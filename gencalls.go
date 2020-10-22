@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
-	"text/template"
 )
 
 type Param struct {
@@ -35,9 +33,6 @@ type Source struct {
 	Funcs []*Fn
 }
 
-func syscalldot() string {
-	return "syscall."
-}
 
 //join concatenates parameters ps into a string with sep separator.
 // Each parameter is converted into string by applying fn to it
@@ -53,13 +48,6 @@ func join(ps []*Param, fn func(*Param) string, sep string) string {
 	return strings.Join(a, sep)
 }
 
-// HelperType returns type of parameter p used in helper function.
-func (p *Param) HelperType() string {
-	if p.Type == "string" {
-		return p.fn.StrconvType()
-	}
-	return p.Type
-}
 
 // tmpVar returns temp variable name that will be used to represent p during syscall.
 func (p *Param) tmpVar() string {
@@ -74,7 +62,7 @@ func (p *Param) tmpVar() string {
 // in syscall. Slices are translated into 2 syscall parameters: pointer to
 // the first element and length.
 func (p *Param) SyscallArgList() []string {
-	t := p.HelperType()
+	t := p.Type
 	var s string
 	switch {
 	case t == "*bool":
@@ -135,9 +123,9 @@ func (f *Fn) ParamCount() int {
 func (f *Fn) Syscall() string {
 	c := f.SyscallParamCount()
 	if c == 3 {
-		return syscalldot() + "Syscall"
+		return "syscall.Syscall"
 	}
-	return syscalldot() + "Syscall" + strconv.Itoa(c)
+	return "syscall.Syscall" + strconv.Itoa(c)
 }
 
 // HelperCallParamList returns source code of call into function f helper.
@@ -153,39 +141,7 @@ func (f *Fn) HelperCallParamList() string {
 	return strings.Join(a, ", ")
 }
 
-// IsUTF16 is true, if f is W (utf16) function. It is false
-// for all A (ascii) functions.
-func (f *Fn) IsUTF16() bool {
-	s := f.DLLFuncName()
-	return s[len(s)-1] == 'W'
-}
 
-// StrconvType returns Go type name used for OS string for f.
-func (f *Fn) StrconvType() string {
-	if f.IsUTF16() {
-		return "*uint16"
-	}
-	return "*byte"
-}
-
-// HasStringParam is true, if f has at least one string parameter.
-// Otherwise it is false.
-func (f *Fn) HasStringParam() bool {
-	for _, p := range f.Params {
-		if p.Type == "string" {
-			return true
-		}
-	}
-	return false
-}
-
-// HelperName returns name of function f helper.
-func (f *Fn) HelperName() string {
-	if !f.HasStringParam() {
-		return f.Name
-	}
-	return "_" + f.Name
-}
 
 // SyscallParamCount determines which version of Syscall/Syscall6/Syscall9/...
 // to use. It returns parameter count for correspondent SyscallX function.
@@ -209,7 +165,10 @@ func (f *Fn) SyscallParamCount() int {
 
 // HelperParamList returns source code for helper function f parameters.
 func (f *Fn) HelperParamList() string {
-	return join(f.Params, func(p *Param) string { return p.Name + " " + p.HelperType() }, ", ")
+	return join(f.Params, func(p *Param) string { return p.Name + " " + p.Type }, ", ")
+}
+func (f *Fn) HelperName() string {
+	return f.Name
 }
 
 // DLLName returns DLL function name for function f.
@@ -241,31 +200,6 @@ func (r *Rets) List() string {
 	return s
 }
 
-func GenCalls(Funcs []*Fn) {
-	src := Source{Funcs}
-	w, e := os.OpenFile(CONFIG_DIR + "/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0664)
-	if e != nil {
-		panic(e)
-	}
-
-	w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
-
-	var err error
-	funcMap := template.FuncMap{
-		"newlazydll": func(dll string) string {
-			arg := "\"" + dll + ".dll\""
-			return "windows.NewLazySystemDLL(" + arg + ")"
-		},
-	}
-	t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
-	err = t.Execute(w, src)
-	if err != nil {
-		w.Close()
-		os.Remove(CONFIG_DIR + "vulkan_windows.go")
-		panic(err)
-	}
-}
-
 // BoolTmpVarCode returns source code for bool temp variable.
 func (p *Param) BoolTmpVarCode() string {
 	const code = `var %[1]s uint32
@@ -292,17 +226,6 @@ func (p *Param) SliceTmpVarCode() string {
 		}`
 	tmp := p.tmpVar()
 	return fmt.Sprintf(code, tmp, p.Type[2:], p.Name, tmp, p.Name)
-}
-
-// ErrorVarName returns error variable name for r.
-func (r *Rets) ErrorVarName() string {
-	if r.ReturnsError {
-		return "err"
-	}
-	if r.Type == "error" {
-		return r.Name
-	}
-	return ""
 }
 
 // TmpVarCode returns source code for temp variable.
@@ -366,7 +289,7 @@ func (r *Rets) SetErrorCode() string {
 		return r.useLongHandleErrorCode("r1")
 	}
 	if r.Type == "error" {
-		return fmt.Sprintf(code, r.Name, syscalldot())
+		return fmt.Sprintf(code, r.Name, "syscall.")
 	}
 	s := ""
 	switch {
@@ -385,7 +308,6 @@ func (r *Rets) SetErrorCode() string {
 	return s + "\n\t" + r.useLongHandleErrorCode(r.Name)
 }
 
-
 var tsrc string = `
 {{define "main"}}
 
@@ -401,21 +323,11 @@ var(
 {{template "funcnames" .}}
 )
 
-{{range .Funcs}}{{if .HasStringParam}}{{template "helperbody" .}}{{end}}{{template "funcbody" .}}{{end}}
+{{range .Funcs}}{{template "funcbody" .}}{{end}}
 {{end}}
-
-
-{{/* help functions */}}
-
 
 {{define "funcnames"}}{{range .Funcs}}	proc{{.DLLFuncName}} = vulkan.NewProc("{{.DLLFuncName}}")
 {{end}}{{end}}
-
-{{define "helperbody"}}
-func {{.Name}}({{.ParamList}}) {{template "results" .}}{
-	{{template "helpertmpvars" .}}	return {{.HelperName}}({{.HelperCallParamList}})
-}
-{{end}}
 
 {{define "funcbody"}}
 func {{.HelperName}}({{.HelperParamList}}) {{template "results" .}}{
@@ -424,8 +336,6 @@ func {{.HelperName}}({{.HelperParamList}}) {{template "results" .}}{
 }
 {{end}}
 
-{{define "helpertmpvars"}}{{range .Params}}{{if .TmpVarHelperCode}}	{{.TmpVarHelperCode}}
-{{end}}{{end}}{{end}}
 
 {{define "tmpvars"}}{{range .Params}}{{if .TmpVarCode}}	{{.TmpVarCode}}
 {{end}}{{end}}{{end}}
@@ -438,8 +348,5 @@ func {{.HelperName}}({{.HelperParamList}}) {{template "results" .}}{
 {{.TmpVarReadbackCode}}{{end}}{{end}}{{end}}
 
 {{define "seterror"}}{{if .Rets.SetErrorCode}}	{{.Rets.SetErrorCode}}
-{{end}}{{end}}
-
-{{define "printtrace"}}{{if .PrintTrace}}	print("SYSCALL: {{.Name}}(", {{.ParamPrintList}}") (", {{.Rets.PrintList}}")\n")
 {{end}}{{end}}
 `

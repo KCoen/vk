@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
+	
 )
 const CONFIG_DIR = "vk"
 const CONFIG_PACKAGE = "vk"
@@ -135,6 +137,32 @@ func bitwidth_to_type(width int) string {
 		panic(width);
 	}
 }
+
+func gencalls(Funcs []*Fn) {
+	src := Source{Funcs}
+	w, e := os.OpenFile(CONFIG_DIR + "/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0664)
+	if e != nil {
+		panic(e)
+	}
+
+	w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
+
+	var err error
+	funcMap := template.FuncMap{
+		"newlazydll": func(dll string) string {
+			arg := "\"" + dll + ".dll\""
+			return "windows.NewLazySystemDLL(" + arg + ")"
+		},
+	}
+	t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
+	err = t.Execute(w, src)
+	if err != nil {
+		w.Close()
+		os.Remove(CONFIG_DIR + "vulkan_windows.go")
+		panic(err)
+	}
+}
+
 func main() {
 	d, _ := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
 	var reg Registry
@@ -160,26 +188,6 @@ func main() {
 		wl("//----------------------------------------")
 		wf("//--%s\n", s)
 		wl("//----------------------------------------\n")
-	}
-	doc_attr := func(ss ...string) {
-		if len(ss) % 2 != 0 {
-			panic(ss);
-		}
-		for i := 0;i < len(ss);i += 2{
-			if ss[i+1] != "" {
-				wf("//%s: %s\n", ss[i], ss[i+1])
-			}
-		}
-	}
-	doc_arguments := func(ss ...string) {
-		if len(ss) % 2 != 0 {
-			panic(ss);
-		}
-		for i := 0;i < len(ss);i += 2{
-			if ss[i+1] != "" {
-				wf("/*[%s]=%s*/", ss[i], ss[i+1])
-			}
-		}
 	}
 
 	wf("package %s\n\n", CONFIG_PACKAGE)
@@ -266,14 +274,13 @@ func main() {
 		}
 	}
 
+
 	art("Functions")
 
 	funlist := []*Fn{}
-
 	for _,c := range(reg.Commands.Command) {
-		doc_attr("Errors", c.Errorcodes, "On success", c.Successcodes, "queues", c.Queues, "renderpass", c.Renderpass, "pipeline", c.Pipeline)
 		name := valid_lh(select_one(c.Name, c.Proto.Name))
-		//wf("//golinkname: %s\n", name)
+		
 		f := Fn{
 			Name: name,
 			PrintTrace: false,
@@ -290,8 +297,6 @@ func main() {
 			f.Rets = &Rets{}	
 		}
 		
-
-		//wf("func %s(", name)
 		for i, p :=range(c.Param) {
 			param_type_name := base_type(p.Type)
 			for i := strings.Count(p.Text, "*"); i > 0; i-- {
@@ -306,22 +311,11 @@ func main() {
 				fn: &f,
 				tmpVarIdx: i,
 			}
-
-			if i > 0 {
-				//wf(",")	
-			}			
-			//wf("%s %s", valid_lh(p.Name), param_type_name)
-			doc_arguments("optional", p.Optional, "len", p.Len)
-		}
-		if c.Proto.Type != "" && c.Proto.Type != "void" {
-			//wf(") (ret %s) %s\n", c.Proto.Type, stubfunction());
-		} else {
-			//wf(") %s \n", stubfunction());
 		}
 		funlist = append(funlist, &f)
 	}
 
-	GenCalls(funlist)
+	gencalls(funlist)
 }
 
 type kronostype struct {
