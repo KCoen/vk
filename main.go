@@ -8,6 +8,10 @@ import (
 	"strconv"
 	"strings"
 )
+const CONFIG_DIR = "vk"
+const CONFIG_PACKAGE = "vk"
+const CONFIG_REGISTERY_FILE = "vk.xml"
+
 var _ = strconv.AppendBool
 
 var sprintf = fmt.Sprintf
@@ -15,6 +19,7 @@ var printf = fmt.Printf
 var textcontext struct {
 	at interface{}
 }
+
 
 func base_type(in string) string {
 	switch in {
@@ -130,15 +135,12 @@ func bitwidth_to_type(width int) string {
 		panic(width);
 	}
 }
-
-
-
 func main() {
-	d, _ := ioutil.ReadFile("vk.xml")
+	d, _ := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
 	var reg Registry
 	xml.Unmarshal(d, &reg)
 
-	f, e := os.OpenFile("vulkan.go", os.O_TRUNC|os.O_CREATE, 0664)
+	f, e := os.OpenFile(CONFIG_DIR + "/vulkan.go", os.O_TRUNC|os.O_CREATE, 0664)
 	if e != nil {
 		panic(e)
 	}
@@ -180,7 +182,7 @@ func main() {
 		}
 	}
 
-	wl("package main\n")
+	wf("package %s\n\n", CONFIG_PACKAGE)
 	art("Build-in")
 	wl("type unk = int")
 	wl("type external_type = unk")
@@ -223,11 +225,17 @@ func main() {
 		case "struct":
 			wf("type %s struct {\n", name)
 			for _, m := range t.Member {
+				// Fix *
 				type_name := base_type(m.Type)
 				for i := strings.Count(m.Text, "*"); i > 0; i-- {
 					type_name = "*" + type_name
 				}
 				type_name = base_type(type_name)
+				if strings.Count(m.Text, "[") != 0 && strings.Count(m.Text, "]") != 0 {
+					if m.Enum != "" {
+						type_name = "[" +m.Enum + "]" + type_name	
+					}
+				}
 				wf("\t%s %s\n", valid_lh(m.Name), type_name)
 			}
 			wl("}\n")

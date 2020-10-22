@@ -53,14 +53,6 @@ func join(ps []*Param, fn func(*Param) string, sep string) string {
 	return strings.Join(a, sep)
 }
 
-// StrconvFunc returns name of Go string to OS string function for f.
-func (f *Fn) StrconvFunc() string {
-	if f.IsUTF16() {
-		return syscalldot() + "UTF16PtrFromString"
-	}
-	return syscalldot() + "BytePtrFromString"
-}
-
 // HelperType returns type of parameter p used in helper function.
 func (p *Param) HelperType() string {
 	if p.Type == "string" {
@@ -105,14 +97,6 @@ func (p *Param) SyscallArgList() []string {
 		s = p.Name
 	}
 	return []string{fmt.Sprintf("uintptr(%s)", s)}
-}
-
-// DLLName returns DLL name for function f.
-func (f *Fn) DLLName() string {
-	if f.dllname == "" {
-		return "kernel32"
-	}
-	return f.dllname
 }
 
 // ParamList returns source code for function f parameters.
@@ -259,12 +243,12 @@ func (r *Rets) List() string {
 
 func GenCalls(Funcs []*Fn) {
 	src := Source{Funcs}
-	w, e := os.OpenFile("vulkan_windows.go", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0664)
+	w, e := os.OpenFile(CONFIG_DIR + "/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0664)
 	if e != nil {
 		panic(e)
 	}
 
-	w.Write([]byte("package main\n"))
+	w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
 
 	var err error
 	funcMap := template.FuncMap{
@@ -277,7 +261,7 @@ func GenCalls(Funcs []*Fn) {
 	err = t.Execute(w, src)
 	if err != nil {
 		w.Close()
-		os.Remove("vulkan_windows.go")
+		os.Remove(CONFIG_DIR + "vulkan_windows.go")
 		panic(err)
 	}
 }
@@ -319,26 +303,6 @@ func (r *Rets) ErrorVarName() string {
 		return r.Name
 	}
 	return ""
-}
-
-// StringTmpVarCode returns source code for string temp variable.
-func (p *Param) StringTmpVarCode() string {
-	errvar := p.fn.Rets.ErrorVarName()
-	if errvar == "" {
-		errvar = "_"
-	}
-	tmp := p.tmpVar()
-	const code = `var %s %s
-		%s, %s = %s(%s)`
-	s := fmt.Sprintf(code, tmp, p.fn.StrconvType(), tmp, errvar, p.fn.StrconvFunc(), p.Name)
-	if errvar == "-" {
-		return s
-	}
-	const morecode = `
-		if %s != nil {
-			return
-		}`
-	return s + fmt.Sprintf(morecode, errvar)
 }
 
 // TmpVarCode returns source code for temp variable.
@@ -433,7 +397,7 @@ import(
 var _ unsafe.Pointer
 
 var(
-	vulkan = windows.NewLazySystemDLL("vulkan.dll")
+	vulkan = windows.NewLazySystemDLL("vulkan-1.dll")
 {{template "funcnames" .}}
 )
 

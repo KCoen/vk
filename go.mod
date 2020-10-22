@@ -1,4 +1,4 @@
-module go-vulkan-gen.cld.moe
+module cld.moe/vkgen
 
 go 1.16
 
