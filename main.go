@@ -1,98 +1,35 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"go/token"
 	"io/ioutil"
 	"os"
-	"strconv"
-	"strings"
 	"text/template"
-	
 )
 const CONFIG_DIR = "vk"
 const CONFIG_PACKAGE = "vk"
 const CONFIG_REGISTERY_FILE = "vk.xml"
 
-var _ = strconv.AppendBool
-
 var sprintf = fmt.Sprintf
 var printf = fmt.Printf
+var sscanf = fmt.Sscanf
+
 var textcontext struct {
 	at interface{}
 }
 
-
-func base_type(in string) string {
-	switch in {
-	case "int32_t": fallthrough
-	case "int64_t": fallthrough
-	case "uint64_t": fallthrough
-	case "uint32_t": fallthrough
-	case "int16_t":
-		return string(in[:len(in)-2])
-	case "char": fallthrough
-	case "uint8_t":
-		return "byte"
-	case "float":
-		return "float32"
-	case "double":
-		return "float64"
-	case "size_t":
-		return "uint"
-	case "*void":
-		return "uintptr"
-	default:
-		return in
-	}
-}
-
-func valid_lh(in string) string {
-	switch in {
-	case "range":
-		fallthrough
-	case "type":
+func renameKeywords(in string) string {
+	t := token.Lookup(in)
+	if t.IsKeyword() {
 		return in + "0"
-	default:
-		return in
 	}
+	return in;
 }
-func textpanic(v interface{}) {
-	fmt.Printf("in %v\n", textcontext.at)
-	panic(v)
-}
-func select_one(vls ...string) (r string) {
-	for _, v := range vls {
-		if v != "" {
-			if r != "" {
-				textpanic(fmt.Sprintf("Expected one but got %v", vls))
-			}
-			r = v
-		}
-	}
-	if r == "" {
-		textpanic(fmt.Sprintf("Expected one but got none"))
-	}
-	return
-}
-func select_either(vls ...string) (r string) {
-	for _, v := range vls {
-		if v != "" {
-			return v;
-		}
-	}
-	textpanic(fmt.Sprintf("Expected one but got none"))
-	return
-}
-
-func stubfunction() string {
-	return ``
-	return `{
-	return;
-}`;
-}
-
-func cleanvalue(in string) string {
+func fixNumberLiterals(in string) string {
 	// Clean .f from floats
 	if in != "" {
 		var a float64
@@ -107,19 +44,15 @@ func cleanvalue(in string) string {
 	}
 	return in
 }
-
-func parsebitpos(in string) string {
+func formatBitPos(in string) string {
 	if in != "" {
-		in = strings.Replace(in, "f", "", 0)
-		in = strings.Replace(in, "d", "", 0)
 		return "0x1 << " + in
 	}
 	return ""
 }
-
-func parse_basetype(m kronostype) string {
+func parseBaseType(m kronostype) string {
 	if len(m.Type) > 0 {
-		return fmt.Sprintf("type %s = %s\n", m.Name, base_type(m.Type[0]))
+		return fmt.Sprintf("type %s = %s\n", m.Name, ctype_to_go(m.Type[0]))
 	} else {
 		return fmt.Sprintf("type %s = unk\n", m.Name)
 	}
@@ -149,7 +82,7 @@ func gencalls(Funcs []*Fn) {
 
 	var err error
 	funcMap := template.FuncMap{
-		"newlazydll": func(dll string) string {
+ 		"newlazydll": func(dll string) string {
 			arg := "\"" + dll + ".dll\""
 			return "windows.NewLazySystemDLL(" + arg + ")"
 		},
@@ -164,22 +97,25 @@ func gencalls(Funcs []*Fn) {
 }
 
 func main() {
+	// Read File
 	d, _ := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
 	var reg Registry
 	xml.Unmarshal(d, &reg)
 
+	// Open Output
 	f, e := os.OpenFile(CONFIG_DIR + "/vulkan.go", os.O_TRUNC|os.O_CREATE, 0664)
 	if e != nil {
 		panic(e)
 	}
 
+	// Helper functions
 	wf := func(s string, vals ... interface{}) {
 		f.Write([]byte(sprintf(s, vals...)))
 	}
 	wl := func(ss ... string) {
 		for _, s := range(ss) {
 			f.Write([]byte(s))
-			if s[len(s)-1] != '\n' {
+			if len(s) < 1 || s[len(s)-1] != '\n' {
 				f.Write([]byte{'\n'})	
 			}
 		}
@@ -190,6 +126,8 @@ func main() {
 		wl("//----------------------------------------\n")
 	}
 
+
+	wl("//Generated")
 	wf("package %s\n\n", CONFIG_PACKAGE)
 	art("Build-in")
 	wl("type unk = int")
@@ -205,7 +143,7 @@ func main() {
 		switch t.Category {
 		case "basetype":
 			if len(t.Type) > 0 {
-				wf("type %s = %s\n", name, base_type(t.Type[0]))
+				wf("type %s = %s\n", name, ctype_to_go(t.Type[0]))
 			} else {
 				wf("type %s = unk\n", name)
 			}
@@ -215,15 +153,25 @@ func main() {
 			wf("type %s = uint64\n", name)
 		case "":
 			if t.Requires != "" {
-				wf("type %s = external_type\n", name) // Externally defined type
-				continue;
+				if is_buildin_type(name) == false {
+					wf("type %s = external_type\n", name) // Externally defined type	
+				}
 			}
-			fallthrough
 		case "bitmask":
 			if name == "int" {
 				continue;
 			}
-			wf("type %s = uint32\n", name)
+
+			vktype := parseTypeFromXmlString(fmt.Sprintf("<type>%s</type>", t.Xml))
+			if vktype.Istypedef {
+				wf("type %s = %s\n", name, vktype.GoType)
+				if t.Requires != "" {
+					// Assume same size?
+					wf("type %s = %s\n", t.Requires, vktype.GoType)
+				}
+			} else {
+				wf("type %s = uint32\n", name)	
+			}		
 		case "union":
 			wf("type %s = struct{uintptr}\n", name)
 		case "enum":
@@ -233,18 +181,12 @@ func main() {
 		case "struct":
 			wf("type %s struct {\n", name)
 			for _, m := range t.Member {
-				// Fix *
-				type_name := base_type(m.Type)
-				for i := strings.Count(m.Text, "*"); i > 0; i-- {
-					type_name = "*" + type_name
+				t := parseTypeFromXmlString(fmt.Sprintf("<member>%s</member>", m.Xml))
+				wf("\t%s %s", t.GoName, t.GoType)
+				if t.GoComment != "" {
+					wf(" //%s", t.GoComment)
 				}
-				type_name = base_type(type_name)
-				if strings.Count(m.Text, "[") != 0 && strings.Count(m.Text, "]") != 0 {
-					if m.Enum != "" {
-						type_name = "[" +m.Enum + "]" + type_name	
-					}
-				}
-				wf("\t%s %s\n", valid_lh(m.Name), type_name)
+				wl("")
 			}
 			wl("}\n")
 		case "include": // Nop
@@ -257,65 +199,147 @@ func main() {
 	art("Enums")
 
 	for _, e := range reg.Enums {
-		bitwidth := 32
+		bitwidth := 32 //??
 		if e.Type == "bitmask" {
-			bitwidth = 64;
+			bitwidth = 64; ///??
 		}
+		
 		if e.Name == "API Constants" {
 			e.Name = ""
 		} else {
-			fmt.Fprintf(f, "type %s = %s\n", e.Name, bitwidth_to_type(bitwidth))
+			if e.Type != "bitmask" {
+				fmt.Fprintf(f, "type %s = %s\n", e.Name, bitwidth_to_type(bitwidth))	
+			}
 		}
 		for _, ev := range e.Enum {
 			textcontext.at = ev
 			lh := ev.Name
-			rh := select_one(cleanvalue(ev.Value), ev.Alias, parsebitpos(ev.Bitpos))
+			rh := select_one(fixNumberLiterals(ev.Value), ev.Alias, formatBitPos(ev.Bitpos))
 			fmt.Fprintf(f, "const %s %s = %s\n", lh, e.Name, rh)
 		}
 	}
-
 
 	art("Functions")
 
 	funlist := []*Fn{}
 	for _,c := range(reg.Commands.Command) {
-		name := valid_lh(select_one(c.Name, c.Proto.Name))
+		name := renameKeywords(select_one(c.Name, c.Proto.Name))
 		
 		f := Fn{
 			Name: name,
 			PrintTrace: false,
 			dllname: "vulkan-1.dll",
 			dllfuncname: name,
-			Params: make([]*Param, len(c.Param)),
+			Params: make([]*Param, 0),
 		}
+
 		if c.Proto.Type != "" && c.Proto.Type != "void" {
 			f.Rets = &Rets{
-				Type: c.Proto.Type,
+				Type: ctype_to_go(c.Proto.Type),
 				Name: "ret0",
 			}	
 		} else {
-			f.Rets = &Rets{}	
+			f.Rets = &Rets{}
 		}
 		
 		for i, p :=range(c.Param) {
-			param_type_name := base_type(p.Type)
-			for i := strings.Count(p.Text, "*"); i > 0; i-- {
-				param_type_name = "*" + param_type_name
-			}
-			param_type_name = base_type(param_type_name)
-			param_name := valid_lh(p.Name)
+			vktype := parseTypeFromXmlString(sprintf("<param>%s</param>", p.Xml))
 
-			f.Params[i] = &Param{
-				Name: param_name,
-				Type: param_type_name,
-				fn: &f,
-				tmpVarIdx: i,
-			}
+			// If its sized array as argument,we unroll it, because the binding generator doesn't support them
+			// I think this should work but the order might be wrong
+			// this only works for arrays passed over the stack
+			if vktype.Size > 0 && vktype.Ispointer == 0 {
+				for index := vktype.Size; index > 0;index-- {
+					f.Params = append(f.Params, &Param{
+						Name: sprintf("%s%d",vktype.GoName, index),
+						Type: ctype_to_go(vktype.Simpletype),
+						fn: &f,
+						tmpVarIdx: i,
+					})		
+				}
+			} else {
+				f.Params = append(f.Params, &Param{
+					Name: vktype.GoName,
+					Type: vktype.GoType,
+					fn: &f,
+					tmpVarIdx: i,
+				})	
+			}			
 		}
 		funlist = append(funlist, &f)
 	}
 
 	gencalls(funlist)
+}
+// Helper functions 
+func clamp(a, mi, ma int) int {
+	return min(max(a, mi), ma)
+}
+func max(a,b int) int {
+	if b > a {
+		return b;
+	}
+	return a;
+}
+func min(a,b int) int {
+	if a < b {
+		return a;
+	}
+	return b;
+}
+func vardump(i interface{}) string {
+	var a bytes.Buffer
+	e := json.NewEncoder(&a)
+	e.SetEscapeHTML(false)
+	e.SetIndent("", "\t")
+	e.Encode(i)
+	return string(a.Bytes())
+}
+func select_one(vls ...string) (r string) {
+	for _, v := range vls {
+		if v != "" {
+			if r != "" {
+				textpanic(fmt.Sprintf("Expected one but got %v", vls))
+			}
+			r = v
+		}
+	}
+	if r == "" {
+		textpanic(fmt.Sprintf("Expected one but got none"))
+	}
+	return
+}
+// Is any value in a equal to any value in vals
+func is_any(a string, vals ...string) bool {
+	for _, v := range vals {
+		if a == v {
+			return true
+		}
+	}
+	return false
+}
+
+// Is any value in a equal to any value in vals
+func is_any_byte(a byte, vals ...byte) bool {
+	for _, v := range vals {
+		if a == v {
+			return true
+		}
+	}
+	return false
+}
+func select_either(vls ...string) (r string) {
+	for _, v := range vls {
+		if v != "" {
+			return v;
+		}
+	}
+	textpanic(fmt.Sprintf("Expected one but got none"))
+	return
+}
+func textpanic(v interface{}) {
+	fmt.Printf("in %v\n", textcontext.at)
+	panic(v)
 }
 
 type kronostype struct {
@@ -327,7 +351,7 @@ type kronostype struct {
 	Returnedonly  string `xml:"returnedonly,attr"`
 	AttrComment   string `xml:"comment,attr"`
 	Structextends string `xml:"structextends,attr"`
-	Inner         string `xml:",innerxml"`
+	Xml         string `xml:",innerxml"`
 	Text          string `xml:",chardata"`
 	Allowduplicate string   `xml:"allowduplicate,attr"`
 	Name           string   `xml:"name"`
@@ -350,6 +374,7 @@ type member struct {
 	Name           string `xml:"name"`
 	Enum           string `xml:"enum"`
 	Comment        string `xml:"comment"`
+	Xml        string `xml:",innerxml"`
 }
 
 type Registry struct {
@@ -418,6 +443,7 @@ type Registry struct {
 				Noautovalidity string `xml:"noautovalidity,attr"`
 				Type           string `xml:"type"`
 				Name           string `xml:"name"`
+				Xml        string `xml:",innerxml"`
 			} `xml:"param"`
 			Implicitexternsyncparams struct {
 				Param string `xml:"param"`

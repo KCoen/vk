@@ -7,11 +7,11 @@
 	],
 	"build_systems": [ 
 		{
-			"name": "Run Current File",
-			"shell_cmd": "set CGO_ENABLED=0&go run .",
+			"name": "Run",
+			"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vkgen&go test cld.moe/vkgen/vk",
 			"variants": [{
 				"name": "Test TestTypeDecode",
-				"shell_cmd": "go test cld.moe/vkgen/vk -run=TestTypeDecode -v"
+				"shell_cmd": "go test cld.moe/vkgen -run=TestTypeDecode -v"
 			}],
 		},
 		

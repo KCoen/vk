@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// This File is partially based on https://github.com/golang/sys/blob/master/windows/syscall.go
+// Aim to make it less generic and more specific so the code becomes less unwieldy for later ports to other OS's that are not windows or solaris
+
 type Param struct {
 	Name      string
 	Type      string
@@ -127,21 +130,6 @@ func (f *Fn) Syscall() string {
 	}
 	return "syscall.Syscall" + strconv.Itoa(c)
 }
-
-// HelperCallParamList returns source code of call into function f helper.
-func (f *Fn) HelperCallParamList() string {
-	a := make([]string, 0, len(f.Params))
-	for _, p := range f.Params {
-		s := p.Name
-		if p.Type == "string" {
-			s = p.tmpVar()
-		}
-		a = append(a, s)
-	}
-	return strings.Join(a, ", ")
-}
-
-
 
 // SyscallParamCount determines which version of Syscall/Syscall6/Syscall9/...
 // to use. It returns parameter count for correspondent SyscallX function.

@@ -34,9 +34,9 @@ func TestHelloWorld(tst *testing.T) {
 	ext := make([]VkExtensionProperties,extensionCount)
 	vkEnumerateInstanceExtensionProperties(nil, &extensionCount, &ext[0]);
 	
-	tst.Logf("Ext[0] name: %s", CString(ext[0].extensionName[:]))
-	
-
+	for i := uint32(0);i < extensionCount;i++ {
+		tst.Logf("Ext[%d] \tname: %s",i, CString(ext[i].extensionName[:]))	
+	}	
 	var instance VkInstance
 	if e := vkCreateInstance(&createInfo, nil, &instance);e != VK_SUCCESS {
 		tst.Error(e)
