@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
+	"go/format"
 	"go/token"
 	"io/ioutil"
 	"os"
@@ -30,7 +32,7 @@ func renameKeywords(in string) string {
 	if t.IsKeyword() {
 		return in + "0"
 	}
-	return in;
+	return in
 }
 func fixNumberLiterals(in string) string {
 	// Clean .f from floats
@@ -64,39 +66,45 @@ func parseBaseType(m kronostype) string {
 func bitwidth_to_type(width int) string {
 	switch width {
 	case 32:
-		return "int32";
+		return "int32"
 	case 64:
-		return "int64";
+		return "int64"
 	case 16:
-		return "int16";
+		return "int16"
 	default:
-		panic(width);
+		panic(width)
 	}
 }
 
 func gencalls(Funcs []*Fn) {
 	src := Source{Funcs}
-	w, e := os.OpenFile(CONFIG_DIR + "/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY, 0664)
-	if e != nil {
-		panic(e)
-	}
-
+	var w bytes.Buffer
 	w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
 
 	var err error
 	funcMap := template.FuncMap{
- 		"newlazydll": func(dll string) string {
+		"newlazydll": func(dll string) string {
 			arg := "\"" + dll + ".dll\""
 			return "windows.NewLazySystemDLL(" + arg + ")"
 		},
 	}
 	t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
-	err = t.Execute(w, src)
+	err = t.Execute(&w, src)
 	if err != nil {
-		w.Close()
-		os.Remove(CONFIG_DIR + "vulkan_windows.go")
 		panic(err)
 	}
+
+	formatedbytes, err := format.Source(w.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	file, e := os.OpenFile(CONFIG_DIR+"/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY, 0664)
+	if e != nil {
+		panic(e)
+	}
+	defer file.Close()
+	file.Write(formatedbytes)
 }
 
 func main() {
@@ -105,25 +113,23 @@ func main() {
 	if e != nil {
 		panic(e)
 	}
-	
-	var reg Registry
-	xml.Unmarshal(d, &reg)
 
-	// Open Output
-	f, e := os.OpenFile(CONFIG_DIR + "/vulkan.go", os.O_WRONLY|os.O_TRUNC, 0664)
+	var reg Registry
+	e = xml.Unmarshal(d, &reg)
 	if e != nil {
 		panic(e)
 	}
 
+	var f bytes.Buffer
 	// Helper functions
-	wf := func(s string, vals ... interface{}) {
+	wf := func(s string, vals ...interface{}) {
 		f.Write([]byte(sprintf(s, vals...)))
 	}
-	wl := func(ss ... string) {
-		for _, s := range(ss) {
+	wl := func(ss ...string) {
+		for _, s := range ss {
 			f.Write([]byte(s))
 			if len(s) < 1 || s[len(s)-1] != '\n' {
-				f.Write([]byte{'\n'})	
+				f.Write([]byte{'\n'})
 			}
 		}
 	}
@@ -133,7 +139,7 @@ func main() {
 		wl("//----------------------------------------\n")
 	}
 
-	wf("//Generated %s\n",time.Now().UTC())
+	wf("//Generated %s\n", time.Now().UTC())
 	wf("package %s\n\n", CONFIG_PACKAGE)
 	art("Build-in")
 	wl("type unk = int")
@@ -160,12 +166,12 @@ func main() {
 		case "":
 			if t.Requires != "" {
 				if is_buildin_type(name) == false {
-					wf("type %s = external_type\n", name) // Externally defined type	
+					wf("type %s = external_type\n", name) // Externally defined type
 				}
 			}
 		case "bitmask":
 			if name == "int" {
-				continue;
+				continue
 			}
 
 			vktype := parseTypeFromXmlString(fmt.Sprintf("<type>%s</type>", t.Xml))
@@ -175,8 +181,8 @@ func main() {
 					wf("type %s = %s\n", t.Requires, vktype.GoType)
 				}
 			} else {
-				wf("type %s = uint32\n", name)	
-			}		
+				wf("type %s = uint32\n", name)
+			}
 		case "union":
 			wf("type %s = struct{uintptr}\n", name) //@TODO
 		case "enum":
@@ -206,90 +212,103 @@ func main() {
 	for _, e := range reg.Enums {
 		bitwidth := 32 //??
 		if e.Type == "bitmask" {
-			bitwidth = 64; ///??
+			bitwidth = 64 ///??
 		}
 
 		if e.Name == "API Constants" {
 			e.Name = ""
 		} else {
 			if e.Type != "bitmask" {
-				fmt.Fprintf(f, "type %s = %s\n", e.Name, bitwidth_to_type(bitwidth))	
+				wf("type %s = %s\n", e.Name, bitwidth_to_type(bitwidth))
 			}
 		}
 		for _, ev := range e.Enum {
 			lh := ev.Name
 			rh := select_one(fixNumberLiterals(ev.Value), ev.Alias, formatBitPos(ev.Bitpos))
-			fmt.Fprintf(f, "const %s %s = %s\n", lh, e.Name, rh)
+			wf("const %s %s = %s\n", lh, e.Name, rh)
 		}
 	}
 
 	art("Functions")
 
 	funlist := []*Fn{}
-	for _,c := range(reg.Commands.Command) {
+	for _, c := range reg.Commands.Command {
 		name := renameKeywords(select_one(c.Name, c.Proto.Name))
 
 		f := Fn{
-			Name: name,
-			PrintTrace: false,
-			dllname: "vulkan-1.dll",
-			dllfuncname: name,
-			Params: make([]*Param, 0),
-			comment: c.Comment,
-			successcodes: strings.Split(c.Successcodes,","),
-			renderpass: strings.Split(c.Renderpass,","),
-			pipeline: strings.Split(c.Pipeline,","),
-			errorcodes: strings.Split(c.Errorcodes,","),
-			cmdbufferlevel: strings.Split(c.Cmdbufferlevel,","),
+			Name:           name,
+			PrintTrace:     false,
+			dllname:        "vulkan-1.dll",
+			dllfuncname:    name,
+			Params:         make([]*Param, 0),
+			comment:        c.Comment,
+			successcodes:   strings.Split(c.Successcodes, ","),
+			renderpass:     strings.Split(c.Renderpass, ","),
+			pipeline:       strings.Split(c.Pipeline, ","),
+			errorcodes:     strings.Split(c.Errorcodes, ","),
+			cmdbufferlevel: strings.Split(c.Cmdbufferlevel, ","),
 		}
 
 		if c.Proto.Type != "" && c.Proto.Type != "void" {
 			f.Rets = &Rets{
 				Type: ctype_to_go(c.Proto.Type),
 				Name: "ret0",
-			}	
+			}
 		} else {
 			f.Rets = &Rets{}
 		}
-		
-		for i, p := range(c.Param) {
-			vktype := parseTypeFromXmlString(sprintf("<param>%s</param>", p.Xml))
+		for i, p := range c.Param {
+			vktype := parseTypeFromXmlString(sprintf("<param>%s</param>", string(p.Xml)))
 
 			// If its sized array as argument,we unroll it
 			if vktype.Size > 0 && vktype.Ispointer == 0 {
-				for index := vktype.Size; index > 0;index-- {
+				for index := vktype.Size; index > 0; index-- {
 					f.Params = append(f.Params, &Param{
-						Name: sprintf("%s%d",vktype.GoName, index),
-						Type: ctype_to_go(vktype.Simpletype),
-						fn: &f,
+						Name:      sprintf("%s%d", vktype.GoName, index),
+						Type:      ctype_to_go(vktype.Simpletype),
+						fn:        &f,
 						tmpVarIdx: i,
-					})		
+					})
 				}
 			} else {
 				f.Params = append(f.Params, &Param{
-					Name: vktype.GoName,
-					Type: vktype.GoType,
-					fn: &f,
+					Name:      vktype.GoName,
+					Type:      vktype.GoType,
+					fn:        &f,
 					tmpVarIdx: i,
-				})	
-			}			
+				})
+			}
 		}
 		funlist = append(funlist, &f)
 	}
+
+	formatedbytes, err := format.Source(f.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	// Open Output
+	file, e := os.OpenFile(CONFIG_DIR+"/vulkan.go", os.O_WRONLY|os.O_TRUNC, 0664)
+	if e != nil {
+		panic(e)
+	}
+	defer file.Close()
+	file.Write(formatedbytes)
+
 	gencalls(funlist)
 }
 
 type kronostype struct {
-	AttrName      string `xml:"name,attr"`
-	Category      string `xml:"category,attr"`
-	Requires      string `xml:"requires,attr"`
-	Alias         string `xml:"alias,attr"`
-	Parent        string `xml:"parent,attr"`
-	Returnedonly  string `xml:"returnedonly,attr"`
-	AttrComment   string `xml:"comment,attr"`
-	Structextends string `xml:"structextends,attr"`
-	Xml         string `xml:",innerxml"`
-	Text          string `xml:",chardata"`
+	AttrName       string   `xml:"name,attr"`
+	Category       string   `xml:"category,attr"`
+	Requires       string   `xml:"requires,attr"`
+	Alias          string   `xml:"alias,attr"`
+	Parent         string   `xml:"parent,attr"`
+	Returnedonly   string   `xml:"returnedonly,attr"`
+	AttrComment    string   `xml:"comment,attr"`
+	Structextends  string   `xml:"structextends,attr"`
+	Xml            string   `xml:",innerxml"`
+	Text           string   `xml:",chardata"`
 	Allowduplicate string   `xml:"allowduplicate,attr"`
 	Name           string   `xml:"name"`
 	Type           []string `xml:"type"`
@@ -311,7 +330,7 @@ type member struct {
 	Name           string `xml:"name"`
 	Enum           string `xml:"enum"`
 	Comment        string `xml:"comment"`
-	Xml        string `xml:",innerxml"`
+	Xml            string `xml:",innerxml"`
 }
 
 type Registry struct {
@@ -358,7 +377,7 @@ type Registry struct {
 	Commands struct {
 		Comment string `xml:"comment,attr"`
 		Command []struct {
-			Text          string `xml:",chardata"`
+			Text           string `xml:",chardata"`
 			Successcodes   string `xml:"successcodes,attr"`
 			Errorcodes     string `xml:"errorcodes,attr"`
 			Queues         string `xml:"queues,attr"`
@@ -373,14 +392,14 @@ type Registry struct {
 				Name string `xml:"name"`
 			} `xml:"proto"`
 			Param []struct {
-				Text          string `xml:",chardata"`
+				Text           string `xml:",chardata"`
 				Optional       string `xml:"optional,attr"`
 				Externsync     string `xml:"externsync,attr"`
 				Len            string `xml:"len,attr"`
 				Noautovalidity string `xml:"noautovalidity,attr"`
 				Type           string `xml:"type"`
 				Name           string `xml:"name"`
-				Xml        string `xml:",innerxml"`
+				Xml            string `xml:",innerxml"`
 			} `xml:"param"`
 			Implicitexternsyncparams struct {
 				Param string `xml:"param"`

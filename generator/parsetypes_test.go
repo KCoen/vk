@@ -3,6 +3,8 @@ package main
 import (
 	"strings"
 	"testing"
+
+	"cld.moe/vk/generator/util"
 )
 
 // Honestly there might just be a cgo api for parsing a fully fledged C definition?
@@ -12,7 +14,7 @@ func TestTypeDecode(tst *testing.T) {
 	    if c.Comment != "" && strings.Count(c.Fulltype, c.Comment) > 0 {
 	    	tst.Errorf("Failed %s Fulltype %s contained Comment %s", s,c.Fulltype, c.Comment)
 	    }
-	    tst.Log(vardump(c))
+	    tst.Log(util.Vardump(c))
 	}
 
 	SimpleTest(`<type category="enum" name="VkDriverIdKHR"                                 alias="VkDriverId"/>`)

@@ -22,7 +22,7 @@ type VkTypeInfo struct { //@TODO Some of the members are public just for vardump
 	BitOffset  int
 	Xml        string
 	FuncName   string
-	Size 		int
+	Size       int
 
 	ReturnType *VkTypeInfo // @TODO
 	Arguments  []VkTypeInfo
@@ -32,8 +32,8 @@ var regexp_func *regexp.Regexp
 
 func init() {
 	regexp_func = regexp.MustCompile(
-		`\(VKAPI_PTR\s+\*(PFN_[A-z0-9]*)\)` + 	// Name
-		`\(\s*(.*)\s*\)`) 						// Argument list
+		`\(VKAPI_PTR\s+\*(PFN_[A-z0-9]*)\)` + // Name
+			`\(\s*(.*)\s*\)`) // Argument list
 }
 
 func parseTypeFromXmlString(_xml string) VkTypeInfo {
@@ -173,7 +173,7 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 		c.GoName = renameKeywords(c.Name)
 		c.GoComment = c.Comment
 		if c.BitOffset != 0 {
-			c.GoType = strings.Replace(c.GoType,ctype_to_go(c.Simpletype), "struct{}", -1) // @TODO Make sure the padding is corrected on these structs
+			c.GoType = strings.Replace(c.GoType, ctype_to_go(c.Simpletype), "struct{}", -1) // @TODO Make sure the padding is corrected on these structs
 			c.GoComment = fmt.Sprintf("BITFIELD: %d %s", c.BitOffset, c.GoComment)
 		}
 	}
@@ -196,19 +196,27 @@ func ctype_to_go(in string) string {
 		return "uintptr"
 	default:
 		switch strings.TrimLeft(in, "*") {
-		case "int_t": fallthrough
+		case "int_t":
+			fallthrough
 		case "int":
 			return "int32"
-		case "int16_t":  fallthrough
-		case "uint16_t":  fallthrough
-		case "int32_t":  fallthrough
-		case "int64_t":  fallthrough
-		case "uint64_t": fallthrough
-		case "int8_t": fallthrough
-		case "uint8_t": fallthrough
-		case "uint32_t": 
+		case "int16_t":
+			fallthrough
+		case "uint16_t":
+			fallthrough
+		case "int32_t":
+			fallthrough
+		case "int64_t":
+			fallthrough
+		case "uint64_t":
+			fallthrough
+		case "int8_t":
+			fallthrough
+		case "uint8_t":
+			fallthrough
+		case "uint32_t":
 			return string(in[:len(in)-2])
-		case "char": 	
+		case "char":
 			return "byte"
 		case "float":
 			return "float32"
@@ -221,6 +229,7 @@ func ctype_to_go(in string) string {
 		}
 	}
 }
+
 // This function read out a tag eg <foobar>, end_tag is set to 1 in the case of </foobar> or <foobar/>
 func readtag(d string) (name string, tag string, end_tag bool) {
 	if d[0] != '<' {

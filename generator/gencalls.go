@@ -18,18 +18,18 @@ type Param struct {
 	tmpVarIdx int
 }
 type Fn struct {
-	Name        string
-	Params      []*Param
-	Rets        *Rets
-	PrintTrace  bool
-	dllname     string
-	dllfuncname string
-	comment		string
-	renderpass		[]string
+	Name           string
+	Params         []*Param
+	Rets           *Rets
+	PrintTrace     bool
+	dllname        string
+	dllfuncname    string
+	comment        string
+	renderpass     []string
 	cmdbufferlevel []string
-	pipeline		[]string
-	successcodes	[]string
-	errorcodes		[]string
+	pipeline       []string
+	successcodes   []string
+	errorcodes     []string
 	// TODO: get rid of this field and just use parameter index instead
 	curTmpVarIdx int // insure tmp variables have uniq names
 }
@@ -44,7 +44,6 @@ type Source struct {
 	Funcs []*Fn
 }
 
-
 //join concatenates parameters ps into a string with sep separator.
 // Each parameter is converted into string by applying fn to it
 // before conversion.
@@ -58,7 +57,6 @@ func join(ps []*Param, fn func(*Param) string, sep string) string {
 	}
 	return strings.Join(a, sep)
 }
-
 
 // tmpVar returns temp variable name that will be used to represent p during syscall.
 func (p *Param) tmpVar() string {
@@ -99,7 +97,7 @@ func (p *Param) SyscallArgList() []string {
 }
 
 func hasnonempty(set []string) bool {
-	for _,v := range(set) {
+	for _, v := range set {
 		if v != "" {
 			return true
 		}
@@ -107,7 +105,7 @@ func hasnonempty(set []string) bool {
 	return false
 }
 
-func(f *Fn) Comment() (r string) {
+func (f *Fn) Comment() (r string) {
 	if f.comment != "" {
 		r += "//" + f.comment + "\n"
 	}
@@ -292,13 +290,14 @@ func (r *Rets) useLongHandleErrorCode(retvar string) string {
 	cond := retvar + " == 0"
 	return fmt.Sprintf(code, cond)
 }
+
 // SetErrorCode returns source code that sets return parameters.
 func (r *Rets) SetErrorCode() string {
 	const code = `if r0 != 0 {
 		%s = %sErrno(r0)
 	}`
 	if len(r.Type) == 0 {
-		return "";
+		return ""
 	}
 	if r.Name == "" && !r.ReturnsError {
 		return ""
