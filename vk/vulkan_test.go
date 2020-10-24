@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-func VK_MAKE_VERSION(major, minor, patch int) uint32 {
+/*func VK_MAKE_VERSION(major, minor, patch int) uint32 {
     return ((((uint32)(major)) << 22) | (((uint32)(minor)) << 12) | ((uint32)(patch)))
-}
+}*/
 
 func CString(b []byte) []byte {
 	return b[:bytes.IndexByte(b, 0)]
@@ -35,8 +35,8 @@ func TestHelloWorld(tst *testing.T) {
 	vkEnumerateInstanceExtensionProperties(nil, &extensionCount, &ext[0]);
 	
 	for i := uint32(0);i < extensionCount;i++ {
-		tst.Logf("Ext[%d] \tname: %s",i, CString(ext[i].extensionName[:]))	
-	}	
+		tst.Logf("Ext[%d] \tname: %s",i, CString(ext[i].extensionName[:]))
+	}
 	var instance VkInstance
 	if e := vkCreateInstance(&createInfo, nil, &instance);e != VK_SUCCESS {
 		tst.Error(e)

@@ -595,7 +595,7 @@ func vkFreeMemory(device VkDevice, memory VkDeviceMemory, pAllocator *VkAllocati
 	return
 }
 
-func vkMapMemory(device VkDevice, memory VkDeviceMemory, offset VkDeviceSize, size VkDeviceSize, flags VkMemoryMapFlags, ppData **void) (ret0 VkResult) {
+func vkMapMemory(device VkDevice, memory VkDeviceMemory, offset VkDeviceSize, size VkDeviceSize, flags VkMemoryMapFlags, ppData *uintptr) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall6(procvkMapMemory.Addr(), 6, uintptr(device), uintptr(memory), uintptr(offset), uintptr(size), uintptr(flags), uintptr(unsafe.Pointer(ppData)))	
 	ret0 = VkResult(r0)
 	return
@@ -1022,8 +1022,8 @@ func vkCmdSetDepthBias(commandBuffer VkCommandBuffer, depthBiasConstantFactor fl
 	return
 }
 
-func vkCmdSetBlendConstants(commandBuffer VkCommandBuffer, blendConstants float32) {
-	syscall.Syscall(procvkCmdSetBlendConstants.Addr(), 2, uintptr(commandBuffer), uintptr(blendConstants), 0)	
+func vkCmdSetBlendConstants(commandBuffer VkCommandBuffer, blendConstants4 float32, blendConstants3 float32, blendConstants2 float32, blendConstants1 float32) {
+	syscall.Syscall6(procvkCmdSetBlendConstants.Addr(), 5, uintptr(commandBuffer), uintptr(blendConstants4), uintptr(blendConstants3), uintptr(blendConstants2), uintptr(blendConstants1), 0)	
 	return
 }
 
@@ -1611,13 +1611,13 @@ func vkGetMemoryWin32HandlePropertiesKHR(device VkDevice, handleType VkExternalM
 	return
 }
 
-func vkGetMemoryFdKHR(device VkDevice, pGetFdInfo *VkMemoryGetFdInfoKHR, pFd *int) (ret0 VkResult) {
+func vkGetMemoryFdKHR(device VkDevice, pGetFdInfo *VkMemoryGetFdInfoKHR, pFd *int32) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall(procvkGetMemoryFdKHR.Addr(), 3, uintptr(device), uintptr(unsafe.Pointer(pGetFdInfo)), uintptr(unsafe.Pointer(pFd)))	
 	ret0 = VkResult(r0)
 	return
 }
 
-func vkGetMemoryFdPropertiesKHR(device VkDevice, handleType VkExternalMemoryHandleTypeFlagBits, fd int, pMemoryFdProperties *VkMemoryFdPropertiesKHR) (ret0 VkResult) {
+func vkGetMemoryFdPropertiesKHR(device VkDevice, handleType VkExternalMemoryHandleTypeFlagBits, fd int32, pMemoryFdProperties *VkMemoryFdPropertiesKHR) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall6(procvkGetMemoryFdPropertiesKHR.Addr(), 4, uintptr(device), uintptr(handleType), uintptr(fd), uintptr(unsafe.Pointer(pMemoryFdProperties)), 0, 0)	
 	ret0 = VkResult(r0)
 	return
@@ -1645,7 +1645,7 @@ func vkImportSemaphoreWin32HandleKHR(device VkDevice, pImportSemaphoreWin32Handl
 	return
 }
 
-func vkGetSemaphoreFdKHR(device VkDevice, pGetFdInfo *VkSemaphoreGetFdInfoKHR, pFd *int) (ret0 VkResult) {
+func vkGetSemaphoreFdKHR(device VkDevice, pGetFdInfo *VkSemaphoreGetFdInfoKHR, pFd *int32) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall(procvkGetSemaphoreFdKHR.Addr(), 3, uintptr(device), uintptr(unsafe.Pointer(pGetFdInfo)), uintptr(unsafe.Pointer(pFd)))	
 	ret0 = VkResult(r0)
 	return
@@ -1679,7 +1679,7 @@ func vkImportFenceWin32HandleKHR(device VkDevice, pImportFenceWin32HandleInfo *V
 	return
 }
 
-func vkGetFenceFdKHR(device VkDevice, pGetFdInfo *VkFenceGetFdInfoKHR, pFd *int) (ret0 VkResult) {
+func vkGetFenceFdKHR(device VkDevice, pGetFdInfo *VkFenceGetFdInfoKHR, pFd *int32) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall(procvkGetFenceFdKHR.Addr(), 3, uintptr(device), uintptr(unsafe.Pointer(pGetFdInfo)), uintptr(unsafe.Pointer(pFd)))	
 	ret0 = VkResult(r0)
 	return
@@ -2048,7 +2048,7 @@ func vkGetDescriptorSetLayoutSupportKHR() {
 	return
 }
 
-func vkGetSwapchainGrallocUsageANDROID(device VkDevice, format VkFormat, imageUsage VkImageUsageFlags, grallocUsage *int) (ret0 VkResult) {
+func vkGetSwapchainGrallocUsageANDROID(device VkDevice, format VkFormat, imageUsage VkImageUsageFlags, grallocUsage *int32) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall6(procvkGetSwapchainGrallocUsageANDROID.Addr(), 4, uintptr(device), uintptr(format), uintptr(imageUsage), uintptr(unsafe.Pointer(grallocUsage)), 0, 0)	
 	ret0 = VkResult(r0)
 	return
@@ -2060,13 +2060,13 @@ func vkGetSwapchainGrallocUsage2ANDROID(device VkDevice, format VkFormat, imageU
 	return
 }
 
-func vkAcquireImageANDROID(device VkDevice, image VkImage, nativeFenceFd int, semaphore VkSemaphore, fence VkFence) (ret0 VkResult) {
+func vkAcquireImageANDROID(device VkDevice, image VkImage, nativeFenceFd int32, semaphore VkSemaphore, fence VkFence) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall6(procvkAcquireImageANDROID.Addr(), 5, uintptr(device), uintptr(image), uintptr(nativeFenceFd), uintptr(semaphore), uintptr(fence), 0)	
 	ret0 = VkResult(r0)
 	return
 }
 
-func vkQueueSignalReleaseImageANDROID(queue VkQueue, waitSemaphoreCount uint32, pWaitSemaphores *VkSemaphore, image VkImage, pNativeFenceFd *int) (ret0 VkResult) {
+func vkQueueSignalReleaseImageANDROID(queue VkQueue, waitSemaphoreCount uint32, pWaitSemaphores *VkSemaphore, image VkImage, pNativeFenceFd *int32) (ret0 VkResult) {
 	r0, _, _ := syscall.Syscall6(procvkQueueSignalReleaseImageANDROID.Addr(), 5, uintptr(queue), uintptr(waitSemaphoreCount), uintptr(unsafe.Pointer(pWaitSemaphores)), uintptr(image), uintptr(unsafe.Pointer(pNativeFenceFd)), 0)	
 	ret0 = VkResult(r0)
 	return
@@ -2519,9 +2519,9 @@ func vkGetDeviceAccelerationStructureCompatibilityKHR(device VkDevice, version *
 	return
 }
 
-func vkGetImageViewHandleNVX(device VkDevice, pInfo *VkImageViewHandleInfoNVX) (ret0 uint32_t) {
+func vkGetImageViewHandleNVX(device VkDevice, pInfo *VkImageViewHandleInfoNVX) (ret0 uint32) {
 	r0, _, _ := syscall.Syscall(procvkGetImageViewHandleNVX.Addr(), 2, uintptr(device), uintptr(unsafe.Pointer(pInfo)), 0)	
-	ret0 = uint32_t(r0)
+	ret0 = uint32(r0)
 	return
 }
 
@@ -2583,9 +2583,9 @@ func vkGetImageDrmFormatModifierPropertiesEXT(device VkDevice, image VkImage, pP
 	return
 }
 
-func vkGetBufferOpaqueCaptureAddress(device VkDevice, pInfo *VkBufferDeviceAddressInfo) (ret0 uint64_t) {
+func vkGetBufferOpaqueCaptureAddress(device VkDevice, pInfo *VkBufferDeviceAddressInfo) (ret0 uint64) {
 	r0, _, _ := syscall.Syscall(procvkGetBufferOpaqueCaptureAddress.Addr(), 2, uintptr(device), uintptr(unsafe.Pointer(pInfo)), 0)	
-	ret0 = uint64_t(r0)
+	ret0 = uint64(r0)
 	return
 }
 
@@ -2675,9 +2675,9 @@ func vkGetPerformanceParameterINTEL(device VkDevice, parameter VkPerformancePara
 	return
 }
 
-func vkGetDeviceMemoryOpaqueCaptureAddress(device VkDevice, pInfo *VkDeviceMemoryOpaqueCaptureAddressInfo) (ret0 uint64_t) {
+func vkGetDeviceMemoryOpaqueCaptureAddress(device VkDevice, pInfo *VkDeviceMemoryOpaqueCaptureAddressInfo) (ret0 uint64) {
 	r0, _, _ := syscall.Syscall(procvkGetDeviceMemoryOpaqueCaptureAddress.Addr(), 2, uintptr(device), uintptr(unsafe.Pointer(pInfo)), 0)	
-	ret0 = uint64_t(r0)
+	ret0 = uint64(r0)
 	return
 }
 
@@ -2704,7 +2704,7 @@ func vkGetPipelineExecutableInternalRepresentationsKHR(device VkDevice, pExecuta
 	return
 }
 
-func vkCmdSetLineStippleEXT(commandBuffer VkCommandBuffer, lineStippleFactor uint32, lineStipplePattern uint16_t) {
+func vkCmdSetLineStippleEXT(commandBuffer VkCommandBuffer, lineStippleFactor uint32, lineStipplePattern uint16) {
 	syscall.Syscall(procvkCmdSetLineStippleEXT.Addr(), 3, uintptr(commandBuffer), uintptr(lineStippleFactor), uintptr(lineStipplePattern))	
 	return
 }
@@ -2754,9 +2754,9 @@ func vkDestroyDeferredOperationKHR(device VkDevice, operation VkDeferredOperatio
 	return
 }
 
-func vkGetDeferredOperationMaxConcurrencyKHR(device VkDevice, operation VkDeferredOperationKHR) (ret0 uint32_t) {
+func vkGetDeferredOperationMaxConcurrencyKHR(device VkDevice, operation VkDeferredOperationKHR) (ret0 uint32) {
 	r0, _, _ := syscall.Syscall(procvkGetDeferredOperationMaxConcurrencyKHR.Addr(), 2, uintptr(device), uintptr(operation), 0)	
-	ret0 = uint32_t(r0)
+	ret0 = uint32(r0)
 	return
 }
 
@@ -2884,8 +2884,8 @@ func vkCmdResolveImage2KHR(commandBuffer VkCommandBuffer, pResolveImageInfo *VkR
 	return
 }
 
-func vkCmdSetFragmentShadingRateKHR(commandBuffer VkCommandBuffer, pFragmentSize *VkExtent2D, combinerOps VkFragmentShadingRateCombinerOpKHR) {
-	syscall.Syscall(procvkCmdSetFragmentShadingRateKHR.Addr(), 3, uintptr(commandBuffer), uintptr(unsafe.Pointer(pFragmentSize)), uintptr(combinerOps))	
+func vkCmdSetFragmentShadingRateKHR(commandBuffer VkCommandBuffer, pFragmentSize *VkExtent2D, combinerOps2 VkFragmentShadingRateCombinerOpKHR, combinerOps1 VkFragmentShadingRateCombinerOpKHR) {
+	syscall.Syscall6(procvkCmdSetFragmentShadingRateKHR.Addr(), 4, uintptr(commandBuffer), uintptr(unsafe.Pointer(pFragmentSize)), uintptr(combinerOps2), uintptr(combinerOps1), 0, 0)	
 	return
 }
 

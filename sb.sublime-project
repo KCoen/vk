@@ -8,10 +8,16 @@
 	"build_systems": [ 
 		{
 			"name": "Run",
-			"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vkgen&go test cld.moe/vkgen/vk",
+			"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vkgen",
 			"variants": [{
 				"name": "Test TestTypeDecode",
 				"shell_cmd": "go test cld.moe/vkgen -run=TestTypeDecode -v"
+			},{
+				"name": "Run TestCompute",
+				"shell_cmd": "go test cld.moe/vkgen/vk -run=TestCompute -v"
+			},{
+				"name": "Debug TestCompute",
+				"shell_cmd": "go test cld.moe/vkgen/vk -run=TestCompute -v -c&windbgx.exe vk.test.exe"
 			}],
 		},
 		
