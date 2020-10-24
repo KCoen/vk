@@ -21,6 +21,10 @@
 			},{
 				"name": "WindbgX TestCompute",
 				"shell_cmd": "go test cld.moe/vk -run=TestCompute -v -c&windbgx.exe vk.test.exe",
+			},{
+				"name": "Format",
+				"working_dir": "$project_path", 
+				"shell_cmd": "go fmt&go fmt cld.moe/vk/generator&go fmt cld.moe/vk/generator/util",
 			}],
 		},
 		

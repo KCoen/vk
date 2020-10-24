@@ -1,3 +1,5 @@
+//Generated
+
 package vk
 
 import (

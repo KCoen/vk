@@ -26,86 +26,6 @@ var select_either = util.Select_either
 var is_any_byte = util.Is_any_byte
 var is_any = util.Is_any
 
-func renameKeywords(in string) string {
-	t := token.Lookup(in)
-	if t.IsKeyword() {
-		return in + "0"
-	}
-	return in
-}
-func fixNumberLiterals(in string) string {
-	// Clean .f from floats
-	if in != "" {
-		var a float64
-		c, e := fmt.Sscanf(in, "%ff", &a)
-		if e == nil && c == 1 {
-			return fmt.Sprintf("%f", a)
-		}
-		// C++ specific expression @TODO
-		if in[0] == '(' {
-			return sprintf("\"%s\"", in)
-		}
-	}
-	return in
-}
-func formatBitPos(in string) string {
-	if in != "" {
-		return "0x1 << " + in
-	}
-	return ""
-}
-func parseBaseType(m kronostype) string {
-	if len(m.Type) > 0 {
-		return fmt.Sprintf("type %s = %s\n", m.Name, ctype_to_go(m.Type[0]))
-	} else {
-		return fmt.Sprintf("type %s = unk\n", m.Name)
-	}
-}
-
-func bitwidth_to_type(width int) string {
-	switch width {
-	case 32:
-		return "int32"
-	case 64:
-		return "int64"
-	case 16:
-		return "int16"
-	default:
-		panic(width)
-	}
-}
-
-func gencalls(Funcs []*Fn) {
-	src := Source{Funcs}
-	var w bytes.Buffer
-	w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
-
-	var err error
-	funcMap := template.FuncMap{
-		"newlazydll": func(dll string) string {
-			arg := "\"" + dll + ".dll\""
-			return "windows.NewLazySystemDLL(" + arg + ")"
-		},
-	}
-	t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
-	err = t.Execute(&w, src)
-	if err != nil {
-		panic(err)
-	}
-
-	formatedbytes, err := format.Source(w.Bytes())
-	if err != nil {
-		panic(err)
-	}
-
-	file, e := os.OpenFile(CONFIG_DIR+"/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY, 0664)
-	if e != nil {
-		panic(e)
-	}
-	defer file.Close()
-	file.Write(formatedbytes)
-}
-
 func main() {
 	// Read File
 	d, e := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
@@ -138,13 +58,8 @@ func main() {
 		wl("//----------------------------------------\n")
 	}
 
-	wf("//Generated")
+	wl("//Generated\n")
 	wf("package %s\n\n", CONFIG_PACKAGE)
-	art("Build-in")
-	wl("type unk = int")
-	wl("type external_type = unk")
-	wl("type funcptr = uintptr")
-	wl("type handle = uintptr")
 
 	art("Types")
 
@@ -281,20 +196,144 @@ func main() {
 		funlist = append(funlist, &f)
 	}
 
-	formatedbytes, err := format.Source(f.Bytes())
-	if err != nil {
-		panic(err)
+	{
+		formatedbytes, err := format.Source(f.Bytes())
+		if err != nil {
+			panic(err)
+		}
+		// Open Output
+		file, e := os.OpenFile(CONFIG_DIR+"/vulkan.go", os.O_WRONLY|os.O_TRUNC, 0664)
+		if e != nil {
+			panic(e)
+		}
+		defer file.Close()
+
+		file.Write(formatedbytes)
 	}
 
-	// Open Output
-	file, e := os.OpenFile(CONFIG_DIR+"/vulkan.go", os.O_WRONLY|os.O_TRUNC, 0664)
-	if e != nil {
-		panic(e)
-	}
-	defer file.Close()
-	file.Write(formatedbytes)
+	{
+		src := Source{funlist}
+		var w bytes.Buffer
+		w.Write([]byte("//Generated\n\n"))
+		w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
 
-	gencalls(funlist)
+		var err error
+		funcMap := template.FuncMap{
+			"newlazydll": func(dll string) string {
+				arg := "\"" + dll + ".dll\""
+				return "windows.NewLazySystemDLL(" + arg + ")"
+			},
+		}
+		t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
+		err = t.Execute(&w, src)
+		if err != nil {
+			panic(err)
+		}
+
+		formatedbytes, err := format.Source(w.Bytes())
+		if err != nil {
+			panic(err)
+		}
+
+		file, e := os.OpenFile(CONFIG_DIR+"/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY, 0664)
+		if e != nil {
+			panic(e)
+		}
+		defer file.Close()
+		file.Write(formatedbytes)
+	}
+}
+
+func renameKeywords(in string) string {
+	t := token.Lookup(in)
+	if t.IsKeyword() {
+		return in + "0"
+	}
+	return in
+}
+func fixNumberLiterals(in string) string {
+	// Clean .f from floats
+	if in != "" {
+		var a float64
+		c, e := fmt.Sscanf(in, "%ff", &a)
+		if e == nil && c == 1 {
+			return fmt.Sprintf("%f", a)
+		}
+		// C++ specific expression @TODO
+		if in[0] == '(' {
+			return sprintf("\"%s\"", in)
+		}
+	}
+	return in
+}
+func formatBitPos(in string) string {
+	if in != "" {
+		return "0x1 << " + in
+	}
+	return ""
+}
+func parseBaseType(m kronostype) string {
+	if len(m.Type) > 0 {
+		return fmt.Sprintf("type %s = %s\n", m.Name, ctype_to_go(m.Type[0]))
+	} else {
+		return fmt.Sprintf("type %s = unk\n", m.Name)
+	}
+}
+
+func bitwidth_to_type(width int) string {
+	switch width {
+	case 32:
+		return "int32"
+	case 64:
+		return "int64"
+	case 16:
+		return "int16"
+	default:
+		panic(width)
+	}
+}
+
+func is_buildin_type(in string) bool {
+	return ctype_to_go(in) != in
+}
+func ctype_to_go(in string) string {
+	switch in {
+	case "*void":
+		return "uintptr"
+	default:
+		switch strings.TrimLeft(in, "*") {
+		case "int_t":
+			fallthrough
+		case "int":
+			return "int32"
+		case "int16_t":
+			fallthrough
+		case "uint16_t":
+			fallthrough
+		case "int32_t":
+			fallthrough
+		case "int64_t":
+			fallthrough
+		case "uint64_t":
+			fallthrough
+		case "int8_t":
+			fallthrough
+		case "uint8_t":
+			fallthrough
+		case "uint32_t":
+			return string(in[:len(in)-2])
+		case "char":
+			return "byte"
+		case "float":
+			return "float32"
+		case "double":
+			return "float64"
+		case "size_t":
+			return "uint"
+		default:
+			return in
+		}
+	}
 }
 
 type kronostype struct {

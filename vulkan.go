@@ -1,13 +1,5 @@
-//Generated 2020-10-24 19:51:16.2750527 +0000 UTC
+//Generated
 package vk
-
-//----------------------------------------
-//--Build-in
-//----------------------------------------
-type unk = int
-type external_type = unk
-type funcptr = uintptr
-type handle = uintptr
 
 //----------------------------------------
 //--Types

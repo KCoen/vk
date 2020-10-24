@@ -17,10 +17,8 @@ type VkTypeInfo struct { //@TODO Some of the members are public just for vardump
 	Isconst    bool
 	Istypedef  bool              // XML defined the type using a typedef
 	Ispointer  int               // If pointer of any kind
-	IsCallback bool              // If typedef of a PFN_ function
 	Scopes     map[string]string // All paths in the object @TODO Add attributes
 	BitOffset  int
-	Xml        string
 	FuncName   string
 	Size       int
 
@@ -30,20 +28,23 @@ type VkTypeInfo struct { //@TODO Some of the members are public just for vardump
 
 var regexp_func *regexp.Regexp
 
+var hasPrefix = strings.HasPrefix
+var hasSuffix = strings.HasSuffix
+var trimPrefix = strings.TrimPrefix
+
 func init() {
 	regexp_func = regexp.MustCompile(
 		`\(VKAPI_PTR\s+\*(PFN_[A-z0-9]*)\)` + // Name
 			`\(\s*(.*)\s*\)`) // Argument list
 }
 
-func parseTypeFromXmlString(_xml string) VkTypeInfo {
+func parseTypeFromXmlString(xml_input string) VkTypeInfo {
 	var c VkTypeInfo
 	c.Scopes = map[string]string{}
-	c.Xml = _xml
 
 	is_simple_scope := func(path string) bool {
 		for _, v := range c.Scopes {
-			if strings.HasPrefix(v, path) {
+			if hasPrefix(v, path) {
 				return false
 			}
 		}
@@ -53,8 +54,7 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 	callback := func(full_path string, char byte) {
 		c.Scopes[full_path] += string(char)
 
-		// Replace /foo/bar/bracket/fox/cuba
-		// with /foo/bar/cuba
+		// Replace `/foo/bar/BRACKET/fox/cuba` with `/foo/bar/`
 		// Eg bracket forces nested elements to be demoted to text
 		var path = full_path
 		i := strings.Index(full_path, "/BRACKET")
@@ -64,25 +64,27 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 
 		depth := strings.Count(path, "/")
 
-		if strings.HasSuffix(path, "/type") {
+		if hasSuffix(path, "/type") {
 			c.Simpletype += string(char)
 			c.Fulltype += string(char)
-		} else if is_any(path, "/member", "/param") || strings.HasSuffix(path, "/type") {
+		} else if is_any(path, "/member", "/param") || hasSuffix(path, "/type") {
 			c.Fulltype += string(char)
-		} else if depth < 3 && strings.HasSuffix(path, "/name") {
+		} else if depth < 3 && hasSuffix(path, "/name") {
 			if strings.Contains(c.Fulltype, "typedef") {
 				c.Fulltype += string(char)
 			}
 		}
 
-		if depth < 3 && strings.HasSuffix(path, "/name") {
+		if depth < 3 && hasSuffix(path, "/name") {
 			c.Name += string(char)
 		}
-		if depth < 3 && strings.HasSuffix(path, "/comment") {
+		if depth < 3 && hasSuffix(path, "/comment") {
 			c.Comment += string(char)
 		}
 	}
 
+	// Basic Recursive decent XML Parser that calls the callback every character
+	// This could potentially be replaced with an encoding/xml tokenizer
 	var linear_xml_parse func(path string, d string) (i int)
 	linear_xml_parse = func(path string, d string) (i int) {
 		for ; i < len(d); i++ {
@@ -92,13 +94,13 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 				if closing {
 					return
 				}
-				if d[i-1] != '/' { // Short tag notation
-					i++ // Go Into Contents
+				if d[i-1] != '/' {
+					i++
 					i += linear_xml_parse(path+"/"+name, d[i:])
 				}
 			} else {
-				// Add Pseudo XML path for <type>asdf</type>(<enum>stuff</enum) xml layouts parsing
-				// @TODO maybe we can just do this with the xml lib
+				// Add Pseudo XML path for paths that are contained with text brackets
+				// Eg <type>asdf(<enum>stuff</enum)</type> becomes type/BRACKET/enum
 				if is_any_byte(d[i], '[', '(') {
 					path += "/BRACKET"
 				}
@@ -114,9 +116,9 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 		return
 	}
 
-	linear_xml_parse("", _xml)
+	linear_xml_parse("", xml_input)
 
-	// Assume that when /type contains non-whitespace characters and /type/type also contains characters the simple type is /type/type
+	// In the case of <type>struct <type>vkAlignedJelly<type></type> we pick /type/type over /type
 	_, ok := c.Scopes["/type/type"]
 	if ok {
 		if len(c.Scopes["/type"]) > 0 && is_simple_scope("/type/type") {
@@ -131,25 +133,25 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 		for len(ctype) > 0 {
 			ctype = strings.Trim(ctype, "\t\n\r ")
 			switch {
-			case strings.HasPrefix(ctype, "const"):
+			case hasPrefix(ctype, "const"):
 				c.Isconst = true
-				ctype = strings.TrimPrefix(ctype, "const")
-			case strings.HasPrefix(ctype, "typedef"):
+				ctype = trimPrefix(ctype, "const")
+			case hasPrefix(ctype, "typedef"):
 				c.Istypedef = true
-				ctype = strings.TrimPrefix(ctype, "typedef")
-			case strings.HasPrefix(ctype, "*"):
+				ctype = trimPrefix(ctype, "typedef")
+			case hasPrefix(ctype, "*"):
 				gotype = "*" + gotype
 				gotype = ctype_to_go(gotype)
 				c.Ispointer++
-				ctype = strings.TrimPrefix(ctype, "*")
-			case c.Simpletype != "" && strings.HasPrefix(ctype, c.Simpletype):
+				ctype = trimPrefix(ctype, "*")
+			case c.Simpletype != "" && hasPrefix(ctype, c.Simpletype):
 				gotype += c.Simpletype
 				gotype = ctype_to_go(gotype)
-				ctype = strings.TrimPrefix(ctype, c.Simpletype)
-			case strings.HasPrefix(ctype, "struct"):
-				ctype = strings.TrimPrefix(ctype, "struct")
-			case c.Name != "" && strings.HasPrefix(ctype, c.Name):
-				ctype = strings.TrimPrefix(ctype, c.Name)
+				ctype = trimPrefix(ctype, c.Simpletype)
+			case hasPrefix(ctype, "struct"):
+				ctype = trimPrefix(ctype, "struct")
+			case c.Name != "" && hasPrefix(ctype, c.Name):
+				ctype = trimPrefix(ctype, c.Name)
 			default:
 				named_size := ""
 
@@ -178,56 +180,13 @@ func parseTypeFromXmlString(_xml string) VkTypeInfo {
 		}
 	}
 
-	// Parse function type definitions @TODO
+	// Parse functions as types  @TODO
 	s := regexp_func.FindAllStringSubmatch(c.Fulltype, 5)
 	if len(s) > 0 {
 		c.FuncName = s[0][1]
 		//ArgListString := s[0][2]
 	}
 	return c
-}
-
-func is_buildin_type(in string) bool {
-	return ctype_to_go(in) != in
-}
-func ctype_to_go(in string) string {
-	switch in {
-	case "*void":
-		return "uintptr"
-	default:
-		switch strings.TrimLeft(in, "*") {
-		case "int_t":
-			fallthrough
-		case "int":
-			return "int32"
-		case "int16_t":
-			fallthrough
-		case "uint16_t":
-			fallthrough
-		case "int32_t":
-			fallthrough
-		case "int64_t":
-			fallthrough
-		case "uint64_t":
-			fallthrough
-		case "int8_t":
-			fallthrough
-		case "uint8_t":
-			fallthrough
-		case "uint32_t":
-			return string(in[:len(in)-2])
-		case "char":
-			return "byte"
-		case "float":
-			return "float32"
-		case "double":
-			return "float64"
-		case "size_t":
-			return "uint"
-		default:
-			return in
-		}
-	}
 }
 
 // This function read out a tag eg <foobar>, end_tag is set to 1 in the case of </foobar> or <foobar/>
