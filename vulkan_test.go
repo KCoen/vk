@@ -1,4 +1,3 @@
-// +build test
 package vk
 
 import (
@@ -6,9 +5,9 @@ import (
 	"testing"
 )
 
-/*func VK_MAKE_VERSION(major, minor, patch int) uint32 {
+func VK_MAKE_VERSION(major, minor, patch int) uint32 {
     return ((((uint32)(major)) << 22) | (((uint32)(minor)) << 12) | ((uint32)(patch)))
-}*/
+}
 
 func CString(b []byte) []byte {
 	return b[:bytes.IndexByte(b, 0)]

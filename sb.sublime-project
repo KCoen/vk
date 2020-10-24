@@ -2,24 +2,36 @@
 	"folders":
 	[
 		{
-			"path": "."
+			"path": ".",
 		}
 	],
 	"build_systems": [ 
 		{
-			"name": "Run",
-			"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vkgen",
+			"name": "vk",
 			"variants": [{
+				"name": "Run Generator",
+				"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vk/generator",
+			},{
 				"name": "Test TestTypeDecode",
-				"shell_cmd": "go test cld.moe/vkgen -run=TestTypeDecode -v"
+				"shell_cmd": "go test cld.moe/vk/generator -run=TestTypeDecode -v",
 			},{
 				"name": "Run TestCompute",
-				"shell_cmd": "go test cld.moe/vkgen/vk -run=TestCompute -v"
+				"shell_cmd": "go test cld.moe/vk -run=TestCompute -v",
 			},{
-				"name": "Debug TestCompute",
-				"shell_cmd": "go test cld.moe/vkgen/vk -run=TestCompute -v -c&windbgx.exe vk.test.exe"
+				"name": "WindbgX TestCompute",
+				"shell_cmd": "go test cld.moe/vk -run=TestCompute -v -c&windbgx.exe vk.test.exe",
 			}],
 		},
 		
-	]
+	],
+	"settings":
+	{
+		"LSP":
+		{
+			"gopls":
+			{
+				"enabled": true,
+			},
+		},
+	},
 }

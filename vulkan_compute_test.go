@@ -1,14 +1,22 @@
-// +build test
 package vk
 
 import (
 	"runtime"
 	"testing"
 	"unsafe"
+	"cld.moe/vk/generator/util"
 )
 
-func VK_MAKE_VERSION(major, minor, patch int) uint32 {
-    return ((((uint32)(major)) << 22) | (((uint32)(minor)) << 12) | ((uint32)(patch)))
+var min = util.Min
+var max = util.Max
+
+var cnt []*[]byte // Take a extra reference just in case
+func QuickCString(s string) *byte {	
+	a := make([]byte, len(s) + 1)
+	copy(a, s)
+	b := &a
+	cnt = append(cnt, b);
+	return &a[0]
 }
 
 func BAIL_ON_BAD_RESULT(res int32) {
@@ -63,14 +71,6 @@ func vkGetBestComputeQueueNPH(physicalDevice VkPhysicalDevice, queueFamilyIndex 
 	return VK_ERROR_INITIALIZATION_FAILED
 }
 
-var cnt []*[]byte
-func QuickCString(s string) *byte {	
-	a := make([]byte, len(s) + 1)
-	copy(a, s)
-	b := &a
-	cnt = append(cnt, b);
-	return &a[0]
-}
 
 func TestCompute(tst *testing.T) {
 	runtime.LockOSThread()
@@ -137,8 +137,9 @@ func TestCompute(tst *testing.T) {
 		BAIL_ON_BAD_RESULT(vkCreateDevice(physicalDevices[i], &deviceCreateInfo, nil, &device))
 
 		var properties VkPhysicalDeviceMemoryProperties
-
 		vkGetPhysicalDeviceMemoryProperties(physicalDevices[i], &properties)
+		
+		tst.Log(util.Vardump(deviceCreateInfo))
 
 		bufferLength := int32(16384)
 		bufferSize := VkDeviceSize(4 * bufferLength)

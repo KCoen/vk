@@ -1,26 +1,28 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"go/token"
 	"io/ioutil"
 	"os"
 	"text/template"
+	"time"
+
+	"cld.moe/vk/generator/util"
 )
-const CONFIG_DIR = "vk"
+
+const CONFIG_DIR = ".."
 const CONFIG_PACKAGE = "vk"
 const CONFIG_REGISTERY_FILE = "vk.xml"
 
 var sprintf = fmt.Sprintf
 var printf = fmt.Printf
 var sscanf = fmt.Sscanf
-
-var textcontext struct {
-	at interface{}
-}
+var select_one = util.Select_one
+var select_either = util.Select_either
+var is_any_byte = util.Is_any_byte
+var is_any = util.Is_any
 
 func renameKeywords(in string) string {
 	t := token.Lookup(in)
@@ -73,7 +75,7 @@ func bitwidth_to_type(width int) string {
 
 func gencalls(Funcs []*Fn) {
 	src := Source{Funcs}
-	w, e := os.OpenFile(CONFIG_DIR + "/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0664)
+	w, e := os.OpenFile(CONFIG_DIR + "/vulkan_windows.go", os.O_TRUNC|os.O_WRONLY, 0664)
 	if e != nil {
 		panic(e)
 	}
@@ -103,7 +105,7 @@ func main() {
 	xml.Unmarshal(d, &reg)
 
 	// Open Output
-	f, e := os.OpenFile(CONFIG_DIR + "/vulkan.go", os.O_TRUNC|os.O_CREATE, 0664)
+	f, e := os.OpenFile(CONFIG_DIR + "/vulkan.go", os.O_WRONLY|os.O_TRUNC, 0664)
 	if e != nil {
 		panic(e)
 	}
@@ -126,8 +128,7 @@ func main() {
 		wl("//----------------------------------------\n")
 	}
 
-
-	wl("//Generated")
+	wf("//Generated %s\n",time.Now().UTC())
 	wf("package %s\n\n", CONFIG_PACKAGE)
 	art("Build-in")
 	wl("type unk = int")
@@ -203,7 +204,7 @@ func main() {
 		if e.Type == "bitmask" {
 			bitwidth = 64; ///??
 		}
-		
+
 		if e.Name == "API Constants" {
 			e.Name = ""
 		} else {
@@ -212,7 +213,6 @@ func main() {
 			}
 		}
 		for _, ev := range e.Enum {
-			textcontext.at = ev
 			lh := ev.Name
 			rh := select_one(fixNumberLiterals(ev.Value), ev.Alias, formatBitPos(ev.Bitpos))
 			fmt.Fprintf(f, "const %s %s = %s\n", lh, e.Name, rh)
@@ -270,76 +270,6 @@ func main() {
 	}
 
 	gencalls(funlist)
-}
-// Helper functions 
-func clamp(a, mi, ma int) int {
-	return min(max(a, mi), ma)
-}
-func max(a,b int) int {
-	if b > a {
-		return b;
-	}
-	return a;
-}
-func min(a,b int) int {
-	if a < b {
-		return a;
-	}
-	return b;
-}
-func vardump(i interface{}) string {
-	var a bytes.Buffer
-	e := json.NewEncoder(&a)
-	e.SetEscapeHTML(false)
-	e.SetIndent("", "\t")
-	e.Encode(i)
-	return string(a.Bytes())
-}
-func select_one(vls ...string) (r string) {
-	for _, v := range vls {
-		if v != "" {
-			if r != "" {
-				textpanic(fmt.Sprintf("Expected one but got %v", vls))
-			}
-			r = v
-		}
-	}
-	if r == "" {
-		textpanic(fmt.Sprintf("Expected one but got none"))
-	}
-	return
-}
-// Is any value in a equal to any value in vals
-func is_any(a string, vals ...string) bool {
-	for _, v := range vals {
-		if a == v {
-			return true
-		}
-	}
-	return false
-}
-
-// Is any value in a equal to any value in vals
-func is_any_byte(a byte, vals ...byte) bool {
-	for _, v := range vals {
-		if a == v {
-			return true
-		}
-	}
-	return false
-}
-func select_either(vls ...string) (r string) {
-	for _, v := range vls {
-		if v != "" {
-			return v;
-		}
-	}
-	textpanic(fmt.Sprintf("Expected one but got none"))
-	return
-}
-func textpanic(v interface{}) {
-	fmt.Printf("in %v\n", textcontext.at)
-	panic(v)
 }
 
 type kronostype struct {
