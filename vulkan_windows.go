@@ -1,5 +1,5 @@
-//Generated
-
+// +build windows
+// Generated
 package vk
 
 import (

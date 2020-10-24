@@ -9,9 +9,11 @@ import (
 	"cld.moe/vk/generator/util"
 )
 
+// Shorthands
 var min = util.Min
 var max = util.Max
 
+// Helper functions
 func QuickCString(s string) *byte {
 	a := make([]byte, len(s)+1)
 	copy(a, s)
@@ -23,11 +25,11 @@ func BAIL_ON_BAD_RESULT(res int32) {
 		panic(res)
 	}
 }
-
 func CString(b []byte) []byte {
 	return b[:bytes.IndexByte(b, 0)]
 }
 
+// Tests
 func TestHelloWorld(tst *testing.T) {
 	appInfo := VkApplicationInfo{}
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO
@@ -58,52 +60,6 @@ func TestHelloWorld(tst *testing.T) {
 	tst.Logf("%v", instance)
 	vkDestroyInstance(instance, nil)
 	tst.Logf("%v", instance)
-}
-
-func vkGetBestTransferQueueNPH(physicalDevice VkPhysicalDevice, queueFamilyIndex *uint32) VkResult {
-	queueFamilyPropertiesCount := uint32(0)
-	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, nil)
-
-	queueFamilyProperties := make([]VkQueueFamilyProperties, queueFamilyPropertiesCount)
-	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, &queueFamilyProperties[0])
-
-	// lastly get any queue that'll work for us (graphics, compute or transfer bit set)
-	for i := uint32(0); i < queueFamilyPropertiesCount; i++ {
-
-		// mask out the sparse binding bit that we aren't caring about (yet!)
-		a := ^VK_QUEUE_SPARSE_BINDING_BIT // Bypass Contant Evaluator
-		maskedFlags := (uint32(a) & queueFamilyProperties[i].queueFlags)
-
-		if (VK_QUEUE_GRAPHICS_BIT|VK_QUEUE_COMPUTE_BIT|VK_QUEUE_TRANSFER_BIT)&maskedFlags != 0 {
-			*queueFamilyIndex = i
-			return VK_SUCCESS
-		}
-	}
-
-	return VK_ERROR_INITIALIZATION_FAILED
-}
-
-func vkGetBestComputeQueueNPH(physicalDevice VkPhysicalDevice, queueFamilyIndex *uint32) VkResult {
-	queueFamilyPropertiesCount := uint32(0)
-	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, nil)
-
-	queueFamilyProperties := make([]VkQueueFamilyProperties, queueFamilyPropertiesCount)
-
-	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, &queueFamilyProperties[0])
-
-	// lastly get any queue that'll work for us
-	for i := uint32(0); i < queueFamilyPropertiesCount; i++ {
-		// mask out the sparse binding bit that we aren't caring about (yet!) and the transfer bit
-		a := ^(VK_QUEUE_SPARSE_BINDING_BIT | VK_QUEUE_SPARSE_BINDING_BIT) // Bypass Contant Evaluator
-		maskedFlags := uint32(a) & queueFamilyProperties[i].queueFlags
-
-		if VK_QUEUE_COMPUTE_BIT&maskedFlags != 0 {
-			*queueFamilyIndex = i
-			return VK_SUCCESS
-		}
-	}
-
-	return VK_ERROR_INITIALIZATION_FAILED
 }
 
 func TestCompute(tst *testing.T) {
@@ -569,4 +525,50 @@ func TestCompute(tst *testing.T) {
 			}
 		}
 	}
+}
+
+func vkGetBestTransferQueueNPH(physicalDevice VkPhysicalDevice, queueFamilyIndex *uint32) VkResult {
+	queueFamilyPropertiesCount := uint32(0)
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, nil)
+
+	queueFamilyProperties := make([]VkQueueFamilyProperties, queueFamilyPropertiesCount)
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, &queueFamilyProperties[0])
+
+	// lastly get any queue that'll work for us (graphics, compute or transfer bit set)
+	for i := uint32(0); i < queueFamilyPropertiesCount; i++ {
+
+		// mask out the sparse binding bit that we aren't caring about (yet!)
+		a := ^VK_QUEUE_SPARSE_BINDING_BIT // Bypass Contant Evaluator
+		maskedFlags := (uint32(a) & queueFamilyProperties[i].queueFlags)
+
+		if (VK_QUEUE_GRAPHICS_BIT|VK_QUEUE_COMPUTE_BIT|VK_QUEUE_TRANSFER_BIT)&maskedFlags != 0 {
+			*queueFamilyIndex = i
+			return VK_SUCCESS
+		}
+	}
+
+	return VK_ERROR_INITIALIZATION_FAILED
+}
+
+func vkGetBestComputeQueueNPH(physicalDevice VkPhysicalDevice, queueFamilyIndex *uint32) VkResult {
+	queueFamilyPropertiesCount := uint32(0)
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, nil)
+
+	queueFamilyProperties := make([]VkQueueFamilyProperties, queueFamilyPropertiesCount)
+
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyPropertiesCount, &queueFamilyProperties[0])
+
+	// lastly get any queue that'll work for us
+	for i := uint32(0); i < queueFamilyPropertiesCount; i++ {
+		// mask out the sparse binding bit that we aren't caring about (yet!) and the transfer bit
+		a := ^(VK_QUEUE_SPARSE_BINDING_BIT | VK_QUEUE_SPARSE_BINDING_BIT) // Bypass Contant Evaluator
+		maskedFlags := uint32(a) & queueFamilyProperties[i].queueFlags
+
+		if VK_QUEUE_COMPUTE_BIT&maskedFlags != 0 {
+			*queueFamilyIndex = i
+			return VK_SUCCESS
+		}
+	}
+
+	return VK_ERROR_INITIALIZATION_FAILED
 }

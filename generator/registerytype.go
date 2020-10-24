@@ -38,8 +38,7 @@ func init() {
 			`\(\s*(.*)\s*\)`) // Argument list
 }
 
-func parseTypeFromXmlString(xml_input string) VkTypeInfo {
-	var c VkTypeInfo
+func parseTypeFromXmlString(xml_input string) (c VkTypeInfo) {
 	c.Scopes = map[string]string{}
 
 	is_simple_scope := func(path string) bool {
@@ -172,7 +171,7 @@ func parseTypeFromXmlString(xml_input string) VkTypeInfo {
 
 		// Reconstruct Go Type
 		c.GoType = gotype
-		c.GoName = renameKeywords(c.Name)
+		c.GoName = makeGoSafeIdentifier(c.Name)
 		c.GoComment = c.Comment
 		if c.BitOffset != 0 {
 			c.GoType = strings.Replace(c.GoType, ctype_to_go(c.Simpletype), "struct{}", -1) // @TODO Make sure the padding is corrected on these structs

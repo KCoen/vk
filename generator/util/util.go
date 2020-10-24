@@ -65,7 +65,6 @@ func Select_either(vls ...string) (r string) {
 		}
 	}
 	panic(fmt.Sprintf("Expected one but got none"))
-	return
 }
 
 func Vardump(i interface{}) (ret string) {

@@ -147,7 +147,7 @@ func main() {
 
 	funlist := []*Fn{}
 	for _, c := range reg.Commands.Command {
-		name := renameKeywords(select_one(c.Name, c.Proto.Name))
+		name := makeGoSafeIdentifier(select_one(c.Name, c.Proto.Name))
 
 		f := Fn{
 			Name:           name,
@@ -213,9 +213,11 @@ func main() {
 
 	{
 		src := Source{funlist}
-		var w bytes.Buffer
-		w.Write([]byte("//Generated\n\n"))
-		w.Write([]byte("package " + CONFIG_PACKAGE + "\n"))
+		f = bytes.Buffer{}
+
+		wl("// +build windows\n")
+		wl("// Generated\n")
+		wl("package " + CONFIG_PACKAGE + "\n")
 
 		var err error
 		funcMap := template.FuncMap{
@@ -224,13 +226,14 @@ func main() {
 				return "windows.NewLazySystemDLL(" + arg + ")"
 			},
 		}
+
 		t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
-		err = t.Execute(&w, src)
+		err = t.Execute(&f, src)
 		if err != nil {
 			panic(err)
 		}
 
-		formatedbytes, err := format.Source(w.Bytes())
+		formatedbytes, err := format.Source(f.Bytes())
 		if err != nil {
 			panic(err)
 		}
@@ -244,7 +247,7 @@ func main() {
 	}
 }
 
-func renameKeywords(in string) string {
+func makeGoSafeIdentifier(in string) string {
 	t := token.Lookup(in)
 	if t.IsKeyword() {
 		return in + "0"

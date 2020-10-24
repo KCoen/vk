@@ -24,7 +24,11 @@
 			},{
 				"name": "Format",
 				"working_dir": "$project_path", 
-				"shell_cmd": "go fmt&go fmt cld.moe/vk/generator&go fmt cld.moe/vk/generator/util",
+				"shell_cmd": "go fmt cld.moe/vk cld.moe/vk/generator cld.moe/vk/generator/util",
+			},{
+				"name": "Vet",
+				"working_dir": "$project_path", 
+				"shell_cmd": "go vet cld.moe/vk cld.moe/vk/generator cld.moe/vk/generator/util",
 			}],
 		},
 		
