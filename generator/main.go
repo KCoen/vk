@@ -6,6 +6,7 @@ import (
 	"go/token"
 	"io/ioutil"
 	"os"
+	"strings"
 	"text/template"
 	"time"
 
@@ -100,7 +101,11 @@ func gencalls(Funcs []*Fn) {
 
 func main() {
 	// Read File
-	d, _ := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
+	d, e := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
+	if e != nil {
+		panic(e)
+	}
+	
 	var reg Registry
 	xml.Unmarshal(d, &reg)
 
@@ -167,14 +172,13 @@ func main() {
 			if vktype.Istypedef {
 				wf("type %s = %s\n", name, vktype.GoType)
 				if t.Requires != "" {
-					// Assume same size?
 					wf("type %s = %s\n", t.Requires, vktype.GoType)
 				}
 			} else {
 				wf("type %s = uint32\n", name)	
 			}		
 		case "union":
-			wf("type %s = struct{uintptr}\n", name)
+			wf("type %s = struct{uintptr}\n", name) //@TODO
 		case "enum":
 			if t.Alias != "" {
 				wf("type %s = %s\n", name, t.Alias)
@@ -224,13 +228,19 @@ func main() {
 	funlist := []*Fn{}
 	for _,c := range(reg.Commands.Command) {
 		name := renameKeywords(select_one(c.Name, c.Proto.Name))
-		
+
 		f := Fn{
 			Name: name,
 			PrintTrace: false,
 			dllname: "vulkan-1.dll",
 			dllfuncname: name,
 			Params: make([]*Param, 0),
+			comment: c.Comment,
+			successcodes: strings.Split(c.Successcodes,","),
+			renderpass: strings.Split(c.Renderpass,","),
+			pipeline: strings.Split(c.Pipeline,","),
+			errorcodes: strings.Split(c.Errorcodes,","),
+			cmdbufferlevel: strings.Split(c.Cmdbufferlevel,","),
 		}
 
 		if c.Proto.Type != "" && c.Proto.Type != "void" {
@@ -242,12 +252,10 @@ func main() {
 			f.Rets = &Rets{}
 		}
 		
-		for i, p :=range(c.Param) {
+		for i, p := range(c.Param) {
 			vktype := parseTypeFromXmlString(sprintf("<param>%s</param>", p.Xml))
 
-			// If its sized array as argument,we unroll it, because the binding generator doesn't support them
-			// I think this should work but the order might be wrong
-			// this only works for arrays passed over the stack
+			// If its sized array as argument,we unroll it
 			if vktype.Size > 0 && vktype.Ispointer == 0 {
 				for index := vktype.Size; index > 0;index-- {
 					f.Params = append(f.Params, &Param{
@@ -268,7 +276,6 @@ func main() {
 		}
 		funlist = append(funlist, &f)
 	}
-
 	gencalls(funlist)
 }
 

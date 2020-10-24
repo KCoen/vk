@@ -4,18 +4,16 @@ import (
 	"runtime"
 	"testing"
 	"unsafe"
+
 	"cld.moe/vk/generator/util"
 )
 
 var min = util.Min
 var max = util.Max
 
-var cnt []*[]byte // Take a extra reference just in case
 func QuickCString(s string) *byte {	
 	a := make([]byte, len(s) + 1)
 	copy(a, s)
-	b := &a
-	cnt = append(cnt, b);
 	return &a[0]
 }
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"cld.moe/vk/generator/util"
 )
 
 // This File is partially based on https://github.com/golang/sys/blob/master/windows/syscall.go
@@ -22,6 +24,12 @@ type Fn struct {
 	PrintTrace  bool
 	dllname     string
 	dllfuncname string
+	comment		string
+	renderpass		[]string
+	cmdbufferlevel []string
+	pipeline		[]string
+	successcodes	[]string
+	errorcodes		[]string
 	// TODO: get rid of this field and just use parameter index instead
 	curTmpVarIdx int // insure tmp variables have uniq names
 }
@@ -88,6 +96,28 @@ func (p *Param) SyscallArgList() []string {
 		s = p.Name
 	}
 	return []string{fmt.Sprintf("uintptr(%s)", s)}
+}
+
+func hasnonempty(set []string) bool {
+	for _,v := range(set) {
+		if v != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func(f *Fn) Comment() (r string) {
+	if f.comment != "" {
+		r += "//" + f.comment + "\n"
+	}
+	if hasnonempty(f.errorcodes) {
+		r += "//Errors: " + strings.Join(f.errorcodes, ", ") + "\n"
+	}
+	if hasnonempty(f.successcodes) {
+		r += "//On Success: " + strings.Join(f.successcodes, ", ") + "\n"
+	}
+	return r[:util.Max(len(r)-1, 0)]
 }
 
 // ParamList returns source code for function f parameters.
@@ -318,6 +348,7 @@ var(
 {{end}}{{end}}
 
 {{define "funcbody"}}
+{{.Comment}}
 func {{.HelperName}}({{.HelperParamList}}) {{template "results" .}}{
 {{template "tmpvars" .}}	{{template "syscall" .}}	{{template "tmpvarsreadback" .}}
 {{template "seterror" .}}	return

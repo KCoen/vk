@@ -10,6 +10,7 @@
 			"name": "vk",
 			"variants": [{
 				"name": "Run Generator",
+				"working_dir": "$project_path\\generator", 
 				"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vk/generator",
 			},{
 				"name": "Test TestTypeDecode",
