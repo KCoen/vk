@@ -4553,10 +4553,10 @@ type VkTransformMatrixNV struct {
 }
 type VkAccelerationStructureInstanceKHR struct {
 	transform                              VkTransformMatrixKHR
-	instanceCustomIndex                    struct{} //BITFIELD: 24
-	mask                                   struct{} //BITFIELD: 8
-	instanceShaderBindingTableRecordOffset struct{} //BITFIELD: 24
-	flags                                  struct{} //BITFIELD: 8
+	instanceCustomIndex                    struct{} //!! Unimplemented bitfield: 24
+	mask                                   struct{} //!! Unimplemented bitfield: 8
+	instanceShaderBindingTableRecordOffset struct{} //!! Unimplemented bitfield: 24
+	flags                                  struct{} //!! Unimplemented bitfield: 8
 	accelerationStructureReference         uint64
 }
 type VkAccelerationStructureInstanceNV struct {

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type VkTypeInfo struct { //@TODO Some of the members are public just for vardump reason, clean them up
+type VkTypeInfo struct {
 	Simpletype string // Simple type as defined by the XML
 	Fulltype   string // The full C type
 	GoType     string // Go Should use this type
@@ -38,6 +38,8 @@ func init() {
 			`\(\s*(.*)\s*\)`) // Argument list
 }
 
+// Expects input in the form of
+// `<member>const <type>void</type>*<name>pNext</name></member>`
 func parseTypeFromXmlString(xml_input string) (c VkTypeInfo) {
 	c.Scopes = map[string]string{}
 
@@ -50,6 +52,7 @@ func parseTypeFromXmlString(xml_input string) (c VkTypeInfo) {
 		return true
 	}
 
+	// @TODO Delete this
 	callback := func(full_path string, char byte) {
 		c.Scopes[full_path] += string(char)
 
@@ -63,27 +66,34 @@ func parseTypeFromXmlString(xml_input string) (c VkTypeInfo) {
 
 		depth := strings.Count(path, "/")
 
+		// Write to Simpletype on ??/type
 		if hasSuffix(path, "/type") {
 			c.Simpletype += string(char)
-			c.Fulltype += string(char)
-		} else if is_any(path, "/member", "/param") || hasSuffix(path, "/type") {
-			c.Fulltype += string(char)
-		} else if depth < 3 && hasSuffix(path, "/name") {
-			if strings.Contains(c.Fulltype, "typedef") {
-				c.Fulltype += string(char)
-			}
 		}
 
-		if depth < 3 && hasSuffix(path, "/name") {
-			c.Name += string(char)
-		}
-		if depth < 3 && hasSuffix(path, "/comment") {
-			c.Comment += string(char)
+		if depth < 3 {
+			// Write to Fulltype on ??/type
+			// Write to Fulltype on /member | /param
+			// Write /name to Fulltype when inside of a typedef
+			if hasSuffix(path, "/type") || is_any(path, "/member", "/param") {
+				c.Fulltype += string(char)
+			} else if hasSuffix(path, "/name") {
+				if strings.Contains(c.Fulltype, "typedef") {
+					c.Fulltype += string(char)
+				}
+			}
+
+			if hasSuffix(path, "/name") {
+				c.Name += string(char)
+			}
+			if hasSuffix(path, "/comment") {
+				c.Comment += string(char)
+			}
 		}
 	}
 
 	// Basic Recursive decent XML Parser that calls the callback every character
-	// This could potentially be replaced with an encoding/xml tokenizer
+	// @TODO Replace with encoding/xml tokenizer or 3rd party library
 	var linear_xml_parse func(path string, d string) (i int)
 	linear_xml_parse = func(path string, d string) (i int) {
 		for ; i < len(d); i++ {
@@ -162,6 +172,7 @@ func parseTypeFromXmlString(xml_input string) (c VkTypeInfo) {
 					println("Din't know what to do with: " + ctype)
 				}
 				if c0+c1 > 0 {
+					// Put what remains of the type (eg `[2]`) in front of the go type
 					gotype = ctype + gotype
 				}
 
@@ -174,16 +185,18 @@ func parseTypeFromXmlString(xml_input string) (c VkTypeInfo) {
 		c.GoName = makeGoSafeIdentifier(c.Name)
 		c.GoComment = c.Comment
 		if c.BitOffset != 0 {
-			c.GoType = strings.Replace(c.GoType, ctype_to_go(c.Simpletype), "struct{}", -1) // @TODO Make sure the padding is corrected on these structs
-			c.GoComment = fmt.Sprintf("BITFIELD: %d %s", c.BitOffset, c.GoComment)
+			// @TODO Implement support for bitfields
+			c.GoType = strings.Replace(c.GoType, ctype_to_go(c.Simpletype), "struct{}", -1)
+			c.GoComment = fmt.Sprintf("!! Unimplemented bitfield: %d %s", c.BitOffset, c.GoComment)
 		}
 	}
 
-	// Parse functions as types  @TODO
+	// @TODO Parse defined function types
 	s := regexp_func.FindAllStringSubmatch(c.Fulltype, 5)
 	if len(s) > 0 {
 		c.FuncName = s[0][1]
-		//ArgListString := s[0][2]
+		ArgListString := s[0][2]
+		_ = ArgListString
 	}
 	return c
 }
@@ -203,7 +216,7 @@ func readtag(d string) (name string, tag string, end_tag bool) {
 	}
 
 	for ; d[i] != '>'; i++ {
-		if d[i] == ' ' && name == "" { // @TODO Unicode& Other whitespace
+		if d[i] == ' ' && name == "" {
 			name = d[1:i] // Slice tag contents
 		}
 	}

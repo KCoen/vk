@@ -27,14 +27,13 @@ var is_any_byte = util.Is_any_byte
 var is_any = util.Is_any
 
 func main() {
-	// Read File
 	var reg Registry
 	{
 		d, e := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
 		if e != nil {
 			panic(e)
 		}
-		
+
 		e = xml.Unmarshal(d, &reg)
 		if e != nil {
 			panic(e)
@@ -118,7 +117,7 @@ func main() {
 			}
 			wl("}\n")
 		case "include": // Nop
-		case "define": //@Todo
+		case "define":
 		default:
 			printf("Unknown type category %s\n", t.Category)
 		}
@@ -265,7 +264,7 @@ func fixNumberLiterals(in string) string {
 		if e == nil && c == 1 {
 			return fmt.Sprintf("%f", a)
 		}
-		// C++ specific expression @TODO
+		// @TODO Convert C++ specific expression to go
 		if in[0] == '(' {
 			return sprintf("\"%s\"", in)
 		}
@@ -342,6 +341,7 @@ func ctype_to_go(in string) string {
 	}
 }
 
+// Structs generated from the XML Input
 type kronostype struct {
 	AttrName       string   `xml:"name,attr"`
 	Category       string   `xml:"category,attr"`
