@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 	"text/template"
-	"time"
 
 	"cld.moe/vk/generator/util"
 )
@@ -139,7 +138,7 @@ func main() {
 		wl("//----------------------------------------\n")
 	}
 
-	wf("//Generated %s\n", time.Now().UTC())
+	wf("//Generated")
 	wf("package %s\n\n", CONFIG_PACKAGE)
 	art("Build-in")
 	wl("type unk = int")
