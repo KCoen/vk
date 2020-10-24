@@ -28,27 +28,30 @@ var is_any = util.Is_any
 
 func main() {
 	// Read File
-	d, e := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
-	if e != nil {
-		panic(e)
-	}
-
 	var reg Registry
-	e = xml.Unmarshal(d, &reg)
-	if e != nil {
-		panic(e)
+	{
+		d, e := ioutil.ReadFile(CONFIG_REGISTERY_FILE)
+		if e != nil {
+			panic(e)
+		}
+		
+		e = xml.Unmarshal(d, &reg)
+		if e != nil {
+			panic(e)
+		}
 	}
 
-	var f bytes.Buffer
+	var bbuf bytes.Buffer
+
 	// Helper functions
 	wf := func(s string, vals ...interface{}) {
-		f.Write([]byte(sprintf(s, vals...)))
+		bbuf.Write([]byte(sprintf(s, vals...)))
 	}
 	wl := func(ss ...string) {
 		for _, s := range ss {
-			f.Write([]byte(s))
+			bbuf.Write([]byte(s))
 			if len(s) < 1 || s[len(s)-1] != '\n' {
-				f.Write([]byte{'\n'})
+				bbuf.Write([]byte{'\n'})
 			}
 		}
 	}
@@ -88,7 +91,7 @@ func main() {
 				continue
 			}
 
-			vktype := parseTypeFromXmlString(fmt.Sprintf("<type>%s</type>", t.Xml))
+			vktype := parseTypeFromXmlString(sprintf("<type>%s</type>", t.Xml))
 			if vktype.Istypedef {
 				wf("type %s = %s\n", name, vktype.GoType)
 				if t.Requires != "" {
@@ -106,7 +109,7 @@ func main() {
 		case "struct":
 			wf("type %s struct {\n", name)
 			for _, m := range t.Member {
-				t := parseTypeFromXmlString(fmt.Sprintf("<member>%s</member>", m.Xml))
+				t := parseTypeFromXmlString(sprintf("<member>%s</member>", m.Xml))
 				wf("\t%s %s", t.GoName, t.GoType)
 				if t.GoComment != "" {
 					wf(" //%s", t.GoComment)
@@ -197,7 +200,7 @@ func main() {
 	}
 
 	{
-		formatedbytes, err := format.Source(f.Bytes())
+		formatedbytes, err := format.Source(bbuf.Bytes())
 		if err != nil {
 			panic(err)
 		}
@@ -213,9 +216,9 @@ func main() {
 
 	{
 		src := Source{funlist}
-		f = bytes.Buffer{}
+		bbuf = bytes.Buffer{}
 
-		wl("// +build windows\n")
+		wl("// +build windows\n\n")
 		wl("// Generated\n")
 		wl("package " + CONFIG_PACKAGE + "\n")
 
@@ -228,12 +231,12 @@ func main() {
 		}
 
 		t := template.Must(template.New("main").Funcs(funcMap).Parse(tsrc))
-		err = t.Execute(&f, src)
+		err = t.Execute(&bbuf, src)
 		if err != nil {
 			panic(err)
 		}
 
-		formatedbytes, err := format.Source(f.Bytes())
+		formatedbytes, err := format.Source(bbuf.Bytes())
 		if err != nil {
 			panic(err)
 		}

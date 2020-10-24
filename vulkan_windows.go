@@ -1,4 +1,5 @@
 // +build windows
+
 // Generated
 package vk
 

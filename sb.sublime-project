@@ -8,6 +8,8 @@
 	"build_systems": [ 
 		{
 			"name": "vk",
+			"working_dir": "$project_path\\generator",
+			"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vk/generator&go test cld.moe/vk",
 			"variants": [{
 				"name": "Run Generator",
 				"working_dir": "$project_path\\generator", 
