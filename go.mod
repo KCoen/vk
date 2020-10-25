@@ -1,4 +1,4 @@
-module cld.moe/vk
+module go.cld.moe/vk
 
 go 1.15
 

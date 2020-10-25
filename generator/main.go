@@ -11,7 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"cld.moe/vk/generator/util"
+	"go.cld.moe/vk/generator/util"
 )
 
 const CONFIG_DIR = ".."

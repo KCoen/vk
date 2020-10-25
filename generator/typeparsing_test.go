@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"cld.moe/vk/generator/util"
+	"go.cld.moe/vk/generator/util"
 )
 
 // Honestly there might just be a cgo api for parsing a fully fledged C definition?

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"cld.moe/vk/generator/util"
+	"go.cld.moe/vk/generator/util"
 )
 
 // This File is partially based on https://github.com/golang/sys/blob/master/windows/syscall.go

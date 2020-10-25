@@ -9,28 +9,28 @@
 		{
 			"name": "vk",
 			"working_dir": "$project_path\\generator",
-			"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vk/generator&go test cld.moe/vk",
+			"shell_cmd": "set CGO_ENABLED=0&go run go.cld.moe/vk/generator&go test go.cld.moe/vk",
 			"variants": [{
 				"name": "Run Generator",
 				"working_dir": "$project_path\\generator", 
-				"shell_cmd": "set CGO_ENABLED=0&go run cld.moe/vk/generator",
+				"shell_cmd": "set CGO_ENABLED=0&go run go.cld.moe/vk/generator",
 			},{
 				"name": "Test TestTypeDecode",
-				"shell_cmd": "go test cld.moe/vk/generator -run=TestTypeDecode -v",
+				"shell_cmd": "go test go.cld.moe/vk/generator -run=TestTypeDecode -v",
 			},{
 				"name": "Run TestCompute",
-				"shell_cmd": "go test cld.moe/vk -run=TestCompute -v",
+				"shell_cmd": "go test go.cld.moe/vk -run=TestCompute -v",
 			},{
 				"name": "WindbgX TestCompute",
-				"shell_cmd": "go test cld.moe/vk -run=TestCompute -v -c&windbgx.exe vk.test.exe",
+				"shell_cmd": "go test go.cld.moe/vk -run=TestCompute -v -c&windbgx.exe vk.test.exe",
 			},{
 				"name": "Format",
 				"working_dir": "$project_path", 
-				"shell_cmd": "go fmt cld.moe/vk cld.moe/vk/generator cld.moe/vk/generator/util",
+				"shell_cmd": "go fmt go.cld.moe/vk go.cld.moe/vk/generator go.cld.moe/vk/generator/util",
 			},{
 				"name": "Vet",
 				"working_dir": "$project_path", 
-				"shell_cmd": "go vet cld.moe/vk cld.moe/vk/generator cld.moe/vk/generator/util",
+				"shell_cmd": "go vet go.cld.moe/vk go.cld.moe/vk/generator go.cld.moe/vk/generator/util",
 			}],
 		},
 		

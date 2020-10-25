@@ -6,7 +6,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"cld.moe/vk/generator/util"
+	"go.cld.moe/vk/generator/util"
 )
 
 // Shorthands
