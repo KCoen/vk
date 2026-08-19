@@ -5,7 +5,7 @@ package khr_descriptor_update_template
 import (
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 var _ = unsafe.Pointer(nil)

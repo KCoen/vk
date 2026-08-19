@@ -3,10 +3,10 @@ package tests
 import (
 	"testing"
 
-	"go.cld.moe/vk_google/extensions/khr_swapchain"
-	"go.cld.moe/vk_google/vulkan"
-	"go.cld.moe/vk_google/vulkanbase"
-	"go.cld.moe/vk_google/vulkansc"
+	"github.com/KCoen/vk/extensions/khr_swapchain"
+	"github.com/KCoen/vk/vulkan"
+	"github.com/KCoen/vk/vulkanbase"
+	"github.com/KCoen/vk/vulkansc"
 )
 
 func TestApiBranchesAndExtensions(t *testing.T) {

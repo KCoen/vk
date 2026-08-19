@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/indexer"
+	"github.com/KCoen/vk/generator/indexer"
 )
 
 // GenerateAll generates all Go packages from the indexed Vulkan registry and writes them to outDir.

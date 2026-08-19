@@ -9,7 +9,7 @@ import (
 	"sort"
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 type BindingInfo struct {

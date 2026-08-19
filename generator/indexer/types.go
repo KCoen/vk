@@ -1,8 +1,8 @@
 package indexer
 
 import (
-	"go.cld.moe/vk_google/generator/docparser"
-	"go.cld.moe/vk_google/generator/parser"
+	"github.com/KCoen/vk/generator/docparser"
+	"github.com/KCoen/vk/generator/parser"
 )
 
 // HandleKind represents dispatchable vs non-dispatchable handles.

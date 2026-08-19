@@ -5,9 +5,9 @@ import (
 	"math"
 	"unsafe"
 
-	"go.cld.moe/vk_google/samples/base"
-	"go.cld.moe/vk_google/samples/utility"
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/samples/base"
+	"github.com/KCoen/vk/samples/utility"
+	"github.com/KCoen/vk/vulkan"
 )
 
 type RenderMode int

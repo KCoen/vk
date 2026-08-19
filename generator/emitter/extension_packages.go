@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/indexer"
+	"github.com/KCoen/vk/generator/indexer"
 )
 
 // EmitExtensionPackage generates all files for a specific Vulkan extension package.

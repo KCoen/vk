@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 // VulkanContext manages instance, device, queues, memory, and command pools.

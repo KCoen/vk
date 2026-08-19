@@ -5,7 +5,7 @@ package nv_external_memory_rdma
 import (
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 var _ = unsafe.Pointer(nil)

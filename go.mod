@@ -1,4 +1,4 @@
-module go.cld.moe/vk_google
+module github.com/KCoen/vk
 
 go 1.26.5
 

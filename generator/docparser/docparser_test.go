@@ -3,7 +3,7 @@ package docparser_test
 import (
 	"testing"
 
-	"go.cld.moe/vk_google/generator/docparser"
+	"github.com/KCoen/vk/generator/docparser"
 )
 
 func TestParseVulkanDocs(t *testing.T) {

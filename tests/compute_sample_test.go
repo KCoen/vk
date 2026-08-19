@@ -5,7 +5,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 func bailOnBadResult(res vulkan.Result) {

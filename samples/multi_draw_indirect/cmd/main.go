@@ -6,8 +6,8 @@ import (
 	"runtime"
 
 	"github.com/AllenDang/cimgui-go/imgui"
-	"go.cld.moe/vk_google/samples/multi_draw_indirect"
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/samples/multi_draw_indirect"
+	"github.com/KCoen/vk/vulkan"
 )
 
 func init() {

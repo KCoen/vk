@@ -9,11 +9,11 @@ import (
 
 	"github.com/AllenDang/cimgui-go/imgui"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"go.cld.moe/vk_google/extensions/khr_surface"
-	"go.cld.moe/vk_google/extensions/khr_swapchain"
-	"go.cld.moe/vk_google/samples/utility"
-	"go.cld.moe/vk_google/samples/utility/cimgui_vulkan"
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/extensions/khr_surface"
+	"github.com/KCoen/vk/extensions/khr_swapchain"
+	"github.com/KCoen/vk/samples/utility"
+	"github.com/KCoen/vk/samples/utility/cimgui_vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 type Vec3 = utility.Vec3

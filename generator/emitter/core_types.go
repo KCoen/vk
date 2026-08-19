@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/indexer"
+	"github.com/KCoen/vk/generator/indexer"
 )
 
 // EmitBranchTypes generates the types_gen.go file for an API branch package (vulkan, vulkanbase, vulkansc).

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 // Buffer wraps a Vulkan Buffer and its backing DeviceMemory.

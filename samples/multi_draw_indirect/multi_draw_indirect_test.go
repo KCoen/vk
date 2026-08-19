@@ -3,9 +3,9 @@ package multi_draw_indirect_test
 import (
 	"testing"
 
-	"go.cld.moe/vk_google/samples/multi_draw_indirect"
-	"go.cld.moe/vk_google/samples/utility"
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/samples/multi_draw_indirect"
+	"github.com/KCoen/vk/samples/utility"
+	"github.com/KCoen/vk/vulkan"
 )
 
 func TestFrustumMath(t *testing.T) {

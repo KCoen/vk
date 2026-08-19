@@ -7,8 +7,8 @@ import (
 	"testing"
 	"unsafe"
 
-	"go.cld.moe/vk_google/extensions/ext_debug_utils"
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/extensions/ext_debug_utils"
+	"github.com/KCoen/vk/vulkan"
 )
 
 func TestDebugUtilsCallback(t *testing.T) {

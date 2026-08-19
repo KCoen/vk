@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/docparser"
-	"go.cld.moe/vk_google/generator/parser"
+	"github.com/KCoen/vk/generator/docparser"
+	"github.com/KCoen/vk/generator/parser"
 )
 
 // BuildIndex indexes the parsed XML registry into a semantic database.

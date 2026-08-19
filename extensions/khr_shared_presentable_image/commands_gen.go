@@ -5,7 +5,7 @@ package khr_shared_presentable_image
 import (
 	"unsafe"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 var _ = unsafe.Pointer(nil)

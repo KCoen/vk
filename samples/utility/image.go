@@ -3,7 +3,7 @@ package utility
 import (
 	"fmt"
 
-	"go.cld.moe/vk_google/vulkan"
+	"github.com/KCoen/vk/vulkan"
 )
 
 // Texture wraps an Image, DeviceMemory, ImageView, and Sampler.

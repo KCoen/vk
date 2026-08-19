@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/indexer"
+	"github.com/KCoen/vk/generator/indexer"
 )
 
 // EmitBranchEnums generates enums_gen.go for an API branch package (vulkan, vulkanbase, vulkansc).

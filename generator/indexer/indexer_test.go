@@ -3,8 +3,8 @@ package indexer_test
 import (
 	"testing"
 
-	"go.cld.moe/vk_google/generator/indexer"
-	"go.cld.moe/vk_google/generator/parser"
+	"github.com/KCoen/vk/generator/indexer"
+	"github.com/KCoen/vk/generator/parser"
 )
 
 func TestIndexVkXML(t *testing.T) {

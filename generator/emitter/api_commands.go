@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/indexer"
+	"github.com/KCoen/vk/generator/indexer"
 )
 
 // EmitApiBranchPackage generates all files for an API branch package (vulkan, vulkanbase, vulkansc).
@@ -164,7 +164,7 @@ func EmitExtensionCommands(ext *indexer.ExtensionInfo, idx *indexer.Index) (stri
 	sb.WriteString(fmt.Sprintf("package %s\n\n", ext.PkgName))
 	sb.WriteString("import (\n")
 	sb.WriteString("\t\"unsafe\"\n\n")
-	sb.WriteString("\t\"go.cld.moe/vk_google/vulkan\"\n")
+	sb.WriteString("\t\"github.com/KCoen/vk/vulkan\"\n")
 	sb.WriteString(")\n\n")
 	sb.WriteString("var _ = unsafe.Pointer(nil)\n\n")
 

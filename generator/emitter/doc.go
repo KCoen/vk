@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"go.cld.moe/vk_google/generator/indexer"
+	"github.com/KCoen/vk/generator/indexer"
 )
 
 // FormatDocComment formats a documentation comment into Go standard doc comments (// ...).

@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
-	"go.cld.moe/vk_google/generator/docparser"
-	"go.cld.moe/vk_google/generator/emitter"
-	"go.cld.moe/vk_google/generator/indexer"
-	"go.cld.moe/vk_google/generator/parser"
+	"github.com/KCoen/vk/generator/docparser"
+	"github.com/KCoen/vk/generator/emitter"
+	"github.com/KCoen/vk/generator/indexer"
+	"github.com/KCoen/vk/generator/parser"
 )
 
 func main() {
