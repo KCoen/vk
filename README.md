@@ -14,4 +14,4 @@ You probably want to use `vulkan` instead of `vulkanbase` or `vulkansc`, all ext
 You need to load the functions in the package by calling `Init()`
 it would look something like `amd_anti_lag.Init()` or `vulkan.Init()`
 
-To update when they release vulkan 1.4, update the Vulkan-Docs submodule and run `go run ./cmd/vk-gen` it will regenerate everything
+To update when they release vulkan 1.5, update the Vulkan-Docs submodule and run `go run ./cmd/vk-gen` it will regenerate everything
