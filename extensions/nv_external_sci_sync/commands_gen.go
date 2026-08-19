@@ -11,8 +11,125 @@ import (
 var _ = unsafe.Pointer(nil)
 
 // Procedure addresses resolved by Init
-var ()
+var (
+	pfnGetFenceSciSyncFenceNV               uintptr
+	pfnGetFenceSciSyncObjNV                 uintptr
+	pfnGetPhysicalDeviceSciSyncAttributesNV uintptr
+	pfnGetSemaphoreSciSyncObjNV             uintptr
+	pfnImportFenceSciSyncFenceNV            uintptr
+	pfnImportFenceSciSyncObjNV              uintptr
+	pfnImportSemaphoreSciSyncObjNV          uintptr
+)
 
 // Init resolves and initializes all VK_NV_external_sci_sync extension procedure addresses.
 func Init(instance vulkan.Instance, device vulkan.Device) {
+	pfnGetFenceSciSyncFenceNV = vulkan.GetDeviceProcAddr(device, "vkGetFenceSciSyncFenceNV")
+	pfnGetFenceSciSyncObjNV = vulkan.GetDeviceProcAddr(device, "vkGetFenceSciSyncObjNV")
+	pfnGetPhysicalDeviceSciSyncAttributesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciSyncAttributesNV")
+	pfnGetSemaphoreSciSyncObjNV = vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreSciSyncObjNV")
+	pfnImportFenceSciSyncFenceNV = vulkan.GetDeviceProcAddr(device, "vkImportFenceSciSyncFenceNV")
+	pfnImportFenceSciSyncObjNV = vulkan.GetDeviceProcAddr(device, "vkImportFenceSciSyncObjNV")
+	pfnImportSemaphoreSciSyncObjNV = vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreSciSyncObjNV")
+}
+
+// GetFenceSciSyncFenceNV - Get a stext:NvSciSyncFence handle for a fence (vkGetFenceSciSyncFenceNV).
+// Parameters:
+//   - device: is the logical device that created the fence being exported.
+//   - getSciSyncHandleInfo: is a pointer to a VkFenceGetSciSyncInfoNV structure containing parameters of the export operation.
+//   - handle: is a pointer to a stext:NvSciSyncFence which will contain the fence payload on return.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncFenceNV.html
+func GetFenceSciSyncFenceNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
+	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnGetFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
+// GetFenceSciSyncObjNV - Get a stext:NvSciSyncObj handle for a fence (vkGetFenceSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the fence being exported.
+//   - getSciSyncHandleInfo: is a pointer to a VkFenceGetSciSyncInfoNV structure containing parameters of the export operation.
+//   - handle: will return the stext:NvSciSyncObj handle representing the fence payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncObjNV.html
+func GetFenceSciSyncObjNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
+	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnGetFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
+// GetPhysicalDeviceSciSyncAttributesNV - Get the implementation-specific NvSciSync attributes (vkGetPhysicalDeviceSciSyncAttributesNV).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device that will be used to determine the attributes.
+//   - sciSyncAttributesInfo: is a pointer to a VkSciSyncAttributesInfoNV structure containing information about how the attributes are to be filled.
+//   - attributes: is an opaque stext:NvSciSyncAttrList in which the implementation will set the requested attributes.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciSyncAttributesNV.html
+func GetPhysicalDeviceSciSyncAttributesNV(physicalDevice vulkan.PhysicalDevice, sciSyncAttributesInfo *vulkan.SciSyncAttributesInfoNV, attributes uintptr) (result vulkan.Result) {
+	c_sciSyncAttributesInfo := sciSyncAttributesInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSciSyncAttributesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_sciSyncAttributesInfo)), uintptr(attributes))
+	return vulkan.Result(r1)
+}
+
+// GetSemaphoreSciSyncObjNV - Get a stext:NvSciSyncObj handle for a semaphore (vkGetSemaphoreSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the semaphore being exported.
+//   - getSciSyncInfo: is a pointer to a VkSemaphoreGetSciSyncInfoNV structure containing parameters of the export operation.
+//   - handle: will return the stext:NvSciSyncObj representing the semaphore payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreSciSyncObjNV.html
+func GetSemaphoreSciSyncObjNV(device vulkan.Device, getSciSyncInfo *vulkan.SemaphoreGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
+	c_getSciSyncInfo := getSciSyncInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnGetSemaphoreSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
+// ImportFenceSciSyncFenceNV - Import a fence from a stext:NvSciSyncFence handle (vkImportFenceSciSyncFenceNV).
+// Parameters:
+//   - device: is the logical device that created the fence.
+//   - importFenceSciSyncInfo: is a pointer to a VkImportFenceSciSyncInfoNV structure containing parameters of the import operation
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncFenceNV.html
+func ImportFenceSciSyncFenceNV(device vulkan.Device, importFenceSciSyncInfo *vulkan.ImportFenceSciSyncInfoNV) (result vulkan.Result) {
+	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnImportFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
+	return vulkan.Result(r1)
+}
+
+// ImportFenceSciSyncObjNV - Import a fence from a stext:NvSciSyncObj handle (vkImportFenceSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the fence.
+//   - importFenceSciSyncInfo: is a pointer to a VkImportFenceSciSyncInfoNV structure containing parameters of the import operation
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncObjNV.html
+func ImportFenceSciSyncObjNV(device vulkan.Device, importFenceSciSyncInfo *vulkan.ImportFenceSciSyncInfoNV) (result vulkan.Result) {
+	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnImportFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
+	return vulkan.Result(r1)
+}
+
+// ImportSemaphoreSciSyncObjNV - Import a semaphore from a SciSync handle (vkImportSemaphoreSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the semaphore.
+//   - importSemaphoreSciSyncInfo: is a pointer to a VkImportSemaphoreSciSyncInfoNV structure containing parameters of the import operation
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreSciSyncObjNV.html
+func ImportSemaphoreSciSyncObjNV(device vulkan.Device, importSemaphoreSciSyncInfo *vulkan.ImportSemaphoreSciSyncInfoNV) (result vulkan.Result) {
+	c_importSemaphoreSciSyncInfo := importSemaphoreSciSyncInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnImportSemaphoreSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreSciSyncInfo)))
+	return vulkan.Result(r1)
 }

@@ -4,7 +4,7 @@ package vulkan
 
 import "fmt"
 
-// AccelerationStructureBuildTypeKHR represents VkAccelerationStructureBuildTypeKHR.
+// AccelerationStructureBuildTypeKHR - Acceleration structure build type (VkAccelerationStructureBuildTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureBuildTypeKHR.html
 type AccelerationStructureBuildTypeKHR int32
 
@@ -28,7 +28,7 @@ func (e AccelerationStructureBuildTypeKHR) String() string {
 	}
 }
 
-// AccelerationStructureCompatibilityKHR represents VkAccelerationStructureCompatibilityKHR.
+// AccelerationStructureCompatibilityKHR - Acceleration structure compatibility (VkAccelerationStructureCompatibilityKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureCompatibilityKHR.html
 type AccelerationStructureCompatibilityKHR int32
 
@@ -49,7 +49,7 @@ func (e AccelerationStructureCompatibilityKHR) String() string {
 	}
 }
 
-// AccelerationStructureMemoryRequirementsTypeNV represents VkAccelerationStructureMemoryRequirementsTypeNV.
+// AccelerationStructureMemoryRequirementsTypeNV - Acceleration structure memory requirement type (VkAccelerationStructureMemoryRequirementsTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureMemoryRequirementsTypeNV.html
 type AccelerationStructureMemoryRequirementsTypeNV int32
 
@@ -73,7 +73,7 @@ func (e AccelerationStructureMemoryRequirementsTypeNV) String() string {
 	}
 }
 
-// AccelerationStructureMotionInstanceTypeNV represents VkAccelerationStructureMotionInstanceTypeNV.
+// AccelerationStructureMotionInstanceTypeNV - Enum specifying a type of acceleration structure motion instance data for building into an acceleration structure geometry (VkAccelerationStructureMotionInstanceTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureMotionInstanceTypeNV.html
 type AccelerationStructureMotionInstanceTypeNV int32
 
@@ -97,7 +97,7 @@ func (e AccelerationStructureMotionInstanceTypeNV) String() string {
 	}
 }
 
-// AccelerationStructureSerializedBlockTypeKHR represents VkAccelerationStructureSerializedBlockTypeKHR.
+// AccelerationStructureSerializedBlockTypeKHR - Enum for block types in a serialized acceleration structure (VkAccelerationStructureSerializedBlockTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureSerializedBlockTypeKHR.html
 type AccelerationStructureSerializedBlockTypeKHR int32
 
@@ -115,7 +115,7 @@ func (e AccelerationStructureSerializedBlockTypeKHR) String() string {
 	}
 }
 
-// AccelerationStructureTypeKHR represents VkAccelerationStructureTypeKHR.
+// AccelerationStructureTypeKHR - Type of acceleration structure (VkAccelerationStructureTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureTypeKHR.html
 type AccelerationStructureTypeKHR int32
 
@@ -144,7 +144,7 @@ func (e AccelerationStructureTypeKHR) String() string {
 	}
 }
 
-// AntiLagModeAMD represents VkAntiLagModeAMD.
+// AntiLagModeAMD - Set the status of the anti-lag feature (VkAntiLagModeAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAntiLagModeAMD.html
 type AntiLagModeAMD int32
 
@@ -168,7 +168,7 @@ func (e AntiLagModeAMD) String() string {
 	}
 }
 
-// AntiLagStageAMD represents VkAntiLagStageAMD.
+// AntiLagStageAMD - Report the application stage (VkAntiLagStageAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkAntiLagStageAMD.html
 type AntiLagStageAMD int32
 
@@ -485,7 +485,7 @@ func (e BlendOp) String() string {
 	}
 }
 
-// BlendOverlapEXT represents VkBlendOverlapEXT.
+// BlendOverlapEXT - Enumerant specifying the blend overlap parameter (VkBlendOverlapEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBlendOverlapEXT.html
 type BlendOverlapEXT int32
 
@@ -509,7 +509,7 @@ func (e BlendOverlapEXT) String() string {
 	}
 }
 
-// BlockMatchWindowCompareModeQCOM represents VkBlockMatchWindowCompareModeQCOM.
+// BlockMatchWindowCompareModeQCOM - Block match window compare modes (VkBlockMatchWindowCompareModeQCOM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBlockMatchWindowCompareModeQCOM.html
 type BlockMatchWindowCompareModeQCOM int32
 
@@ -569,7 +569,7 @@ func (e BorderColor) String() string {
 	}
 }
 
-// BuildAccelerationStructureModeKHR represents VkBuildAccelerationStructureModeKHR.
+// BuildAccelerationStructureModeKHR - Enum specifying the type of build operation to perform (VkBuildAccelerationStructureModeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBuildAccelerationStructureModeKHR.html
 type BuildAccelerationStructureModeKHR int32
 
@@ -590,7 +590,7 @@ func (e BuildAccelerationStructureModeKHR) String() string {
 	}
 }
 
-// BuildMicromapModeEXT represents VkBuildMicromapModeEXT.
+// BuildMicromapModeEXT - Enum specifying the type of build operation to perform (VkBuildMicromapModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBuildMicromapModeEXT.html
 type BuildMicromapModeEXT int32
 
@@ -631,7 +631,7 @@ func (e ChromaLocation) String() string {
 	}
 }
 
-// ClusterAccelerationStructureOpModeNV represents VkClusterAccelerationStructureOpModeNV.
+// ClusterAccelerationStructureOpModeNV - Enum providing the mode of operation (VkClusterAccelerationStructureOpModeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkClusterAccelerationStructureOpModeNV.html
 type ClusterAccelerationStructureOpModeNV int32
 
@@ -655,7 +655,7 @@ func (e ClusterAccelerationStructureOpModeNV) String() string {
 	}
 }
 
-// ClusterAccelerationStructureOpTypeNV represents VkClusterAccelerationStructureOpTypeNV.
+// ClusterAccelerationStructureOpTypeNV - Enum providing the type of operation (VkClusterAccelerationStructureOpTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkClusterAccelerationStructureOpTypeNV.html
 type ClusterAccelerationStructureOpTypeNV int32
 
@@ -688,7 +688,7 @@ func (e ClusterAccelerationStructureOpTypeNV) String() string {
 	}
 }
 
-// ClusterAccelerationStructureTypeNV represents VkClusterAccelerationStructureTypeNV.
+// ClusterAccelerationStructureTypeNV - Enum providing the type of cluster acceleration structure (VkClusterAccelerationStructureTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkClusterAccelerationStructureTypeNV.html
 type ClusterAccelerationStructureTypeNV int32
 
@@ -712,7 +712,7 @@ func (e ClusterAccelerationStructureTypeNV) String() string {
 	}
 }
 
-// CoarseSampleOrderTypeNV represents VkCoarseSampleOrderTypeNV.
+// CoarseSampleOrderTypeNV - Shading rate image sample ordering types (VkCoarseSampleOrderTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCoarseSampleOrderTypeNV.html
 type CoarseSampleOrderTypeNV int32
 
@@ -739,7 +739,7 @@ func (e CoarseSampleOrderTypeNV) String() string {
 	}
 }
 
-// ColorSpaceKHR represents VkColorSpaceKHR.
+// ColorSpaceKHR - Supported color space of the presentation engine (VkColorSpaceKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkColorSpaceKHR.html
 type ColorSpaceKHR int32
 
@@ -900,7 +900,7 @@ func (e ComponentSwizzle) String() string {
 	}
 }
 
-// ComponentTypeKHR represents VkComponentTypeKHR.
+// ComponentTypeKHR - Specify SPIR-V cooperative matrix component type (VkComponentTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkComponentTypeKHR.html
 type ComponentTypeKHR int32
 
@@ -991,7 +991,7 @@ func (e ComponentTypeKHR) String() string {
 	}
 }
 
-// CompressedTriangleFormatAMDX represents VkCompressedTriangleFormatAMDX.
+// CompressedTriangleFormatAMDX - Available compressed triangle formats (VkCompressedTriangleFormatAMDX).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCompressedTriangleFormatAMDX.html
 type CompressedTriangleFormatAMDX int32
 
@@ -1009,7 +1009,7 @@ func (e CompressedTriangleFormatAMDX) String() string {
 	}
 }
 
-// ConservativeRasterizationModeEXT represents VkConservativeRasterizationModeEXT.
+// ConservativeRasterizationModeEXT - Specify the conservative rasterization mode (VkConservativeRasterizationModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkConservativeRasterizationModeEXT.html
 type ConservativeRasterizationModeEXT int32
 
@@ -1033,7 +1033,7 @@ func (e ConservativeRasterizationModeEXT) String() string {
 	}
 }
 
-// CooperativeVectorMatrixLayoutNV represents VkCooperativeVectorMatrixLayoutNV.
+// CooperativeVectorMatrixLayoutNV - Specify cooperative vector matrix layout (VkCooperativeVectorMatrixLayoutNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCooperativeVectorMatrixLayoutNV.html
 type CooperativeVectorMatrixLayoutNV int32
 
@@ -1060,7 +1060,7 @@ func (e CooperativeVectorMatrixLayoutNV) String() string {
 	}
 }
 
-// CopyAccelerationStructureModeKHR represents VkCopyAccelerationStructureModeKHR.
+// CopyAccelerationStructureModeKHR - Acceleration structure copy mode (VkCopyAccelerationStructureModeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCopyAccelerationStructureModeKHR.html
 type CopyAccelerationStructureModeKHR int32
 
@@ -1089,7 +1089,7 @@ func (e CopyAccelerationStructureModeKHR) String() string {
 	}
 }
 
-// CopyMicromapModeEXT represents VkCopyMicromapModeEXT.
+// CopyMicromapModeEXT - Micromap copy mode (VkCopyMicromapModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCopyMicromapModeEXT.html
 type CopyMicromapModeEXT int32
 
@@ -1116,7 +1116,7 @@ func (e CopyMicromapModeEXT) String() string {
 	}
 }
 
-// CoverageModulationModeNV represents VkCoverageModulationModeNV.
+// CoverageModulationModeNV - Specify the coverage modulation mode (VkCoverageModulationModeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCoverageModulationModeNV.html
 type CoverageModulationModeNV int32
 
@@ -1143,7 +1143,7 @@ func (e CoverageModulationModeNV) String() string {
 	}
 }
 
-// CoverageReductionModeNV represents VkCoverageReductionModeNV.
+// CoverageReductionModeNV - Specify the coverage reduction mode (VkCoverageReductionModeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCoverageReductionModeNV.html
 type CoverageReductionModeNV int32
 
@@ -1164,7 +1164,7 @@ func (e CoverageReductionModeNV) String() string {
 	}
 }
 
-// CubicFilterWeightsQCOM represents VkCubicFilterWeightsQCOM.
+// CubicFilterWeightsQCOM - Specify cubic weights for texture filtering (VkCubicFilterWeightsQCOM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkCubicFilterWeightsQCOM.html
 type CubicFilterWeightsQCOM int32
 
@@ -1191,7 +1191,7 @@ func (e CubicFilterWeightsQCOM) String() string {
 	}
 }
 
-// DataGraphModelCacheTypeQCOM represents VkDataGraphModelCacheTypeQCOM.
+// DataGraphModelCacheTypeQCOM - Encode pipeline data graph cache type (VkDataGraphModelCacheTypeQCOM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphModelCacheTypeQCOM.html
 type DataGraphModelCacheTypeQCOM int32
 
@@ -1209,7 +1209,7 @@ func (e DataGraphModelCacheTypeQCOM) String() string {
 	}
 }
 
-// DataGraphOpticalFlowPerformanceLevelARM represents VkDataGraphOpticalFlowPerformanceLevelARM.
+// DataGraphOpticalFlowPerformanceLevelARM - Optical flow performance level types (VkDataGraphOpticalFlowPerformanceLevelARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphOpticalFlowPerformanceLevelARM.html
 type DataGraphOpticalFlowPerformanceLevelARM int32
 
@@ -1236,7 +1236,7 @@ func (e DataGraphOpticalFlowPerformanceLevelARM) String() string {
 	}
 }
 
-// DataGraphPipelineNodeConnectionTypeARM represents VkDataGraphPipelineNodeConnectionTypeARM.
+// DataGraphPipelineNodeConnectionTypeARM - Connection points for a fixed-function data graph node (VkDataGraphPipelineNodeConnectionTypeARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphPipelineNodeConnectionTypeARM.html
 type DataGraphPipelineNodeConnectionTypeARM int32
 
@@ -1266,7 +1266,7 @@ func (e DataGraphPipelineNodeConnectionTypeARM) String() string {
 	}
 }
 
-// DataGraphPipelineNodeTypeARM represents VkDataGraphPipelineNodeTypeARM.
+// DataGraphPipelineNodeTypeARM - Enumeration describing the type of a data graph pipeline node (VkDataGraphPipelineNodeTypeARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphPipelineNodeTypeARM.html
 type DataGraphPipelineNodeTypeARM int32
 
@@ -1284,7 +1284,7 @@ func (e DataGraphPipelineNodeTypeARM) String() string {
 	}
 }
 
-// DataGraphPipelinePropertyARM represents VkDataGraphPipelinePropertyARM.
+// DataGraphPipelinePropertyARM - Enumeration describing the properties of a data graph pipeline that can be queried (VkDataGraphPipelinePropertyARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphPipelinePropertyARM.html
 type DataGraphPipelinePropertyARM int32
 
@@ -1311,7 +1311,7 @@ func (e DataGraphPipelinePropertyARM) String() string {
 	}
 }
 
-// DataGraphPipelineSessionBindPointARM represents VkDataGraphPipelineSessionBindPointARM.
+// DataGraphPipelineSessionBindPointARM - Enumeration describing the bind points of a data graph pipeline session (VkDataGraphPipelineSessionBindPointARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphPipelineSessionBindPointARM.html
 type DataGraphPipelineSessionBindPointARM int32
 
@@ -1335,7 +1335,7 @@ func (e DataGraphPipelineSessionBindPointARM) String() string {
 	}
 }
 
-// DataGraphPipelineSessionBindPointTypeARM represents VkDataGraphPipelineSessionBindPointTypeARM.
+// DataGraphPipelineSessionBindPointTypeARM - Enumeration describing the type of bind points of a data graph pipeline session (VkDataGraphPipelineSessionBindPointTypeARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphPipelineSessionBindPointTypeARM.html
 type DataGraphPipelineSessionBindPointTypeARM int32
 
@@ -1353,7 +1353,7 @@ func (e DataGraphPipelineSessionBindPointTypeARM) String() string {
 	}
 }
 
-// DataGraphTOSALevelARM represents VkDataGraphTOSALevelARM.
+// DataGraphTOSALevelARM - Enumeration describing a data graph TOSA level (VkDataGraphTOSALevelARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDataGraphTOSALevelARM.html
 type DataGraphTOSALevelARM int32
 
@@ -1374,7 +1374,7 @@ func (e DataGraphTOSALevelARM) String() string {
 	}
 }
 
-// DebugReportObjectTypeEXT represents VkDebugReportObjectTypeEXT.
+// DebugReportObjectTypeEXT - Specify the type of an object handle (VkDebugReportObjectTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDebugReportObjectTypeEXT.html
 type DebugReportObjectTypeEXT int32
 
@@ -1516,7 +1516,7 @@ func (e DebugReportObjectTypeEXT) String() string {
 	}
 }
 
-// DefaultVertexAttributeValueKHR represents VkDefaultVertexAttributeValueKHR.
+// DefaultVertexAttributeValueKHR - Values returned for unbound vertex attributes (VkDefaultVertexAttributeValueKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDefaultVertexAttributeValueKHR.html
 type DefaultVertexAttributeValueKHR int32
 
@@ -1537,7 +1537,7 @@ func (e DefaultVertexAttributeValueKHR) String() string {
 	}
 }
 
-// DepthBiasRepresentationEXT represents VkDepthBiasRepresentationEXT.
+// DepthBiasRepresentationEXT - Specify the depth bias representation (VkDepthBiasRepresentationEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDepthBiasRepresentationEXT.html
 type DepthBiasRepresentationEXT int32
 
@@ -1561,7 +1561,7 @@ func (e DepthBiasRepresentationEXT) String() string {
 	}
 }
 
-// DepthClampModeEXT represents VkDepthClampModeEXT.
+// DepthClampModeEXT - Modes that determine the depth clamp range (VkDepthClampModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDepthClampModeEXT.html
 type DepthClampModeEXT int32
 
@@ -1582,7 +1582,7 @@ func (e DepthClampModeEXT) String() string {
 	}
 }
 
-// DescriptorMappingSourceEXT represents VkDescriptorMappingSourceEXT.
+// DescriptorMappingSourceEXT - Specifies the mapping source for a shader binding (VkDescriptorMappingSourceEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDescriptorMappingSourceEXT.html
 type DescriptorMappingSourceEXT int32
 
@@ -1727,7 +1727,7 @@ func (e DescriptorUpdateTemplateType) String() string {
 	}
 }
 
-// DeviceAddressBindingTypeEXT represents VkDeviceAddressBindingTypeEXT.
+// DeviceAddressBindingTypeEXT - Enum describing a change in device address bindings (VkDeviceAddressBindingTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDeviceAddressBindingTypeEXT.html
 type DeviceAddressBindingTypeEXT int32
 
@@ -1748,7 +1748,7 @@ func (e DeviceAddressBindingTypeEXT) String() string {
 	}
 }
 
-// DeviceEventTypeEXT represents VkDeviceEventTypeEXT.
+// DeviceEventTypeEXT - Events that can occur on a device object (VkDeviceEventTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDeviceEventTypeEXT.html
 type DeviceEventTypeEXT int32
 
@@ -1766,7 +1766,7 @@ func (e DeviceEventTypeEXT) String() string {
 	}
 }
 
-// DeviceFaultAddressTypeKHR represents VkDeviceFaultAddressTypeKHR.
+// DeviceFaultAddressTypeKHR - Page fault access types (VkDeviceFaultAddressTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultAddressTypeKHR.html
 type DeviceFaultAddressTypeKHR int32
 
@@ -1809,7 +1809,7 @@ func (e DeviceFaultAddressTypeKHR) String() string {
 	}
 }
 
-// DeviceFaultVendorBinaryHeaderVersionKHR represents VkDeviceFaultVendorBinaryHeaderVersionKHR.
+// DeviceFaultVendorBinaryHeaderVersionKHR - Encode vendor binary crash dump version (VkDeviceFaultVendorBinaryHeaderVersionKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDeviceFaultVendorBinaryHeaderVersionKHR.html
 type DeviceFaultVendorBinaryHeaderVersionKHR int32
 
@@ -1828,7 +1828,7 @@ func (e DeviceFaultVendorBinaryHeaderVersionKHR) String() string {
 	}
 }
 
-// DeviceMemoryReportEventTypeEXT represents VkDeviceMemoryReportEventTypeEXT.
+// DeviceMemoryReportEventTypeEXT - Events that can occur on a device memory object (VkDeviceMemoryReportEventTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDeviceMemoryReportEventTypeEXT.html
 type DeviceMemoryReportEventTypeEXT int32
 
@@ -1858,7 +1858,7 @@ func (e DeviceMemoryReportEventTypeEXT) String() string {
 	}
 }
 
-// DirectDriverLoadingModeLUNARG represents VkDirectDriverLoadingModeLUNARG.
+// DirectDriverLoadingModeLUNARG - Specify loader behavior of added drivers (VkDirectDriverLoadingModeLUNARG).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDirectDriverLoadingModeLUNARG.html
 type DirectDriverLoadingModeLUNARG int32
 
@@ -1879,7 +1879,7 @@ func (e DirectDriverLoadingModeLUNARG) String() string {
 	}
 }
 
-// DiscardRectangleModeEXT represents VkDiscardRectangleModeEXT.
+// DiscardRectangleModeEXT - Specify the discard rectangle mode (VkDiscardRectangleModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDiscardRectangleModeEXT.html
 type DiscardRectangleModeEXT int32
 
@@ -1900,7 +1900,7 @@ func (e DiscardRectangleModeEXT) String() string {
 	}
 }
 
-// DisplacementMicromapFormatNV represents VkDisplacementMicromapFormatNV.
+// DisplacementMicromapFormatNV - Format enum for displacement micromaps (VkDisplacementMicromapFormatNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDisplacementMicromapFormatNV.html
 type DisplacementMicromapFormatNV int32
 
@@ -1924,7 +1924,7 @@ func (e DisplacementMicromapFormatNV) String() string {
 	}
 }
 
-// DisplayEventTypeEXT represents VkDisplayEventTypeEXT.
+// DisplayEventTypeEXT - Events that can occur on a display object (VkDisplayEventTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDisplayEventTypeEXT.html
 type DisplayEventTypeEXT int32
 
@@ -1942,7 +1942,7 @@ func (e DisplayEventTypeEXT) String() string {
 	}
 }
 
-// DisplayPowerStateEXT represents VkDisplayPowerStateEXT.
+// DisplayPowerStateEXT - Possible power states for a display (VkDisplayPowerStateEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDisplayPowerStateEXT.html
 type DisplayPowerStateEXT int32
 
@@ -1966,7 +1966,7 @@ func (e DisplayPowerStateEXT) String() string {
 	}
 }
 
-// DisplaySurfaceStereoTypeNV represents VkDisplaySurfaceStereoTypeNV.
+// DisplaySurfaceStereoTypeNV - 3D Stereo type (VkDisplaySurfaceStereoTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDisplaySurfaceStereoTypeNV.html
 type DisplaySurfaceStereoTypeNV int32
 
@@ -3436,7 +3436,7 @@ func (e Format) String() string {
 	}
 }
 
-// FragmentShadingRateCombinerOpKHR represents VkFragmentShadingRateCombinerOpKHR.
+// FragmentShadingRateCombinerOpKHR - Control how fragment shading rates are combined (VkFragmentShadingRateCombinerOpKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFragmentShadingRateCombinerOpKHR.html
 type FragmentShadingRateCombinerOpKHR int32
 
@@ -3466,7 +3466,7 @@ func (e FragmentShadingRateCombinerOpKHR) String() string {
 	}
 }
 
-// FragmentShadingRateNV represents VkFragmentShadingRateNV.
+// FragmentShadingRateNV - Enumeration with fragment shading rates (VkFragmentShadingRateNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFragmentShadingRateNV.html
 type FragmentShadingRateNV int32
 
@@ -3517,7 +3517,7 @@ func (e FragmentShadingRateNV) String() string {
 	}
 }
 
-// FragmentShadingRateTypeNV represents VkFragmentShadingRateTypeNV.
+// FragmentShadingRateTypeNV - Enumeration with fragment shading rate types (VkFragmentShadingRateTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFragmentShadingRateTypeNV.html
 type FragmentShadingRateTypeNV int32
 
@@ -3559,7 +3559,7 @@ func (e FrontFace) String() string {
 	}
 }
 
-// FullScreenExclusiveEXT represents VkFullScreenExclusiveEXT.
+// FullScreenExclusiveEXT - Hint values an application can specify affecting full-screen transition behavior (VkFullScreenExclusiveEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFullScreenExclusiveEXT.html
 type FullScreenExclusiveEXT int32
 
@@ -3586,7 +3586,7 @@ func (e FullScreenExclusiveEXT) String() string {
 	}
 }
 
-// GeometryTypeKHR represents VkGeometryTypeKHR.
+// GeometryTypeKHR - Enum specifying which type of geometry is provided (VkGeometryTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkGeometryTypeKHR.html
 type GeometryTypeKHR int32
 
@@ -3624,7 +3624,7 @@ func (e GeometryTypeKHR) String() string {
 	}
 }
 
-// GpaDeviceClockModeAMD represents VkGpaDeviceClockModeAMD.
+// GpaDeviceClockModeAMD - Enum providing the clock mode or query (VkGpaDeviceClockModeAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkGpaDeviceClockModeAMD.html
 type GpaDeviceClockModeAMD int32
 
@@ -3657,7 +3657,7 @@ func (e GpaDeviceClockModeAMD) String() string {
 	}
 }
 
-// GpaPerfBlockAMD represents VkGpaPerfBlockAMD.
+// GpaPerfBlockAMD - Enum providing performance counter types (VkGpaPerfBlockAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkGpaPerfBlockAMD.html
 type GpaPerfBlockAMD int32
 
@@ -3845,7 +3845,7 @@ func (e GpaPerfBlockAMD) String() string {
 	}
 }
 
-// GpaSampleTypeAMD represents VkGpaSampleTypeAMD.
+// GpaSampleTypeAMD - Enum providing the sample type (VkGpaSampleTypeAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkGpaSampleTypeAMD.html
 type GpaSampleTypeAMD int32
 
@@ -4014,7 +4014,7 @@ func (e ImageTiling) String() string {
 	}
 }
 
-// ImageTilingControlEXT represents VkImageTilingControlEXT.
+// ImageTilingControlEXT - Specifies image tiling arrangement (VkImageTilingControlEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkImageTilingControlEXT.html
 type ImageTilingControlEXT int32
 
@@ -4128,7 +4128,7 @@ func (e IndexType) String() string {
 	}
 }
 
-// IndirectCommandsTokenTypeEXT represents VkIndirectCommandsTokenTypeEXT.
+// IndirectCommandsTokenTypeEXT - Enum specifying token commands (VkIndirectCommandsTokenTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkIndirectCommandsTokenTypeEXT.html
 type IndirectCommandsTokenTypeEXT int32
 
@@ -4194,7 +4194,7 @@ func (e IndirectCommandsTokenTypeEXT) String() string {
 	}
 }
 
-// IndirectCommandsTokenTypeNV represents VkIndirectCommandsTokenTypeNV.
+// IndirectCommandsTokenTypeNV - Enum specifying token commands (VkIndirectCommandsTokenTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkIndirectCommandsTokenTypeNV.html
 type IndirectCommandsTokenTypeNV int32
 
@@ -4245,7 +4245,7 @@ func (e IndirectCommandsTokenTypeNV) String() string {
 	}
 }
 
-// IndirectExecutionSetInfoTypeEXT represents VkIndirectExecutionSetInfoTypeEXT.
+// IndirectExecutionSetInfoTypeEXT - Enum specifying allowed usage of an indirect execution set (VkIndirectExecutionSetInfoTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkIndirectExecutionSetInfoTypeEXT.html
 type IndirectExecutionSetInfoTypeEXT int32
 
@@ -4284,7 +4284,7 @@ func (e InternalAllocationType) String() string {
 	}
 }
 
-// LatencyMarkerNV represents VkLatencyMarkerNV.
+// LatencyMarkerNV - Structure used to mark different points in latency (VkLatencyMarkerNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkLatencyMarkerNV.html
 type LatencyMarkerNV int32
 
@@ -4335,7 +4335,7 @@ func (e LatencyMarkerNV) String() string {
 	}
 }
 
-// LayerSettingTypeEXT represents VkLayerSettingTypeEXT.
+// LayerSettingTypeEXT - Type of the values that can be passed to a layer (VkLayerSettingTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkLayerSettingTypeEXT.html
 type LayerSettingTypeEXT int32
 
@@ -4374,7 +4374,7 @@ func (e LayerSettingTypeEXT) String() string {
 	}
 }
 
-// LayeredDriverUnderlyingApiMSFT represents VkLayeredDriverUnderlyingApiMSFT.
+// LayeredDriverUnderlyingApiMSFT - Layered driver underlying APIs (VkLayeredDriverUnderlyingApiMSFT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkLayeredDriverUnderlyingApiMSFT.html
 type LayeredDriverUnderlyingApiMSFT int32
 
@@ -4493,7 +4493,7 @@ func (e LogicOp) String() string {
 	}
 }
 
-// MemoryOverallocationBehaviorAMD represents VkMemoryOverallocationBehaviorAMD.
+// MemoryOverallocationBehaviorAMD - Specify memory overallocation behavior (VkMemoryOverallocationBehaviorAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkMemoryOverallocationBehaviorAMD.html
 type MemoryOverallocationBehaviorAMD int32
 
@@ -4517,7 +4517,7 @@ func (e MemoryOverallocationBehaviorAMD) String() string {
 	}
 }
 
-// MicromapTypeEXT represents VkMicromapTypeEXT.
+// MicromapTypeEXT - Type of micromap (VkMicromapTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkMicromapTypeEXT.html
 type MicromapTypeEXT int32
 
@@ -4538,7 +4538,7 @@ func (e MicromapTypeEXT) String() string {
 	}
 }
 
-// NeuralAcceleratorStatisticsModeARM represents VkNeuralAcceleratorStatisticsModeARM.
+// NeuralAcceleratorStatisticsModeARM - Enum specifying the mode of operation for neural accelerator statistics (VkNeuralAcceleratorStatisticsModeARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkNeuralAcceleratorStatisticsModeARM.html
 type NeuralAcceleratorStatisticsModeARM int32
 
@@ -4760,7 +4760,7 @@ func (e ObjectType) String() string {
 	}
 }
 
-// OpacityMicromapFormatKHR represents VkOpacityMicromapFormatKHR.
+// OpacityMicromapFormatKHR - Format enum for opacity micromaps (VkOpacityMicromapFormatKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkOpacityMicromapFormatKHR.html
 type OpacityMicromapFormatKHR int32
 
@@ -4783,7 +4783,7 @@ func (e OpacityMicromapFormatKHR) String() string {
 	}
 }
 
-// OpacityMicromapSpecialIndexKHR represents VkOpacityMicromapSpecialIndexKHR.
+// OpacityMicromapSpecialIndexKHR - Enum for special indices in the opacity micromap (VkOpacityMicromapSpecialIndexKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkOpacityMicromapSpecialIndexKHR.html
 type OpacityMicromapSpecialIndexKHR int32
 
@@ -4817,7 +4817,7 @@ func (e OpacityMicromapSpecialIndexKHR) String() string {
 	}
 }
 
-// OpticalFlowPerformanceLevelNV represents VkOpticalFlowPerformanceLevelNV.
+// OpticalFlowPerformanceLevelNV - Optical flow performance level types (VkOpticalFlowPerformanceLevelNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowPerformanceLevelNV.html
 type OpticalFlowPerformanceLevelNV int32
 
@@ -4844,7 +4844,7 @@ func (e OpticalFlowPerformanceLevelNV) String() string {
 	}
 }
 
-// OpticalFlowSessionBindingPointNV represents VkOpticalFlowSessionBindingPointNV.
+// OpticalFlowSessionBindingPointNV - Binding points of an optical flow session (VkOpticalFlowSessionBindingPointNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkOpticalFlowSessionBindingPointNV.html
 type OpticalFlowSessionBindingPointNV int32
 
@@ -4886,7 +4886,7 @@ func (e OpticalFlowSessionBindingPointNV) String() string {
 	}
 }
 
-// OutOfBandQueueTypeNV represents VkOutOfBandQueueTypeNV.
+// OutOfBandQueueTypeNV - Type of out of band queue (VkOutOfBandQueueTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkOutOfBandQueueTypeNV.html
 type OutOfBandQueueTypeNV int32
 
@@ -4907,7 +4907,7 @@ func (e OutOfBandQueueTypeNV) String() string {
 	}
 }
 
-// PartitionedAccelerationStructureOpTypeNV represents VkPartitionedAccelerationStructureOpTypeNV.
+// PartitionedAccelerationStructureOpTypeNV - Enum providing the type of PTLAS operation to perform (VkPartitionedAccelerationStructureOpTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPartitionedAccelerationStructureOpTypeNV.html
 type PartitionedAccelerationStructureOpTypeNV int32
 
@@ -4931,7 +4931,7 @@ func (e PartitionedAccelerationStructureOpTypeNV) String() string {
 	}
 }
 
-// PerfHintTypeQCOM represents VkPerfHintTypeQCOM.
+// PerfHintTypeQCOM - Specifies the performance hint type (VkPerfHintTypeQCOM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerfHintTypeQCOM.html
 type PerfHintTypeQCOM int32
 
@@ -4958,7 +4958,7 @@ func (e PerfHintTypeQCOM) String() string {
 	}
 }
 
-// PerformanceConfigurationTypeINTEL represents VkPerformanceConfigurationTypeINTEL.
+// PerformanceConfigurationTypeINTEL - Type of performance configuration (VkPerformanceConfigurationTypeINTEL).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceConfigurationTypeINTEL.html
 type PerformanceConfigurationTypeINTEL int32
 
@@ -4976,7 +4976,7 @@ func (e PerformanceConfigurationTypeINTEL) String() string {
 	}
 }
 
-// PerformanceCounterScopeKHR represents VkPerformanceCounterScopeKHR.
+// PerformanceCounterScopeKHR - Supported counter scope types (VkPerformanceCounterScopeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceCounterScopeKHR.html
 type PerformanceCounterScopeKHR int32
 
@@ -5003,7 +5003,7 @@ func (e PerformanceCounterScopeKHR) String() string {
 	}
 }
 
-// PerformanceCounterStorageKHR represents VkPerformanceCounterStorageKHR.
+// PerformanceCounterStorageKHR - Supported counter storage types (VkPerformanceCounterStorageKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceCounterStorageKHR.html
 type PerformanceCounterStorageKHR int32
 
@@ -5036,7 +5036,7 @@ func (e PerformanceCounterStorageKHR) String() string {
 	}
 }
 
-// PerformanceCounterUnitKHR represents VkPerformanceCounterUnitKHR.
+// PerformanceCounterUnitKHR - Supported counter unit types (VkPerformanceCounterUnitKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceCounterUnitKHR.html
 type PerformanceCounterUnitKHR int32
 
@@ -5084,7 +5084,7 @@ func (e PerformanceCounterUnitKHR) String() string {
 	}
 }
 
-// PerformanceOverrideTypeINTEL represents VkPerformanceOverrideTypeINTEL.
+// PerformanceOverrideTypeINTEL - Performance override type (VkPerformanceOverrideTypeINTEL).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceOverrideTypeINTEL.html
 type PerformanceOverrideTypeINTEL int32
 
@@ -5105,7 +5105,7 @@ func (e PerformanceOverrideTypeINTEL) String() string {
 	}
 }
 
-// PerformanceParameterTypeINTEL represents VkPerformanceParameterTypeINTEL.
+// PerformanceParameterTypeINTEL - Parameters that can be queried (VkPerformanceParameterTypeINTEL).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceParameterTypeINTEL.html
 type PerformanceParameterTypeINTEL int32
 
@@ -5126,7 +5126,7 @@ func (e PerformanceParameterTypeINTEL) String() string {
 	}
 }
 
-// PerformanceValueTypeINTEL represents VkPerformanceValueTypeINTEL.
+// PerformanceValueTypeINTEL - Type of the parameters that can be queried (VkPerformanceValueTypeINTEL).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceValueTypeINTEL.html
 type PerformanceValueTypeINTEL int32
 
@@ -5156,7 +5156,7 @@ func (e PerformanceValueTypeINTEL) String() string {
 	}
 }
 
-// PhysicalDeviceDataGraphOperationTypeARM represents VkPhysicalDeviceDataGraphOperationTypeARM.
+// PhysicalDeviceDataGraphOperationTypeARM - Enumeration describing data graph operations (VkPhysicalDeviceDataGraphOperationTypeARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDataGraphOperationTypeARM.html
 type PhysicalDeviceDataGraphOperationTypeARM int32
 
@@ -5183,7 +5183,7 @@ func (e PhysicalDeviceDataGraphOperationTypeARM) String() string {
 	}
 }
 
-// PhysicalDeviceDataGraphProcessingEngineTypeARM represents VkPhysicalDeviceDataGraphProcessingEngineTypeARM.
+// PhysicalDeviceDataGraphProcessingEngineTypeARM - Enumeration describing data graph processing engines (VkPhysicalDeviceDataGraphProcessingEngineTypeARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDataGraphProcessingEngineTypeARM.html
 type PhysicalDeviceDataGraphProcessingEngineTypeARM int32
 
@@ -5207,7 +5207,7 @@ func (e PhysicalDeviceDataGraphProcessingEngineTypeARM) String() string {
 	}
 }
 
-// PhysicalDeviceLayeredApiKHR represents VkPhysicalDeviceLayeredApiKHR.
+// PhysicalDeviceLayeredApiKHR - API implemented by the layered implementation (VkPhysicalDeviceLayeredApiKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceLayeredApiKHR.html
 type PhysicalDeviceLayeredApiKHR int32
 
@@ -5340,7 +5340,7 @@ func (e PipelineCacheValidationVersion) String() string {
 	}
 }
 
-// PipelineExecutableStatisticFormatKHR represents VkPipelineExecutableStatisticFormatKHR.
+// PipelineExecutableStatisticFormatKHR - Enum describing a pipeline executable statistic (VkPipelineExecutableStatisticFormatKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineExecutableStatisticFormatKHR.html
 type PipelineExecutableStatisticFormatKHR int32
 
@@ -5497,7 +5497,7 @@ func (e PolygonMode) String() string {
 	}
 }
 
-// PresentModeKHR represents VkPresentModeKHR.
+// PresentModeKHR - Presentation mode supported for a surface (VkPresentModeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPresentModeKHR.html
 type PresentModeKHR int32
 
@@ -5582,7 +5582,7 @@ func (e PrimitiveTopology) String() string {
 	}
 }
 
-// ProvokingVertexModeEXT represents VkProvokingVertexModeEXT.
+// ProvokingVertexModeEXT - Specify which vertex in a primitive is the provoking vertex (VkProvokingVertexModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkProvokingVertexModeEXT.html
 type ProvokingVertexModeEXT int32
 
@@ -5603,7 +5603,7 @@ func (e ProvokingVertexModeEXT) String() string {
 	}
 }
 
-// QueryPoolSamplingModeINTEL represents VkQueryPoolSamplingModeINTEL.
+// QueryPoolSamplingModeINTEL - Enum specifying how performance queries should be captured (VkQueryPoolSamplingModeINTEL).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkQueryPoolSamplingModeINTEL.html
 type QueryPoolSamplingModeINTEL int32
 
@@ -5621,7 +5621,7 @@ func (e QueryPoolSamplingModeINTEL) String() string {
 	}
 }
 
-// QueryResultStatusKHR represents VkQueryResultStatusKHR.
+// QueryResultStatusKHR - Specific status codes for operations (VkQueryResultStatusKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkQueryResultStatusKHR.html
 type QueryResultStatusKHR int32
 
@@ -5752,7 +5752,7 @@ func (e QueueGlobalPriority) String() string {
 	}
 }
 
-// RasterizationOrderAMD represents VkRasterizationOrderAMD.
+// RasterizationOrderAMD - Specify rasterization order for a graphics pipeline (VkRasterizationOrderAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkRasterizationOrderAMD.html
 type RasterizationOrderAMD int32
 
@@ -5773,7 +5773,7 @@ func (e RasterizationOrderAMD) String() string {
 	}
 }
 
-// RayTracingInvocationReorderModeEXT represents VkRayTracingInvocationReorderModeEXT.
+// RayTracingInvocationReorderModeEXT - Enum providing a hint on how the application may reorder (VkRayTracingInvocationReorderModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkRayTracingInvocationReorderModeEXT.html
 type RayTracingInvocationReorderModeEXT int32
 
@@ -5796,7 +5796,7 @@ func (e RayTracingInvocationReorderModeEXT) String() string {
 	}
 }
 
-// RayTracingLssIndexingModeNV represents VkRayTracingLssIndexingModeNV.
+// RayTracingLssIndexingModeNV - LSS indexing mode (VkRayTracingLssIndexingModeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkRayTracingLssIndexingModeNV.html
 type RayTracingLssIndexingModeNV int32
 
@@ -5817,7 +5817,7 @@ func (e RayTracingLssIndexingModeNV) String() string {
 	}
 }
 
-// RayTracingLssPrimitiveEndCapsModeNV represents VkRayTracingLssPrimitiveEndCapsModeNV.
+// RayTracingLssPrimitiveEndCapsModeNV - LSS endcaps mode (VkRayTracingLssPrimitiveEndCapsModeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkRayTracingLssPrimitiveEndCapsModeNV.html
 type RayTracingLssPrimitiveEndCapsModeNV int32
 
@@ -5838,7 +5838,7 @@ func (e RayTracingLssPrimitiveEndCapsModeNV) String() string {
 	}
 }
 
-// RayTracingShaderGroupTypeKHR represents VkRayTracingShaderGroupTypeKHR.
+// RayTracingShaderGroupTypeKHR - Shader group types (VkRayTracingShaderGroupTypeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkRayTracingShaderGroupTypeKHR.html
 type RayTracingShaderGroupTypeKHR int32
 
@@ -6226,7 +6226,7 @@ func (e SciSyncPrimitiveTypeNV) String() string {
 	}
 }
 
-// ScopeKHR represents VkScopeKHR.
+// ScopeKHR - Specify SPIR-V scope (VkScopeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkScopeKHR.html
 type ScopeKHR int32
 
@@ -6280,7 +6280,7 @@ func (e SemaphoreType) String() string {
 	}
 }
 
-// ShaderCodeTypeEXT represents VkShaderCodeTypeEXT.
+// ShaderCodeTypeEXT - Indicate a shader code type (VkShaderCodeTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkShaderCodeTypeEXT.html
 type ShaderCodeTypeEXT int32
 
@@ -6328,7 +6328,7 @@ func (e ShaderFloatControlsIndependence) String() string {
 	}
 }
 
-// ShaderGroupShaderKHR represents VkShaderGroupShaderKHR.
+// ShaderGroupShaderKHR - Shader group shaders (VkShaderGroupShaderKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkShaderGroupShaderKHR.html
 type ShaderGroupShaderKHR int32
 
@@ -6355,7 +6355,7 @@ func (e ShaderGroupShaderKHR) String() string {
 	}
 }
 
-// ShaderInfoTypeAMD represents VkShaderInfoTypeAMD.
+// ShaderInfoTypeAMD - Enum specifying which type of shader information to query (VkShaderInfoTypeAMD).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkShaderInfoTypeAMD.html
 type ShaderInfoTypeAMD int32
 
@@ -6379,7 +6379,7 @@ func (e ShaderInfoTypeAMD) String() string {
 	}
 }
 
-// ShadingRatePaletteEntryNV represents VkShadingRatePaletteEntryNV.
+// ShadingRatePaletteEntryNV - Shading rate image palette entry types (VkShadingRatePaletteEntryNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkShadingRatePaletteEntryNV.html
 type ShadingRatePaletteEntryNV int32
 
@@ -10546,7 +10546,7 @@ func (e SubpassContents) String() string {
 	}
 }
 
-// SubpassMergeStatusEXT represents VkSubpassMergeStatusEXT.
+// SubpassMergeStatusEXT - Specify a subpass merging status (VkSubpassMergeStatusEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkSubpassMergeStatusEXT.html
 type SubpassMergeStatusEXT int32
 
@@ -10633,7 +10633,7 @@ func (e SystemAllocationScope) String() string {
 	}
 }
 
-// TensorTilingARM represents VkTensorTilingARM.
+// TensorTilingARM - Specifies the tiling arrangement of data in an tensor (VkTensorTilingARM).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkTensorTilingARM.html
 type TensorTilingARM int32
 
@@ -10692,7 +10692,7 @@ func (e TessellationDomainOrigin) String() string {
 	}
 }
 
-// ThrottleHintTypeSEC represents VkThrottleHintTypeSEC.
+// ThrottleHintTypeSEC - Stub description of VkThrottleHintTypeSEC (VkThrottleHintTypeSEC).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkThrottleHintTypeSEC.html
 type ThrottleHintTypeSEC int32
 
@@ -10716,7 +10716,7 @@ func (e ThrottleHintTypeSEC) String() string {
 	}
 }
 
-// TimeDomainKHR represents VkTimeDomainKHR.
+// TimeDomainKHR - Supported time domains (VkTimeDomainKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkTimeDomainKHR.html
 type TimeDomainKHR int32
 
@@ -10753,7 +10753,7 @@ func (e TimeDomainKHR) String() string {
 	}
 }
 
-// ValidationCacheHeaderVersionEXT represents VkValidationCacheHeaderVersionEXT.
+// ValidationCacheHeaderVersionEXT - Encode validation cache version (VkValidationCacheHeaderVersionEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkValidationCacheHeaderVersionEXT.html
 type ValidationCacheHeaderVersionEXT int32
 
@@ -10771,7 +10771,7 @@ func (e ValidationCacheHeaderVersionEXT) String() string {
 	}
 }
 
-// ValidationCheckEXT represents VkValidationCheckEXT.
+// ValidationCheckEXT - Specify validation checks to disable (VkValidationCheckEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkValidationCheckEXT.html
 type ValidationCheckEXT int32
 
@@ -10792,7 +10792,7 @@ func (e ValidationCheckEXT) String() string {
 	}
 }
 
-// ValidationFeatureDisableEXT represents VkValidationFeatureDisableEXT.
+// ValidationFeatureDisableEXT - Specify validation features to disable (VkValidationFeatureDisableEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkValidationFeatureDisableEXT.html
 type ValidationFeatureDisableEXT int32
 
@@ -10831,7 +10831,7 @@ func (e ValidationFeatureDisableEXT) String() string {
 	}
 }
 
-// ValidationFeatureEnableEXT represents VkValidationFeatureEnableEXT.
+// ValidationFeatureEnableEXT - Specify validation features to enable (VkValidationFeatureEnableEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkValidationFeatureEnableEXT.html
 type ValidationFeatureEnableEXT int32
 
@@ -10924,7 +10924,7 @@ func (e VertexInputRate) String() string {
 	}
 }
 
-// VideoEncodeAV1PredictionModeKHR represents VkVideoEncodeAV1PredictionModeKHR.
+// VideoEncodeAV1PredictionModeKHR - AV1 encode prediction mode (VkVideoEncodeAV1PredictionModeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeAV1PredictionModeKHR.html
 type VideoEncodeAV1PredictionModeKHR int32
 
@@ -10951,7 +10951,7 @@ func (e VideoEncodeAV1PredictionModeKHR) String() string {
 	}
 }
 
-// VideoEncodeAV1RateControlGroupKHR represents VkVideoEncodeAV1RateControlGroupKHR.
+// VideoEncodeAV1RateControlGroupKHR - AV1 encode rate control group (VkVideoEncodeAV1RateControlGroupKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeAV1RateControlGroupKHR.html
 type VideoEncodeAV1RateControlGroupKHR int32
 
@@ -10975,7 +10975,7 @@ func (e VideoEncodeAV1RateControlGroupKHR) String() string {
 	}
 }
 
-// VideoEncodeTuningModeKHR represents VkVideoEncodeTuningModeKHR.
+// VideoEncodeTuningModeKHR - Video encode tuning mode (VkVideoEncodeTuningModeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkVideoEncodeTuningModeKHR.html
 type VideoEncodeTuningModeKHR int32
 
@@ -11005,7 +11005,7 @@ func (e VideoEncodeTuningModeKHR) String() string {
 	}
 }
 
-// ViewportCoordinateSwizzleNV represents VkViewportCoordinateSwizzleNV.
+// ViewportCoordinateSwizzleNV - Specify how a viewport coordinate is swizzled (VkViewportCoordinateSwizzleNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkViewportCoordinateSwizzleNV.html
 type ViewportCoordinateSwizzleNV int32
 

@@ -8,7 +8,7 @@ import (
 )
 
 func TestIndexVkXML(t *testing.T) {
-	reg, err := parser.ParseFile("../../vk.xml")
+	reg, err := parser.ParseFile("../../Vulkan-Docs/xml/vk.xml")
 	if err != nil {
 		t.Fatalf("Failed to parse vk.xml: %v", err)
 	}

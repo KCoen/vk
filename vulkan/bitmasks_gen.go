@@ -703,6 +703,9 @@ const (
 	BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_BIT_KHR      BuildAccelerationStructureFlagsKHR = 0x40
 	BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_BIT_KHR    BuildAccelerationStructureFlagsKHR = 0x80
 	BUILD_ACCELERATION_STRUCTURE_MICROMAP_LOSSY_BIT_KHR                     BuildAccelerationStructureFlagsKHR = 0x400
+	BUILD_ACCELERATION_STRUCTURE_RESERVED_15_BIT_EXT                        BuildAccelerationStructureFlagsKHR = 0x8000
+	BUILD_ACCELERATION_STRUCTURE_RESERVED_14_BIT_EXT                        BuildAccelerationStructureFlagsKHR = 0x4000
+	BUILD_ACCELERATION_STRUCTURE_RESERVED_13_BIT_AMD                        BuildAccelerationStructureFlagsKHR = 0x2000
 )
 
 // BuildMicromapFlagsEXT is a bitmask of VkBuildMicromapFlagsEXT.
@@ -3383,6 +3386,7 @@ const (
 	IMAGE_CREATE_2_SPARSE_ALIASED_BIT_KHR                        ImageCreateFlags2KHR = 0x4
 	IMAGE_CREATE_2_MUTABLE_FORMAT_BIT_KHR                        ImageCreateFlags2KHR = 0x8
 	IMAGE_CREATE_2_CUBE_COMPATIBLE_BIT_KHR                       ImageCreateFlags2KHR = 0x10
+	IMAGE_CREATE_2_RESERVED_21_BIT_IMG                           ImageCreateFlags2KHR = 0x200000
 	IMAGE_CREATE_2_ALIAS_SINGLE_LAYER_DESCRIPTOR_BIT_KHR         ImageCreateFlags2KHR = 0x400000
 	IMAGE_CREATE_2_2D_ARRAY_COMPATIBLE_BIT_KHR                   ImageCreateFlags2KHR = 0x20
 	IMAGE_CREATE_2_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR           ImageCreateFlags2KHR = 0x40
@@ -3399,6 +3403,7 @@ const (
 	IMAGE_CREATE_2_2D_VIEW_COMPATIBLE_BIT_EXT                    ImageCreateFlags2KHR = 0x20000
 	IMAGE_CREATE_2_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT ImageCreateFlags2KHR = 0x40000
 	IMAGE_CREATE_2_VIDEO_PROFILE_INDEPENDENT_BIT_KHR             ImageCreateFlags2KHR = 0x100000
+	IMAGE_CREATE_2_RESERVED_19_BIT_NV                            ImageCreateFlags2KHR = 0x80000
 )
 
 // ImageFormatConstraintsFlagsFUCHSIA is a bitmask of VkImageFormatConstraintsFlagsFUCHSIA.
@@ -3542,6 +3547,13 @@ const (
 	IMAGE_USAGE_2_DEPTH_STENCIL_ATTACHMENT_BIT_KHR            ImageUsageFlags2KHR = 0x20
 	IMAGE_USAGE_2_TRANSIENT_ATTACHMENT_BIT_KHR                ImageUsageFlags2KHR = 0x40
 	IMAGE_USAGE_2_INPUT_ATTACHMENT_BIT_KHR                    ImageUsageFlags2KHR = 0x80
+	IMAGE_USAGE_2_RESERVED_31_BIT_EXT                         ImageUsageFlags2KHR = 0x80000000
+	IMAGE_USAGE_2_RESERVED_24_BIT_COREAVI                     ImageUsageFlags2KHR = 0x1000000
+	IMAGE_USAGE_2_RESERVED_28_BIT_EXT                         ImageUsageFlags2KHR = 0x10000000
+	IMAGE_USAGE_2_RESERVED_29_BIT_KHR                         ImageUsageFlags2KHR = 0x20000000
+	IMAGE_USAGE_2_RESERVED_30_BIT_KHR                         ImageUsageFlags2KHR = 0x40000000
+	IMAGE_USAGE_2_RESERVED_16_BIT_HUAWEI                      ImageUsageFlags2KHR = 0x10000
+	IMAGE_USAGE_2_RESERVED_27_BIT_HUAWEI                      ImageUsageFlags2KHR = 0x20000
 	IMAGE_USAGE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR    ImageUsageFlags2KHR = 0x100
 	IMAGE_USAGE_2_FRAGMENT_DENSITY_MAP_BIT_EXT                ImageUsageFlags2KHR = 0x200
 	IMAGE_USAGE_2_VIDEO_DECODE_DST_BIT_KHR                    ImageUsageFlags2KHR = 0x400
@@ -4424,6 +4436,8 @@ func (f PipelineCacheCreateFlags) String() string {
 
 const (
 	PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT           PipelineCacheCreateFlags = 0x1
+	PIPELINE_CACHE_CREATE_READ_ONLY_BIT                         PipelineCacheCreateFlags = 0x2
+	PIPELINE_CACHE_CREATE_USE_APPLICATION_STORAGE_BIT           PipelineCacheCreateFlags = 0x4
 	PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT_EXT       PipelineCacheCreateFlags = PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT
 	PIPELINE_CACHE_CREATE_INTERNALLY_SYNCHRONIZED_MERGE_BIT_KHR PipelineCacheCreateFlags = 0x8
 )
@@ -6143,7 +6157,9 @@ func (f ShaderCreateFlagsEXT) String() string {
 
 const (
 	SHADER_CREATE_LINK_STAGE_BIT_EXT                                    ShaderCreateFlagsEXT = 0x1
+	SHADER_CREATE_RESERVED_17_BIT_IMG                                   ShaderCreateFlagsEXT = 0x20000
 	SHADER_CREATE_DESCRIPTOR_HEAP_BIT_EXT                               ShaderCreateFlagsEXT = 0x400
+	SHADER_CREATE_RESERVED_16_BIT_KHR                                   ShaderCreateFlagsEXT = 0x10000
 	SHADER_CREATE_INSTRUMENT_SHADER_BIT_ARM                             ShaderCreateFlagsEXT = 0x800
 	SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT                   ShaderCreateFlagsEXT = 0x2
 	SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT                        ShaderCreateFlagsEXT = 0x4
@@ -6152,6 +6168,8 @@ const (
 	SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT              ShaderCreateFlagsEXT = 0x20
 	SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT               ShaderCreateFlagsEXT = 0x40
 	SHADER_CREATE_INDIRECT_BINDABLE_BIT_EXT                             ShaderCreateFlagsEXT = 0x80
+	SHADER_CREATE_RESERVED_8_BIT_EXT                                    ShaderCreateFlagsEXT = 0x100
+	SHADER_CREATE_RESERVED_9_BIT_EXT                                    ShaderCreateFlagsEXT = 0x200
 	SHADER_CREATE_OPACITY_MICROMAP_DISALLOW_MIXED_SPECIAL_INDEX_BIT_EXT ShaderCreateFlagsEXT = 0x1000
 	SHADER_CREATE_64_BIT_INDEXING_BIT_EXT                               ShaderCreateFlagsEXT = 0x8000
 	SHADER_CREATE_INDEPENDENT_SETS_BIT_KHR                              ShaderCreateFlagsEXT = 0x40000
@@ -6675,10 +6693,13 @@ const (
 	SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR                        SwapchainCreateFlagsKHR = 0x4
 	SWAPCHAIN_CREATE_PRESENT_TIMING_BIT_EXT                        SwapchainCreateFlagsKHR = 0x200
 	SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT            SwapchainCreateFlagsKHR = SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR
+	SWAPCHAIN_CREATE_RESERVED_5_BIT_EXT                            SwapchainCreateFlagsKHR = 0x20
+	SWAPCHAIN_CREATE_RESERVED_4_BIT_EXT                            SwapchainCreateFlagsKHR = 0x10
 	SWAPCHAIN_CREATE_PRESENT_ID_2_BIT_KHR                          SwapchainCreateFlagsKHR = 0x40 // Allow use of VK_KHR_present_id2 with this swapchain
 	SWAPCHAIN_CREATE_PRESENT_WAIT_2_BIT_KHR                        SwapchainCreateFlagsKHR = 0x80 // Allow use of VK_KHR_present_wait2 with this swapchain
 	SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR            SwapchainCreateFlagsKHR = 0x8
 	SWAPCHAIN_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT SwapchainCreateFlagsKHR = 0x100
+	SWAPCHAIN_CREATE_RESERVED_10_BIT_HUAWEI                        SwapchainCreateFlagsKHR = 0x400
 )
 
 // SwapchainImageUsageFlagsANDROID is a bitmask of VkSwapchainImageUsageFlagsANDROID.

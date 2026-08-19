@@ -1224,6 +1224,10 @@ type PFN_vkDebugUtilsMessengerCallbackEXT func(messageSeverity DebugUtilsMessage
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/PFN_vkDeviceMemoryReportCallbackEXT.html
 type PFN_vkDeviceMemoryReportCallbackEXT func(callbackData *RawDeviceMemoryReportCallbackDataEXT, userData unsafe.Pointer)
 
+// PFN_vkFaultCallbackFunction is a Vulkan function pointer / callback type.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/PFN_vkFaultCallbackFunction.html
+type PFN_vkFaultCallbackFunction func(unrecordedFaults Bool32, faultCount uint32, faults *RawFaultData)
+
 // PFN_vkFreeFunction is a Vulkan function pointer / callback type.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/PFN_vkFreeFunction.html
 type PFN_vkFreeFunction func(userData unsafe.Pointer, memory unsafe.Pointer)

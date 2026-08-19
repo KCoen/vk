@@ -12,12 +12,46 @@ var _ = unsafe.Pointer(nil)
 
 // Procedure addresses resolved by Init
 var (
-	pfnGetPhysicalDeviceSciBufAttributesNV uintptr
+	pfnGetMemorySciBufNV                                 uintptr
+	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV uintptr
+	pfnGetPhysicalDeviceSciBufAttributesNV               uintptr
 )
 
 // Init resolves and initializes all VK_NV_external_memory_sci_buf extension procedure addresses.
 func Init(instance vulkan.Instance, device vulkan.Device) {
+	pfnGetMemorySciBufNV = vulkan.GetDeviceProcAddr(device, "vkGetMemorySciBufNV")
+	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV")
 	pfnGetPhysicalDeviceSciBufAttributesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciBufAttributesNV")
+}
+
+// GetMemorySciBufNV - Get a stext:NvSciBufObj handle for a memory object (vkGetMemorySciBufNV).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - getSciBufInfo: is a pointer to a VkMemoryGetSciBufInfoNV structure containing parameters of the export operation.
+//   - handle: will return the stext:NvSciBufObj representing the payload of the device memory object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemorySciBufNV.html
+func GetMemorySciBufNV(device vulkan.Device, getSciBufInfo *vulkan.MemoryGetSciBufInfoNV) (handle uintptr, result vulkan.Result) {
+	c_getSciBufInfo := getSciBufInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(pfnGetMemorySciBufNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciBufInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
+// GetPhysicalDeviceExternalMemorySciBufPropertiesNV - Get physical device properties of External Memory stext:NvSciBufObj Handles (vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device whose properties will be queried.
+//   - handleType: is the type of the handle handle.
+//   - handle: is the stext:NvSciBuffObj handle which will be imported.
+//   - memorySciBufProperties: is a pointer to a VkMemorySciBufPropertiesNV structure.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV.html
+func GetPhysicalDeviceExternalMemorySciBufPropertiesNV(physicalDevice vulkan.PhysicalDevice, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle uintptr) (memorySciBufProperties vulkan.MemorySciBufPropertiesNV, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV, uintptr(physicalDevice), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memorySciBufProperties)))
+	return memorySciBufProperties, vulkan.Result(r1)
 }
 
 // GetPhysicalDeviceSciBufAttributesNV - Fill the private attributes of the stext:NvSciBufAttrList struct (vkGetPhysicalDeviceSciBufAttributesNV).

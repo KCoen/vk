@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	xmlPath := flag.String("xml", "vk.xml", "Path to Vulkan vk.xml file")
+	xmlPath := flag.String("xml", "Vulkan-Docs/xml/vk.xml", "Path to Vulkan vk.xml file")
 	docsPath := flag.String("docs", "Vulkan-Docs", "Path to Vulkan-Docs repository directory")
 	outDir := flag.String("out", ".", "Output directory for generated Go packages")
 	flag.Parse()

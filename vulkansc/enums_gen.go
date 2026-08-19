@@ -475,7 +475,7 @@ func (e BlendOp) String() string {
 	}
 }
 
-// BlendOverlapEXT represents VkBlendOverlapEXT.
+// BlendOverlapEXT - Enumerant specifying the blend overlap parameter (VkBlendOverlapEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBlendOverlapEXT.html
 type BlendOverlapEXT int32
 
@@ -727,12 +727,13 @@ func (e CoarseSampleOrderTypeNV) String() string {
 	}
 }
 
-// ColorSpaceKHR represents VkColorSpaceKHR.
+// ColorSpaceKHR - Supported color space of the presentation engine (VkColorSpaceKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkColorSpaceKHR.html
 type ColorSpaceKHR int32
 
 const (
 	COLOR_SPACE_SRGB_NONLINEAR_KHR          ColorSpaceKHR = 0
+	COLORSPACE_SRGB_NONLINEAR_KHR           ColorSpaceKHR = COLOR_SPACE_SRGB_NONLINEAR_KHR
 	COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT    ColorSpaceKHR = 1000104001
 	COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT    ColorSpaceKHR = 1000104002
 	COLOR_SPACE_DISPLAY_P3_LINEAR_EXT       ColorSpaceKHR = 1000104003
@@ -747,6 +748,8 @@ const (
 	COLOR_SPACE_ADOBERGB_NONLINEAR_EXT      ColorSpaceKHR = 1000104012
 	COLOR_SPACE_PASS_THROUGH_EXT            ColorSpaceKHR = 1000104013
 	COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT ColorSpaceKHR = 1000104014
+	COLOR_SPACE_DCI_P3_LINEAR_EXT           ColorSpaceKHR = COLOR_SPACE_DISPLAY_P3_LINEAR_EXT
+	COLOR_SPACE_DISPLAY_NATIVE_AMD          ColorSpaceKHR = 1000213000
 )
 
 // String returns the string representation of ColorSpaceKHR.
@@ -782,6 +785,8 @@ func (e ColorSpaceKHR) String() string {
 		return "VK_COLOR_SPACE_PASS_THROUGH_EXT"
 	case COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT:
 		return "VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT"
+	case COLOR_SPACE_DISPLAY_NATIVE_AMD:
+		return "VK_COLOR_SPACE_DISPLAY_NATIVE_AMD"
 	default:
 		return fmt.Sprintf("ColorSpaceKHR(%d)", e)
 	}
@@ -949,7 +954,7 @@ func (e CompressedTriangleFormatAMDX) String() string {
 	}
 }
 
-// ConservativeRasterizationModeEXT represents VkConservativeRasterizationModeEXT.
+// ConservativeRasterizationModeEXT - Specify the conservative rasterization mode (VkConservativeRasterizationModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkConservativeRasterizationModeEXT.html
 type ConservativeRasterizationModeEXT int32
 
@@ -1565,7 +1570,7 @@ func (e DeviceAddressBindingTypeEXT) String() string {
 	}
 }
 
-// DeviceEventTypeEXT represents VkDeviceEventTypeEXT.
+// DeviceEventTypeEXT - Events that can occur on a device object (VkDeviceEventTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDeviceEventTypeEXT.html
 type DeviceEventTypeEXT int32
 
@@ -1689,7 +1694,7 @@ func (e DirectDriverLoadingModeLUNARG) String() string {
 	}
 }
 
-// DiscardRectangleModeEXT represents VkDiscardRectangleModeEXT.
+// DiscardRectangleModeEXT - Specify the discard rectangle mode (VkDiscardRectangleModeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDiscardRectangleModeEXT.html
 type DiscardRectangleModeEXT int32
 
@@ -1734,7 +1739,7 @@ func (e DisplacementMicromapFormatNV) String() string {
 	}
 }
 
-// DisplayEventTypeEXT represents VkDisplayEventTypeEXT.
+// DisplayEventTypeEXT - Events that can occur on a display object (VkDisplayEventTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDisplayEventTypeEXT.html
 type DisplayEventTypeEXT int32
 
@@ -1752,7 +1757,7 @@ func (e DisplayEventTypeEXT) String() string {
 	}
 }
 
-// DisplayPowerStateEXT represents VkDisplayPowerStateEXT.
+// DisplayPowerStateEXT - Possible power states for a display (VkDisplayPowerStateEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDisplayPowerStateEXT.html
 type DisplayPowerStateEXT int32
 
@@ -2908,7 +2913,7 @@ func (e Format) String() string {
 	}
 }
 
-// FragmentShadingRateCombinerOpKHR represents VkFragmentShadingRateCombinerOpKHR.
+// FragmentShadingRateCombinerOpKHR - Control how fragment shading rates are combined (VkFragmentShadingRateCombinerOpKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkFragmentShadingRateCombinerOpKHR.html
 type FragmentShadingRateCombinerOpKHR int32
 
@@ -3715,7 +3720,7 @@ func (e LatencyMarkerNV) String() string {
 	}
 }
 
-// LayerSettingTypeEXT represents VkLayerSettingTypeEXT.
+// LayerSettingTypeEXT - Type of the values that can be passed to a layer (VkLayerSettingTypeEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkLayerSettingTypeEXT.html
 type LayerSettingTypeEXT int32
 
@@ -4266,7 +4271,7 @@ func (e PerformanceConfigurationTypeINTEL) String() string {
 	}
 }
 
-// PerformanceCounterScopeKHR represents VkPerformanceCounterScopeKHR.
+// PerformanceCounterScopeKHR - Supported counter scope types (VkPerformanceCounterScopeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceCounterScopeKHR.html
 type PerformanceCounterScopeKHR int32
 
@@ -4293,7 +4298,7 @@ func (e PerformanceCounterScopeKHR) String() string {
 	}
 }
 
-// PerformanceCounterStorageKHR represents VkPerformanceCounterStorageKHR.
+// PerformanceCounterStorageKHR - Supported counter storage types (VkPerformanceCounterStorageKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceCounterStorageKHR.html
 type PerformanceCounterStorageKHR int32
 
@@ -4326,7 +4331,7 @@ func (e PerformanceCounterStorageKHR) String() string {
 	}
 }
 
-// PerformanceCounterUnitKHR represents VkPerformanceCounterUnitKHR.
+// PerformanceCounterUnitKHR - Supported counter unit types (VkPerformanceCounterUnitKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPerformanceCounterUnitKHR.html
 type PerformanceCounterUnitKHR int32
 
@@ -4746,7 +4751,7 @@ func (e PolygonMode) String() string {
 	}
 }
 
-// PresentModeKHR represents VkPresentModeKHR.
+// PresentModeKHR - Presentation mode supported for a surface (VkPresentModeKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPresentModeKHR.html
 type PresentModeKHR int32
 
@@ -4757,6 +4762,8 @@ const (
 	PRESENT_MODE_FIFO_RELAXED_KHR              PresentModeKHR = 3
 	PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR     PresentModeKHR = 1000111000
 	PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR PresentModeKHR = 1000111001
+	PRESENT_MODE_FIFO_LATEST_READY_EXT         PresentModeKHR = PRESENT_MODE_FIFO_LATEST_READY_KHR
+	PRESENT_MODE_FIFO_LATEST_READY_KHR         PresentModeKHR = 1000361000
 )
 
 // String returns the string representation of PresentModeKHR.
@@ -4774,6 +4781,8 @@ func (e PresentModeKHR) String() string {
 		return "VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR"
 	case PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
 		return "VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR"
+	case PRESENT_MODE_FIFO_LATEST_READY_KHR:
+		return "VK_PRESENT_MODE_FIFO_LATEST_READY_KHR"
 	default:
 		return fmt.Sprintf("PresentModeKHR(%d)", e)
 	}
@@ -5300,7 +5309,7 @@ func (e SamplerYcbcrRange) String() string {
 	}
 }
 
-// SciSyncClientTypeNV represents VkSciSyncClientTypeNV.
+// SciSyncClientTypeNV - Enums specifying client permission types (VkSciSyncClientTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkSciSyncClientTypeNV.html
 type SciSyncClientTypeNV int32
 
@@ -5324,7 +5333,7 @@ func (e SciSyncClientTypeNV) String() string {
 	}
 }
 
-// SciSyncPrimitiveTypeNV represents VkSciSyncPrimitiveTypeNV.
+// SciSyncPrimitiveTypeNV - Enums specifying the primitive types (VkSciSyncPrimitiveTypeNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkSciSyncPrimitiveTypeNV.html
 type SciSyncPrimitiveTypeNV int32
 
@@ -7043,7 +7052,7 @@ func (e ThrottleHintTypeSEC) String() string {
 	}
 }
 
-// TimeDomainKHR represents VkTimeDomainKHR.
+// TimeDomainKHR - Supported time domains (VkTimeDomainKHR).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkTimeDomainKHR.html
 type TimeDomainKHR int32
 
@@ -7052,6 +7061,12 @@ const (
 	TIME_DOMAIN_CLOCK_MONOTONIC_KHR           TimeDomainKHR = 1
 	TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR       TimeDomainKHR = 2
 	TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR TimeDomainKHR = 3
+	TIME_DOMAIN_DEVICE_EXT                    TimeDomainKHR = TIME_DOMAIN_DEVICE_KHR
+	TIME_DOMAIN_CLOCK_MONOTONIC_EXT           TimeDomainKHR = TIME_DOMAIN_CLOCK_MONOTONIC_KHR
+	TIME_DOMAIN_CLOCK_MONOTONIC_RAW_EXT       TimeDomainKHR = TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR
+	TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_EXT TimeDomainKHR = TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR
+	TIME_DOMAIN_PRESENT_STAGE_LOCAL_EXT       TimeDomainKHR = 1000208000
+	TIME_DOMAIN_SWAPCHAIN_LOCAL_EXT           TimeDomainKHR = 1000208001
 )
 
 // String returns the string representation of TimeDomainKHR.
@@ -7065,6 +7080,10 @@ func (e TimeDomainKHR) String() string {
 		return "VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_KHR"
 	case TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR:
 		return "VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR"
+	case TIME_DOMAIN_PRESENT_STAGE_LOCAL_EXT:
+		return "VK_TIME_DOMAIN_PRESENT_STAGE_LOCAL_EXT"
+	case TIME_DOMAIN_SWAPCHAIN_LOCAL_EXT:
+		return "VK_TIME_DOMAIN_SWAPCHAIN_LOCAL_EXT"
 	default:
 		return fmt.Sprintf("TimeDomainKHR(%d)", e)
 	}
@@ -7109,7 +7128,7 @@ func (e ValidationCheckEXT) String() string {
 	}
 }
 
-// ValidationFeatureDisableEXT represents VkValidationFeatureDisableEXT.
+// ValidationFeatureDisableEXT - Specify validation features to disable (VkValidationFeatureDisableEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkValidationFeatureDisableEXT.html
 type ValidationFeatureDisableEXT int32
 
@@ -7148,7 +7167,7 @@ func (e ValidationFeatureDisableEXT) String() string {
 	}
 }
 
-// ValidationFeatureEnableEXT represents VkValidationFeatureEnableEXT.
+// ValidationFeatureEnableEXT - Specify validation features to enable (VkValidationFeatureEnableEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkValidationFeatureEnableEXT.html
 type ValidationFeatureEnableEXT int32
 

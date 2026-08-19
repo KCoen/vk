@@ -55,6 +55,7 @@ func BuildIndex(reg *parser.Registry, docIdx *docparser.DocIndex) (*Index, error
 			Constants:       make(map[string]ConstantInfo),
 			TypeAliases:     make(map[string]TypeAliasInfo),
 			FuncPointerDefs: make(map[string]*FuncPointerInfo),
+			BranchCommands:  make(map[string]*CommandInfo),
 		}
 	}
 
@@ -156,6 +157,10 @@ func BuildIndex(reg *parser.Registry, docIdx *docparser.DocIndex) (*Index, error
 					if ApiMatches(t.Api, bName) {
 						branch.Structs[name] = sInfo
 					}
+				}
+			} else {
+				for _, branch := range idx.ApiBranches {
+					branch.Structs[name] = sInfo
 				}
 			}
 
@@ -410,7 +415,13 @@ func BuildIndex(reg *parser.Registry, docIdx *docparser.DocIndex) (*Index, error
 				a = strings.TrimSpace(a)
 				if branch, ok := idx.ApiBranches[a]; ok {
 					branch.Commands = append(branch.Commands, proto.Name)
+					branch.BranchCommands[proto.Name] = cinfo
 				}
+			}
+		} else {
+			for _, branch := range idx.ApiBranches {
+				branch.Commands = append(branch.Commands, proto.Name)
+				branch.BranchCommands[proto.Name] = cinfo
 			}
 		}
 	}
@@ -458,6 +469,11 @@ func BuildIndex(reg *parser.Registry, docIdx *docparser.DocIndex) (*Index, error
 							continue
 						}
 						branch.Commands = append(branch.Commands, c.Name)
+						if cInfo, ok := idx.Commands[c.Name]; ok {
+							if _, exists := branch.BranchCommands[c.Name]; !exists {
+								branch.BranchCommands[c.Name] = cInfo
+							}
+						}
 					}
 				}
 			}
@@ -505,6 +521,20 @@ func BuildIndex(reg *parser.Registry, docIdx *docparser.DocIndex) (*Index, error
 							}
 							if fpInfo, ok := idx.FuncPointerDefs[t.Name]; ok {
 								branch.FuncPointerDefs[t.Name] = fpInfo
+							}
+							if eGroup, ok := idx.EnumGroups[t.Name]; ok {
+								branch.EnumGroups[t.Name] = eGroup
+							}
+						}
+						for _, c := range req.Commands {
+							if c.Api != "" && !ApiMatches(c.Api, bName) {
+								continue
+							}
+							branch.Commands = append(branch.Commands, c.Name)
+							if cInfo, ok := idx.Commands[c.Name]; ok {
+								if _, exists := branch.BranchCommands[c.Name]; !exists {
+									branch.BranchCommands[c.Name] = cInfo
+								}
 							}
 						}
 					}

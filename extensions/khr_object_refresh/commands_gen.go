@@ -12,12 +12,25 @@ var _ = unsafe.Pointer(nil)
 
 // Procedure addresses resolved by Init
 var (
+	pfnCmdRefreshObjectsKHR                       uintptr
 	pfnGetPhysicalDeviceRefreshableObjectTypesKHR uintptr
 )
 
 // Init resolves and initializes all VK_KHR_object_refresh extension procedure addresses.
 func Init(instance vulkan.Instance, device vulkan.Device) {
+	pfnCmdRefreshObjectsKHR = vulkan.GetDeviceProcAddr(device, "vkCmdRefreshObjectsKHR")
 	pfnGetPhysicalDeviceRefreshableObjectTypesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceRefreshableObjectTypesKHR")
+}
+
+// CmdRefreshObjectsKHR - Execute a pipelined refresh of a list of objects (vkCmdRefreshObjectsKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - refreshObjects: is a pointer to a VkRefreshObjectListKHR structure specifying the list of objects to refresh.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdRefreshObjectsKHR.html
+func CmdRefreshObjectsKHR(commandBuffer vulkan.CommandBuffer, refreshObjects *vulkan.RefreshObjectListKHR) {
+	c_refreshObjects := refreshObjects.Raw()
+	vulkan.CallSyscall(pfnCmdRefreshObjectsKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_refreshObjects)))
 }
 
 // GetPhysicalDeviceRefreshableObjectTypesKHR - Query refreshable objects (vkGetPhysicalDeviceRefreshableObjectTypesKHR).

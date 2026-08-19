@@ -83,7 +83,10 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 	sb.WriteString("// Procedure addresses resolved by Init\n")
 	sb.WriteString("var (\n")
 	for _, name := range cmdNames {
-		cmd := idx.Commands[name]
+		cmd := branch.BranchCommands[name]
+		if cmd == nil {
+			cmd = idx.Commands[name]
+		}
 		if cmd == nil {
 			continue
 		}
@@ -95,7 +98,10 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 	sb.WriteString(FormatDocComment(fmt.Sprintf("InitCommands resolves and initializes all %s procedure addresses.", branch.Title)))
 	sb.WriteString("func InitCommands(instance Instance, device Device) {\n")
 	for _, name := range cmdNames {
-		cmd := idx.Commands[name]
+		cmd := branch.BranchCommands[name]
+		if cmd == nil {
+			cmd = idx.Commands[name]
+		}
 		if cmd == nil {
 			continue
 		}
@@ -109,7 +115,10 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 
 	// 3. Emit wrapper functions for each command
 	for _, name := range cmdNames {
-		cmd := idx.Commands[name]
+		cmd := branch.BranchCommands[name]
+		if cmd == nil {
+			cmd = idx.Commands[name]
+		}
 		if cmd == nil || cmd.Name == "vkGetInstanceProcAddr" || cmd.Name == "vkGetDeviceProcAddr" {
 			continue
 		}

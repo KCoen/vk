@@ -10,363 +10,1179 @@ var _ = unsafe.Pointer(nil)
 
 // Procedure addresses resolved by Init
 var (
-	pfnAllocateCommandBuffers                        uintptr
-	pfnAllocateDescriptorSets                        uintptr
-	pfnAllocateMemory                                uintptr
-	pfnBeginCommandBuffer                            uintptr
-	pfnBindBufferMemory                              uintptr
-	pfnBindBufferMemory2                             uintptr
-	pfnBindImageMemory                               uintptr
-	pfnBindImageMemory2                              uintptr
-	pfnCmdBeginQuery                                 uintptr
-	pfnCmdBeginRenderPass                            uintptr
-	pfnCmdBeginRenderPass2                           uintptr
-	pfnCmdBeginRendering                             uintptr
-	pfnCmdBindDescriptorSets                         uintptr
-	pfnCmdBindDescriptorSets2                        uintptr
-	pfnCmdBindIndexBuffer                            uintptr
-	pfnCmdBindIndexBuffer2                           uintptr
-	pfnCmdBindPipeline                               uintptr
-	pfnCmdBindVertexBuffers                          uintptr
-	pfnCmdBindVertexBuffers2                         uintptr
-	pfnCmdBlitImage                                  uintptr
-	pfnCmdBlitImage2                                 uintptr
-	pfnCmdClearAttachments                           uintptr
-	pfnCmdClearColorImage                            uintptr
-	pfnCmdClearDepthStencilImage                     uintptr
-	pfnCmdCopyBuffer                                 uintptr
-	pfnCmdCopyBuffer2                                uintptr
-	pfnCmdCopyBufferToImage                          uintptr
-	pfnCmdCopyBufferToImage2                         uintptr
-	pfnCmdCopyImage                                  uintptr
-	pfnCmdCopyImage2                                 uintptr
-	pfnCmdCopyImageToBuffer                          uintptr
-	pfnCmdCopyImageToBuffer2                         uintptr
-	pfnCmdCopyQueryPoolResults                       uintptr
-	pfnCmdDispatch                                   uintptr
-	pfnCmdDispatchBase                               uintptr
-	pfnCmdDispatchIndirect                           uintptr
-	pfnCmdDraw                                       uintptr
-	pfnCmdDrawIndexed                                uintptr
-	pfnCmdDrawIndexedIndirect                        uintptr
-	pfnCmdDrawIndexedIndirectCount                   uintptr
-	pfnCmdDrawIndirect                               uintptr
-	pfnCmdDrawIndirectCount                          uintptr
-	pfnCmdEndQuery                                   uintptr
-	pfnCmdEndRenderPass                              uintptr
-	pfnCmdEndRenderPass2                             uintptr
-	pfnCmdEndRendering                               uintptr
-	pfnCmdExecuteCommands                            uintptr
-	pfnCmdFillBuffer                                 uintptr
-	pfnCmdNextSubpass                                uintptr
-	pfnCmdNextSubpass2                               uintptr
-	pfnCmdPipelineBarrier                            uintptr
-	pfnCmdPipelineBarrier2                           uintptr
-	pfnCmdPushConstants                              uintptr
-	pfnCmdPushConstants2                             uintptr
-	pfnCmdPushDescriptorSet                          uintptr
-	pfnCmdPushDescriptorSet2                         uintptr
-	pfnCmdPushDescriptorSetWithTemplate              uintptr
-	pfnCmdPushDescriptorSetWithTemplate2             uintptr
-	pfnCmdResetEvent                                 uintptr
-	pfnCmdResetEvent2                                uintptr
-	pfnCmdResetQueryPool                             uintptr
-	pfnCmdResolveImage                               uintptr
-	pfnCmdResolveImage2                              uintptr
-	pfnCmdSetBlendConstants                          uintptr
-	pfnCmdSetCullMode                                uintptr
-	pfnCmdSetDepthBias                               uintptr
-	pfnCmdSetDepthBiasEnable                         uintptr
-	pfnCmdSetDepthBounds                             uintptr
-	pfnCmdSetDepthBoundsTestEnable                   uintptr
-	pfnCmdSetDepthCompareOp                          uintptr
-	pfnCmdSetDepthTestEnable                         uintptr
-	pfnCmdSetDepthWriteEnable                        uintptr
-	pfnCmdSetDeviceMask                              uintptr
-	pfnCmdSetEvent                                   uintptr
-	pfnCmdSetEvent2                                  uintptr
-	pfnCmdSetFrontFace                               uintptr
-	pfnCmdSetLineStipple                             uintptr
-	pfnCmdSetLineWidth                               uintptr
-	pfnCmdSetPrimitiveRestartEnable                  uintptr
-	pfnCmdSetPrimitiveTopology                       uintptr
-	pfnCmdSetRasterizerDiscardEnable                 uintptr
-	pfnCmdSetRenderingAttachmentLocations            uintptr
-	pfnCmdSetRenderingInputAttachmentIndices         uintptr
-	pfnCmdSetScissor                                 uintptr
-	pfnCmdSetScissorWithCount                        uintptr
-	pfnCmdSetStencilCompareMask                      uintptr
-	pfnCmdSetStencilOp                               uintptr
-	pfnCmdSetStencilReference                        uintptr
-	pfnCmdSetStencilTestEnable                       uintptr
-	pfnCmdSetStencilWriteMask                        uintptr
-	pfnCmdSetViewport                                uintptr
-	pfnCmdSetViewportWithCount                       uintptr
-	pfnCmdUpdateBuffer                               uintptr
-	pfnCmdWaitEvents                                 uintptr
-	pfnCmdWaitEvents2                                uintptr
-	pfnCmdWriteTimestamp                             uintptr
-	pfnCmdWriteTimestamp2                            uintptr
-	pfnCopyImageToImage                              uintptr
-	pfnCopyImageToMemory                             uintptr
-	pfnCopyMemoryToImage                             uintptr
-	pfnCreateBuffer                                  uintptr
-	pfnCreateBufferView                              uintptr
-	pfnCreateCommandPool                             uintptr
-	pfnCreateComputePipelines                        uintptr
-	pfnCreateDescriptorPool                          uintptr
-	pfnCreateDescriptorSetLayout                     uintptr
-	pfnCreateDescriptorUpdateTemplate                uintptr
-	pfnCreateDevice                                  uintptr
-	pfnCreateEvent                                   uintptr
-	pfnCreateFence                                   uintptr
-	pfnCreateFramebuffer                             uintptr
-	pfnCreateGraphicsPipelines                       uintptr
-	pfnCreateImage                                   uintptr
-	pfnCreateImageView                               uintptr
-	pfnCreateInstance                                uintptr
-	pfnCreatePipelineCache                           uintptr
-	pfnCreatePipelineLayout                          uintptr
-	pfnCreatePrivateDataSlot                         uintptr
-	pfnCreateQueryPool                               uintptr
-	pfnCreateRayTracingPipelinesKHR                  uintptr
-	pfnCreateRayTracingPipelinesNV                   uintptr
-	pfnCreateRenderPass                              uintptr
-	pfnCreateRenderPass2                             uintptr
-	pfnCreateSampler                                 uintptr
-	pfnCreateSamplerYcbcrConversion                  uintptr
-	pfnCreateSemaphore                               uintptr
-	pfnCreateShaderModule                            uintptr
-	pfnDestroyBuffer                                 uintptr
-	pfnDestroyBufferView                             uintptr
-	pfnDestroyCommandPool                            uintptr
-	pfnDestroyDescriptorPool                         uintptr
-	pfnDestroyDescriptorSetLayout                    uintptr
-	pfnDestroyDescriptorUpdateTemplate               uintptr
-	pfnDestroyDevice                                 uintptr
-	pfnDestroyEvent                                  uintptr
-	pfnDestroyFence                                  uintptr
-	pfnDestroyFramebuffer                            uintptr
-	pfnDestroyImage                                  uintptr
-	pfnDestroyImageView                              uintptr
-	pfnDestroyInstance                               uintptr
-	pfnDestroyPipeline                               uintptr
-	pfnDestroyPipelineCache                          uintptr
-	pfnDestroyPipelineLayout                         uintptr
-	pfnDestroyPrivateDataSlot                        uintptr
-	pfnDestroyQueryPool                              uintptr
-	pfnDestroyRenderPass                             uintptr
-	pfnDestroySampler                                uintptr
-	pfnDestroySamplerYcbcrConversion                 uintptr
-	pfnDestroySemaphore                              uintptr
-	pfnDestroyShaderModule                           uintptr
-	pfnDeviceWaitIdle                                uintptr
-	pfnEndCommandBuffer                              uintptr
-	pfnEnumerateDeviceExtensionProperties            uintptr
-	pfnEnumerateDeviceLayerProperties                uintptr
-	pfnEnumerateInstanceExtensionProperties          uintptr
-	pfnEnumerateInstanceLayerProperties              uintptr
-	pfnEnumerateInstanceVersion                      uintptr
-	pfnEnumeratePhysicalDeviceGroups                 uintptr
-	pfnEnumeratePhysicalDevices                      uintptr
-	pfnFlushMappedMemoryRanges                       uintptr
-	pfnFreeCommandBuffers                            uintptr
-	pfnFreeDescriptorSets                            uintptr
-	pfnFreeMemory                                    uintptr
-	pfnGetBufferDeviceAddress                        uintptr
-	pfnGetBufferMemoryRequirements                   uintptr
-	pfnGetBufferMemoryRequirements2                  uintptr
-	pfnGetBufferOpaqueCaptureAddress                 uintptr
-	pfnGetCommandPoolMemoryConsumption               uintptr
-	pfnGetDescriptorSetLayoutSupport                 uintptr
-	pfnGetDeviceBufferMemoryRequirements             uintptr
-	pfnGetDeviceGroupPeerMemoryFeatures              uintptr
-	pfnGetDeviceImageMemoryRequirements              uintptr
-	pfnGetDeviceImageSparseMemoryRequirements        uintptr
-	pfnGetDeviceImageSubresourceLayout               uintptr
-	pfnGetDeviceMemoryCommitment                     uintptr
-	pfnGetDeviceMemoryOpaqueCaptureAddress           uintptr
-	pfnGetDeviceProcAddr                             uintptr
-	pfnGetDeviceQueue                                uintptr
-	pfnGetDeviceQueue2                               uintptr
-	pfnGetEventStatus                                uintptr
-	pfnGetFaultData                                  uintptr
-	pfnGetFenceStatus                                uintptr
-	pfnGetImageMemoryRequirements                    uintptr
-	pfnGetImageMemoryRequirements2                   uintptr
-	pfnGetImageSparseMemoryRequirements              uintptr
-	pfnGetImageSparseMemoryRequirements2             uintptr
-	pfnGetImageSubresourceLayout                     uintptr
-	pfnGetImageSubresourceLayout2                    uintptr
-	pfnGetInstanceProcAddr                           uintptr
-	pfnGetPhysicalDeviceExternalBufferProperties     uintptr
-	pfnGetPhysicalDeviceExternalFenceProperties      uintptr
-	pfnGetPhysicalDeviceExternalSemaphoreProperties  uintptr
-	pfnGetPhysicalDeviceFeatures                     uintptr
-	pfnGetPhysicalDeviceFeatures2                    uintptr
-	pfnGetPhysicalDeviceFormatProperties             uintptr
-	pfnGetPhysicalDeviceFormatProperties2            uintptr
-	pfnGetPhysicalDeviceImageFormatProperties        uintptr
-	pfnGetPhysicalDeviceImageFormatProperties2       uintptr
-	pfnGetPhysicalDeviceMemoryProperties             uintptr
-	pfnGetPhysicalDeviceMemoryProperties2            uintptr
-	pfnGetPhysicalDeviceProperties                   uintptr
-	pfnGetPhysicalDeviceProperties2                  uintptr
-	pfnGetPhysicalDeviceQueueFamilyProperties        uintptr
-	pfnGetPhysicalDeviceQueueFamilyProperties2       uintptr
-	pfnGetPhysicalDeviceSparseImageFormatProperties  uintptr
-	pfnGetPhysicalDeviceSparseImageFormatProperties2 uintptr
-	pfnGetPhysicalDeviceToolProperties               uintptr
-	pfnGetPipelineCacheData                          uintptr
-	pfnGetPrivateData                                uintptr
-	pfnGetQueryPoolResults                           uintptr
-	pfnGetRenderAreaGranularity                      uintptr
-	pfnGetRenderingAreaGranularity                   uintptr
-	pfnGetSemaphoreCounterValue                      uintptr
-	pfnInvalidateMappedMemoryRanges                  uintptr
-	pfnMapMemory                                     uintptr
-	pfnMapMemory2                                    uintptr
-	pfnMergePipelineCaches                           uintptr
-	pfnQueueBindSparse                               uintptr
-	pfnQueueSubmit                                   uintptr
-	pfnQueueSubmit2                                  uintptr
-	pfnQueueWaitIdle                                 uintptr
-	pfnResetCommandBuffer                            uintptr
-	pfnResetCommandPool                              uintptr
-	pfnResetDescriptorPool                           uintptr
-	pfnResetEvent                                    uintptr
-	pfnResetFences                                   uintptr
-	pfnResetQueryPool                                uintptr
-	pfnSetEvent                                      uintptr
-	pfnSetPrivateData                                uintptr
-	pfnSignalSemaphore                               uintptr
-	pfnTransitionImageLayout                         uintptr
-	pfnTrimCommandPool                               uintptr
-	pfnUnmapMemory                                   uintptr
-	pfnUnmapMemory2                                  uintptr
-	pfnUpdateDescriptorSetWithTemplate               uintptr
-	pfnUpdateDescriptorSets                          uintptr
-	pfnWaitForFences                                 uintptr
-	pfnWaitSemaphores                                uintptr
+	pfnAcquireDrmDisplayEXT                                               uintptr
+	pfnAcquireFullScreenExclusiveModeEXT                                  uintptr
+	pfnAcquireImageANDROID                                                uintptr
+	pfnAcquireImageOHOS                                                   uintptr
+	pfnAcquireNextImage2KHR                                               uintptr
+	pfnAcquireNextImageKHR                                                uintptr
+	pfnAcquirePerformanceConfigurationINTEL                               uintptr
+	pfnAcquireProfilingLockKHR                                            uintptr
+	pfnAcquireWinrtDisplayNV                                              uintptr
+	pfnAcquireXlibDisplayEXT                                              uintptr
+	pfnAllocateCommandBuffers                                             uintptr
+	pfnAllocateDescriptorSets                                             uintptr
+	pfnAllocateMemory                                                     uintptr
+	pfnAntiLagUpdateAMD                                                   uintptr
+	pfnBeginCommandBuffer                                                 uintptr
+	pfnBindAccelerationStructureMemoryNV                                  uintptr
+	pfnBindBufferMemory                                                   uintptr
+	pfnBindBufferMemory2                                                  uintptr
+	pfnBindDataGraphPipelineSessionMemoryARM                              uintptr
+	pfnBindImageMemory                                                    uintptr
+	pfnBindImageMemory2                                                   uintptr
+	pfnBindOpticalFlowSessionImageNV                                      uintptr
+	pfnBindTensorMemoryARM                                                uintptr
+	pfnBindVideoSessionMemoryKHR                                          uintptr
+	pfnBuildAccelerationStructuresKHR                                     uintptr
+	pfnBuildMicromapsEXT                                                  uintptr
+	pfnClearShaderInstrumentationMetricsARM                               uintptr
+	pfnCmdBeginConditionalRendering2EXT                                   uintptr
+	pfnCmdBeginConditionalRenderingEXT                                    uintptr
+	pfnCmdBeginCustomResolveEXT                                           uintptr
+	pfnCmdBeginDebugUtilsLabelEXT                                         uintptr
+	pfnCmdBeginGpaSampleAMD                                               uintptr
+	pfnCmdBeginGpaSessionAMD                                              uintptr
+	pfnCmdBeginPerTileExecutionQCOM                                       uintptr
+	pfnCmdBeginQuery                                                      uintptr
+	pfnCmdBeginQueryIndexedEXT                                            uintptr
+	pfnCmdBeginRenderPass                                                 uintptr
+	pfnCmdBeginRenderPass2                                                uintptr
+	pfnCmdBeginRendering                                                  uintptr
+	pfnCmdBeginShaderInstrumentationARM                                   uintptr
+	pfnCmdBeginTransformFeedback2EXT                                      uintptr
+	pfnCmdBeginTransformFeedbackEXT                                       uintptr
+	pfnCmdBeginVideoCodingKHR                                             uintptr
+	pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT                        uintptr
+	pfnCmdBindDescriptorBufferEmbeddedSamplersEXT                         uintptr
+	pfnCmdBindDescriptorBuffersEXT                                        uintptr
+	pfnCmdBindDescriptorSets                                              uintptr
+	pfnCmdBindDescriptorSets2                                             uintptr
+	pfnCmdBindIndexBuffer                                                 uintptr
+	pfnCmdBindIndexBuffer2                                                uintptr
+	pfnCmdBindIndexBuffer3KHR                                             uintptr
+	pfnCmdBindInvocationMaskHUAWEI                                        uintptr
+	pfnCmdBindPipeline                                                    uintptr
+	pfnCmdBindPipelineShaderGroupNV                                       uintptr
+	pfnCmdBindResourceHeapEXT                                             uintptr
+	pfnCmdBindSamplerHeapEXT                                              uintptr
+	pfnCmdBindShadersEXT                                                  uintptr
+	pfnCmdBindShadingRateImageNV                                          uintptr
+	pfnCmdBindTileMemoryQCOM                                              uintptr
+	pfnCmdBindTransformFeedbackBuffers2EXT                                uintptr
+	pfnCmdBindTransformFeedbackBuffersEXT                                 uintptr
+	pfnCmdBindVertexBuffers                                               uintptr
+	pfnCmdBindVertexBuffers2                                              uintptr
+	pfnCmdBindVertexBuffers2EXT                                           uintptr
+	pfnCmdBindVertexBuffers3KHR                                           uintptr
+	pfnCmdBlitImage                                                       uintptr
+	pfnCmdBlitImage2                                                      uintptr
+	pfnCmdBlitImage2KHR                                                   uintptr
+	pfnCmdBuildAccelerationStructureNV                                    uintptr
+	pfnCmdBuildAccelerationStructuresIndirectKHR                          uintptr
+	pfnCmdBuildAccelerationStructuresKHR                                  uintptr
+	pfnCmdBuildClusterAccelerationStructureIndirectNV                     uintptr
+	pfnCmdBuildMicromapsEXT                                               uintptr
+	pfnCmdBuildPartitionedAccelerationStructuresNV                        uintptr
+	pfnCmdClearAttachments                                                uintptr
+	pfnCmdClearColorImage                                                 uintptr
+	pfnCmdClearDepthStencilImage                                          uintptr
+	pfnCmdControlVideoCodingKHR                                           uintptr
+	pfnCmdConvertCooperativeVectorMatrixNV                                uintptr
+	pfnCmdCopyAccelerationStructureKHR                                    uintptr
+	pfnCmdCopyAccelerationStructureNV                                     uintptr
+	pfnCmdCopyAccelerationStructureToMemoryKHR                            uintptr
+	pfnCmdCopyBuffer                                                      uintptr
+	pfnCmdCopyBuffer2                                                     uintptr
+	pfnCmdCopyBuffer2KHR                                                  uintptr
+	pfnCmdCopyBufferToImage                                               uintptr
+	pfnCmdCopyBufferToImage2                                              uintptr
+	pfnCmdCopyBufferToImage2KHR                                           uintptr
+	pfnCmdCopyGpaSessionResultsAMD                                        uintptr
+	pfnCmdCopyImage                                                       uintptr
+	pfnCmdCopyImage2                                                      uintptr
+	pfnCmdCopyImage2KHR                                                   uintptr
+	pfnCmdCopyImageToBuffer                                               uintptr
+	pfnCmdCopyImageToBuffer2                                              uintptr
+	pfnCmdCopyImageToBuffer2KHR                                           uintptr
+	pfnCmdCopyImageToMemoryKHR                                            uintptr
+	pfnCmdCopyMemoryIndirectKHR                                           uintptr
+	pfnCmdCopyMemoryIndirectNV                                            uintptr
+	pfnCmdCopyMemoryKHR                                                   uintptr
+	pfnCmdCopyMemoryToAccelerationStructureKHR                            uintptr
+	pfnCmdCopyMemoryToImageIndirectKHR                                    uintptr
+	pfnCmdCopyMemoryToImageIndirectNV                                     uintptr
+	pfnCmdCopyMemoryToImageKHR                                            uintptr
+	pfnCmdCopyMemoryToMicromapEXT                                         uintptr
+	pfnCmdCopyMicromapEXT                                                 uintptr
+	pfnCmdCopyMicromapToMemoryEXT                                         uintptr
+	pfnCmdCopyQueryPoolResults                                            uintptr
+	pfnCmdCopyQueryPoolResultsToMemoryKHR                                 uintptr
+	pfnCmdCopyTensorARM                                                   uintptr
+	pfnCmdCuLaunchKernelNVX                                               uintptr
+	pfnCmdCudaLaunchKernelNV                                              uintptr
+	pfnCmdDebugMarkerBeginEXT                                             uintptr
+	pfnCmdDebugMarkerEndEXT                                               uintptr
+	pfnCmdDebugMarkerInsertEXT                                            uintptr
+	pfnCmdDecodeVideoKHR                                                  uintptr
+	pfnCmdDecompressMemoryEXT                                             uintptr
+	pfnCmdDecompressMemoryIndirectCountEXT                                uintptr
+	pfnCmdDecompressMemoryIndirectCountNV                                 uintptr
+	pfnCmdDecompressMemoryNV                                              uintptr
+	pfnCmdDispatch                                                        uintptr
+	pfnCmdDispatchBase                                                    uintptr
+	pfnCmdDispatchDataGraphARM                                            uintptr
+	pfnCmdDispatchGraphAMDX                                               uintptr
+	pfnCmdDispatchGraphIndirectAMDX                                       uintptr
+	pfnCmdDispatchGraphIndirectCountAMDX                                  uintptr
+	pfnCmdDispatchIndirect                                                uintptr
+	pfnCmdDispatchIndirect2KHR                                            uintptr
+	pfnCmdDispatchTileQCOM                                                uintptr
+	pfnCmdDraw                                                            uintptr
+	pfnCmdDrawClusterHUAWEI                                               uintptr
+	pfnCmdDrawClusterIndirectHUAWEI                                       uintptr
+	pfnCmdDrawIndexed                                                     uintptr
+	pfnCmdDrawIndexedIndirect                                             uintptr
+	pfnCmdDrawIndexedIndirect2KHR                                         uintptr
+	pfnCmdDrawIndexedIndirectCount                                        uintptr
+	pfnCmdDrawIndexedIndirectCount2KHR                                    uintptr
+	pfnCmdDrawIndirect                                                    uintptr
+	pfnCmdDrawIndirect2KHR                                                uintptr
+	pfnCmdDrawIndirectByteCount2EXT                                       uintptr
+	pfnCmdDrawIndirectByteCountEXT                                        uintptr
+	pfnCmdDrawIndirectCount                                               uintptr
+	pfnCmdDrawIndirectCount2KHR                                           uintptr
+	pfnCmdDrawMeshTasksEXT                                                uintptr
+	pfnCmdDrawMeshTasksIndirect2EXT                                       uintptr
+	pfnCmdDrawMeshTasksIndirectCount2EXT                                  uintptr
+	pfnCmdDrawMeshTasksIndirectCountEXT                                   uintptr
+	pfnCmdDrawMeshTasksIndirectCountNV                                    uintptr
+	pfnCmdDrawMeshTasksIndirectEXT                                        uintptr
+	pfnCmdDrawMeshTasksIndirectNV                                         uintptr
+	pfnCmdDrawMeshTasksNV                                                 uintptr
+	pfnCmdDrawMultiEXT                                                    uintptr
+	pfnCmdDrawMultiIndexedEXT                                             uintptr
+	pfnCmdEncodeVideoKHR                                                  uintptr
+	pfnCmdEndConditionalRenderingEXT                                      uintptr
+	pfnCmdEndDebugUtilsLabelEXT                                           uintptr
+	pfnCmdEndGpaSampleAMD                                                 uintptr
+	pfnCmdEndGpaSessionAMD                                                uintptr
+	pfnCmdEndPerTileExecutionQCOM                                         uintptr
+	pfnCmdEndQuery                                                        uintptr
+	pfnCmdEndQueryIndexedEXT                                              uintptr
+	pfnCmdEndRenderPass                                                   uintptr
+	pfnCmdEndRenderPass2                                                  uintptr
+	pfnCmdEndRendering                                                    uintptr
+	pfnCmdEndRendering2KHR                                                uintptr
+	pfnCmdEndShaderInstrumentationARM                                     uintptr
+	pfnCmdEndTransformFeedback2EXT                                        uintptr
+	pfnCmdEndTransformFeedbackEXT                                         uintptr
+	pfnCmdEndVideoCodingKHR                                               uintptr
+	pfnCmdExecuteCommands                                                 uintptr
+	pfnCmdExecuteGeneratedCommandsEXT                                     uintptr
+	pfnCmdExecuteGeneratedCommandsNV                                      uintptr
+	pfnCmdFillBuffer                                                      uintptr
+	pfnCmdFillMemoryKHR                                                   uintptr
+	pfnCmdInitializeGraphScratchMemoryAMDX                                uintptr
+	pfnCmdInsertDebugUtilsLabelEXT                                        uintptr
+	pfnCmdNextSubpass                                                     uintptr
+	pfnCmdNextSubpass2                                                    uintptr
+	pfnCmdOpticalFlowExecuteNV                                            uintptr
+	pfnCmdPipelineBarrier                                                 uintptr
+	pfnCmdPipelineBarrier2                                                uintptr
+	pfnCmdPipelineBarrier2KHR                                             uintptr
+	pfnCmdPreprocessGeneratedCommandsEXT                                  uintptr
+	pfnCmdPreprocessGeneratedCommandsNV                                   uintptr
+	pfnCmdPushConstants                                                   uintptr
+	pfnCmdPushConstants2                                                  uintptr
+	pfnCmdPushDataEXT                                                     uintptr
+	pfnCmdPushDescriptorSet                                               uintptr
+	pfnCmdPushDescriptorSet2                                              uintptr
+	pfnCmdPushDescriptorSetWithTemplate                                   uintptr
+	pfnCmdPushDescriptorSetWithTemplate2                                  uintptr
+	pfnCmdRefreshObjectsKHR                                               uintptr
+	pfnCmdResetEvent                                                      uintptr
+	pfnCmdResetEvent2                                                     uintptr
+	pfnCmdResetEvent2KHR                                                  uintptr
+	pfnCmdResetQueryPool                                                  uintptr
+	pfnCmdResolveImage                                                    uintptr
+	pfnCmdResolveImage2                                                   uintptr
+	pfnCmdResolveImage2KHR                                                uintptr
+	pfnCmdSetAlphaToCoverageEnableEXT                                     uintptr
+	pfnCmdSetAlphaToOneEnableEXT                                          uintptr
+	pfnCmdSetAttachmentFeedbackLoopEnableEXT                              uintptr
+	pfnCmdSetBlendConstants                                               uintptr
+	pfnCmdSetCheckpointNV                                                 uintptr
+	pfnCmdSetCoarseSampleOrderNV                                          uintptr
+	pfnCmdSetColorBlendAdvancedEXT                                        uintptr
+	pfnCmdSetColorBlendEnableEXT                                          uintptr
+	pfnCmdSetColorBlendEquationEXT                                        uintptr
+	pfnCmdSetColorWriteEnableEXT                                          uintptr
+	pfnCmdSetColorWriteMaskEXT                                            uintptr
+	pfnCmdSetComputeOccupancyPriorityNV                                   uintptr
+	pfnCmdSetConservativeRasterizationModeEXT                             uintptr
+	pfnCmdSetCoverageModulationModeNV                                     uintptr
+	pfnCmdSetCoverageModulationTableEnableNV                              uintptr
+	pfnCmdSetCoverageModulationTableNV                                    uintptr
+	pfnCmdSetCoverageReductionModeNV                                      uintptr
+	pfnCmdSetCoverageToColorEnableNV                                      uintptr
+	pfnCmdSetCoverageToColorLocationNV                                    uintptr
+	pfnCmdSetCullMode                                                     uintptr
+	pfnCmdSetCullModeEXT                                                  uintptr
+	pfnCmdSetDepthBias                                                    uintptr
+	pfnCmdSetDepthBias2EXT                                                uintptr
+	pfnCmdSetDepthBiasEnable                                              uintptr
+	pfnCmdSetDepthBiasEnableEXT                                           uintptr
+	pfnCmdSetDepthBounds                                                  uintptr
+	pfnCmdSetDepthBoundsTestEnable                                        uintptr
+	pfnCmdSetDepthBoundsTestEnableEXT                                     uintptr
+	pfnCmdSetDepthClampEnableEXT                                          uintptr
+	pfnCmdSetDepthClampRangeEXT                                           uintptr
+	pfnCmdSetDepthClipEnableEXT                                           uintptr
+	pfnCmdSetDepthClipNegativeOneToOneEXT                                 uintptr
+	pfnCmdSetDepthCompareOp                                               uintptr
+	pfnCmdSetDepthCompareOpEXT                                            uintptr
+	pfnCmdSetDepthTestEnable                                              uintptr
+	pfnCmdSetDepthTestEnableEXT                                           uintptr
+	pfnCmdSetDepthWriteEnable                                             uintptr
+	pfnCmdSetDepthWriteEnableEXT                                          uintptr
+	pfnCmdSetDescriptorBufferOffsets2EXT                                  uintptr
+	pfnCmdSetDescriptorBufferOffsetsEXT                                   uintptr
+	pfnCmdSetDeviceMask                                                   uintptr
+	pfnCmdSetDiscardRectangleEXT                                          uintptr
+	pfnCmdSetDiscardRectangleEnableEXT                                    uintptr
+	pfnCmdSetDiscardRectangleModeEXT                                      uintptr
+	pfnCmdSetDispatchParametersARM                                        uintptr
+	pfnCmdSetEvent                                                        uintptr
+	pfnCmdSetEvent2                                                       uintptr
+	pfnCmdSetEvent2KHR                                                    uintptr
+	pfnCmdSetExclusiveScissorEnableNV                                     uintptr
+	pfnCmdSetExclusiveScissorNV                                           uintptr
+	pfnCmdSetExtraPrimitiveOverestimationSizeEXT                          uintptr
+	pfnCmdSetFragmentShadingRateEnumNV                                    uintptr
+	pfnCmdSetFragmentShadingRateKHR                                       uintptr
+	pfnCmdSetFrontFace                                                    uintptr
+	pfnCmdSetFrontFaceEXT                                                 uintptr
+	pfnCmdSetLineRasterizationModeEXT                                     uintptr
+	pfnCmdSetLineStipple                                                  uintptr
+	pfnCmdSetLineStippleEXT                                               uintptr
+	pfnCmdSetLineStippleEnableEXT                                         uintptr
+	pfnCmdSetLineStippleKHR                                               uintptr
+	pfnCmdSetLineWidth                                                    uintptr
+	pfnCmdSetLogicOpEXT                                                   uintptr
+	pfnCmdSetLogicOpEnableEXT                                             uintptr
+	pfnCmdSetPatchControlPointsEXT                                        uintptr
+	pfnCmdSetPerformanceMarkerINTEL                                       uintptr
+	pfnCmdSetPerformanceOverrideINTEL                                     uintptr
+	pfnCmdSetPerformanceStreamMarkerINTEL                                 uintptr
+	pfnCmdSetPolygonModeEXT                                               uintptr
+	pfnCmdSetPrimitiveRestartEnable                                       uintptr
+	pfnCmdSetPrimitiveRestartEnableEXT                                    uintptr
+	pfnCmdSetPrimitiveRestartIndexEXT                                     uintptr
+	pfnCmdSetPrimitiveTopology                                            uintptr
+	pfnCmdSetPrimitiveTopologyEXT                                         uintptr
+	pfnCmdSetProvokingVertexModeEXT                                       uintptr
+	pfnCmdSetRasterizationSamplesEXT                                      uintptr
+	pfnCmdSetRasterizationStreamEXT                                       uintptr
+	pfnCmdSetRasterizerDiscardEnable                                      uintptr
+	pfnCmdSetRasterizerDiscardEnableEXT                                   uintptr
+	pfnCmdSetRayTracingPipelineStackSizeKHR                               uintptr
+	pfnCmdSetRenderingAttachmentLocations                                 uintptr
+	pfnCmdSetRenderingInputAttachmentIndices                              uintptr
+	pfnCmdSetRepresentativeFragmentTestEnableNV                           uintptr
+	pfnCmdSetSampleLocationsEXT                                           uintptr
+	pfnCmdSetSampleLocationsEnableEXT                                     uintptr
+	pfnCmdSetSampleMaskEXT                                                uintptr
+	pfnCmdSetScissor                                                      uintptr
+	pfnCmdSetScissorWithCount                                             uintptr
+	pfnCmdSetScissorWithCountEXT                                          uintptr
+	pfnCmdSetShadingRateImageEnableNV                                     uintptr
+	pfnCmdSetStencilCompareMask                                           uintptr
+	pfnCmdSetStencilOp                                                    uintptr
+	pfnCmdSetStencilOpEXT                                                 uintptr
+	pfnCmdSetStencilReference                                             uintptr
+	pfnCmdSetStencilTestEnable                                            uintptr
+	pfnCmdSetStencilTestEnableEXT                                         uintptr
+	pfnCmdSetStencilWriteMask                                             uintptr
+	pfnCmdSetTessellationDomainOriginEXT                                  uintptr
+	pfnCmdSetVertexInputEXT                                               uintptr
+	pfnCmdSetViewport                                                     uintptr
+	pfnCmdSetViewportShadingRatePaletteNV                                 uintptr
+	pfnCmdSetViewportSwizzleNV                                            uintptr
+	pfnCmdSetViewportWScalingEnableNV                                     uintptr
+	pfnCmdSetViewportWScalingNV                                           uintptr
+	pfnCmdSetViewportWithCount                                            uintptr
+	pfnCmdSetViewportWithCountEXT                                         uintptr
+	pfnCmdSubpassShadingHUAWEI                                            uintptr
+	pfnCmdTraceRaysIndirect2KHR                                           uintptr
+	pfnCmdTraceRaysIndirectKHR                                            uintptr
+	pfnCmdTraceRaysKHR                                                    uintptr
+	pfnCmdTraceRaysNV                                                     uintptr
+	pfnCmdUpdateBuffer                                                    uintptr
+	pfnCmdUpdateMemoryKHR                                                 uintptr
+	pfnCmdUpdatePipelineIndirectBufferNV                                  uintptr
+	pfnCmdWaitEvents                                                      uintptr
+	pfnCmdWaitEvents2                                                     uintptr
+	pfnCmdWaitEvents2KHR                                                  uintptr
+	pfnCmdWriteAccelerationStructuresPropertiesKHR                        uintptr
+	pfnCmdWriteAccelerationStructuresPropertiesNV                         uintptr
+	pfnCmdWriteBufferMarker2AMD                                           uintptr
+	pfnCmdWriteBufferMarkerAMD                                            uintptr
+	pfnCmdWriteMarkerToMemoryAMD                                          uintptr
+	pfnCmdWriteMicromapsPropertiesEXT                                     uintptr
+	pfnCmdWriteTimestamp                                                  uintptr
+	pfnCmdWriteTimestamp2                                                 uintptr
+	pfnCmdWriteTimestamp2KHR                                              uintptr
+	pfnCompileDeferredNV                                                  uintptr
+	pfnConvertCooperativeVectorMatrixNV                                   uintptr
+	pfnCopyAccelerationStructureKHR                                       uintptr
+	pfnCopyAccelerationStructureToMemoryKHR                               uintptr
+	pfnCopyImageToImage                                                   uintptr
+	pfnCopyImageToMemory                                                  uintptr
+	pfnCopyMemoryToAccelerationStructureKHR                               uintptr
+	pfnCopyMemoryToImage                                                  uintptr
+	pfnCopyMemoryToMicromapEXT                                            uintptr
+	pfnCopyMicromapEXT                                                    uintptr
+	pfnCopyMicromapToMemoryEXT                                            uintptr
+	pfnCreateAccelerationStructure2KHR                                    uintptr
+	pfnCreateAccelerationStructureKHR                                     uintptr
+	pfnCreateAccelerationStructureNV                                      uintptr
+	pfnCreateAndroidSurfaceKHR                                            uintptr
+	pfnCreateBuffer                                                       uintptr
+	pfnCreateBufferCollectionFUCHSIA                                      uintptr
+	pfnCreateBufferView                                                   uintptr
+	pfnCreateCommandPool                                                  uintptr
+	pfnCreateComputePipelines                                             uintptr
+	pfnCreateCuFunctionNVX                                                uintptr
+	pfnCreateCuModuleNVX                                                  uintptr
+	pfnCreateCudaFunctionNV                                               uintptr
+	pfnCreateCudaModuleNV                                                 uintptr
+	pfnCreateDataGraphPipelineSessionARM                                  uintptr
+	pfnCreateDataGraphPipelinesARM                                        uintptr
+	pfnCreateDebugReportCallbackEXT                                       uintptr
+	pfnCreateDebugUtilsMessengerEXT                                       uintptr
+	pfnCreateDeferredOperationKHR                                         uintptr
+	pfnCreateDescriptorPool                                               uintptr
+	pfnCreateDescriptorSetLayout                                          uintptr
+	pfnCreateDescriptorUpdateTemplate                                     uintptr
+	pfnCreateDevice                                                       uintptr
+	pfnCreateDirectFBSurfaceEXT                                           uintptr
+	pfnCreateDisplayModeKHR                                               uintptr
+	pfnCreateDisplayPlaneSurfaceKHR                                       uintptr
+	pfnCreateEvent                                                        uintptr
+	pfnCreateExecutionGraphPipelinesAMDX                                  uintptr
+	pfnCreateExternalComputeQueueNV                                       uintptr
+	pfnCreateFence                                                        uintptr
+	pfnCreateFramebuffer                                                  uintptr
+	pfnCreateGpaSessionAMD                                                uintptr
+	pfnCreateGraphicsPipelines                                            uintptr
+	pfnCreateHeadlessSurfaceEXT                                           uintptr
+	pfnCreateIOSSurfaceMVK                                                uintptr
+	pfnCreateImage                                                        uintptr
+	pfnCreateImagePipeSurfaceFUCHSIA                                      uintptr
+	pfnCreateImageView                                                    uintptr
+	pfnCreateIndirectCommandsLayoutEXT                                    uintptr
+	pfnCreateIndirectCommandsLayoutNV                                     uintptr
+	pfnCreateIndirectExecutionSetEXT                                      uintptr
+	pfnCreateInstance                                                     uintptr
+	pfnCreateMacOSSurfaceMVK                                              uintptr
+	pfnCreateMetalSurfaceEXT                                              uintptr
+	pfnCreateMicromapEXT                                                  uintptr
+	pfnCreateOpticalFlowSessionNV                                         uintptr
+	pfnCreatePipelineBinariesKHR                                          uintptr
+	pfnCreatePipelineCache                                                uintptr
+	pfnCreatePipelineLayout                                               uintptr
+	pfnCreatePrivateDataSlot                                              uintptr
+	pfnCreateQueryPool                                                    uintptr
+	pfnCreateRayTracingPipelinesKHR                                       uintptr
+	pfnCreateRayTracingPipelinesNV                                        uintptr
+	pfnCreateRenderPass                                                   uintptr
+	pfnCreateRenderPass2                                                  uintptr
+	pfnCreateSampler                                                      uintptr
+	pfnCreateSamplerYcbcrConversion                                       uintptr
+	pfnCreateScreenSurfaceQNX                                             uintptr
+	pfnCreateSemaphore                                                    uintptr
+	pfnCreateSemaphoreSciSyncPoolNV                                       uintptr
+	pfnCreateShaderInstrumentationARM                                     uintptr
+	pfnCreateShaderModule                                                 uintptr
+	pfnCreateShadersEXT                                                   uintptr
+	pfnCreateSharedSwapchainsKHR                                          uintptr
+	pfnCreateStreamDescriptorSurfaceGGP                                   uintptr
+	pfnCreateSurfaceOHOS                                                  uintptr
+	pfnCreateSwapchainKHR                                                 uintptr
+	pfnCreateTensorARM                                                    uintptr
+	pfnCreateTensorViewARM                                                uintptr
+	pfnCreateUbmSurfaceSEC                                                uintptr
+	pfnCreateValidationCacheEXT                                           uintptr
+	pfnCreateViSurfaceNN                                                  uintptr
+	pfnCreateVideoSessionKHR                                              uintptr
+	pfnCreateVideoSessionParametersKHR                                    uintptr
+	pfnCreateWaylandSurfaceKHR                                            uintptr
+	pfnCreateWin32SurfaceKHR                                              uintptr
+	pfnCreateXcbSurfaceKHR                                                uintptr
+	pfnCreateXlibSurfaceKHR                                               uintptr
+	pfnDebugMarkerSetObjectNameEXT                                        uintptr
+	pfnDebugMarkerSetObjectTagEXT                                         uintptr
+	pfnDebugReportMessageEXT                                              uintptr
+	pfnDeferredOperationJoinKHR                                           uintptr
+	pfnDestroyAccelerationStructureKHR                                    uintptr
+	pfnDestroyAccelerationStructureNV                                     uintptr
+	pfnDestroyBuffer                                                      uintptr
+	pfnDestroyBufferCollectionFUCHSIA                                     uintptr
+	pfnDestroyBufferView                                                  uintptr
+	pfnDestroyCommandPool                                                 uintptr
+	pfnDestroyCuFunctionNVX                                               uintptr
+	pfnDestroyCuModuleNVX                                                 uintptr
+	pfnDestroyCudaFunctionNV                                              uintptr
+	pfnDestroyCudaModuleNV                                                uintptr
+	pfnDestroyDataGraphPipelineSessionARM                                 uintptr
+	pfnDestroyDebugReportCallbackEXT                                      uintptr
+	pfnDestroyDebugUtilsMessengerEXT                                      uintptr
+	pfnDestroyDeferredOperationKHR                                        uintptr
+	pfnDestroyDescriptorPool                                              uintptr
+	pfnDestroyDescriptorSetLayout                                         uintptr
+	pfnDestroyDescriptorUpdateTemplate                                    uintptr
+	pfnDestroyDevice                                                      uintptr
+	pfnDestroyEvent                                                       uintptr
+	pfnDestroyExternalComputeQueueNV                                      uintptr
+	pfnDestroyFence                                                       uintptr
+	pfnDestroyFramebuffer                                                 uintptr
+	pfnDestroyGpaSessionAMD                                               uintptr
+	pfnDestroyImage                                                       uintptr
+	pfnDestroyImageView                                                   uintptr
+	pfnDestroyIndirectCommandsLayoutEXT                                   uintptr
+	pfnDestroyIndirectCommandsLayoutNV                                    uintptr
+	pfnDestroyIndirectExecutionSetEXT                                     uintptr
+	pfnDestroyInstance                                                    uintptr
+	pfnDestroyMicromapEXT                                                 uintptr
+	pfnDestroyOpticalFlowSessionNV                                        uintptr
+	pfnDestroyPipeline                                                    uintptr
+	pfnDestroyPipelineBinaryKHR                                           uintptr
+	pfnDestroyPipelineCache                                               uintptr
+	pfnDestroyPipelineLayout                                              uintptr
+	pfnDestroyPrivateDataSlot                                             uintptr
+	pfnDestroyQueryPool                                                   uintptr
+	pfnDestroyRenderPass                                                  uintptr
+	pfnDestroySampler                                                     uintptr
+	pfnDestroySamplerYcbcrConversion                                      uintptr
+	pfnDestroySemaphore                                                   uintptr
+	pfnDestroySemaphoreSciSyncPoolNV                                      uintptr
+	pfnDestroyShaderEXT                                                   uintptr
+	pfnDestroyShaderInstrumentationARM                                    uintptr
+	pfnDestroyShaderModule                                                uintptr
+	pfnDestroySurfaceKHR                                                  uintptr
+	pfnDestroySwapchainKHR                                                uintptr
+	pfnDestroyTensorARM                                                   uintptr
+	pfnDestroyTensorViewARM                                               uintptr
+	pfnDestroyValidationCacheEXT                                          uintptr
+	pfnDestroyVideoSessionKHR                                             uintptr
+	pfnDestroyVideoSessionParametersKHR                                   uintptr
+	pfnDeviceWaitIdle                                                     uintptr
+	pfnDisplayPowerControlEXT                                             uintptr
+	pfnEndCommandBuffer                                                   uintptr
+	pfnEnumerateDeviceExtensionProperties                                 uintptr
+	pfnEnumerateDeviceLayerProperties                                     uintptr
+	pfnEnumerateInstanceExtensionProperties                               uintptr
+	pfnEnumerateInstanceLayerProperties                                   uintptr
+	pfnEnumerateInstanceVersion                                           uintptr
+	pfnEnumeratePhysicalDeviceGroups                                      uintptr
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM   uintptr
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR      uintptr
+	pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM             uintptr
+	pfnEnumeratePhysicalDevices                                           uintptr
+	pfnExportMetalObjectsEXT                                              uintptr
+	pfnFlushMappedMemoryRanges                                            uintptr
+	pfnFreeCommandBuffers                                                 uintptr
+	pfnFreeDescriptorSets                                                 uintptr
+	pfnFreeMemory                                                         uintptr
+	pfnGetAccelerationStructureBuildSizesKHR                              uintptr
+	pfnGetAccelerationStructureDeviceAddressKHR                           uintptr
+	pfnGetAccelerationStructureHandleNV                                   uintptr
+	pfnGetAccelerationStructureMemoryRequirementsNV                       uintptr
+	pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT             uintptr
+	pfnGetAndroidHardwareBufferPropertiesANDROID                          uintptr
+	pfnGetBufferCollectionPropertiesFUCHSIA                               uintptr
+	pfnGetBufferDeviceAddress                                             uintptr
+	pfnGetBufferMemoryRequirements                                        uintptr
+	pfnGetBufferMemoryRequirements2                                       uintptr
+	pfnGetBufferOpaqueCaptureAddress                                      uintptr
+	pfnGetBufferOpaqueCaptureDescriptorDataEXT                            uintptr
+	pfnGetCalibratedTimestampsKHR                                         uintptr
+	pfnGetClusterAccelerationStructureBuildSizesNV                        uintptr
+	pfnGetCommandPoolMemoryConsumption                                    uintptr
+	pfnGetCudaModuleCacheNV                                               uintptr
+	pfnGetDataGraphPipelineAvailablePropertiesARM                         uintptr
+	pfnGetDataGraphPipelinePropertiesARM                                  uintptr
+	pfnGetDataGraphPipelineSessionBindPointRequirementsARM                uintptr
+	pfnGetDataGraphPipelineSessionMemoryRequirementsARM                   uintptr
+	pfnGetDeferredOperationMaxConcurrencyKHR                              uintptr
+	pfnGetDeferredOperationResultKHR                                      uintptr
+	pfnGetDescriptorEXT                                                   uintptr
+	pfnGetDescriptorSetHostMappingVALVE                                   uintptr
+	pfnGetDescriptorSetLayoutBindingOffsetEXT                             uintptr
+	pfnGetDescriptorSetLayoutHostMappingInfoVALVE                         uintptr
+	pfnGetDescriptorSetLayoutSizeEXT                                      uintptr
+	pfnGetDescriptorSetLayoutSupport                                      uintptr
+	pfnGetDeviceAccelerationStructureCompatibilityKHR                     uintptr
+	pfnGetDeviceBufferMemoryRequirements                                  uintptr
+	pfnGetDeviceCombinedImageSamplerIndexNVX                              uintptr
+	pfnGetDeviceFaultDebugInfoKHR                                         uintptr
+	pfnGetDeviceFaultInfoEXT                                              uintptr
+	pfnGetDeviceFaultReportsKHR                                           uintptr
+	pfnGetDeviceGroupPeerMemoryFeatures                                   uintptr
+	pfnGetDeviceGroupPresentCapabilitiesKHR                               uintptr
+	pfnGetDeviceGroupSurfacePresentModes2EXT                              uintptr
+	pfnGetDeviceGroupSurfacePresentModesKHR                               uintptr
+	pfnGetDeviceImageMemoryRequirements                                   uintptr
+	pfnGetDeviceImageSparseMemoryRequirements                             uintptr
+	pfnGetDeviceImageSubresourceLayout                                    uintptr
+	pfnGetDeviceMemoryCommitment                                          uintptr
+	pfnGetDeviceMemoryOpaqueCaptureAddress                                uintptr
+	pfnGetDeviceMicromapCompatibilityEXT                                  uintptr
+	pfnGetDeviceProcAddr                                                  uintptr
+	pfnGetDeviceQueue                                                     uintptr
+	pfnGetDeviceQueue2                                                    uintptr
+	pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI                      uintptr
+	pfnGetDeviceTensorMemoryRequirementsARM                               uintptr
+	pfnGetDisplayModeProperties2KHR                                       uintptr
+	pfnGetDisplayModePropertiesKHR                                        uintptr
+	pfnGetDisplayPlaneCapabilities2KHR                                    uintptr
+	pfnGetDisplayPlaneCapabilitiesKHR                                     uintptr
+	pfnGetDisplayPlaneSupportedDisplaysKHR                                uintptr
+	pfnGetDrmDisplayEXT                                                   uintptr
+	pfnGetDynamicRenderingTilePropertiesQCOM                              uintptr
+	pfnGetEncodedVideoSessionParametersKHR                                uintptr
+	pfnGetEventStatus                                                     uintptr
+	pfnGetExecutionGraphPipelineNodeIndexAMDX                             uintptr
+	pfnGetExecutionGraphPipelineScratchSizeAMDX                           uintptr
+	pfnGetExternalComputeQueueDataNV                                      uintptr
+	pfnGetFaultData                                                       uintptr
+	pfnGetFenceFdKHR                                                      uintptr
+	pfnGetFenceSciSyncFenceNV                                             uintptr
+	pfnGetFenceSciSyncObjNV                                               uintptr
+	pfnGetFenceStatus                                                     uintptr
+	pfnGetFenceWin32HandleKHR                                             uintptr
+	pfnGetFramebufferTilePropertiesQCOM                                   uintptr
+	pfnGetGeneratedCommandsMemoryRequirementsEXT                          uintptr
+	pfnGetGeneratedCommandsMemoryRequirementsNV                           uintptr
+	pfnGetGpaDeviceClockInfoAMD                                           uintptr
+	pfnGetGpaSessionResultsAMD                                            uintptr
+	pfnGetGpaSessionStatusAMD                                             uintptr
+	pfnGetImageDrmFormatModifierPropertiesEXT                             uintptr
+	pfnGetImageMemoryRequirements                                         uintptr
+	pfnGetImageMemoryRequirements2                                        uintptr
+	pfnGetImageOpaqueCaptureDataEXT                                       uintptr
+	pfnGetImageOpaqueCaptureDescriptorDataEXT                             uintptr
+	pfnGetImageSparseMemoryRequirements                                   uintptr
+	pfnGetImageSparseMemoryRequirements2                                  uintptr
+	pfnGetImageSubresourceLayout                                          uintptr
+	pfnGetImageSubresourceLayout2                                         uintptr
+	pfnGetImageViewAddressNVX                                             uintptr
+	pfnGetImageViewHandle64NVX                                            uintptr
+	pfnGetImageViewHandleNVX                                              uintptr
+	pfnGetImageViewOpaqueCaptureDescriptorDataEXT                         uintptr
+	pfnGetInstanceProcAddr                                                uintptr
+	pfnGetLatencyTimingsLegacyNV                                          uintptr
+	pfnGetLatencyTimingsNV                                                uintptr
+	pfnGetMemoryAndroidHardwareBufferANDROID                              uintptr
+	pfnGetMemoryFdKHR                                                     uintptr
+	pfnGetMemoryFdPropertiesKHR                                           uintptr
+	pfnGetMemoryHostPointerPropertiesEXT                                  uintptr
+	pfnGetMemoryMetalHandleEXT                                            uintptr
+	pfnGetMemoryMetalHandlePropertiesEXT                                  uintptr
+	pfnGetMemoryNativeBufferOHOS                                          uintptr
+	pfnGetMemoryRemoteAddressNV                                           uintptr
+	pfnGetMemorySciBufNV                                                  uintptr
+	pfnGetMemoryWin32HandleKHR                                            uintptr
+	pfnGetMemoryWin32HandleNV                                             uintptr
+	pfnGetMemoryWin32HandlePropertiesKHR                                  uintptr
+	pfnGetMemoryZirconHandleFUCHSIA                                       uintptr
+	pfnGetMemoryZirconHandlePropertiesFUCHSIA                             uintptr
+	pfnGetMicromapBuildSizesEXT                                           uintptr
+	pfnGetNativeBufferPropertiesOHOS                                      uintptr
+	pfnGetPartitionedAccelerationStructuresBuildSizesNV                   uintptr
+	pfnGetPastPresentationTimingEXT                                       uintptr
+	pfnGetPastPresentationTimingGOOGLE                                    uintptr
+	pfnGetPerformanceParameterINTEL                                       uintptr
+	pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR                       uintptr
+	pfnGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV   uintptr
+	pfnGetPhysicalDeviceCooperativeMatrixProperties2EXT                   uintptr
+	pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR                    uintptr
+	pfnGetPhysicalDeviceCooperativeMatrixPropertiesNV                     uintptr
+	pfnGetPhysicalDeviceCooperativeVectorPropertiesNV                     uintptr
+	pfnGetPhysicalDeviceDescriptorSizeEXT                                 uintptr
+	pfnGetPhysicalDeviceDirectFBPresentationSupportEXT                    uintptr
+	pfnGetPhysicalDeviceDisplayPlaneProperties2KHR                        uintptr
+	pfnGetPhysicalDeviceDisplayPlanePropertiesKHR                         uintptr
+	pfnGetPhysicalDeviceDisplayProperties2KHR                             uintptr
+	pfnGetPhysicalDeviceDisplayPropertiesKHR                              uintptr
+	pfnGetPhysicalDeviceExternalBufferProperties                          uintptr
+	pfnGetPhysicalDeviceExternalFenceProperties                           uintptr
+	pfnGetPhysicalDeviceExternalImageFormatPropertiesNV                   uintptr
+	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV                  uintptr
+	pfnGetPhysicalDeviceExternalSemaphoreProperties                       uintptr
+	pfnGetPhysicalDeviceExternalTensorPropertiesARM                       uintptr
+	pfnGetPhysicalDeviceFeatures                                          uintptr
+	pfnGetPhysicalDeviceFeatures2                                         uintptr
+	pfnGetPhysicalDeviceFormatProperties                                  uintptr
+	pfnGetPhysicalDeviceFormatProperties2                                 uintptr
+	pfnGetPhysicalDeviceFragmentShadingRatesKHR                           uintptr
+	pfnGetPhysicalDeviceImageFormatProperties                             uintptr
+	pfnGetPhysicalDeviceImageFormatProperties2                            uintptr
+	pfnGetPhysicalDeviceMemoryProperties                                  uintptr
+	pfnGetPhysicalDeviceMemoryProperties2                                 uintptr
+	pfnGetPhysicalDeviceMultisamplePropertiesEXT                          uintptr
+	pfnGetPhysicalDeviceOpticalFlowImageFormatsNV                         uintptr
+	pfnGetPhysicalDevicePresentRectanglesKHR                              uintptr
+	pfnGetPhysicalDeviceProperties                                        uintptr
+	pfnGetPhysicalDeviceProperties2                                       uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM  uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM    uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM                 uintptr
+	pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR              uintptr
+	pfnGetPhysicalDeviceQueueFamilyProperties                             uintptr
+	pfnGetPhysicalDeviceQueueFamilyProperties2                            uintptr
+	pfnGetPhysicalDeviceRefreshableObjectTypesKHR                         uintptr
+	pfnGetPhysicalDeviceSciBufAttributesNV                                uintptr
+	pfnGetPhysicalDeviceSciSyncAttributesNV                               uintptr
+	pfnGetPhysicalDeviceScreenPresentationSupportQNX                      uintptr
+	pfnGetPhysicalDeviceSparseImageFormatProperties                       uintptr
+	pfnGetPhysicalDeviceSparseImageFormatProperties2                      uintptr
+	pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV    uintptr
+	pfnGetPhysicalDeviceSurfaceCapabilities2EXT                           uintptr
+	pfnGetPhysicalDeviceSurfaceCapabilities2KHR                           uintptr
+	pfnGetPhysicalDeviceSurfaceCapabilitiesKHR                            uintptr
+	pfnGetPhysicalDeviceSurfaceFormats2KHR                                uintptr
+	pfnGetPhysicalDeviceSurfaceFormatsKHR                                 uintptr
+	pfnGetPhysicalDeviceSurfacePresentModes2EXT                           uintptr
+	pfnGetPhysicalDeviceSurfacePresentModesKHR                            uintptr
+	pfnGetPhysicalDeviceSurfaceSupportKHR                                 uintptr
+	pfnGetPhysicalDeviceToolProperties                                    uintptr
+	pfnGetPhysicalDeviceUbmPresentationSupportSEC                         uintptr
+	pfnGetPhysicalDeviceVideoCapabilitiesKHR                              uintptr
+	pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR              uintptr
+	pfnGetPhysicalDeviceVideoFormatPropertiesKHR                          uintptr
+	pfnGetPhysicalDeviceWaylandPresentationSupportKHR                     uintptr
+	pfnGetPhysicalDeviceWin32PresentationSupportKHR                       uintptr
+	pfnGetPhysicalDeviceXcbPresentationSupportKHR                         uintptr
+	pfnGetPhysicalDeviceXlibPresentationSupportKHR                        uintptr
+	pfnGetPipelineBinaryDataKHR                                           uintptr
+	pfnGetPipelineCacheData                                               uintptr
+	pfnGetPipelineExecutableInternalRepresentationsKHR                    uintptr
+	pfnGetPipelineExecutablePropertiesKHR                                 uintptr
+	pfnGetPipelineExecutableStatisticsKHR                                 uintptr
+	pfnGetPipelineIndirectDeviceAddressNV                                 uintptr
+	pfnGetPipelineIndirectMemoryRequirementsNV                            uintptr
+	pfnGetPipelineKeyKHR                                                  uintptr
+	pfnGetPipelinePropertiesEXT                                           uintptr
+	pfnGetPrivateData                                                     uintptr
+	pfnGetQueryPoolResults                                                uintptr
+	pfnGetQueueCheckpointData2NV                                          uintptr
+	pfnGetQueueCheckpointDataNV                                           uintptr
+	pfnGetRandROutputDisplayEXT                                           uintptr
+	pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR                    uintptr
+	pfnGetRayTracingShaderGroupHandlesKHR                                 uintptr
+	pfnGetRayTracingShaderGroupStackSizeKHR                               uintptr
+	pfnGetRefreshCycleDurationGOOGLE                                      uintptr
+	pfnGetRenderAreaGranularity                                           uintptr
+	pfnGetRenderingAreaGranularity                                        uintptr
+	pfnGetSamplerOpaqueCaptureDescriptorDataEXT                           uintptr
+	pfnGetScreenBufferPropertiesQNX                                       uintptr
+	pfnGetSemaphoreCounterValue                                           uintptr
+	pfnGetSemaphoreFdKHR                                                  uintptr
+	pfnGetSemaphoreSciSyncObjNV                                           uintptr
+	pfnGetSemaphoreWin32HandleKHR                                         uintptr
+	pfnGetSemaphoreZirconHandleFUCHSIA                                    uintptr
+	pfnGetShaderBinaryDataEXT                                             uintptr
+	pfnGetShaderInfoAMD                                                   uintptr
+	pfnGetShaderInstrumentationValuesARM                                  uintptr
+	pfnGetShaderModuleCreateInfoIdentifierEXT                             uintptr
+	pfnGetShaderModuleIdentifierEXT                                       uintptr
+	pfnGetSleepStatusLegacyNV                                             uintptr
+	pfnGetSwapchainCounterEXT                                             uintptr
+	pfnGetSwapchainGrallocUsage2ANDROID                                   uintptr
+	pfnGetSwapchainGrallocUsageANDROID                                    uintptr
+	pfnGetSwapchainGrallocUsageOHOS                                       uintptr
+	pfnGetSwapchainImagesKHR                                              uintptr
+	pfnGetSwapchainStatusKHR                                              uintptr
+	pfnGetSwapchainTimeDomainPropertiesEXT                                uintptr
+	pfnGetSwapchainTimingPropertiesEXT                                    uintptr
+	pfnGetTensorMemoryRequirementsARM                                     uintptr
+	pfnGetTensorOpaqueCaptureDataARM                                      uintptr
+	pfnGetTensorOpaqueCaptureDescriptorDataARM                            uintptr
+	pfnGetTensorViewOpaqueCaptureDescriptorDataARM                        uintptr
+	pfnGetValidationCacheDataEXT                                          uintptr
+	pfnGetVideoSessionMemoryRequirementsKHR                               uintptr
+	pfnGetWinrtDisplayNV                                                  uintptr
+	pfnImportFenceFdKHR                                                   uintptr
+	pfnImportFenceSciSyncFenceNV                                          uintptr
+	pfnImportFenceSciSyncObjNV                                            uintptr
+	pfnImportFenceWin32HandleKHR                                          uintptr
+	pfnImportSemaphoreFdKHR                                               uintptr
+	pfnImportSemaphoreSciSyncObjNV                                        uintptr
+	pfnImportSemaphoreWin32HandleKHR                                      uintptr
+	pfnImportSemaphoreZirconHandleFUCHSIA                                 uintptr
+	pfnInitializePerformanceApiINTEL                                      uintptr
+	pfnInvalidateMappedMemoryRanges                                       uintptr
+	pfnLatencySleepLegacyNV                                               uintptr
+	pfnLatencySleepNV                                                     uintptr
+	pfnMapMemory                                                          uintptr
+	pfnMapMemory2                                                         uintptr
+	pfnMergePipelineCaches                                                uintptr
+	pfnMergeValidationCachesEXT                                           uintptr
+	pfnQueueBeginDebugUtilsLabelEXT                                       uintptr
+	pfnQueueBindSparse                                                    uintptr
+	pfnQueueEndDebugUtilsLabelEXT                                         uintptr
+	pfnQueueInsertDebugUtilsLabelEXT                                      uintptr
+	pfnQueueNotifyOutOfBandLegacyNV                                       uintptr
+	pfnQueueNotifyOutOfBandNV                                             uintptr
+	pfnQueuePresentKHR                                                    uintptr
+	pfnQueueSetPerfHintQCOM                                               uintptr
+	pfnQueueSetPerformanceConfigurationINTEL                              uintptr
+	pfnQueueSignalReleaseImageANDROID                                     uintptr
+	pfnQueueSignalReleaseImageOHOS                                        uintptr
+	pfnQueueSubmit                                                        uintptr
+	pfnQueueSubmit2                                                       uintptr
+	pfnQueueSubmit2KHR                                                    uintptr
+	pfnQueueWaitIdle                                                      uintptr
+	pfnRegisterCustomBorderColorEXT                                       uintptr
+	pfnRegisterDeviceEventEXT                                             uintptr
+	pfnRegisterDisplayEventEXT                                            uintptr
+	pfnReleaseCapturedPipelineDataKHR                                     uintptr
+	pfnReleaseDisplayEXT                                                  uintptr
+	pfnReleaseFullScreenExclusiveModeEXT                                  uintptr
+	pfnReleasePerformanceConfigurationINTEL                               uintptr
+	pfnReleaseProfilingLockKHR                                            uintptr
+	pfnReleaseSwapchainImagesKHR                                          uintptr
+	pfnResetCommandBuffer                                                 uintptr
+	pfnResetCommandPool                                                   uintptr
+	pfnResetDescriptorPool                                                uintptr
+	pfnResetEvent                                                         uintptr
+	pfnResetFences                                                        uintptr
+	pfnResetGpaSessionAMD                                                 uintptr
+	pfnResetQueryPool                                                     uintptr
+	pfnSetBufferCollectionBufferConstraintsFUCHSIA                        uintptr
+	pfnSetBufferCollectionImageConstraintsFUCHSIA                         uintptr
+	pfnSetDebugUtilsObjectNameEXT                                         uintptr
+	pfnSetDebugUtilsObjectTagEXT                                          uintptr
+	pfnSetDeviceMemoryPriorityEXT                                         uintptr
+	pfnSetEvent                                                           uintptr
+	pfnSetGpaDeviceClockModeAMD                                           uintptr
+	pfnSetHdrMetadataEXT                                                  uintptr
+	pfnSetLatencyMarkerLegacyNV                                           uintptr
+	pfnSetLatencyMarkerNV                                                 uintptr
+	pfnSetLatencySleepModeLegacyNV                                        uintptr
+	pfnSetLatencySleepModeNV                                              uintptr
+	pfnSetLocalDimmingAMD                                                 uintptr
+	pfnSetPrivateData                                                     uintptr
+	pfnSetSwapchainPresentTimingQueueSizeEXT                              uintptr
+	pfnShutdownLatencyDeviceLegacyNV                                      uintptr
+	pfnSignalSemaphore                                                    uintptr
+	pfnSubmitDebugUtilsMessageEXT                                         uintptr
+	pfnTransitionImageLayout                                              uintptr
+	pfnTrimCommandPool                                                    uintptr
+	pfnUninitializePerformanceApiINTEL                                    uintptr
+	pfnUnmapMemory                                                        uintptr
+	pfnUnmapMemory2                                                       uintptr
+	pfnUnregisterCustomBorderColorEXT                                     uintptr
+	pfnUpdateDescriptorSetWithTemplate                                    uintptr
+	pfnUpdateDescriptorSets                                               uintptr
+	pfnUpdateIndirectExecutionSetPipelineEXT                              uintptr
+	pfnUpdateIndirectExecutionSetShaderEXT                                uintptr
+	pfnUpdateVideoSessionParametersKHR                                    uintptr
+	pfnWaitForFences                                                      uintptr
+	pfnWaitForPresent2KHR                                                 uintptr
+	pfnWaitForPresentKHR                                                  uintptr
+	pfnWaitSemaphores                                                     uintptr
+	pfnWriteAccelerationStructuresPropertiesKHR                           uintptr
+	pfnWriteMicromapsPropertiesEXT                                        uintptr
+	pfnWriteResourceDescriptorsEXT                                        uintptr
+	pfnWriteSamplerDescriptorsEXT                                         uintptr
 )
 
 // InitCommands resolves and initializes all Vulkan Safety Critical (SC) API procedure addresses.
 func InitCommands(instance Instance, device Device) {
+	pfnAcquireDrmDisplayEXT = GetInstanceProcAddr(instance, "vkAcquireDrmDisplayEXT")
+	pfnAcquireFullScreenExclusiveModeEXT = GetDeviceProcAddr(device, "vkAcquireFullScreenExclusiveModeEXT")
+	pfnAcquireImageANDROID = GetDeviceProcAddr(device, "vkAcquireImageANDROID")
+	pfnAcquireImageOHOS = GetDeviceProcAddr(device, "vkAcquireImageOHOS")
+	pfnAcquireNextImage2KHR = GetDeviceProcAddr(device, "vkAcquireNextImage2KHR")
+	pfnAcquireNextImageKHR = GetDeviceProcAddr(device, "vkAcquireNextImageKHR")
+	pfnAcquirePerformanceConfigurationINTEL = GetDeviceProcAddr(device, "vkAcquirePerformanceConfigurationINTEL")
+	pfnAcquireProfilingLockKHR = GetDeviceProcAddr(device, "vkAcquireProfilingLockKHR")
+	pfnAcquireWinrtDisplayNV = GetInstanceProcAddr(instance, "vkAcquireWinrtDisplayNV")
+	pfnAcquireXlibDisplayEXT = GetInstanceProcAddr(instance, "vkAcquireXlibDisplayEXT")
 	pfnAllocateCommandBuffers = GetDeviceProcAddr(device, "vkAllocateCommandBuffers")
 	pfnAllocateDescriptorSets = GetDeviceProcAddr(device, "vkAllocateDescriptorSets")
 	pfnAllocateMemory = GetDeviceProcAddr(device, "vkAllocateMemory")
+	pfnAntiLagUpdateAMD = GetDeviceProcAddr(device, "vkAntiLagUpdateAMD")
 	pfnBeginCommandBuffer = GetDeviceProcAddr(device, "vkBeginCommandBuffer")
+	pfnBindAccelerationStructureMemoryNV = GetDeviceProcAddr(device, "vkBindAccelerationStructureMemoryNV")
 	pfnBindBufferMemory = GetDeviceProcAddr(device, "vkBindBufferMemory")
 	pfnBindBufferMemory2 = GetDeviceProcAddr(device, "vkBindBufferMemory2")
+	pfnBindDataGraphPipelineSessionMemoryARM = GetDeviceProcAddr(device, "vkBindDataGraphPipelineSessionMemoryARM")
 	pfnBindImageMemory = GetDeviceProcAddr(device, "vkBindImageMemory")
 	pfnBindImageMemory2 = GetDeviceProcAddr(device, "vkBindImageMemory2")
+	pfnBindOpticalFlowSessionImageNV = GetDeviceProcAddr(device, "vkBindOpticalFlowSessionImageNV")
+	pfnBindTensorMemoryARM = GetDeviceProcAddr(device, "vkBindTensorMemoryARM")
+	pfnBindVideoSessionMemoryKHR = GetDeviceProcAddr(device, "vkBindVideoSessionMemoryKHR")
+	pfnBuildAccelerationStructuresKHR = GetDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR")
+	pfnBuildMicromapsEXT = GetDeviceProcAddr(device, "vkBuildMicromapsEXT")
+	pfnClearShaderInstrumentationMetricsARM = GetDeviceProcAddr(device, "vkClearShaderInstrumentationMetricsARM")
+	pfnCmdBeginConditionalRendering2EXT = GetDeviceProcAddr(device, "vkCmdBeginConditionalRendering2EXT")
+	pfnCmdBeginConditionalRenderingEXT = GetDeviceProcAddr(device, "vkCmdBeginConditionalRenderingEXT")
+	pfnCmdBeginCustomResolveEXT = GetDeviceProcAddr(device, "vkCmdBeginCustomResolveEXT")
+	pfnCmdBeginDebugUtilsLabelEXT = GetDeviceProcAddr(device, "vkCmdBeginDebugUtilsLabelEXT")
+	pfnCmdBeginGpaSampleAMD = GetDeviceProcAddr(device, "vkCmdBeginGpaSampleAMD")
+	pfnCmdBeginGpaSessionAMD = GetDeviceProcAddr(device, "vkCmdBeginGpaSessionAMD")
+	pfnCmdBeginPerTileExecutionQCOM = GetDeviceProcAddr(device, "vkCmdBeginPerTileExecutionQCOM")
 	pfnCmdBeginQuery = GetDeviceProcAddr(device, "vkCmdBeginQuery")
+	pfnCmdBeginQueryIndexedEXT = GetDeviceProcAddr(device, "vkCmdBeginQueryIndexedEXT")
 	pfnCmdBeginRenderPass = GetDeviceProcAddr(device, "vkCmdBeginRenderPass")
 	pfnCmdBeginRenderPass2 = GetDeviceProcAddr(device, "vkCmdBeginRenderPass2")
 	pfnCmdBeginRendering = GetDeviceProcAddr(device, "vkCmdBeginRendering")
+	pfnCmdBeginShaderInstrumentationARM = GetDeviceProcAddr(device, "vkCmdBeginShaderInstrumentationARM")
+	pfnCmdBeginTransformFeedback2EXT = GetDeviceProcAddr(device, "vkCmdBeginTransformFeedback2EXT")
+	pfnCmdBeginTransformFeedbackEXT = GetDeviceProcAddr(device, "vkCmdBeginTransformFeedbackEXT")
+	pfnCmdBeginVideoCodingKHR = GetDeviceProcAddr(device, "vkCmdBeginVideoCodingKHR")
+	pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT = GetDeviceProcAddr(device, "vkCmdBindDescriptorBufferEmbeddedSamplers2EXT")
+	pfnCmdBindDescriptorBufferEmbeddedSamplersEXT = GetDeviceProcAddr(device, "vkCmdBindDescriptorBufferEmbeddedSamplersEXT")
+	pfnCmdBindDescriptorBuffersEXT = GetDeviceProcAddr(device, "vkCmdBindDescriptorBuffersEXT")
 	pfnCmdBindDescriptorSets = GetDeviceProcAddr(device, "vkCmdBindDescriptorSets")
 	pfnCmdBindDescriptorSets2 = GetDeviceProcAddr(device, "vkCmdBindDescriptorSets2")
 	pfnCmdBindIndexBuffer = GetDeviceProcAddr(device, "vkCmdBindIndexBuffer")
 	pfnCmdBindIndexBuffer2 = GetDeviceProcAddr(device, "vkCmdBindIndexBuffer2")
+	pfnCmdBindIndexBuffer3KHR = GetDeviceProcAddr(device, "vkCmdBindIndexBuffer3KHR")
+	pfnCmdBindInvocationMaskHUAWEI = GetDeviceProcAddr(device, "vkCmdBindInvocationMaskHUAWEI")
 	pfnCmdBindPipeline = GetDeviceProcAddr(device, "vkCmdBindPipeline")
+	pfnCmdBindPipelineShaderGroupNV = GetDeviceProcAddr(device, "vkCmdBindPipelineShaderGroupNV")
+	pfnCmdBindResourceHeapEXT = GetDeviceProcAddr(device, "vkCmdBindResourceHeapEXT")
+	pfnCmdBindSamplerHeapEXT = GetDeviceProcAddr(device, "vkCmdBindSamplerHeapEXT")
+	pfnCmdBindShadersEXT = GetDeviceProcAddr(device, "vkCmdBindShadersEXT")
+	pfnCmdBindShadingRateImageNV = GetDeviceProcAddr(device, "vkCmdBindShadingRateImageNV")
+	pfnCmdBindTileMemoryQCOM = GetDeviceProcAddr(device, "vkCmdBindTileMemoryQCOM")
+	pfnCmdBindTransformFeedbackBuffers2EXT = GetDeviceProcAddr(device, "vkCmdBindTransformFeedbackBuffers2EXT")
+	pfnCmdBindTransformFeedbackBuffersEXT = GetDeviceProcAddr(device, "vkCmdBindTransformFeedbackBuffersEXT")
 	pfnCmdBindVertexBuffers = GetDeviceProcAddr(device, "vkCmdBindVertexBuffers")
 	pfnCmdBindVertexBuffers2 = GetDeviceProcAddr(device, "vkCmdBindVertexBuffers2")
+	pfnCmdBindVertexBuffers2EXT = GetInstanceProcAddr(instance, "vkCmdBindVertexBuffers2EXT")
+	pfnCmdBindVertexBuffers3KHR = GetDeviceProcAddr(device, "vkCmdBindVertexBuffers3KHR")
 	pfnCmdBlitImage = GetDeviceProcAddr(device, "vkCmdBlitImage")
 	pfnCmdBlitImage2 = GetDeviceProcAddr(device, "vkCmdBlitImage2")
+	pfnCmdBlitImage2KHR = GetInstanceProcAddr(instance, "vkCmdBlitImage2KHR")
+	pfnCmdBuildAccelerationStructureNV = GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructureNV")
+	pfnCmdBuildAccelerationStructuresIndirectKHR = GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresIndirectKHR")
+	pfnCmdBuildAccelerationStructuresKHR = GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR")
+	pfnCmdBuildClusterAccelerationStructureIndirectNV = GetDeviceProcAddr(device, "vkCmdBuildClusterAccelerationStructureIndirectNV")
+	pfnCmdBuildMicromapsEXT = GetDeviceProcAddr(device, "vkCmdBuildMicromapsEXT")
+	pfnCmdBuildPartitionedAccelerationStructuresNV = GetDeviceProcAddr(device, "vkCmdBuildPartitionedAccelerationStructuresNV")
 	pfnCmdClearAttachments = GetDeviceProcAddr(device, "vkCmdClearAttachments")
 	pfnCmdClearColorImage = GetDeviceProcAddr(device, "vkCmdClearColorImage")
 	pfnCmdClearDepthStencilImage = GetDeviceProcAddr(device, "vkCmdClearDepthStencilImage")
+	pfnCmdControlVideoCodingKHR = GetDeviceProcAddr(device, "vkCmdControlVideoCodingKHR")
+	pfnCmdConvertCooperativeVectorMatrixNV = GetDeviceProcAddr(device, "vkCmdConvertCooperativeVectorMatrixNV")
+	pfnCmdCopyAccelerationStructureKHR = GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR")
+	pfnCmdCopyAccelerationStructureNV = GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureNV")
+	pfnCmdCopyAccelerationStructureToMemoryKHR = GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR")
 	pfnCmdCopyBuffer = GetDeviceProcAddr(device, "vkCmdCopyBuffer")
 	pfnCmdCopyBuffer2 = GetDeviceProcAddr(device, "vkCmdCopyBuffer2")
+	pfnCmdCopyBuffer2KHR = GetInstanceProcAddr(instance, "vkCmdCopyBuffer2KHR")
 	pfnCmdCopyBufferToImage = GetDeviceProcAddr(device, "vkCmdCopyBufferToImage")
 	pfnCmdCopyBufferToImage2 = GetDeviceProcAddr(device, "vkCmdCopyBufferToImage2")
+	pfnCmdCopyBufferToImage2KHR = GetInstanceProcAddr(instance, "vkCmdCopyBufferToImage2KHR")
+	pfnCmdCopyGpaSessionResultsAMD = GetDeviceProcAddr(device, "vkCmdCopyGpaSessionResultsAMD")
 	pfnCmdCopyImage = GetDeviceProcAddr(device, "vkCmdCopyImage")
 	pfnCmdCopyImage2 = GetDeviceProcAddr(device, "vkCmdCopyImage2")
+	pfnCmdCopyImage2KHR = GetInstanceProcAddr(instance, "vkCmdCopyImage2KHR")
 	pfnCmdCopyImageToBuffer = GetDeviceProcAddr(device, "vkCmdCopyImageToBuffer")
 	pfnCmdCopyImageToBuffer2 = GetDeviceProcAddr(device, "vkCmdCopyImageToBuffer2")
+	pfnCmdCopyImageToBuffer2KHR = GetInstanceProcAddr(instance, "vkCmdCopyImageToBuffer2KHR")
+	pfnCmdCopyImageToMemoryKHR = GetDeviceProcAddr(device, "vkCmdCopyImageToMemoryKHR")
+	pfnCmdCopyMemoryIndirectKHR = GetDeviceProcAddr(device, "vkCmdCopyMemoryIndirectKHR")
+	pfnCmdCopyMemoryIndirectNV = GetDeviceProcAddr(device, "vkCmdCopyMemoryIndirectNV")
+	pfnCmdCopyMemoryKHR = GetDeviceProcAddr(device, "vkCmdCopyMemoryKHR")
+	pfnCmdCopyMemoryToAccelerationStructureKHR = GetDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR")
+	pfnCmdCopyMemoryToImageIndirectKHR = GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageIndirectKHR")
+	pfnCmdCopyMemoryToImageIndirectNV = GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageIndirectNV")
+	pfnCmdCopyMemoryToImageKHR = GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageKHR")
+	pfnCmdCopyMemoryToMicromapEXT = GetDeviceProcAddr(device, "vkCmdCopyMemoryToMicromapEXT")
+	pfnCmdCopyMicromapEXT = GetDeviceProcAddr(device, "vkCmdCopyMicromapEXT")
+	pfnCmdCopyMicromapToMemoryEXT = GetDeviceProcAddr(device, "vkCmdCopyMicromapToMemoryEXT")
 	pfnCmdCopyQueryPoolResults = GetDeviceProcAddr(device, "vkCmdCopyQueryPoolResults")
+	pfnCmdCopyQueryPoolResultsToMemoryKHR = GetDeviceProcAddr(device, "vkCmdCopyQueryPoolResultsToMemoryKHR")
+	pfnCmdCopyTensorARM = GetDeviceProcAddr(device, "vkCmdCopyTensorARM")
+	pfnCmdCuLaunchKernelNVX = GetDeviceProcAddr(device, "vkCmdCuLaunchKernelNVX")
+	pfnCmdCudaLaunchKernelNV = GetDeviceProcAddr(device, "vkCmdCudaLaunchKernelNV")
+	pfnCmdDebugMarkerBeginEXT = GetDeviceProcAddr(device, "vkCmdDebugMarkerBeginEXT")
+	pfnCmdDebugMarkerEndEXT = GetDeviceProcAddr(device, "vkCmdDebugMarkerEndEXT")
+	pfnCmdDebugMarkerInsertEXT = GetDeviceProcAddr(device, "vkCmdDebugMarkerInsertEXT")
+	pfnCmdDecodeVideoKHR = GetDeviceProcAddr(device, "vkCmdDecodeVideoKHR")
+	pfnCmdDecompressMemoryEXT = GetDeviceProcAddr(device, "vkCmdDecompressMemoryEXT")
+	pfnCmdDecompressMemoryIndirectCountEXT = GetDeviceProcAddr(device, "vkCmdDecompressMemoryIndirectCountEXT")
+	pfnCmdDecompressMemoryIndirectCountNV = GetDeviceProcAddr(device, "vkCmdDecompressMemoryIndirectCountNV")
+	pfnCmdDecompressMemoryNV = GetDeviceProcAddr(device, "vkCmdDecompressMemoryNV")
 	pfnCmdDispatch = GetDeviceProcAddr(device, "vkCmdDispatch")
 	pfnCmdDispatchBase = GetDeviceProcAddr(device, "vkCmdDispatchBase")
+	pfnCmdDispatchDataGraphARM = GetDeviceProcAddr(device, "vkCmdDispatchDataGraphARM")
+	pfnCmdDispatchGraphAMDX = GetDeviceProcAddr(device, "vkCmdDispatchGraphAMDX")
+	pfnCmdDispatchGraphIndirectAMDX = GetDeviceProcAddr(device, "vkCmdDispatchGraphIndirectAMDX")
+	pfnCmdDispatchGraphIndirectCountAMDX = GetDeviceProcAddr(device, "vkCmdDispatchGraphIndirectCountAMDX")
 	pfnCmdDispatchIndirect = GetDeviceProcAddr(device, "vkCmdDispatchIndirect")
+	pfnCmdDispatchIndirect2KHR = GetDeviceProcAddr(device, "vkCmdDispatchIndirect2KHR")
+	pfnCmdDispatchTileQCOM = GetDeviceProcAddr(device, "vkCmdDispatchTileQCOM")
 	pfnCmdDraw = GetDeviceProcAddr(device, "vkCmdDraw")
+	pfnCmdDrawClusterHUAWEI = GetDeviceProcAddr(device, "vkCmdDrawClusterHUAWEI")
+	pfnCmdDrawClusterIndirectHUAWEI = GetDeviceProcAddr(device, "vkCmdDrawClusterIndirectHUAWEI")
 	pfnCmdDrawIndexed = GetDeviceProcAddr(device, "vkCmdDrawIndexed")
 	pfnCmdDrawIndexedIndirect = GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirect")
+	pfnCmdDrawIndexedIndirect2KHR = GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirect2KHR")
 	pfnCmdDrawIndexedIndirectCount = GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCount")
+	pfnCmdDrawIndexedIndirectCount2KHR = GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCount2KHR")
 	pfnCmdDrawIndirect = GetDeviceProcAddr(device, "vkCmdDrawIndirect")
+	pfnCmdDrawIndirect2KHR = GetDeviceProcAddr(device, "vkCmdDrawIndirect2KHR")
+	pfnCmdDrawIndirectByteCount2EXT = GetDeviceProcAddr(device, "vkCmdDrawIndirectByteCount2EXT")
+	pfnCmdDrawIndirectByteCountEXT = GetDeviceProcAddr(device, "vkCmdDrawIndirectByteCountEXT")
 	pfnCmdDrawIndirectCount = GetDeviceProcAddr(device, "vkCmdDrawIndirectCount")
+	pfnCmdDrawIndirectCount2KHR = GetDeviceProcAddr(device, "vkCmdDrawIndirectCount2KHR")
+	pfnCmdDrawMeshTasksEXT = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksEXT")
+	pfnCmdDrawMeshTasksIndirect2EXT = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirect2EXT")
+	pfnCmdDrawMeshTasksIndirectCount2EXT = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCount2EXT")
+	pfnCmdDrawMeshTasksIndirectCountEXT = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountEXT")
+	pfnCmdDrawMeshTasksIndirectCountNV = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountNV")
+	pfnCmdDrawMeshTasksIndirectEXT = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectEXT")
+	pfnCmdDrawMeshTasksIndirectNV = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectNV")
+	pfnCmdDrawMeshTasksNV = GetDeviceProcAddr(device, "vkCmdDrawMeshTasksNV")
+	pfnCmdDrawMultiEXT = GetDeviceProcAddr(device, "vkCmdDrawMultiEXT")
+	pfnCmdDrawMultiIndexedEXT = GetDeviceProcAddr(device, "vkCmdDrawMultiIndexedEXT")
+	pfnCmdEncodeVideoKHR = GetDeviceProcAddr(device, "vkCmdEncodeVideoKHR")
+	pfnCmdEndConditionalRenderingEXT = GetDeviceProcAddr(device, "vkCmdEndConditionalRenderingEXT")
+	pfnCmdEndDebugUtilsLabelEXT = GetDeviceProcAddr(device, "vkCmdEndDebugUtilsLabelEXT")
+	pfnCmdEndGpaSampleAMD = GetDeviceProcAddr(device, "vkCmdEndGpaSampleAMD")
+	pfnCmdEndGpaSessionAMD = GetDeviceProcAddr(device, "vkCmdEndGpaSessionAMD")
+	pfnCmdEndPerTileExecutionQCOM = GetDeviceProcAddr(device, "vkCmdEndPerTileExecutionQCOM")
 	pfnCmdEndQuery = GetDeviceProcAddr(device, "vkCmdEndQuery")
+	pfnCmdEndQueryIndexedEXT = GetDeviceProcAddr(device, "vkCmdEndQueryIndexedEXT")
 	pfnCmdEndRenderPass = GetDeviceProcAddr(device, "vkCmdEndRenderPass")
 	pfnCmdEndRenderPass2 = GetDeviceProcAddr(device, "vkCmdEndRenderPass2")
 	pfnCmdEndRendering = GetDeviceProcAddr(device, "vkCmdEndRendering")
+	pfnCmdEndRendering2KHR = GetDeviceProcAddr(device, "vkCmdEndRendering2KHR")
+	pfnCmdEndShaderInstrumentationARM = GetDeviceProcAddr(device, "vkCmdEndShaderInstrumentationARM")
+	pfnCmdEndTransformFeedback2EXT = GetDeviceProcAddr(device, "vkCmdEndTransformFeedback2EXT")
+	pfnCmdEndTransformFeedbackEXT = GetDeviceProcAddr(device, "vkCmdEndTransformFeedbackEXT")
+	pfnCmdEndVideoCodingKHR = GetDeviceProcAddr(device, "vkCmdEndVideoCodingKHR")
 	pfnCmdExecuteCommands = GetDeviceProcAddr(device, "vkCmdExecuteCommands")
+	pfnCmdExecuteGeneratedCommandsEXT = GetDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsEXT")
+	pfnCmdExecuteGeneratedCommandsNV = GetDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsNV")
 	pfnCmdFillBuffer = GetDeviceProcAddr(device, "vkCmdFillBuffer")
+	pfnCmdFillMemoryKHR = GetDeviceProcAddr(device, "vkCmdFillMemoryKHR")
+	pfnCmdInitializeGraphScratchMemoryAMDX = GetDeviceProcAddr(device, "vkCmdInitializeGraphScratchMemoryAMDX")
+	pfnCmdInsertDebugUtilsLabelEXT = GetDeviceProcAddr(device, "vkCmdInsertDebugUtilsLabelEXT")
 	pfnCmdNextSubpass = GetDeviceProcAddr(device, "vkCmdNextSubpass")
 	pfnCmdNextSubpass2 = GetDeviceProcAddr(device, "vkCmdNextSubpass2")
+	pfnCmdOpticalFlowExecuteNV = GetDeviceProcAddr(device, "vkCmdOpticalFlowExecuteNV")
 	pfnCmdPipelineBarrier = GetDeviceProcAddr(device, "vkCmdPipelineBarrier")
 	pfnCmdPipelineBarrier2 = GetDeviceProcAddr(device, "vkCmdPipelineBarrier2")
+	pfnCmdPipelineBarrier2KHR = GetInstanceProcAddr(instance, "vkCmdPipelineBarrier2KHR")
+	pfnCmdPreprocessGeneratedCommandsEXT = GetDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsEXT")
+	pfnCmdPreprocessGeneratedCommandsNV = GetDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsNV")
 	pfnCmdPushConstants = GetDeviceProcAddr(device, "vkCmdPushConstants")
 	pfnCmdPushConstants2 = GetDeviceProcAddr(device, "vkCmdPushConstants2")
+	pfnCmdPushDataEXT = GetDeviceProcAddr(device, "vkCmdPushDataEXT")
 	pfnCmdPushDescriptorSet = GetDeviceProcAddr(device, "vkCmdPushDescriptorSet")
 	pfnCmdPushDescriptorSet2 = GetDeviceProcAddr(device, "vkCmdPushDescriptorSet2")
 	pfnCmdPushDescriptorSetWithTemplate = GetDeviceProcAddr(device, "vkCmdPushDescriptorSetWithTemplate")
 	pfnCmdPushDescriptorSetWithTemplate2 = GetDeviceProcAddr(device, "vkCmdPushDescriptorSetWithTemplate2")
+	pfnCmdRefreshObjectsKHR = GetDeviceProcAddr(device, "vkCmdRefreshObjectsKHR")
 	pfnCmdResetEvent = GetDeviceProcAddr(device, "vkCmdResetEvent")
 	pfnCmdResetEvent2 = GetDeviceProcAddr(device, "vkCmdResetEvent2")
+	pfnCmdResetEvent2KHR = GetInstanceProcAddr(instance, "vkCmdResetEvent2KHR")
 	pfnCmdResetQueryPool = GetDeviceProcAddr(device, "vkCmdResetQueryPool")
 	pfnCmdResolveImage = GetDeviceProcAddr(device, "vkCmdResolveImage")
 	pfnCmdResolveImage2 = GetDeviceProcAddr(device, "vkCmdResolveImage2")
+	pfnCmdResolveImage2KHR = GetInstanceProcAddr(instance, "vkCmdResolveImage2KHR")
+	pfnCmdSetAlphaToCoverageEnableEXT = GetDeviceProcAddr(device, "vkCmdSetAlphaToCoverageEnableEXT")
+	pfnCmdSetAlphaToOneEnableEXT = GetDeviceProcAddr(device, "vkCmdSetAlphaToOneEnableEXT")
+	pfnCmdSetAttachmentFeedbackLoopEnableEXT = GetDeviceProcAddr(device, "vkCmdSetAttachmentFeedbackLoopEnableEXT")
 	pfnCmdSetBlendConstants = GetDeviceProcAddr(device, "vkCmdSetBlendConstants")
+	pfnCmdSetCheckpointNV = GetDeviceProcAddr(device, "vkCmdSetCheckpointNV")
+	pfnCmdSetCoarseSampleOrderNV = GetDeviceProcAddr(device, "vkCmdSetCoarseSampleOrderNV")
+	pfnCmdSetColorBlendAdvancedEXT = GetDeviceProcAddr(device, "vkCmdSetColorBlendAdvancedEXT")
+	pfnCmdSetColorBlendEnableEXT = GetDeviceProcAddr(device, "vkCmdSetColorBlendEnableEXT")
+	pfnCmdSetColorBlendEquationEXT = GetDeviceProcAddr(device, "vkCmdSetColorBlendEquationEXT")
+	pfnCmdSetColorWriteEnableEXT = GetDeviceProcAddr(device, "vkCmdSetColorWriteEnableEXT")
+	pfnCmdSetColorWriteMaskEXT = GetDeviceProcAddr(device, "vkCmdSetColorWriteMaskEXT")
+	pfnCmdSetComputeOccupancyPriorityNV = GetDeviceProcAddr(device, "vkCmdSetComputeOccupancyPriorityNV")
+	pfnCmdSetConservativeRasterizationModeEXT = GetDeviceProcAddr(device, "vkCmdSetConservativeRasterizationModeEXT")
+	pfnCmdSetCoverageModulationModeNV = GetDeviceProcAddr(device, "vkCmdSetCoverageModulationModeNV")
+	pfnCmdSetCoverageModulationTableEnableNV = GetDeviceProcAddr(device, "vkCmdSetCoverageModulationTableEnableNV")
+	pfnCmdSetCoverageModulationTableNV = GetDeviceProcAddr(device, "vkCmdSetCoverageModulationTableNV")
+	pfnCmdSetCoverageReductionModeNV = GetDeviceProcAddr(device, "vkCmdSetCoverageReductionModeNV")
+	pfnCmdSetCoverageToColorEnableNV = GetDeviceProcAddr(device, "vkCmdSetCoverageToColorEnableNV")
+	pfnCmdSetCoverageToColorLocationNV = GetDeviceProcAddr(device, "vkCmdSetCoverageToColorLocationNV")
 	pfnCmdSetCullMode = GetDeviceProcAddr(device, "vkCmdSetCullMode")
+	pfnCmdSetCullModeEXT = GetInstanceProcAddr(instance, "vkCmdSetCullModeEXT")
 	pfnCmdSetDepthBias = GetDeviceProcAddr(device, "vkCmdSetDepthBias")
+	pfnCmdSetDepthBias2EXT = GetDeviceProcAddr(device, "vkCmdSetDepthBias2EXT")
 	pfnCmdSetDepthBiasEnable = GetDeviceProcAddr(device, "vkCmdSetDepthBiasEnable")
+	pfnCmdSetDepthBiasEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetDepthBiasEnableEXT")
 	pfnCmdSetDepthBounds = GetDeviceProcAddr(device, "vkCmdSetDepthBounds")
 	pfnCmdSetDepthBoundsTestEnable = GetDeviceProcAddr(device, "vkCmdSetDepthBoundsTestEnable")
+	pfnCmdSetDepthBoundsTestEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetDepthBoundsTestEnableEXT")
+	pfnCmdSetDepthClampEnableEXT = GetDeviceProcAddr(device, "vkCmdSetDepthClampEnableEXT")
+	pfnCmdSetDepthClampRangeEXT = GetDeviceProcAddr(device, "vkCmdSetDepthClampRangeEXT")
+	pfnCmdSetDepthClipEnableEXT = GetDeviceProcAddr(device, "vkCmdSetDepthClipEnableEXT")
+	pfnCmdSetDepthClipNegativeOneToOneEXT = GetDeviceProcAddr(device, "vkCmdSetDepthClipNegativeOneToOneEXT")
 	pfnCmdSetDepthCompareOp = GetDeviceProcAddr(device, "vkCmdSetDepthCompareOp")
+	pfnCmdSetDepthCompareOpEXT = GetInstanceProcAddr(instance, "vkCmdSetDepthCompareOpEXT")
 	pfnCmdSetDepthTestEnable = GetDeviceProcAddr(device, "vkCmdSetDepthTestEnable")
+	pfnCmdSetDepthTestEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetDepthTestEnableEXT")
 	pfnCmdSetDepthWriteEnable = GetDeviceProcAddr(device, "vkCmdSetDepthWriteEnable")
+	pfnCmdSetDepthWriteEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetDepthWriteEnableEXT")
+	pfnCmdSetDescriptorBufferOffsets2EXT = GetDeviceProcAddr(device, "vkCmdSetDescriptorBufferOffsets2EXT")
+	pfnCmdSetDescriptorBufferOffsetsEXT = GetDeviceProcAddr(device, "vkCmdSetDescriptorBufferOffsetsEXT")
 	pfnCmdSetDeviceMask = GetDeviceProcAddr(device, "vkCmdSetDeviceMask")
+	pfnCmdSetDiscardRectangleEXT = GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleEXT")
+	pfnCmdSetDiscardRectangleEnableEXT = GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleEnableEXT")
+	pfnCmdSetDiscardRectangleModeEXT = GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleModeEXT")
+	pfnCmdSetDispatchParametersARM = GetDeviceProcAddr(device, "vkCmdSetDispatchParametersARM")
 	pfnCmdSetEvent = GetDeviceProcAddr(device, "vkCmdSetEvent")
 	pfnCmdSetEvent2 = GetDeviceProcAddr(device, "vkCmdSetEvent2")
+	pfnCmdSetEvent2KHR = GetInstanceProcAddr(instance, "vkCmdSetEvent2KHR")
+	pfnCmdSetExclusiveScissorEnableNV = GetDeviceProcAddr(device, "vkCmdSetExclusiveScissorEnableNV")
+	pfnCmdSetExclusiveScissorNV = GetDeviceProcAddr(device, "vkCmdSetExclusiveScissorNV")
+	pfnCmdSetExtraPrimitiveOverestimationSizeEXT = GetDeviceProcAddr(device, "vkCmdSetExtraPrimitiveOverestimationSizeEXT")
+	pfnCmdSetFragmentShadingRateEnumNV = GetDeviceProcAddr(device, "vkCmdSetFragmentShadingRateEnumNV")
+	pfnCmdSetFragmentShadingRateKHR = GetDeviceProcAddr(device, "vkCmdSetFragmentShadingRateKHR")
 	pfnCmdSetFrontFace = GetDeviceProcAddr(device, "vkCmdSetFrontFace")
+	pfnCmdSetFrontFaceEXT = GetInstanceProcAddr(instance, "vkCmdSetFrontFaceEXT")
+	pfnCmdSetLineRasterizationModeEXT = GetDeviceProcAddr(device, "vkCmdSetLineRasterizationModeEXT")
 	pfnCmdSetLineStipple = GetDeviceProcAddr(device, "vkCmdSetLineStipple")
+	pfnCmdSetLineStippleEXT = GetInstanceProcAddr(instance, "vkCmdSetLineStippleEXT")
+	pfnCmdSetLineStippleEnableEXT = GetDeviceProcAddr(device, "vkCmdSetLineStippleEnableEXT")
+	pfnCmdSetLineStippleKHR = GetInstanceProcAddr(instance, "vkCmdSetLineStippleKHR")
 	pfnCmdSetLineWidth = GetDeviceProcAddr(device, "vkCmdSetLineWidth")
+	pfnCmdSetLogicOpEXT = GetDeviceProcAddr(device, "vkCmdSetLogicOpEXT")
+	pfnCmdSetLogicOpEnableEXT = GetDeviceProcAddr(device, "vkCmdSetLogicOpEnableEXT")
+	pfnCmdSetPatchControlPointsEXT = GetDeviceProcAddr(device, "vkCmdSetPatchControlPointsEXT")
+	pfnCmdSetPerformanceMarkerINTEL = GetDeviceProcAddr(device, "vkCmdSetPerformanceMarkerINTEL")
+	pfnCmdSetPerformanceOverrideINTEL = GetDeviceProcAddr(device, "vkCmdSetPerformanceOverrideINTEL")
+	pfnCmdSetPerformanceStreamMarkerINTEL = GetDeviceProcAddr(device, "vkCmdSetPerformanceStreamMarkerINTEL")
+	pfnCmdSetPolygonModeEXT = GetDeviceProcAddr(device, "vkCmdSetPolygonModeEXT")
 	pfnCmdSetPrimitiveRestartEnable = GetDeviceProcAddr(device, "vkCmdSetPrimitiveRestartEnable")
+	pfnCmdSetPrimitiveRestartEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetPrimitiveRestartEnableEXT")
+	pfnCmdSetPrimitiveRestartIndexEXT = GetDeviceProcAddr(device, "vkCmdSetPrimitiveRestartIndexEXT")
 	pfnCmdSetPrimitiveTopology = GetDeviceProcAddr(device, "vkCmdSetPrimitiveTopology")
+	pfnCmdSetPrimitiveTopologyEXT = GetInstanceProcAddr(instance, "vkCmdSetPrimitiveTopologyEXT")
+	pfnCmdSetProvokingVertexModeEXT = GetDeviceProcAddr(device, "vkCmdSetProvokingVertexModeEXT")
+	pfnCmdSetRasterizationSamplesEXT = GetDeviceProcAddr(device, "vkCmdSetRasterizationSamplesEXT")
+	pfnCmdSetRasterizationStreamEXT = GetDeviceProcAddr(device, "vkCmdSetRasterizationStreamEXT")
 	pfnCmdSetRasterizerDiscardEnable = GetDeviceProcAddr(device, "vkCmdSetRasterizerDiscardEnable")
+	pfnCmdSetRasterizerDiscardEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetRasterizerDiscardEnableEXT")
+	pfnCmdSetRayTracingPipelineStackSizeKHR = GetDeviceProcAddr(device, "vkCmdSetRayTracingPipelineStackSizeKHR")
 	pfnCmdSetRenderingAttachmentLocations = GetDeviceProcAddr(device, "vkCmdSetRenderingAttachmentLocations")
 	pfnCmdSetRenderingInputAttachmentIndices = GetDeviceProcAddr(device, "vkCmdSetRenderingInputAttachmentIndices")
+	pfnCmdSetRepresentativeFragmentTestEnableNV = GetDeviceProcAddr(device, "vkCmdSetRepresentativeFragmentTestEnableNV")
+	pfnCmdSetSampleLocationsEXT = GetDeviceProcAddr(device, "vkCmdSetSampleLocationsEXT")
+	pfnCmdSetSampleLocationsEnableEXT = GetDeviceProcAddr(device, "vkCmdSetSampleLocationsEnableEXT")
+	pfnCmdSetSampleMaskEXT = GetDeviceProcAddr(device, "vkCmdSetSampleMaskEXT")
 	pfnCmdSetScissor = GetDeviceProcAddr(device, "vkCmdSetScissor")
 	pfnCmdSetScissorWithCount = GetDeviceProcAddr(device, "vkCmdSetScissorWithCount")
+	pfnCmdSetScissorWithCountEXT = GetInstanceProcAddr(instance, "vkCmdSetScissorWithCountEXT")
+	pfnCmdSetShadingRateImageEnableNV = GetDeviceProcAddr(device, "vkCmdSetShadingRateImageEnableNV")
 	pfnCmdSetStencilCompareMask = GetDeviceProcAddr(device, "vkCmdSetStencilCompareMask")
 	pfnCmdSetStencilOp = GetDeviceProcAddr(device, "vkCmdSetStencilOp")
+	pfnCmdSetStencilOpEXT = GetInstanceProcAddr(instance, "vkCmdSetStencilOpEXT")
 	pfnCmdSetStencilReference = GetDeviceProcAddr(device, "vkCmdSetStencilReference")
 	pfnCmdSetStencilTestEnable = GetDeviceProcAddr(device, "vkCmdSetStencilTestEnable")
+	pfnCmdSetStencilTestEnableEXT = GetInstanceProcAddr(instance, "vkCmdSetStencilTestEnableEXT")
 	pfnCmdSetStencilWriteMask = GetDeviceProcAddr(device, "vkCmdSetStencilWriteMask")
+	pfnCmdSetTessellationDomainOriginEXT = GetDeviceProcAddr(device, "vkCmdSetTessellationDomainOriginEXT")
+	pfnCmdSetVertexInputEXT = GetDeviceProcAddr(device, "vkCmdSetVertexInputEXT")
 	pfnCmdSetViewport = GetDeviceProcAddr(device, "vkCmdSetViewport")
+	pfnCmdSetViewportShadingRatePaletteNV = GetDeviceProcAddr(device, "vkCmdSetViewportShadingRatePaletteNV")
+	pfnCmdSetViewportSwizzleNV = GetDeviceProcAddr(device, "vkCmdSetViewportSwizzleNV")
+	pfnCmdSetViewportWScalingEnableNV = GetDeviceProcAddr(device, "vkCmdSetViewportWScalingEnableNV")
+	pfnCmdSetViewportWScalingNV = GetDeviceProcAddr(device, "vkCmdSetViewportWScalingNV")
 	pfnCmdSetViewportWithCount = GetDeviceProcAddr(device, "vkCmdSetViewportWithCount")
+	pfnCmdSetViewportWithCountEXT = GetInstanceProcAddr(instance, "vkCmdSetViewportWithCountEXT")
+	pfnCmdSubpassShadingHUAWEI = GetDeviceProcAddr(device, "vkCmdSubpassShadingHUAWEI")
+	pfnCmdTraceRaysIndirect2KHR = GetDeviceProcAddr(device, "vkCmdTraceRaysIndirect2KHR")
+	pfnCmdTraceRaysIndirectKHR = GetDeviceProcAddr(device, "vkCmdTraceRaysIndirectKHR")
+	pfnCmdTraceRaysKHR = GetDeviceProcAddr(device, "vkCmdTraceRaysKHR")
+	pfnCmdTraceRaysNV = GetDeviceProcAddr(device, "vkCmdTraceRaysNV")
 	pfnCmdUpdateBuffer = GetDeviceProcAddr(device, "vkCmdUpdateBuffer")
+	pfnCmdUpdateMemoryKHR = GetDeviceProcAddr(device, "vkCmdUpdateMemoryKHR")
+	pfnCmdUpdatePipelineIndirectBufferNV = GetDeviceProcAddr(device, "vkCmdUpdatePipelineIndirectBufferNV")
 	pfnCmdWaitEvents = GetDeviceProcAddr(device, "vkCmdWaitEvents")
 	pfnCmdWaitEvents2 = GetDeviceProcAddr(device, "vkCmdWaitEvents2")
+	pfnCmdWaitEvents2KHR = GetInstanceProcAddr(instance, "vkCmdWaitEvents2KHR")
+	pfnCmdWriteAccelerationStructuresPropertiesKHR = GetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR")
+	pfnCmdWriteAccelerationStructuresPropertiesNV = GetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesNV")
+	pfnCmdWriteBufferMarker2AMD = GetDeviceProcAddr(device, "vkCmdWriteBufferMarker2AMD")
+	pfnCmdWriteBufferMarkerAMD = GetDeviceProcAddr(device, "vkCmdWriteBufferMarkerAMD")
+	pfnCmdWriteMarkerToMemoryAMD = GetDeviceProcAddr(device, "vkCmdWriteMarkerToMemoryAMD")
+	pfnCmdWriteMicromapsPropertiesEXT = GetDeviceProcAddr(device, "vkCmdWriteMicromapsPropertiesEXT")
 	pfnCmdWriteTimestamp = GetDeviceProcAddr(device, "vkCmdWriteTimestamp")
 	pfnCmdWriteTimestamp2 = GetDeviceProcAddr(device, "vkCmdWriteTimestamp2")
+	pfnCmdWriteTimestamp2KHR = GetInstanceProcAddr(instance, "vkCmdWriteTimestamp2KHR")
+	pfnCompileDeferredNV = GetDeviceProcAddr(device, "vkCompileDeferredNV")
+	pfnConvertCooperativeVectorMatrixNV = GetDeviceProcAddr(device, "vkConvertCooperativeVectorMatrixNV")
+	pfnCopyAccelerationStructureKHR = GetDeviceProcAddr(device, "vkCopyAccelerationStructureKHR")
+	pfnCopyAccelerationStructureToMemoryKHR = GetDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR")
 	pfnCopyImageToImage = GetDeviceProcAddr(device, "vkCopyImageToImage")
 	pfnCopyImageToMemory = GetDeviceProcAddr(device, "vkCopyImageToMemory")
+	pfnCopyMemoryToAccelerationStructureKHR = GetDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR")
 	pfnCopyMemoryToImage = GetDeviceProcAddr(device, "vkCopyMemoryToImage")
+	pfnCopyMemoryToMicromapEXT = GetDeviceProcAddr(device, "vkCopyMemoryToMicromapEXT")
+	pfnCopyMicromapEXT = GetDeviceProcAddr(device, "vkCopyMicromapEXT")
+	pfnCopyMicromapToMemoryEXT = GetDeviceProcAddr(device, "vkCopyMicromapToMemoryEXT")
+	pfnCreateAccelerationStructure2KHR = GetDeviceProcAddr(device, "vkCreateAccelerationStructure2KHR")
+	pfnCreateAccelerationStructureKHR = GetDeviceProcAddr(device, "vkCreateAccelerationStructureKHR")
+	pfnCreateAccelerationStructureNV = GetDeviceProcAddr(device, "vkCreateAccelerationStructureNV")
+	pfnCreateAndroidSurfaceKHR = GetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR")
 	pfnCreateBuffer = GetDeviceProcAddr(device, "vkCreateBuffer")
+	pfnCreateBufferCollectionFUCHSIA = GetDeviceProcAddr(device, "vkCreateBufferCollectionFUCHSIA")
 	pfnCreateBufferView = GetDeviceProcAddr(device, "vkCreateBufferView")
 	pfnCreateCommandPool = GetDeviceProcAddr(device, "vkCreateCommandPool")
 	pfnCreateComputePipelines = GetDeviceProcAddr(device, "vkCreateComputePipelines")
+	pfnCreateCuFunctionNVX = GetDeviceProcAddr(device, "vkCreateCuFunctionNVX")
+	pfnCreateCuModuleNVX = GetDeviceProcAddr(device, "vkCreateCuModuleNVX")
+	pfnCreateCudaFunctionNV = GetDeviceProcAddr(device, "vkCreateCudaFunctionNV")
+	pfnCreateCudaModuleNV = GetDeviceProcAddr(device, "vkCreateCudaModuleNV")
+	pfnCreateDataGraphPipelineSessionARM = GetDeviceProcAddr(device, "vkCreateDataGraphPipelineSessionARM")
+	pfnCreateDataGraphPipelinesARM = GetDeviceProcAddr(device, "vkCreateDataGraphPipelinesARM")
+	pfnCreateDebugReportCallbackEXT = GetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT")
+	pfnCreateDebugUtilsMessengerEXT = GetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
+	pfnCreateDeferredOperationKHR = GetDeviceProcAddr(device, "vkCreateDeferredOperationKHR")
 	pfnCreateDescriptorPool = GetDeviceProcAddr(device, "vkCreateDescriptorPool")
 	pfnCreateDescriptorSetLayout = GetDeviceProcAddr(device, "vkCreateDescriptorSetLayout")
 	pfnCreateDescriptorUpdateTemplate = GetDeviceProcAddr(device, "vkCreateDescriptorUpdateTemplate")
 	pfnCreateDevice = GetInstanceProcAddr(instance, "vkCreateDevice")
+	pfnCreateDirectFBSurfaceEXT = GetInstanceProcAddr(instance, "vkCreateDirectFBSurfaceEXT")
+	pfnCreateDisplayModeKHR = GetInstanceProcAddr(instance, "vkCreateDisplayModeKHR")
+	pfnCreateDisplayPlaneSurfaceKHR = GetInstanceProcAddr(instance, "vkCreateDisplayPlaneSurfaceKHR")
 	pfnCreateEvent = GetDeviceProcAddr(device, "vkCreateEvent")
+	pfnCreateExecutionGraphPipelinesAMDX = GetDeviceProcAddr(device, "vkCreateExecutionGraphPipelinesAMDX")
+	pfnCreateExternalComputeQueueNV = GetDeviceProcAddr(device, "vkCreateExternalComputeQueueNV")
 	pfnCreateFence = GetDeviceProcAddr(device, "vkCreateFence")
 	pfnCreateFramebuffer = GetDeviceProcAddr(device, "vkCreateFramebuffer")
+	pfnCreateGpaSessionAMD = GetDeviceProcAddr(device, "vkCreateGpaSessionAMD")
 	pfnCreateGraphicsPipelines = GetDeviceProcAddr(device, "vkCreateGraphicsPipelines")
+	pfnCreateHeadlessSurfaceEXT = GetInstanceProcAddr(instance, "vkCreateHeadlessSurfaceEXT")
+	pfnCreateIOSSurfaceMVK = GetInstanceProcAddr(instance, "vkCreateIOSSurfaceMVK")
 	pfnCreateImage = GetDeviceProcAddr(device, "vkCreateImage")
+	pfnCreateImagePipeSurfaceFUCHSIA = GetInstanceProcAddr(instance, "vkCreateImagePipeSurfaceFUCHSIA")
 	pfnCreateImageView = GetDeviceProcAddr(device, "vkCreateImageView")
+	pfnCreateIndirectCommandsLayoutEXT = GetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutEXT")
+	pfnCreateIndirectCommandsLayoutNV = GetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNV")
+	pfnCreateIndirectExecutionSetEXT = GetDeviceProcAddr(device, "vkCreateIndirectExecutionSetEXT")
 	pfnCreateInstance = GetInstanceProcAddr(instance, "vkCreateInstance")
+	pfnCreateMacOSSurfaceMVK = GetInstanceProcAddr(instance, "vkCreateMacOSSurfaceMVK")
+	pfnCreateMetalSurfaceEXT = GetInstanceProcAddr(instance, "vkCreateMetalSurfaceEXT")
+	pfnCreateMicromapEXT = GetDeviceProcAddr(device, "vkCreateMicromapEXT")
+	pfnCreateOpticalFlowSessionNV = GetDeviceProcAddr(device, "vkCreateOpticalFlowSessionNV")
+	pfnCreatePipelineBinariesKHR = GetDeviceProcAddr(device, "vkCreatePipelineBinariesKHR")
 	pfnCreatePipelineCache = GetDeviceProcAddr(device, "vkCreatePipelineCache")
 	pfnCreatePipelineLayout = GetDeviceProcAddr(device, "vkCreatePipelineLayout")
 	pfnCreatePrivateDataSlot = GetDeviceProcAddr(device, "vkCreatePrivateDataSlot")
@@ -377,22 +1193,64 @@ func InitCommands(instance Instance, device Device) {
 	pfnCreateRenderPass2 = GetDeviceProcAddr(device, "vkCreateRenderPass2")
 	pfnCreateSampler = GetDeviceProcAddr(device, "vkCreateSampler")
 	pfnCreateSamplerYcbcrConversion = GetDeviceProcAddr(device, "vkCreateSamplerYcbcrConversion")
+	pfnCreateScreenSurfaceQNX = GetInstanceProcAddr(instance, "vkCreateScreenSurfaceQNX")
 	pfnCreateSemaphore = GetDeviceProcAddr(device, "vkCreateSemaphore")
+	pfnCreateSemaphoreSciSyncPoolNV = GetDeviceProcAddr(device, "vkCreateSemaphoreSciSyncPoolNV")
+	pfnCreateShaderInstrumentationARM = GetDeviceProcAddr(device, "vkCreateShaderInstrumentationARM")
 	pfnCreateShaderModule = GetDeviceProcAddr(device, "vkCreateShaderModule")
+	pfnCreateShadersEXT = GetDeviceProcAddr(device, "vkCreateShadersEXT")
+	pfnCreateSharedSwapchainsKHR = GetDeviceProcAddr(device, "vkCreateSharedSwapchainsKHR")
+	pfnCreateStreamDescriptorSurfaceGGP = GetInstanceProcAddr(instance, "vkCreateStreamDescriptorSurfaceGGP")
+	pfnCreateSurfaceOHOS = GetInstanceProcAddr(instance, "vkCreateSurfaceOHOS")
+	pfnCreateSwapchainKHR = GetDeviceProcAddr(device, "vkCreateSwapchainKHR")
+	pfnCreateTensorARM = GetDeviceProcAddr(device, "vkCreateTensorARM")
+	pfnCreateTensorViewARM = GetDeviceProcAddr(device, "vkCreateTensorViewARM")
+	pfnCreateUbmSurfaceSEC = GetInstanceProcAddr(instance, "vkCreateUbmSurfaceSEC")
+	pfnCreateValidationCacheEXT = GetDeviceProcAddr(device, "vkCreateValidationCacheEXT")
+	pfnCreateViSurfaceNN = GetInstanceProcAddr(instance, "vkCreateViSurfaceNN")
+	pfnCreateVideoSessionKHR = GetDeviceProcAddr(device, "vkCreateVideoSessionKHR")
+	pfnCreateVideoSessionParametersKHR = GetDeviceProcAddr(device, "vkCreateVideoSessionParametersKHR")
+	pfnCreateWaylandSurfaceKHR = GetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR")
+	pfnCreateWin32SurfaceKHR = GetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR")
+	pfnCreateXcbSurfaceKHR = GetInstanceProcAddr(instance, "vkCreateXcbSurfaceKHR")
+	pfnCreateXlibSurfaceKHR = GetInstanceProcAddr(instance, "vkCreateXlibSurfaceKHR")
+	pfnDebugMarkerSetObjectNameEXT = GetDeviceProcAddr(device, "vkDebugMarkerSetObjectNameEXT")
+	pfnDebugMarkerSetObjectTagEXT = GetDeviceProcAddr(device, "vkDebugMarkerSetObjectTagEXT")
+	pfnDebugReportMessageEXT = GetInstanceProcAddr(instance, "vkDebugReportMessageEXT")
+	pfnDeferredOperationJoinKHR = GetDeviceProcAddr(device, "vkDeferredOperationJoinKHR")
+	pfnDestroyAccelerationStructureKHR = GetDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR")
+	pfnDestroyAccelerationStructureNV = GetDeviceProcAddr(device, "vkDestroyAccelerationStructureNV")
 	pfnDestroyBuffer = GetDeviceProcAddr(device, "vkDestroyBuffer")
+	pfnDestroyBufferCollectionFUCHSIA = GetDeviceProcAddr(device, "vkDestroyBufferCollectionFUCHSIA")
 	pfnDestroyBufferView = GetDeviceProcAddr(device, "vkDestroyBufferView")
 	pfnDestroyCommandPool = GetDeviceProcAddr(device, "vkDestroyCommandPool")
+	pfnDestroyCuFunctionNVX = GetDeviceProcAddr(device, "vkDestroyCuFunctionNVX")
+	pfnDestroyCuModuleNVX = GetDeviceProcAddr(device, "vkDestroyCuModuleNVX")
+	pfnDestroyCudaFunctionNV = GetDeviceProcAddr(device, "vkDestroyCudaFunctionNV")
+	pfnDestroyCudaModuleNV = GetDeviceProcAddr(device, "vkDestroyCudaModuleNV")
+	pfnDestroyDataGraphPipelineSessionARM = GetDeviceProcAddr(device, "vkDestroyDataGraphPipelineSessionARM")
+	pfnDestroyDebugReportCallbackEXT = GetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT")
+	pfnDestroyDebugUtilsMessengerEXT = GetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")
+	pfnDestroyDeferredOperationKHR = GetDeviceProcAddr(device, "vkDestroyDeferredOperationKHR")
 	pfnDestroyDescriptorPool = GetDeviceProcAddr(device, "vkDestroyDescriptorPool")
 	pfnDestroyDescriptorSetLayout = GetDeviceProcAddr(device, "vkDestroyDescriptorSetLayout")
 	pfnDestroyDescriptorUpdateTemplate = GetDeviceProcAddr(device, "vkDestroyDescriptorUpdateTemplate")
 	pfnDestroyDevice = GetDeviceProcAddr(device, "vkDestroyDevice")
 	pfnDestroyEvent = GetDeviceProcAddr(device, "vkDestroyEvent")
+	pfnDestroyExternalComputeQueueNV = GetDeviceProcAddr(device, "vkDestroyExternalComputeQueueNV")
 	pfnDestroyFence = GetDeviceProcAddr(device, "vkDestroyFence")
 	pfnDestroyFramebuffer = GetDeviceProcAddr(device, "vkDestroyFramebuffer")
+	pfnDestroyGpaSessionAMD = GetDeviceProcAddr(device, "vkDestroyGpaSessionAMD")
 	pfnDestroyImage = GetDeviceProcAddr(device, "vkDestroyImage")
 	pfnDestroyImageView = GetDeviceProcAddr(device, "vkDestroyImageView")
+	pfnDestroyIndirectCommandsLayoutEXT = GetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutEXT")
+	pfnDestroyIndirectCommandsLayoutNV = GetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNV")
+	pfnDestroyIndirectExecutionSetEXT = GetDeviceProcAddr(device, "vkDestroyIndirectExecutionSetEXT")
 	pfnDestroyInstance = GetInstanceProcAddr(instance, "vkDestroyInstance")
+	pfnDestroyMicromapEXT = GetDeviceProcAddr(device, "vkDestroyMicromapEXT")
+	pfnDestroyOpticalFlowSessionNV = GetDeviceProcAddr(device, "vkDestroyOpticalFlowSessionNV")
 	pfnDestroyPipeline = GetDeviceProcAddr(device, "vkDestroyPipeline")
+	pfnDestroyPipelineBinaryKHR = GetDeviceProcAddr(device, "vkDestroyPipelineBinaryKHR")
 	pfnDestroyPipelineCache = GetDeviceProcAddr(device, "vkDestroyPipelineCache")
 	pfnDestroyPipelineLayout = GetDeviceProcAddr(device, "vkDestroyPipelineLayout")
 	pfnDestroyPrivateDataSlot = GetDeviceProcAddr(device, "vkDestroyPrivateDataSlot")
@@ -401,8 +1259,19 @@ func InitCommands(instance Instance, device Device) {
 	pfnDestroySampler = GetDeviceProcAddr(device, "vkDestroySampler")
 	pfnDestroySamplerYcbcrConversion = GetDeviceProcAddr(device, "vkDestroySamplerYcbcrConversion")
 	pfnDestroySemaphore = GetDeviceProcAddr(device, "vkDestroySemaphore")
+	pfnDestroySemaphoreSciSyncPoolNV = GetDeviceProcAddr(device, "vkDestroySemaphoreSciSyncPoolNV")
+	pfnDestroyShaderEXT = GetDeviceProcAddr(device, "vkDestroyShaderEXT")
+	pfnDestroyShaderInstrumentationARM = GetDeviceProcAddr(device, "vkDestroyShaderInstrumentationARM")
 	pfnDestroyShaderModule = GetDeviceProcAddr(device, "vkDestroyShaderModule")
+	pfnDestroySurfaceKHR = GetInstanceProcAddr(instance, "vkDestroySurfaceKHR")
+	pfnDestroySwapchainKHR = GetDeviceProcAddr(device, "vkDestroySwapchainKHR")
+	pfnDestroyTensorARM = GetDeviceProcAddr(device, "vkDestroyTensorARM")
+	pfnDestroyTensorViewARM = GetDeviceProcAddr(device, "vkDestroyTensorViewARM")
+	pfnDestroyValidationCacheEXT = GetDeviceProcAddr(device, "vkDestroyValidationCacheEXT")
+	pfnDestroyVideoSessionKHR = GetDeviceProcAddr(device, "vkDestroyVideoSessionKHR")
+	pfnDestroyVideoSessionParametersKHR = GetDeviceProcAddr(device, "vkDestroyVideoSessionParametersKHR")
 	pfnDeviceWaitIdle = GetDeviceProcAddr(device, "vkDeviceWaitIdle")
+	pfnDisplayPowerControlEXT = GetDeviceProcAddr(device, "vkDisplayPowerControlEXT")
 	pfnEndCommandBuffer = GetDeviceProcAddr(device, "vkEndCommandBuffer")
 	pfnEnumerateDeviceExtensionProperties = GetInstanceProcAddr(instance, "vkEnumerateDeviceExtensionProperties")
 	pfnEnumerateDeviceLayerProperties = GetInstanceProcAddr(instance, "vkEnumerateDeviceLayerProperties")
@@ -410,86 +1279,457 @@ func InitCommands(instance Instance, device Device) {
 	pfnEnumerateInstanceLayerProperties = GetInstanceProcAddr(instance, "vkEnumerateInstanceLayerProperties")
 	pfnEnumerateInstanceVersion = GetInstanceProcAddr(instance, "vkEnumerateInstanceVersion")
 	pfnEnumeratePhysicalDeviceGroups = GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceGroups")
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM = GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM")
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR = GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR")
+	pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM = GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceShaderInstrumentationMetricsARM")
 	pfnEnumeratePhysicalDevices = GetInstanceProcAddr(instance, "vkEnumeratePhysicalDevices")
+	pfnExportMetalObjectsEXT = GetDeviceProcAddr(device, "vkExportMetalObjectsEXT")
 	pfnFlushMappedMemoryRanges = GetDeviceProcAddr(device, "vkFlushMappedMemoryRanges")
 	pfnFreeCommandBuffers = GetDeviceProcAddr(device, "vkFreeCommandBuffers")
 	pfnFreeDescriptorSets = GetDeviceProcAddr(device, "vkFreeDescriptorSets")
 	pfnFreeMemory = GetDeviceProcAddr(device, "vkFreeMemory")
+	pfnGetAccelerationStructureBuildSizesKHR = GetDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR")
+	pfnGetAccelerationStructureDeviceAddressKHR = GetDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR")
+	pfnGetAccelerationStructureHandleNV = GetDeviceProcAddr(device, "vkGetAccelerationStructureHandleNV")
+	pfnGetAccelerationStructureMemoryRequirementsNV = GetDeviceProcAddr(device, "vkGetAccelerationStructureMemoryRequirementsNV")
+	pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT = GetDeviceProcAddr(device, "vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT")
+	pfnGetAndroidHardwareBufferPropertiesANDROID = GetDeviceProcAddr(device, "vkGetAndroidHardwareBufferPropertiesANDROID")
+	pfnGetBufferCollectionPropertiesFUCHSIA = GetDeviceProcAddr(device, "vkGetBufferCollectionPropertiesFUCHSIA")
 	pfnGetBufferDeviceAddress = GetDeviceProcAddr(device, "vkGetBufferDeviceAddress")
 	pfnGetBufferMemoryRequirements = GetDeviceProcAddr(device, "vkGetBufferMemoryRequirements")
 	pfnGetBufferMemoryRequirements2 = GetDeviceProcAddr(device, "vkGetBufferMemoryRequirements2")
 	pfnGetBufferOpaqueCaptureAddress = GetDeviceProcAddr(device, "vkGetBufferOpaqueCaptureAddress")
+	pfnGetBufferOpaqueCaptureDescriptorDataEXT = GetDeviceProcAddr(device, "vkGetBufferOpaqueCaptureDescriptorDataEXT")
+	pfnGetCalibratedTimestampsKHR = GetDeviceProcAddr(device, "vkGetCalibratedTimestampsKHR")
+	pfnGetClusterAccelerationStructureBuildSizesNV = GetDeviceProcAddr(device, "vkGetClusterAccelerationStructureBuildSizesNV")
 	pfnGetCommandPoolMemoryConsumption = GetDeviceProcAddr(device, "vkGetCommandPoolMemoryConsumption")
+	pfnGetCudaModuleCacheNV = GetDeviceProcAddr(device, "vkGetCudaModuleCacheNV")
+	pfnGetDataGraphPipelineAvailablePropertiesARM = GetDeviceProcAddr(device, "vkGetDataGraphPipelineAvailablePropertiesARM")
+	pfnGetDataGraphPipelinePropertiesARM = GetDeviceProcAddr(device, "vkGetDataGraphPipelinePropertiesARM")
+	pfnGetDataGraphPipelineSessionBindPointRequirementsARM = GetDeviceProcAddr(device, "vkGetDataGraphPipelineSessionBindPointRequirementsARM")
+	pfnGetDataGraphPipelineSessionMemoryRequirementsARM = GetDeviceProcAddr(device, "vkGetDataGraphPipelineSessionMemoryRequirementsARM")
+	pfnGetDeferredOperationMaxConcurrencyKHR = GetDeviceProcAddr(device, "vkGetDeferredOperationMaxConcurrencyKHR")
+	pfnGetDeferredOperationResultKHR = GetDeviceProcAddr(device, "vkGetDeferredOperationResultKHR")
+	pfnGetDescriptorEXT = GetDeviceProcAddr(device, "vkGetDescriptorEXT")
+	pfnGetDescriptorSetHostMappingVALVE = GetDeviceProcAddr(device, "vkGetDescriptorSetHostMappingVALVE")
+	pfnGetDescriptorSetLayoutBindingOffsetEXT = GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutBindingOffsetEXT")
+	pfnGetDescriptorSetLayoutHostMappingInfoVALVE = GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutHostMappingInfoVALVE")
+	pfnGetDescriptorSetLayoutSizeEXT = GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutSizeEXT")
 	pfnGetDescriptorSetLayoutSupport = GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutSupport")
+	pfnGetDeviceAccelerationStructureCompatibilityKHR = GetDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR")
 	pfnGetDeviceBufferMemoryRequirements = GetDeviceProcAddr(device, "vkGetDeviceBufferMemoryRequirements")
+	pfnGetDeviceCombinedImageSamplerIndexNVX = GetDeviceProcAddr(device, "vkGetDeviceCombinedImageSamplerIndexNVX")
+	pfnGetDeviceFaultDebugInfoKHR = GetDeviceProcAddr(device, "vkGetDeviceFaultDebugInfoKHR")
+	pfnGetDeviceFaultInfoEXT = GetDeviceProcAddr(device, "vkGetDeviceFaultInfoEXT")
+	pfnGetDeviceFaultReportsKHR = GetDeviceProcAddr(device, "vkGetDeviceFaultReportsKHR")
 	pfnGetDeviceGroupPeerMemoryFeatures = GetDeviceProcAddr(device, "vkGetDeviceGroupPeerMemoryFeatures")
+	pfnGetDeviceGroupPresentCapabilitiesKHR = GetDeviceProcAddr(device, "vkGetDeviceGroupPresentCapabilitiesKHR")
+	pfnGetDeviceGroupSurfacePresentModes2EXT = GetDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModes2EXT")
+	pfnGetDeviceGroupSurfacePresentModesKHR = GetDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModesKHR")
 	pfnGetDeviceImageMemoryRequirements = GetDeviceProcAddr(device, "vkGetDeviceImageMemoryRequirements")
 	pfnGetDeviceImageSparseMemoryRequirements = GetDeviceProcAddr(device, "vkGetDeviceImageSparseMemoryRequirements")
 	pfnGetDeviceImageSubresourceLayout = GetDeviceProcAddr(device, "vkGetDeviceImageSubresourceLayout")
 	pfnGetDeviceMemoryCommitment = GetDeviceProcAddr(device, "vkGetDeviceMemoryCommitment")
 	pfnGetDeviceMemoryOpaqueCaptureAddress = GetDeviceProcAddr(device, "vkGetDeviceMemoryOpaqueCaptureAddress")
+	pfnGetDeviceMicromapCompatibilityEXT = GetDeviceProcAddr(device, "vkGetDeviceMicromapCompatibilityEXT")
 	pfnGetDeviceProcAddr = GetDeviceProcAddr(device, "vkGetDeviceProcAddr")
 	pfnGetDeviceQueue = GetDeviceProcAddr(device, "vkGetDeviceQueue")
 	pfnGetDeviceQueue2 = GetDeviceProcAddr(device, "vkGetDeviceQueue2")
+	pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = GetDeviceProcAddr(device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI")
+	pfnGetDeviceTensorMemoryRequirementsARM = GetDeviceProcAddr(device, "vkGetDeviceTensorMemoryRequirementsARM")
+	pfnGetDisplayModeProperties2KHR = GetInstanceProcAddr(instance, "vkGetDisplayModeProperties2KHR")
+	pfnGetDisplayModePropertiesKHR = GetInstanceProcAddr(instance, "vkGetDisplayModePropertiesKHR")
+	pfnGetDisplayPlaneCapabilities2KHR = GetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilities2KHR")
+	pfnGetDisplayPlaneCapabilitiesKHR = GetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilitiesKHR")
+	pfnGetDisplayPlaneSupportedDisplaysKHR = GetInstanceProcAddr(instance, "vkGetDisplayPlaneSupportedDisplaysKHR")
+	pfnGetDrmDisplayEXT = GetInstanceProcAddr(instance, "vkGetDrmDisplayEXT")
+	pfnGetDynamicRenderingTilePropertiesQCOM = GetDeviceProcAddr(device, "vkGetDynamicRenderingTilePropertiesQCOM")
+	pfnGetEncodedVideoSessionParametersKHR = GetDeviceProcAddr(device, "vkGetEncodedVideoSessionParametersKHR")
 	pfnGetEventStatus = GetDeviceProcAddr(device, "vkGetEventStatus")
+	pfnGetExecutionGraphPipelineNodeIndexAMDX = GetDeviceProcAddr(device, "vkGetExecutionGraphPipelineNodeIndexAMDX")
+	pfnGetExecutionGraphPipelineScratchSizeAMDX = GetDeviceProcAddr(device, "vkGetExecutionGraphPipelineScratchSizeAMDX")
+	pfnGetExternalComputeQueueDataNV = GetInstanceProcAddr(instance, "vkGetExternalComputeQueueDataNV")
 	pfnGetFaultData = GetDeviceProcAddr(device, "vkGetFaultData")
+	pfnGetFenceFdKHR = GetDeviceProcAddr(device, "vkGetFenceFdKHR")
+	pfnGetFenceSciSyncFenceNV = GetDeviceProcAddr(device, "vkGetFenceSciSyncFenceNV")
+	pfnGetFenceSciSyncObjNV = GetDeviceProcAddr(device, "vkGetFenceSciSyncObjNV")
 	pfnGetFenceStatus = GetDeviceProcAddr(device, "vkGetFenceStatus")
+	pfnGetFenceWin32HandleKHR = GetDeviceProcAddr(device, "vkGetFenceWin32HandleKHR")
+	pfnGetFramebufferTilePropertiesQCOM = GetDeviceProcAddr(device, "vkGetFramebufferTilePropertiesQCOM")
+	pfnGetGeneratedCommandsMemoryRequirementsEXT = GetDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsEXT")
+	pfnGetGeneratedCommandsMemoryRequirementsNV = GetDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsNV")
+	pfnGetGpaDeviceClockInfoAMD = GetDeviceProcAddr(device, "vkGetGpaDeviceClockInfoAMD")
+	pfnGetGpaSessionResultsAMD = GetDeviceProcAddr(device, "vkGetGpaSessionResultsAMD")
+	pfnGetGpaSessionStatusAMD = GetDeviceProcAddr(device, "vkGetGpaSessionStatusAMD")
+	pfnGetImageDrmFormatModifierPropertiesEXT = GetDeviceProcAddr(device, "vkGetImageDrmFormatModifierPropertiesEXT")
 	pfnGetImageMemoryRequirements = GetDeviceProcAddr(device, "vkGetImageMemoryRequirements")
 	pfnGetImageMemoryRequirements2 = GetDeviceProcAddr(device, "vkGetImageMemoryRequirements2")
+	pfnGetImageOpaqueCaptureDataEXT = GetDeviceProcAddr(device, "vkGetImageOpaqueCaptureDataEXT")
+	pfnGetImageOpaqueCaptureDescriptorDataEXT = GetDeviceProcAddr(device, "vkGetImageOpaqueCaptureDescriptorDataEXT")
 	pfnGetImageSparseMemoryRequirements = GetDeviceProcAddr(device, "vkGetImageSparseMemoryRequirements")
 	pfnGetImageSparseMemoryRequirements2 = GetDeviceProcAddr(device, "vkGetImageSparseMemoryRequirements2")
 	pfnGetImageSubresourceLayout = GetDeviceProcAddr(device, "vkGetImageSubresourceLayout")
 	pfnGetImageSubresourceLayout2 = GetDeviceProcAddr(device, "vkGetImageSubresourceLayout2")
+	pfnGetImageViewAddressNVX = GetDeviceProcAddr(device, "vkGetImageViewAddressNVX")
+	pfnGetImageViewHandle64NVX = GetDeviceProcAddr(device, "vkGetImageViewHandle64NVX")
+	pfnGetImageViewHandleNVX = GetDeviceProcAddr(device, "vkGetImageViewHandleNVX")
+	pfnGetImageViewOpaqueCaptureDescriptorDataEXT = GetDeviceProcAddr(device, "vkGetImageViewOpaqueCaptureDescriptorDataEXT")
 	pfnGetInstanceProcAddr = GetInstanceProcAddr(instance, "vkGetInstanceProcAddr")
+	pfnGetLatencyTimingsLegacyNV = GetDeviceProcAddr(device, "vkGetLatencyTimingsLegacyNV")
+	pfnGetLatencyTimingsNV = GetDeviceProcAddr(device, "vkGetLatencyTimingsNV")
+	pfnGetMemoryAndroidHardwareBufferANDROID = GetDeviceProcAddr(device, "vkGetMemoryAndroidHardwareBufferANDROID")
+	pfnGetMemoryFdKHR = GetDeviceProcAddr(device, "vkGetMemoryFdKHR")
+	pfnGetMemoryFdPropertiesKHR = GetDeviceProcAddr(device, "vkGetMemoryFdPropertiesKHR")
+	pfnGetMemoryHostPointerPropertiesEXT = GetDeviceProcAddr(device, "vkGetMemoryHostPointerPropertiesEXT")
+	pfnGetMemoryMetalHandleEXT = GetDeviceProcAddr(device, "vkGetMemoryMetalHandleEXT")
+	pfnGetMemoryMetalHandlePropertiesEXT = GetDeviceProcAddr(device, "vkGetMemoryMetalHandlePropertiesEXT")
+	pfnGetMemoryNativeBufferOHOS = GetDeviceProcAddr(device, "vkGetMemoryNativeBufferOHOS")
+	pfnGetMemoryRemoteAddressNV = GetDeviceProcAddr(device, "vkGetMemoryRemoteAddressNV")
+	pfnGetMemorySciBufNV = GetDeviceProcAddr(device, "vkGetMemorySciBufNV")
+	pfnGetMemoryWin32HandleKHR = GetDeviceProcAddr(device, "vkGetMemoryWin32HandleKHR")
+	pfnGetMemoryWin32HandleNV = GetDeviceProcAddr(device, "vkGetMemoryWin32HandleNV")
+	pfnGetMemoryWin32HandlePropertiesKHR = GetDeviceProcAddr(device, "vkGetMemoryWin32HandlePropertiesKHR")
+	pfnGetMemoryZirconHandleFUCHSIA = GetDeviceProcAddr(device, "vkGetMemoryZirconHandleFUCHSIA")
+	pfnGetMemoryZirconHandlePropertiesFUCHSIA = GetDeviceProcAddr(device, "vkGetMemoryZirconHandlePropertiesFUCHSIA")
+	pfnGetMicromapBuildSizesEXT = GetDeviceProcAddr(device, "vkGetMicromapBuildSizesEXT")
+	pfnGetNativeBufferPropertiesOHOS = GetDeviceProcAddr(device, "vkGetNativeBufferPropertiesOHOS")
+	pfnGetPartitionedAccelerationStructuresBuildSizesNV = GetDeviceProcAddr(device, "vkGetPartitionedAccelerationStructuresBuildSizesNV")
+	pfnGetPastPresentationTimingEXT = GetDeviceProcAddr(device, "vkGetPastPresentationTimingEXT")
+	pfnGetPastPresentationTimingGOOGLE = GetDeviceProcAddr(device, "vkGetPastPresentationTimingGOOGLE")
+	pfnGetPerformanceParameterINTEL = GetDeviceProcAddr(device, "vkGetPerformanceParameterINTEL")
+	pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsKHR")
+	pfnGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV")
+	pfnGetPhysicalDeviceCooperativeMatrixProperties2EXT = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixProperties2EXT")
+	pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR")
+	pfnGetPhysicalDeviceCooperativeMatrixPropertiesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV")
+	pfnGetPhysicalDeviceCooperativeVectorPropertiesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeVectorPropertiesNV")
+	pfnGetPhysicalDeviceDescriptorSizeEXT = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDescriptorSizeEXT")
+	pfnGetPhysicalDeviceDirectFBPresentationSupportEXT = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT")
+	pfnGetPhysicalDeviceDisplayPlaneProperties2KHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR")
+	pfnGetPhysicalDeviceDisplayPlanePropertiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR")
+	pfnGetPhysicalDeviceDisplayProperties2KHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayProperties2KHR")
+	pfnGetPhysicalDeviceDisplayPropertiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPropertiesKHR")
 	pfnGetPhysicalDeviceExternalBufferProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalBufferProperties")
 	pfnGetPhysicalDeviceExternalFenceProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalFenceProperties")
+	pfnGetPhysicalDeviceExternalImageFormatPropertiesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV")
+	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV")
 	pfnGetPhysicalDeviceExternalSemaphoreProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalSemaphoreProperties")
+	pfnGetPhysicalDeviceExternalTensorPropertiesARM = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalTensorPropertiesARM")
 	pfnGetPhysicalDeviceFeatures = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures")
 	pfnGetPhysicalDeviceFeatures2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures2")
 	pfnGetPhysicalDeviceFormatProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFormatProperties")
 	pfnGetPhysicalDeviceFormatProperties2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFormatProperties2")
+	pfnGetPhysicalDeviceFragmentShadingRatesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFragmentShadingRatesKHR")
 	pfnGetPhysicalDeviceImageFormatProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceImageFormatProperties")
 	pfnGetPhysicalDeviceImageFormatProperties2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceImageFormatProperties2")
 	pfnGetPhysicalDeviceMemoryProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties")
 	pfnGetPhysicalDeviceMemoryProperties2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties2")
+	pfnGetPhysicalDeviceMultisamplePropertiesEXT = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMultisamplePropertiesEXT")
+	pfnGetPhysicalDeviceOpticalFlowImageFormatsNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceOpticalFlowImageFormatsNV")
+	pfnGetPhysicalDevicePresentRectanglesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDevicePresentRectanglesKHR")
 	pfnGetPhysicalDeviceProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties")
 	pfnGetPhysicalDeviceProperties2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties2")
+	pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM")
+	pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM")
+	pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM")
+	pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM")
+	pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR")
 	pfnGetPhysicalDeviceQueueFamilyProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties")
 	pfnGetPhysicalDeviceQueueFamilyProperties2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties2")
+	pfnGetPhysicalDeviceRefreshableObjectTypesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceRefreshableObjectTypesKHR")
+	pfnGetPhysicalDeviceSciBufAttributesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciBufAttributesNV")
+	pfnGetPhysicalDeviceSciSyncAttributesNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciSyncAttributesNV")
+	pfnGetPhysicalDeviceScreenPresentationSupportQNX = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceScreenPresentationSupportQNX")
 	pfnGetPhysicalDeviceSparseImageFormatProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSparseImageFormatProperties")
 	pfnGetPhysicalDeviceSparseImageFormatProperties2 = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSparseImageFormatProperties2")
+	pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV")
+	pfnGetPhysicalDeviceSurfaceCapabilities2EXT = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilities2EXT")
+	pfnGetPhysicalDeviceSurfaceCapabilities2KHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilities2KHR")
+	pfnGetPhysicalDeviceSurfaceCapabilitiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
+	pfnGetPhysicalDeviceSurfaceFormats2KHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormats2KHR")
+	pfnGetPhysicalDeviceSurfaceFormatsKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR")
+	pfnGetPhysicalDeviceSurfacePresentModes2EXT = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT")
+	pfnGetPhysicalDeviceSurfacePresentModesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModesKHR")
+	pfnGetPhysicalDeviceSurfaceSupportKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR")
 	pfnGetPhysicalDeviceToolProperties = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceToolProperties")
+	pfnGetPhysicalDeviceUbmPresentationSupportSEC = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceUbmPresentationSupportSEC")
+	pfnGetPhysicalDeviceVideoCapabilitiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoCapabilitiesKHR")
+	pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR")
+	pfnGetPhysicalDeviceVideoFormatPropertiesKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoFormatPropertiesKHR")
+	pfnGetPhysicalDeviceWaylandPresentationSupportKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR")
+	pfnGetPhysicalDeviceWin32PresentationSupportKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR")
+	pfnGetPhysicalDeviceXcbPresentationSupportKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR")
+	pfnGetPhysicalDeviceXlibPresentationSupportKHR = GetInstanceProcAddr(instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR")
+	pfnGetPipelineBinaryDataKHR = GetDeviceProcAddr(device, "vkGetPipelineBinaryDataKHR")
 	pfnGetPipelineCacheData = GetDeviceProcAddr(device, "vkGetPipelineCacheData")
+	pfnGetPipelineExecutableInternalRepresentationsKHR = GetDeviceProcAddr(device, "vkGetPipelineExecutableInternalRepresentationsKHR")
+	pfnGetPipelineExecutablePropertiesKHR = GetDeviceProcAddr(device, "vkGetPipelineExecutablePropertiesKHR")
+	pfnGetPipelineExecutableStatisticsKHR = GetDeviceProcAddr(device, "vkGetPipelineExecutableStatisticsKHR")
+	pfnGetPipelineIndirectDeviceAddressNV = GetDeviceProcAddr(device, "vkGetPipelineIndirectDeviceAddressNV")
+	pfnGetPipelineIndirectMemoryRequirementsNV = GetDeviceProcAddr(device, "vkGetPipelineIndirectMemoryRequirementsNV")
+	pfnGetPipelineKeyKHR = GetDeviceProcAddr(device, "vkGetPipelineKeyKHR")
+	pfnGetPipelinePropertiesEXT = GetDeviceProcAddr(device, "vkGetPipelinePropertiesEXT")
 	pfnGetPrivateData = GetDeviceProcAddr(device, "vkGetPrivateData")
 	pfnGetQueryPoolResults = GetDeviceProcAddr(device, "vkGetQueryPoolResults")
+	pfnGetQueueCheckpointData2NV = GetDeviceProcAddr(device, "vkGetQueueCheckpointData2NV")
+	pfnGetQueueCheckpointDataNV = GetDeviceProcAddr(device, "vkGetQueueCheckpointDataNV")
+	pfnGetRandROutputDisplayEXT = GetInstanceProcAddr(instance, "vkGetRandROutputDisplayEXT")
+	pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR = GetDeviceProcAddr(device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR")
+	pfnGetRayTracingShaderGroupHandlesKHR = GetDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR")
+	pfnGetRayTracingShaderGroupStackSizeKHR = GetDeviceProcAddr(device, "vkGetRayTracingShaderGroupStackSizeKHR")
+	pfnGetRefreshCycleDurationGOOGLE = GetDeviceProcAddr(device, "vkGetRefreshCycleDurationGOOGLE")
 	pfnGetRenderAreaGranularity = GetDeviceProcAddr(device, "vkGetRenderAreaGranularity")
 	pfnGetRenderingAreaGranularity = GetDeviceProcAddr(device, "vkGetRenderingAreaGranularity")
+	pfnGetSamplerOpaqueCaptureDescriptorDataEXT = GetDeviceProcAddr(device, "vkGetSamplerOpaqueCaptureDescriptorDataEXT")
+	pfnGetScreenBufferPropertiesQNX = GetDeviceProcAddr(device, "vkGetScreenBufferPropertiesQNX")
 	pfnGetSemaphoreCounterValue = GetDeviceProcAddr(device, "vkGetSemaphoreCounterValue")
+	pfnGetSemaphoreFdKHR = GetDeviceProcAddr(device, "vkGetSemaphoreFdKHR")
+	pfnGetSemaphoreSciSyncObjNV = GetDeviceProcAddr(device, "vkGetSemaphoreSciSyncObjNV")
+	pfnGetSemaphoreWin32HandleKHR = GetDeviceProcAddr(device, "vkGetSemaphoreWin32HandleKHR")
+	pfnGetSemaphoreZirconHandleFUCHSIA = GetDeviceProcAddr(device, "vkGetSemaphoreZirconHandleFUCHSIA")
+	pfnGetShaderBinaryDataEXT = GetDeviceProcAddr(device, "vkGetShaderBinaryDataEXT")
+	pfnGetShaderInfoAMD = GetDeviceProcAddr(device, "vkGetShaderInfoAMD")
+	pfnGetShaderInstrumentationValuesARM = GetDeviceProcAddr(device, "vkGetShaderInstrumentationValuesARM")
+	pfnGetShaderModuleCreateInfoIdentifierEXT = GetDeviceProcAddr(device, "vkGetShaderModuleCreateInfoIdentifierEXT")
+	pfnGetShaderModuleIdentifierEXT = GetDeviceProcAddr(device, "vkGetShaderModuleIdentifierEXT")
+	pfnGetSleepStatusLegacyNV = GetDeviceProcAddr(device, "vkGetSleepStatusLegacyNV")
+	pfnGetSwapchainCounterEXT = GetDeviceProcAddr(device, "vkGetSwapchainCounterEXT")
+	pfnGetSwapchainGrallocUsage2ANDROID = GetDeviceProcAddr(device, "vkGetSwapchainGrallocUsage2ANDROID")
+	pfnGetSwapchainGrallocUsageANDROID = GetDeviceProcAddr(device, "vkGetSwapchainGrallocUsageANDROID")
+	pfnGetSwapchainGrallocUsageOHOS = GetDeviceProcAddr(device, "vkGetSwapchainGrallocUsageOHOS")
+	pfnGetSwapchainImagesKHR = GetDeviceProcAddr(device, "vkGetSwapchainImagesKHR")
+	pfnGetSwapchainStatusKHR = GetDeviceProcAddr(device, "vkGetSwapchainStatusKHR")
+	pfnGetSwapchainTimeDomainPropertiesEXT = GetDeviceProcAddr(device, "vkGetSwapchainTimeDomainPropertiesEXT")
+	pfnGetSwapchainTimingPropertiesEXT = GetDeviceProcAddr(device, "vkGetSwapchainTimingPropertiesEXT")
+	pfnGetTensorMemoryRequirementsARM = GetDeviceProcAddr(device, "vkGetTensorMemoryRequirementsARM")
+	pfnGetTensorOpaqueCaptureDataARM = GetDeviceProcAddr(device, "vkGetTensorOpaqueCaptureDataARM")
+	pfnGetTensorOpaqueCaptureDescriptorDataARM = GetDeviceProcAddr(device, "vkGetTensorOpaqueCaptureDescriptorDataARM")
+	pfnGetTensorViewOpaqueCaptureDescriptorDataARM = GetDeviceProcAddr(device, "vkGetTensorViewOpaqueCaptureDescriptorDataARM")
+	pfnGetValidationCacheDataEXT = GetDeviceProcAddr(device, "vkGetValidationCacheDataEXT")
+	pfnGetVideoSessionMemoryRequirementsKHR = GetDeviceProcAddr(device, "vkGetVideoSessionMemoryRequirementsKHR")
+	pfnGetWinrtDisplayNV = GetInstanceProcAddr(instance, "vkGetWinrtDisplayNV")
+	pfnImportFenceFdKHR = GetDeviceProcAddr(device, "vkImportFenceFdKHR")
+	pfnImportFenceSciSyncFenceNV = GetDeviceProcAddr(device, "vkImportFenceSciSyncFenceNV")
+	pfnImportFenceSciSyncObjNV = GetDeviceProcAddr(device, "vkImportFenceSciSyncObjNV")
+	pfnImportFenceWin32HandleKHR = GetDeviceProcAddr(device, "vkImportFenceWin32HandleKHR")
+	pfnImportSemaphoreFdKHR = GetDeviceProcAddr(device, "vkImportSemaphoreFdKHR")
+	pfnImportSemaphoreSciSyncObjNV = GetDeviceProcAddr(device, "vkImportSemaphoreSciSyncObjNV")
+	pfnImportSemaphoreWin32HandleKHR = GetDeviceProcAddr(device, "vkImportSemaphoreWin32HandleKHR")
+	pfnImportSemaphoreZirconHandleFUCHSIA = GetDeviceProcAddr(device, "vkImportSemaphoreZirconHandleFUCHSIA")
+	pfnInitializePerformanceApiINTEL = GetDeviceProcAddr(device, "vkInitializePerformanceApiINTEL")
 	pfnInvalidateMappedMemoryRanges = GetDeviceProcAddr(device, "vkInvalidateMappedMemoryRanges")
+	pfnLatencySleepLegacyNV = GetDeviceProcAddr(device, "vkLatencySleepLegacyNV")
+	pfnLatencySleepNV = GetDeviceProcAddr(device, "vkLatencySleepNV")
 	pfnMapMemory = GetDeviceProcAddr(device, "vkMapMemory")
 	pfnMapMemory2 = GetDeviceProcAddr(device, "vkMapMemory2")
 	pfnMergePipelineCaches = GetDeviceProcAddr(device, "vkMergePipelineCaches")
+	pfnMergeValidationCachesEXT = GetDeviceProcAddr(device, "vkMergeValidationCachesEXT")
+	pfnQueueBeginDebugUtilsLabelEXT = GetDeviceProcAddr(device, "vkQueueBeginDebugUtilsLabelEXT")
 	pfnQueueBindSparse = GetDeviceProcAddr(device, "vkQueueBindSparse")
+	pfnQueueEndDebugUtilsLabelEXT = GetDeviceProcAddr(device, "vkQueueEndDebugUtilsLabelEXT")
+	pfnQueueInsertDebugUtilsLabelEXT = GetDeviceProcAddr(device, "vkQueueInsertDebugUtilsLabelEXT")
+	pfnQueueNotifyOutOfBandLegacyNV = GetDeviceProcAddr(device, "vkQueueNotifyOutOfBandLegacyNV")
+	pfnQueueNotifyOutOfBandNV = GetDeviceProcAddr(device, "vkQueueNotifyOutOfBandNV")
+	pfnQueuePresentKHR = GetDeviceProcAddr(device, "vkQueuePresentKHR")
+	pfnQueueSetPerfHintQCOM = GetDeviceProcAddr(device, "vkQueueSetPerfHintQCOM")
+	pfnQueueSetPerformanceConfigurationINTEL = GetDeviceProcAddr(device, "vkQueueSetPerformanceConfigurationINTEL")
+	pfnQueueSignalReleaseImageANDROID = GetDeviceProcAddr(device, "vkQueueSignalReleaseImageANDROID")
+	pfnQueueSignalReleaseImageOHOS = GetDeviceProcAddr(device, "vkQueueSignalReleaseImageOHOS")
 	pfnQueueSubmit = GetDeviceProcAddr(device, "vkQueueSubmit")
 	pfnQueueSubmit2 = GetDeviceProcAddr(device, "vkQueueSubmit2")
+	pfnQueueSubmit2KHR = GetInstanceProcAddr(instance, "vkQueueSubmit2KHR")
 	pfnQueueWaitIdle = GetDeviceProcAddr(device, "vkQueueWaitIdle")
+	pfnRegisterCustomBorderColorEXT = GetDeviceProcAddr(device, "vkRegisterCustomBorderColorEXT")
+	pfnRegisterDeviceEventEXT = GetDeviceProcAddr(device, "vkRegisterDeviceEventEXT")
+	pfnRegisterDisplayEventEXT = GetDeviceProcAddr(device, "vkRegisterDisplayEventEXT")
+	pfnReleaseCapturedPipelineDataKHR = GetDeviceProcAddr(device, "vkReleaseCapturedPipelineDataKHR")
+	pfnReleaseDisplayEXT = GetInstanceProcAddr(instance, "vkReleaseDisplayEXT")
+	pfnReleaseFullScreenExclusiveModeEXT = GetDeviceProcAddr(device, "vkReleaseFullScreenExclusiveModeEXT")
+	pfnReleasePerformanceConfigurationINTEL = GetDeviceProcAddr(device, "vkReleasePerformanceConfigurationINTEL")
+	pfnReleaseProfilingLockKHR = GetDeviceProcAddr(device, "vkReleaseProfilingLockKHR")
+	pfnReleaseSwapchainImagesKHR = GetDeviceProcAddr(device, "vkReleaseSwapchainImagesKHR")
 	pfnResetCommandBuffer = GetDeviceProcAddr(device, "vkResetCommandBuffer")
 	pfnResetCommandPool = GetDeviceProcAddr(device, "vkResetCommandPool")
 	pfnResetDescriptorPool = GetDeviceProcAddr(device, "vkResetDescriptorPool")
 	pfnResetEvent = GetDeviceProcAddr(device, "vkResetEvent")
 	pfnResetFences = GetDeviceProcAddr(device, "vkResetFences")
+	pfnResetGpaSessionAMD = GetDeviceProcAddr(device, "vkResetGpaSessionAMD")
 	pfnResetQueryPool = GetDeviceProcAddr(device, "vkResetQueryPool")
+	pfnSetBufferCollectionBufferConstraintsFUCHSIA = GetDeviceProcAddr(device, "vkSetBufferCollectionBufferConstraintsFUCHSIA")
+	pfnSetBufferCollectionImageConstraintsFUCHSIA = GetDeviceProcAddr(device, "vkSetBufferCollectionImageConstraintsFUCHSIA")
+	pfnSetDebugUtilsObjectNameEXT = GetDeviceProcAddr(device, "vkSetDebugUtilsObjectNameEXT")
+	pfnSetDebugUtilsObjectTagEXT = GetDeviceProcAddr(device, "vkSetDebugUtilsObjectTagEXT")
+	pfnSetDeviceMemoryPriorityEXT = GetDeviceProcAddr(device, "vkSetDeviceMemoryPriorityEXT")
 	pfnSetEvent = GetDeviceProcAddr(device, "vkSetEvent")
+	pfnSetGpaDeviceClockModeAMD = GetDeviceProcAddr(device, "vkSetGpaDeviceClockModeAMD")
+	pfnSetHdrMetadataEXT = GetDeviceProcAddr(device, "vkSetHdrMetadataEXT")
+	pfnSetLatencyMarkerLegacyNV = GetDeviceProcAddr(device, "vkSetLatencyMarkerLegacyNV")
+	pfnSetLatencyMarkerNV = GetDeviceProcAddr(device, "vkSetLatencyMarkerNV")
+	pfnSetLatencySleepModeLegacyNV = GetDeviceProcAddr(device, "vkSetLatencySleepModeLegacyNV")
+	pfnSetLatencySleepModeNV = GetDeviceProcAddr(device, "vkSetLatencySleepModeNV")
+	pfnSetLocalDimmingAMD = GetDeviceProcAddr(device, "vkSetLocalDimmingAMD")
 	pfnSetPrivateData = GetDeviceProcAddr(device, "vkSetPrivateData")
+	pfnSetSwapchainPresentTimingQueueSizeEXT = GetDeviceProcAddr(device, "vkSetSwapchainPresentTimingQueueSizeEXT")
+	pfnShutdownLatencyDeviceLegacyNV = GetDeviceProcAddr(device, "vkShutdownLatencyDeviceLegacyNV")
 	pfnSignalSemaphore = GetDeviceProcAddr(device, "vkSignalSemaphore")
+	pfnSubmitDebugUtilsMessageEXT = GetInstanceProcAddr(instance, "vkSubmitDebugUtilsMessageEXT")
 	pfnTransitionImageLayout = GetDeviceProcAddr(device, "vkTransitionImageLayout")
 	pfnTrimCommandPool = GetDeviceProcAddr(device, "vkTrimCommandPool")
+	pfnUninitializePerformanceApiINTEL = GetDeviceProcAddr(device, "vkUninitializePerformanceApiINTEL")
 	pfnUnmapMemory = GetDeviceProcAddr(device, "vkUnmapMemory")
 	pfnUnmapMemory2 = GetDeviceProcAddr(device, "vkUnmapMemory2")
+	pfnUnregisterCustomBorderColorEXT = GetDeviceProcAddr(device, "vkUnregisterCustomBorderColorEXT")
 	pfnUpdateDescriptorSetWithTemplate = GetDeviceProcAddr(device, "vkUpdateDescriptorSetWithTemplate")
 	pfnUpdateDescriptorSets = GetDeviceProcAddr(device, "vkUpdateDescriptorSets")
+	pfnUpdateIndirectExecutionSetPipelineEXT = GetDeviceProcAddr(device, "vkUpdateIndirectExecutionSetPipelineEXT")
+	pfnUpdateIndirectExecutionSetShaderEXT = GetDeviceProcAddr(device, "vkUpdateIndirectExecutionSetShaderEXT")
+	pfnUpdateVideoSessionParametersKHR = GetDeviceProcAddr(device, "vkUpdateVideoSessionParametersKHR")
 	pfnWaitForFences = GetDeviceProcAddr(device, "vkWaitForFences")
+	pfnWaitForPresent2KHR = GetDeviceProcAddr(device, "vkWaitForPresent2KHR")
+	pfnWaitForPresentKHR = GetDeviceProcAddr(device, "vkWaitForPresentKHR")
 	pfnWaitSemaphores = GetDeviceProcAddr(device, "vkWaitSemaphores")
+	pfnWriteAccelerationStructuresPropertiesKHR = GetDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR")
+	pfnWriteMicromapsPropertiesEXT = GetDeviceProcAddr(device, "vkWriteMicromapsPropertiesEXT")
+	pfnWriteResourceDescriptorsEXT = GetDeviceProcAddr(device, "vkWriteResourceDescriptorsEXT")
+	pfnWriteSamplerDescriptorsEXT = GetDeviceProcAddr(device, "vkWriteSamplerDescriptorsEXT")
+}
+
+// AcquireDrmDisplayEXT - Acquire access to a VkDisplayKHR using DRM (vkAcquireDrmDisplayEXT).
+// Parameters:
+//   - physicalDevice: is the physical device the display is on.
+//   - drmFd: is the DRM primary file descriptor.
+//   - display: is the display the caller wishes Vulkan to control.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireDrmDisplayEXT.html
+func AcquireDrmDisplayEXT(physicalDevice PhysicalDevice, drmFd int32, display DisplayKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireDrmDisplayEXT, uintptr(physicalDevice), uintptr(drmFd), uintptr(display))
+	return Result(r1)
+}
+
+// AcquireFullScreenExclusiveModeEXT - Acquire full-screen exclusive mode for a swapchain (vkAcquireFullScreenExclusiveModeEXT).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to acquire exclusive full-screen access for.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireFullScreenExclusiveModeEXT.html
+func AcquireFullScreenExclusiveModeEXT(device Device, swapchain SwapchainKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireFullScreenExclusiveModeEXT, uintptr(device), uintptr(swapchain))
+	return Result(r1)
+}
+
+// AcquireImageANDROID executes vkAcquireImageANDROID.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireImageANDROID.html
+func AcquireImageANDROID(device Device, image Image, nativeFenceFd int32, semaphore Semaphore, fence Fence) (result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireImageANDROID, uintptr(device), uintptr(image), uintptr(nativeFenceFd), uintptr(semaphore), uintptr(fence))
+	return Result(r1)
+}
+
+// AcquireImageOHOS - Obtain the ownership of a swapchain image, and push the external Fence into the VkSemaphore object and the VkFence object (vkAcquireImageOHOS).
+// Parameters:
+//   - device: is a valid VkDevice object used to create the swapchain image.
+//   - image: is the target image.
+//   - nativeFenceFd: is a file descriptor of the native fence.
+//   - semaphore: is VK_NULL_HANDLE or a VkSemaphore that will be signaled when the nativeFenceFd is signaled.
+//   - fence: is VK_NULL_HANDLE or VkFence that will be signaled when the nativeFenceFd is signaled.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireImageOHOS.html
+func AcquireImageOHOS(device Device, image Image, nativeFenceFd int32, semaphore Semaphore, fence Fence) (result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireImageOHOS, uintptr(device), uintptr(image), uintptr(nativeFenceFd), uintptr(semaphore), uintptr(fence))
+	return Result(r1)
+}
+
+// AcquireNextImage2KHR - Retrieve the index of the next available presentable image (vkAcquireNextImage2KHR).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - acquireInfo: is a pointer to a VkAcquireNextImageInfoKHR structure containing parameters of the acquire.
+//   - imageIndex: is a pointer to a uint32_t value specifying the index of the next image to use.
+//
+// Success codes: VK_SUCCESS, VK_TIMEOUT, VK_NOT_READY, VK_SUBOPTIMAL_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireNextImage2KHR.html
+func AcquireNextImage2KHR(device Device, acquireInfo *AcquireNextImageInfoKHR) (imageIndex uint32, result Result) {
+	c_acquireInfo := acquireInfo.Raw()
+	r1, _, _ := CallSyscall(pfnAcquireNextImage2KHR, uintptr(device), uintptr(unsafe.Pointer(c_acquireInfo)), uintptr(unsafe.Pointer(&imageIndex)))
+	return imageIndex, Result(r1)
+}
+
+// AcquireNextImageKHR - Retrieve the index of the next available presentable image (vkAcquireNextImageKHR).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the non-retired swapchain from which an image is being acquired.
+//   - timeout: specifies how long the function waits, in nanoseconds, if no image is available.
+//   - semaphore: is VK_NULL_HANDLE or a semaphore defining a semaphore signal operation.
+//   - fence: is VK_NULL_HANDLE or a fence to signal.
+//   - imageIndex: is a pointer to a uint32_t in which the index of the next image to use (i.e. an index into the array of images returned by vkGetSwapchainImagesKHR) is returned.
+//
+// Success codes: VK_SUCCESS, VK_TIMEOUT, VK_NOT_READY, VK_SUBOPTIMAL_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireNextImageKHR.html
+func AcquireNextImageKHR(device Device, swapchain SwapchainKHR, timeout uint64, semaphore Semaphore, fence Fence) (imageIndex uint32, result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireNextImageKHR, uintptr(device), uintptr(swapchain), uintptr(timeout), uintptr(semaphore), uintptr(fence), uintptr(unsafe.Pointer(&imageIndex)))
+	return imageIndex, Result(r1)
+}
+
+// AcquirePerformanceConfigurationINTEL - Acquire the performance query capability (vkAcquirePerformanceConfigurationINTEL).
+// Parameters:
+//   - device: is the logical device that the performance query commands will be submitted to.
+//   - acquireInfo: is a pointer to a VkPerformanceConfigurationAcquireInfoINTEL structure, specifying the performance configuration to acquire.
+//   - configuration: is a pointer to a VkPerformanceConfigurationINTEL handle in which the resulting configuration object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquirePerformanceConfigurationINTEL.html
+func AcquirePerformanceConfigurationINTEL(device Device, acquireInfo *PerformanceConfigurationAcquireInfoINTEL) (configuration PerformanceConfigurationINTEL, result Result) {
+	c_acquireInfo := acquireInfo.Raw()
+	r1, _, _ := CallSyscall(pfnAcquirePerformanceConfigurationINTEL, uintptr(device), uintptr(unsafe.Pointer(c_acquireInfo)), uintptr(unsafe.Pointer(&configuration)))
+	return configuration, Result(r1)
+}
+
+// AcquireProfilingLockKHR - Acquires the profiling lock (vkAcquireProfilingLockKHR).
+// Parameters:
+//   - device: is the logical device to profile.
+//   - info: is a pointer to a VkAcquireProfilingLockInfoKHR structure containing information about how the profiling is to be acquired.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_TIMEOUT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireProfilingLockKHR.html
+func AcquireProfilingLockKHR(device Device, info *AcquireProfilingLockInfoKHR) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnAcquireProfilingLockKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
+// AcquireWinrtDisplayNV - Acquire access to a VkDisplayKHR (vkAcquireWinrtDisplayNV).
+// Parameters:
+//   - physicalDevice: is the physical device the display is on.
+//   - display: is the display the caller wishes to control in Vulkan.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireWinrtDisplayNV.html
+func AcquireWinrtDisplayNV(physicalDevice PhysicalDevice, display DisplayKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireWinrtDisplayNV, uintptr(physicalDevice), uintptr(display))
+	return Result(r1)
+}
+
+// AcquireXlibDisplayEXT - Acquire access to a VkDisplayKHR using Xlib (vkAcquireXlibDisplayEXT).
+// Parameters:
+//   - physicalDevice: is the physical device the display is on.
+//   - dpy: is a connection to the X11 server that currently owns display.
+//   - display: is the display the caller wishes to control in Vulkan.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireXlibDisplayEXT.html
+func AcquireXlibDisplayEXT(physicalDevice PhysicalDevice, display DisplayKHR) (dpy uintptr, result Result) {
+	r1, _, _ := CallSyscall(pfnAcquireXlibDisplayEXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(&dpy)), uintptr(display))
+	return dpy, Result(r1)
 }
 
 // AllocateCommandBuffers - Allocate command buffers from an existing command pool (vkAllocateCommandBuffers).
@@ -537,6 +1777,17 @@ func AllocateMemory(device Device, allocateInfo *MemoryAllocateInfo, allocator *
 	return memory, Result(r1)
 }
 
+// AntiLagUpdateAMD - Provide information to reduce latency (vkAntiLagUpdateAMD).
+// Parameters:
+//   - device: is the logical device
+//   - data: is a pointer to a VkAntiLagDataAMD structure containing latency reduction parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAntiLagUpdateAMD.html
+func AntiLagUpdateAMD(device Device, data *AntiLagDataAMD) {
+	c_data := data.Raw()
+	CallSyscall(pfnAntiLagUpdateAMD, uintptr(device), uintptr(unsafe.Pointer(c_data)))
+}
+
 // BeginCommandBuffer - Start recording a command buffer (vkBeginCommandBuffer).
 // Parameters:
 //   - commandBuffer: is the handle of the command buffer which is to be put in the recording state.
@@ -548,6 +1799,26 @@ func AllocateMemory(device Device, allocateInfo *MemoryAllocateInfo, allocator *
 func BeginCommandBuffer(commandBuffer CommandBuffer, beginInfo *CommandBufferBeginInfo) (result Result) {
 	c_beginInfo := beginInfo.Raw()
 	r1, _, _ := CallSyscall(pfnBeginCommandBuffer, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginInfo)))
+	return Result(r1)
+}
+
+// BindAccelerationStructureMemoryNV - Bind acceleration structure memory (vkBindAccelerationStructureMemoryNV).
+// Parameters:
+//   - device: is the logical device that owns the acceleration structures and memory.
+//   - bindInfoCount: is the number of elements in pBindInfos.
+//   - bindInfos: is a pointer to an array of VkBindAccelerationStructureMemoryInfoNV structures describing acceleration structures and memory to bind.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindAccelerationStructureMemoryNV.html
+func BindAccelerationStructureMemoryNV(device Device, bindInfos []BindAccelerationStructureMemoryInfoNV) (result Result) {
+	c_bindInfos := make([]RawBindAccelerationStructureMemoryInfoNV, len(bindInfos))
+	for i := range bindInfos {
+		if raw := bindInfos[i].Raw(); raw != nil {
+			c_bindInfos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnBindAccelerationStructureMemoryNV, uintptr(device), uintptr(len(bindInfos)), uintptr(unsafe.Pointer(SliceData(c_bindInfos))))
 	return Result(r1)
 }
 
@@ -586,6 +1857,26 @@ func BindBufferMemory2(device Device, bindInfos []BindBufferMemoryInfo) (result 
 	return Result(r1)
 }
 
+// BindDataGraphPipelineSessionMemoryARM - Bind device memory to a data graph pipeline session object (vkBindDataGraphPipelineSessionMemoryARM).
+// Parameters:
+//   - device: is the logical device that owns the data graph pipeline session and memory.
+//   - bindInfoCount: is the length of the pBindInfos array.
+//   - bindInfos: is a pointer to an array of VkBindDataGraphPipelineSessionMemoryInfoARM structures describing graph pipeline sessions and memory to bind.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindDataGraphPipelineSessionMemoryARM.html
+func BindDataGraphPipelineSessionMemoryARM(device Device, bindInfos []BindDataGraphPipelineSessionMemoryInfoARM) (result Result) {
+	c_bindInfos := make([]RawBindDataGraphPipelineSessionMemoryInfoARM, len(bindInfos))
+	for i := range bindInfos {
+		if raw := bindInfos[i].Raw(); raw != nil {
+			c_bindInfos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnBindDataGraphPipelineSessionMemoryARM, uintptr(device), uintptr(len(bindInfos)), uintptr(unsafe.Pointer(SliceData(c_bindInfos))))
+	return Result(r1)
+}
+
 // BindImageMemory - Bind device memory to an image object (vkBindImageMemory).
 // Parameters:
 //   - device: is the logical device that owns the image and memory.
@@ -621,6 +1912,200 @@ func BindImageMemory2(device Device, bindInfos []BindImageMemoryInfo) (result Re
 	return Result(r1)
 }
 
+// BindOpticalFlowSessionImageNV - Bind image to an optical flow session (vkBindOpticalFlowSessionImageNV).
+// Parameters:
+//   - device: is the device which owns the optical flow session object session.
+//   - session: is the optical flow session object to which the image view is to be bound.
+//   - bindingPoint: specifies the binding point VkOpticalFlowSessionBindingPointNV to which the image view is bound.
+//   - view: is a VkImageView to be bound.
+//   - layout: must specify the layout that the image subresources accessible from view will be in at the time the optical flow vectors are calculated with vkCmdOpticalFlowExecuteNV on a VkDevice.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindOpticalFlowSessionImageNV.html
+func BindOpticalFlowSessionImageNV(device Device, session OpticalFlowSessionNV, bindingPoint OpticalFlowSessionBindingPointNV, view ImageView, layout ImageLayout) (result Result) {
+	r1, _, _ := CallSyscall(pfnBindOpticalFlowSessionImageNV, uintptr(device), uintptr(session), uintptr(bindingPoint), uintptr(view), uintptr(layout))
+	return Result(r1)
+}
+
+// BindTensorMemoryARM - Bind device memory to tensor objects (vkBindTensorMemoryARM).
+// Parameters:
+//   - device: is the logical device that owns the buffers and memory.
+//   - bindInfoCount: is the number of elements in pBindInfos.
+//   - bindInfos: is a pointer to an array of structures of type VkBindTensorMemoryInfoARM, describing tensors and memory to bind.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindTensorMemoryARM.html
+func BindTensorMemoryARM(device Device, bindInfos []BindTensorMemoryInfoARM) (result Result) {
+	c_bindInfos := make([]RawBindTensorMemoryInfoARM, len(bindInfos))
+	for i := range bindInfos {
+		if raw := bindInfos[i].Raw(); raw != nil {
+			c_bindInfos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnBindTensorMemoryARM, uintptr(device), uintptr(len(bindInfos)), uintptr(unsafe.Pointer(SliceData(c_bindInfos))))
+	return Result(r1)
+}
+
+// BindVideoSessionMemoryKHR - Bind Video Memory (vkBindVideoSessionMemoryKHR).
+// Parameters:
+//   - device: is the logical device that owns the video session.
+//   - videoSession: is the video session to be bound with device memory.
+//   - bindSessionMemoryInfoCount: is the number of elements in pBindSessionMemoryInfos.
+//   - bindSessionMemoryInfos: is a pointer to an array of bindSessionMemoryInfoCount VkBindVideoSessionMemoryInfoKHR structures specifying memory regions to be bound to specific memory bindings of the video session.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindVideoSessionMemoryKHR.html
+func BindVideoSessionMemoryKHR(device Device, videoSession VideoSessionKHR, bindSessionMemoryInfos []BindVideoSessionMemoryInfoKHR) (result Result) {
+	c_bindSessionMemoryInfos := make([]RawBindVideoSessionMemoryInfoKHR, len(bindSessionMemoryInfos))
+	for i := range bindSessionMemoryInfos {
+		if raw := bindSessionMemoryInfos[i].Raw(); raw != nil {
+			c_bindSessionMemoryInfos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnBindVideoSessionMemoryKHR, uintptr(device), uintptr(videoSession), uintptr(len(bindSessionMemoryInfos)), uintptr(unsafe.Pointer(SliceData(c_bindSessionMemoryInfos))))
+	return Result(r1)
+}
+
+// BuildAccelerationStructuresKHR - Build an acceleration structure on the host (vkBuildAccelerationStructuresKHR).
+// Parameters:
+//   - device: is the VkDevice for which the acceleration structures are being built.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - infoCount: is the number of acceleration structures to build. It specifies the number of the pInfos structures and ppBuildRangeInfos pointers that must be provided.
+//   - infos: is a pointer to an array of infoCount VkAccelerationStructureBuildGeometryInfoKHR structures defining the geometry used to build each acceleration structure.
+//   - buildRangeInfos: is a pointer to an array of infoCount pointers to arrays of VkAccelerationStructureBuildRangeInfoKHR structures. Each ppBuildRangeInfos[i] is a pointer to an array of pInfos[i].geometryCount VkAccelerationStructureBuildRangeInfoKHR structures defining dynamic offsets to the addresses where geometry data is stored, as defined by pInfos[i].
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBuildAccelerationStructuresKHR.html
+func BuildAccelerationStructuresKHR(device Device, deferredOperation DeferredOperationKHR, infos []AccelerationStructureBuildGeometryInfoKHR, buildRangeInfos **AccelerationStructureBuildRangeInfoKHR) (result Result) {
+	c_infos := make([]RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnBuildAccelerationStructuresKHR, uintptr(device), uintptr(deferredOperation), uintptr(len(infos)), uintptr(unsafe.Pointer(SliceData(c_infos))), uintptr(unsafe.Pointer(buildRangeInfos)))
+	return Result(r1)
+}
+
+// BuildMicromapsEXT - Build a micromap on the host (vkBuildMicromapsEXT).
+// Parameters:
+//   - device: is the VkDevice for which the micromaps are being built.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - infoCount: is the number of micromaps to build. It specifies the number of the pInfos that must be provided.
+//   - infos: is a pointer to an array of infoCount VkMicromapBuildInfoEXT structures defining the geometry used to build each micromap.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBuildMicromapsEXT.html
+func BuildMicromapsEXT(device Device, deferredOperation DeferredOperationKHR, infos []MicromapBuildInfoEXT) (result Result) {
+	c_infos := make([]RawMicromapBuildInfoEXT, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnBuildMicromapsEXT, uintptr(device), uintptr(deferredOperation), uintptr(len(infos)), uintptr(unsafe.Pointer(SliceData(c_infos))))
+	return Result(r1)
+}
+
+// ClearShaderInstrumentationMetricsARM - Clear shader instrumentation metrics to zero (vkClearShaderInstrumentationMetricsARM).
+// Parameters:
+//   - device: is the logical device that owns the shader instrumentation object.
+//   - instrumentation: is the shader instrumentation object to clear.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkClearShaderInstrumentationMetricsARM.html
+func ClearShaderInstrumentationMetricsARM(device Device, instrumentation ShaderInstrumentationARM) {
+	CallSyscall(pfnClearShaderInstrumentationMetricsARM, uintptr(device), uintptr(instrumentation))
+}
+
+// CmdBeginConditionalRendering2EXT - Define the beginning of a conditional rendering block (vkCmdBeginConditionalRendering2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//   - conditionalRenderingBegin: is a pointer to a VkConditionalRenderingBeginInfo2EXT structure specifying parameters of conditional rendering.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginConditionalRendering2EXT.html
+func CmdBeginConditionalRendering2EXT(commandBuffer CommandBuffer, conditionalRenderingBegin *ConditionalRenderingBeginInfo2EXT) {
+	c_conditionalRenderingBegin := conditionalRenderingBegin.Raw()
+	CallSyscall(pfnCmdBeginConditionalRendering2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_conditionalRenderingBegin)))
+}
+
+// CmdBeginConditionalRenderingEXT - Define the beginning of a conditional rendering block (vkCmdBeginConditionalRenderingEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//   - conditionalRenderingBegin: is a pointer to a VkConditionalRenderingBeginInfoEXT structure specifying parameters of conditional rendering.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginConditionalRenderingEXT.html
+func CmdBeginConditionalRenderingEXT(commandBuffer CommandBuffer, conditionalRenderingBegin *ConditionalRenderingBeginInfoEXT) {
+	c_conditionalRenderingBegin := conditionalRenderingBegin.Raw()
+	CallSyscall(pfnCmdBeginConditionalRenderingEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_conditionalRenderingBegin)))
+}
+
+// CmdBeginCustomResolveEXT - Begins a shader resolve operation (vkCmdBeginCustomResolveEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - beginCustomResolveInfo: is an optional struct with which to extend functionality.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginCustomResolveEXT.html
+func CmdBeginCustomResolveEXT(commandBuffer CommandBuffer, beginCustomResolveInfo *BeginCustomResolveInfoEXT) {
+	c_beginCustomResolveInfo := beginCustomResolveInfo.Raw()
+	CallSyscall(pfnCmdBeginCustomResolveEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginCustomResolveInfo)))
+}
+
+// CmdBeginDebugUtilsLabelEXT - Open a command buffer debug label region (vkCmdBeginDebugUtilsLabelEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label region to open.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginDebugUtilsLabelEXT.html
+func CmdBeginDebugUtilsLabelEXT(commandBuffer CommandBuffer, labelInfo *DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	CallSyscall(pfnCmdBeginDebugUtilsLabelEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
+// CmdBeginGpaSampleAMD - Beginning a sample (vkCmdBeginGpaSampleAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - gpaSession: is the handle of the GPA session to record the sample.
+//   - gpaSampleBeginInfo: is a pointer to a VkGpaSampleBeginInfoAMD structure describing the sample parameters.
+//   - sampleID: is the unique sample ID returned for this sample.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginGpaSampleAMD.html
+func CmdBeginGpaSampleAMD(commandBuffer CommandBuffer, gpaSession GpaSessionAMD, gpaSampleBeginInfo *GpaSampleBeginInfoAMD) (sampleID uint32, result Result) {
+	c_gpaSampleBeginInfo := gpaSampleBeginInfo.Raw()
+	r1, _, _ := CallSyscall(pfnCmdBeginGpaSampleAMD, uintptr(commandBuffer), uintptr(gpaSession), uintptr(unsafe.Pointer(c_gpaSampleBeginInfo)), uintptr(unsafe.Pointer(&sampleID)))
+	return sampleID, Result(r1)
+}
+
+// CmdBeginGpaSessionAMD - Begin a GPA session (vkCmdBeginGpaSessionAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - gpaSession: is the handle of the GPA session to begin.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginGpaSessionAMD.html
+func CmdBeginGpaSessionAMD(commandBuffer CommandBuffer, gpaSession GpaSessionAMD) (result Result) {
+	r1, _, _ := CallSyscall(pfnCmdBeginGpaSessionAMD, uintptr(commandBuffer), uintptr(gpaSession))
+	return Result(r1)
+}
+
+// CmdBeginPerTileExecutionQCOM - Begin per-tile execution mode (vkCmdBeginPerTileExecutionQCOM).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - perTileBeginInfo: is a pointer to a VkPerTileBeginInfoQCOM structure containing information about how the _per-tile execution model_ is started.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginPerTileExecutionQCOM.html
+func CmdBeginPerTileExecutionQCOM(commandBuffer CommandBuffer, perTileBeginInfo *PerTileBeginInfoQCOM) {
+	c_perTileBeginInfo := perTileBeginInfo.Raw()
+	CallSyscall(pfnCmdBeginPerTileExecutionQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_perTileBeginInfo)))
+}
+
 // CmdBeginQuery - Begin a query (vkCmdBeginQuery).
 // Parameters:
 //   - commandBuffer: is the command buffer into which this command will be recorded.
@@ -631,6 +2116,19 @@ func BindImageMemory2(device Device, bindInfos []BindImageMemoryInfo) (result Re
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQuery.html
 func CmdBeginQuery(commandBuffer CommandBuffer, queryPool QueryPool, query uint32, flags QueryControlFlags) {
 	CallSyscall(pfnCmdBeginQuery, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(flags))
+}
+
+// CmdBeginQueryIndexedEXT - Begin an indexed query (vkCmdBeginQueryIndexedEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//   - queryPool: is the query pool that will manage the results of the query.
+//   - query: is the query index within the query pool that will contain the results.
+//   - flags: is a bitmask of VkQueryControlFlagBits specifying constraints on the types of queries that can be performed.
+//   - index: is the query type specific index. When the query type is VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT or VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT, the index represents the vertex stream.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQueryIndexedEXT.html
+func CmdBeginQueryIndexedEXT(commandBuffer CommandBuffer, queryPool QueryPool, query uint32, flags QueryControlFlags, index uint32) {
+	CallSyscall(pfnCmdBeginQueryIndexedEXT, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(flags), uintptr(index))
 }
 
 // CmdBeginRenderPass - Begin a new render pass (vkCmdBeginRenderPass).
@@ -667,6 +2165,99 @@ func CmdBeginRenderPass2(commandBuffer CommandBuffer, renderPassBegin *RenderPas
 func CmdBeginRendering(commandBuffer CommandBuffer, renderingInfo *RenderingInfo) {
 	c_renderingInfo := renderingInfo.Raw()
 	CallSyscall(pfnCmdBeginRendering, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_renderingInfo)))
+}
+
+// CmdBeginShaderInstrumentationARM - Begin shader instrumentation (vkCmdBeginShaderInstrumentationARM).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//   - instrumentation: is the handle of the shader instrumentation object that will capture the metrics.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginShaderInstrumentationARM.html
+func CmdBeginShaderInstrumentationARM(commandBuffer CommandBuffer, instrumentation ShaderInstrumentationARM) {
+	CallSyscall(pfnCmdBeginShaderInstrumentationARM, uintptr(commandBuffer), uintptr(instrumentation))
+}
+
+// CmdBeginTransformFeedback2EXT - Make transform feedback active in the command buffer (vkCmdBeginTransformFeedback2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - firstCounterRange: is the index of the first transform feedback buffer corresponding to pCounterInfos[0].
+//   - counterRangeCount: is the size of the pCounterRanges array.
+//   - counterInfos: is NULL or a pointer to an array of VkBindTransformFeedbackBuffer2InfoEXT structures defining memory ranges containing counters used to resume transform feedback from a previous location.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginTransformFeedback2EXT.html
+func CmdBeginTransformFeedback2EXT(commandBuffer CommandBuffer, firstCounterRange uint32, counterInfos []BindTransformFeedbackBuffer2InfoEXT) {
+	c_counterInfos := make([]RawBindTransformFeedbackBuffer2InfoEXT, len(counterInfos))
+	for i := range counterInfos {
+		if raw := counterInfos[i].Raw(); raw != nil {
+			c_counterInfos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBeginTransformFeedback2EXT, uintptr(commandBuffer), uintptr(firstCounterRange), uintptr(len(counterInfos)), uintptr(unsafe.Pointer(SliceData(c_counterInfos))))
+}
+
+// CmdBeginTransformFeedbackEXT - Make transform feedback active in the command buffer (vkCmdBeginTransformFeedbackEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - firstCounterBuffer: is the index of the first transform feedback buffer corresponding to pCounterBuffers[0] and pCounterBufferOffsets[0].
+//   - counterBufferCount: is the size of the pCounterBuffers and pCounterBufferOffsets arrays.
+//   - counterBuffers: is NULL or a pointer to an array of VkBuffer handles to counter buffers. Each buffer contains a 4 byte integer value representing the byte offset from the start of the corresponding transform feedback buffer from where to start capturing vertex data. If the byte offset stored to the counter buffer location was done using vkCmdEndTransformFeedbackEXT it can be used to resume transform feedback from the previous location. In that case, a pipeline barrier is required between the calls to vkCmdEndTransformFeedbackEXT and vkCmdBeginTransformFeedbackEXT, with VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT as the source and destination stages, VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT as the source access and VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT as the destination access. If pCounterBuffers is NULL, then transform feedback will start capturing vertex data to byte offset zero in all bound transform feedback buffers. For each element of pCounterBuffers that is VK_NULL_HANDLE, transform feedback will start capturing vertex data to byte zero in the corresponding bound transform feedback buffer.
+//   - counterBufferOffsets: is NULL or a pointer to an array of basetype:VkDeviceSize values specifying offsets within each of the pCounterBuffers where the counter values were previously written. The location in each counter buffer at these offsets must be large enough to contain 4 bytes of data. This data is the number of bytes captured by the previous transform feedback to this buffer. If pCounterBufferOffsets is NULL, then it is assumed the offsets are zero.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginTransformFeedbackEXT.html
+func CmdBeginTransformFeedbackEXT(commandBuffer CommandBuffer, firstCounterBuffer uint32, counterBuffers []Buffer, counterBufferOffsets *DeviceSize) {
+	c_counterBuffers := SliceData(counterBuffers)
+	CallSyscall(pfnCmdBeginTransformFeedbackEXT, uintptr(commandBuffer), uintptr(firstCounterBuffer), uintptr(len(counterBuffers)), uintptr(unsafe.Pointer(c_counterBuffers)), uintptr(unsafe.Pointer(counterBufferOffsets)))
+}
+
+// CmdBeginVideoCodingKHR - Begin video coding scope (vkCmdBeginVideoCodingKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - beginInfo: is a pointer to a VkVideoBeginCodingInfoKHR structure specifying the parameters of the video coding scope, including the video session and video session parameters object to use.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginVideoCodingKHR.html
+func CmdBeginVideoCodingKHR(commandBuffer CommandBuffer, beginInfo *VideoBeginCodingInfoKHR) {
+	c_beginInfo := beginInfo.Raw()
+	CallSyscall(pfnCmdBeginVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginInfo)))
+}
+
+// CmdBindDescriptorBufferEmbeddedSamplers2EXT - Setting embedded immutable samplers offsets in a command buffer (vkCmdBindDescriptorBufferEmbeddedSamplers2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer that the embedded immutable samplers will be bound to.
+//   - bindDescriptorBufferEmbeddedSamplersInfo: is a pointer to a VkBindDescriptorBufferEmbeddedSamplersInfoEXT structure.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBufferEmbeddedSamplers2EXT.html
+func CmdBindDescriptorBufferEmbeddedSamplers2EXT(commandBuffer CommandBuffer, bindDescriptorBufferEmbeddedSamplersInfo *BindDescriptorBufferEmbeddedSamplersInfoEXT) {
+	c_bindDescriptorBufferEmbeddedSamplersInfo := bindDescriptorBufferEmbeddedSamplersInfo.Raw()
+	CallSyscall(pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindDescriptorBufferEmbeddedSamplersInfo)))
+}
+
+// CmdBindDescriptorBufferEmbeddedSamplersEXT - Setting embedded immutable samplers offsets in a command buffer (vkCmdBindDescriptorBufferEmbeddedSamplersEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer that the embedded immutable samplers will be bound to.
+//   - pipelineBindPoint: is a VkPipelineBindPoint indicating the type of the pipeline that will use the embedded immutable samplers.
+//   - layout: is a VkPipelineLayout object used to program the bindings.
+//   - set: is the number of the set to be bound.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBufferEmbeddedSamplersEXT.html
+func CmdBindDescriptorBufferEmbeddedSamplersEXT(commandBuffer CommandBuffer, pipelineBindPoint PipelineBindPoint, layout PipelineLayout, set uint32) {
+	CallSyscall(pfnCmdBindDescriptorBufferEmbeddedSamplersEXT, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(layout), uintptr(set))
+}
+
+// CmdBindDescriptorBuffersEXT - Binding descriptor buffers to a command buffer (vkCmdBindDescriptorBuffersEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer that the descriptor buffers will be bound to.
+//   - bufferCount: is the number of elements in the pBindingInfos array.
+//   - bindingInfos: is a pointer to an array of VkDescriptorBufferBindingInfoEXT structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBuffersEXT.html
+func CmdBindDescriptorBuffersEXT(commandBuffer CommandBuffer, bindingInfos []DescriptorBufferBindingInfoEXT) {
+	c_bindingInfos := make([]RawDescriptorBufferBindingInfoEXT, len(bindingInfos))
+	for i := range bindingInfos {
+		if raw := bindingInfos[i].Raw(); raw != nil {
+			c_bindingInfos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBindDescriptorBuffersEXT, uintptr(commandBuffer), uintptr(len(bindingInfos)), uintptr(unsafe.Pointer(SliceData(c_bindingInfos))))
 }
 
 // CmdBindDescriptorSets - Binds descriptor sets to a command buffer (vkCmdBindDescriptorSets).
@@ -723,6 +2314,28 @@ func CmdBindIndexBuffer2(commandBuffer CommandBuffer, buffer Buffer, offset Devi
 	CallSyscall(pfnCmdBindIndexBuffer2, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(size), uintptr(indexType))
 }
 
+// CmdBindIndexBuffer3KHR - Bind an address range as an index buffer to a command buffer (vkCmdBindIndexBuffer3KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkBindIndexBuffer3InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindIndexBuffer3KHR.html
+func CmdBindIndexBuffer3KHR(commandBuffer CommandBuffer, info *BindIndexBuffer3InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdBindIndexBuffer3KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdBindInvocationMaskHUAWEI - Bind an invocation mask image on a command buffer (vkCmdBindInvocationMaskHUAWEI).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded
+//   - imageView: is an image view handle specifying the invocation mask image imageView may be VK_NULL_HANDLE, which is equivalent to specifying a view of an image filled with ones value.
+//   - imageLayout: is the layout that the image subresources accessible from imageView will be in when the invocation mask image is accessed
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindInvocationMaskHUAWEI.html
+func CmdBindInvocationMaskHUAWEI(commandBuffer CommandBuffer, imageView ImageView, imageLayout ImageLayout) {
+	CallSyscall(pfnCmdBindInvocationMaskHUAWEI, uintptr(commandBuffer), uintptr(imageView), uintptr(imageLayout))
+}
+
 // CmdBindPipeline - Bind a pipeline object to a command buffer (vkCmdBindPipeline).
 // Parameters:
 //   - commandBuffer: is the command buffer that the pipeline will be bound to.
@@ -732,6 +2345,108 @@ func CmdBindIndexBuffer2(commandBuffer CommandBuffer, buffer Buffer, offset Devi
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindPipeline.html
 func CmdBindPipeline(commandBuffer CommandBuffer, pipelineBindPoint PipelineBindPoint, pipeline Pipeline) {
 	CallSyscall(pfnCmdBindPipeline, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline))
+}
+
+// CmdBindPipelineShaderGroupNV - Bind a pipeline object (vkCmdBindPipelineShaderGroupNV).
+// Parameters:
+//   - commandBuffer: is the command buffer that the pipeline will be bound to.
+//   - pipelineBindPoint: is a VkPipelineBindPoint value specifying the bind point to which the pipeline will be bound.
+//   - pipeline: is the pipeline to be bound.
+//   - groupIndex: is the shader group to be bound.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindPipelineShaderGroupNV.html
+func CmdBindPipelineShaderGroupNV(commandBuffer CommandBuffer, pipelineBindPoint PipelineBindPoint, pipeline Pipeline, groupIndex uint32) {
+	CallSyscall(pfnCmdBindPipelineShaderGroupNV, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline), uintptr(groupIndex))
+}
+
+// CmdBindResourceHeapEXT - Binds a resource heap to a command buffer (vkCmdBindResourceHeapEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer that the resource heap will be bound to.
+//   - bindInfo: is a VkBindHeapInfoEXT specifying the device address range used for the heap and any implementation reservations.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindResourceHeapEXT.html
+func CmdBindResourceHeapEXT(commandBuffer CommandBuffer, bindInfo *BindHeapInfoEXT) {
+	c_bindInfo := bindInfo.Raw()
+	CallSyscall(pfnCmdBindResourceHeapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindInfo)))
+}
+
+// CmdBindSamplerHeapEXT - Binds a sampler heap to a command buffer (vkCmdBindSamplerHeapEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer that the sampler heap will be bound to.
+//   - bindInfo: is a VkBindHeapInfoEXT specifying the device address range used for the heap and any implementation reservations.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindSamplerHeapEXT.html
+func CmdBindSamplerHeapEXT(commandBuffer CommandBuffer, bindInfo *BindHeapInfoEXT) {
+	c_bindInfo := bindInfo.Raw()
+	CallSyscall(pfnCmdBindSamplerHeapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindInfo)))
+}
+
+// CmdBindShadersEXT - Bind shader objects to a command buffer (vkCmdBindShadersEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer that the shader object will be bound to.
+//   - stageCount: is the length of the pStages and pShaders arrays.
+//   - stages: is a pointer to an array of VkShaderStageFlagBits values specifying one stage per array index that is affected by the corresponding value in the pShaders array.
+//   - shaders: is a pointer to an array of VkShaderEXT handles and/or VK_NULL_HANDLE values describing the shader binding operations to be performed on each stage in pStages.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindShadersEXT.html
+func CmdBindShadersEXT(commandBuffer CommandBuffer, stages []ShaderStageFlagBits, shaders *ShaderEXT) {
+	c_stages := SliceData(stages)
+	CallSyscall(pfnCmdBindShadersEXT, uintptr(commandBuffer), uintptr(len(stages)), uintptr(unsafe.Pointer(c_stages)), uintptr(unsafe.Pointer(shaders)))
+}
+
+// CmdBindShadingRateImageNV - Bind a shading rate image on a command buffer (vkCmdBindShadingRateImageNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - imageView: is an image view handle specifying the shading rate image. imageView may be VK_NULL_HANDLE, which is equivalent to specifying a view of an image filled with zero values.
+//   - imageLayout: is the layout that the image subresources accessible from imageView will be in when the shading rate image is accessed.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindShadingRateImageNV.html
+func CmdBindShadingRateImageNV(commandBuffer CommandBuffer, imageView ImageView, imageLayout ImageLayout) {
+	CallSyscall(pfnCmdBindShadingRateImageNV, uintptr(commandBuffer), uintptr(imageView), uintptr(imageLayout))
+}
+
+// CmdBindTileMemoryQCOM - Bind tile memory to a command buffer (vkCmdBindTileMemoryQCOM).
+// Parameters:
+//   - commandBuffer: is the command buffer that the tile memory will be bound to.
+//   - tileMemoryBindInfo: is VK_NULL_HANDLE or a pointer to a VkTileMemoryBindInfoQCOM structure defining how tile memory is bound.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindTileMemoryQCOM.html
+func CmdBindTileMemoryQCOM(commandBuffer CommandBuffer, tileMemoryBindInfo *TileMemoryBindInfoQCOM) {
+	c_tileMemoryBindInfo := tileMemoryBindInfo.Raw()
+	CallSyscall(pfnCmdBindTileMemoryQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_tileMemoryBindInfo)))
+}
+
+// CmdBindTransformFeedbackBuffers2EXT - Bind transform feedback memory ranges to a command buffer (vkCmdBindTransformFeedbackBuffers2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - firstBinding: is the index of the first transform feedback binding whose state is updated by the command.
+//   - bindingCount: is the number of transform feedback bindings whose state is updated by the command.
+//   - bindingInfos: is a pointer to an array of VkBindTransformFeedbackBuffer2InfoEXT structures specifying the ranges of memory to be used to capture transform feedback data.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindTransformFeedbackBuffers2EXT.html
+func CmdBindTransformFeedbackBuffers2EXT(commandBuffer CommandBuffer, firstBinding uint32, bindingInfos []BindTransformFeedbackBuffer2InfoEXT) {
+	c_bindingInfos := make([]RawBindTransformFeedbackBuffer2InfoEXT, len(bindingInfos))
+	for i := range bindingInfos {
+		if raw := bindingInfos[i].Raw(); raw != nil {
+			c_bindingInfos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBindTransformFeedbackBuffers2EXT, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(bindingInfos)), uintptr(unsafe.Pointer(SliceData(c_bindingInfos))))
+}
+
+// CmdBindTransformFeedbackBuffersEXT - Bind transform feedback buffers to a command buffer (vkCmdBindTransformFeedbackBuffersEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - firstBinding: is the index of the first transform feedback binding whose state is updated by the command.
+//   - bindingCount: is the number of transform feedback bindings whose state is updated by the command.
+//   - buffers: is a pointer to an array of buffer handles.
+//   - offsets: is a pointer to an array of buffer offsets.
+//   - sizes: is NULL or a pointer to an array of basetype:VkDeviceSize buffer sizes, specifying the maximum number of bytes to capture to the corresponding transform feedback buffer. If pSizes is NULL, it is equivalent to setting a pSizes array where every element is VK_WHOLE_SIZE.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindTransformFeedbackBuffersEXT.html
+func CmdBindTransformFeedbackBuffersEXT(commandBuffer CommandBuffer, firstBinding uint32, buffers []Buffer, offsets *DeviceSize, sizes *DeviceSize) {
+	c_buffers := SliceData(buffers)
+	CallSyscall(pfnCmdBindTransformFeedbackBuffersEXT, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(buffers)), uintptr(unsafe.Pointer(c_buffers)), uintptr(unsafe.Pointer(offsets)), uintptr(unsafe.Pointer(sizes)))
 }
 
 // CmdBindVertexBuffers - Bind vertex buffers to a command buffer (vkCmdBindVertexBuffers).
@@ -762,6 +2477,29 @@ func CmdBindVertexBuffers(commandBuffer CommandBuffer, firstBinding uint32, buff
 func CmdBindVertexBuffers2(commandBuffer CommandBuffer, firstBinding uint32, buffers []Buffer, offsets *DeviceSize, sizes *DeviceSize, strides *DeviceSize) {
 	c_buffers := SliceData(buffers)
 	CallSyscall(pfnCmdBindVertexBuffers2, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(buffers)), uintptr(unsafe.Pointer(c_buffers)), uintptr(unsafe.Pointer(offsets)), uintptr(unsafe.Pointer(sizes)), uintptr(unsafe.Pointer(strides)))
+}
+
+// CmdBindVertexBuffers2EXT executes vkCmdBindVertexBuffers2EXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2EXT.html
+func CmdBindVertexBuffers2EXT() {
+	CallSyscall(pfnCmdBindVertexBuffers2EXT)
+}
+
+// CmdBindVertexBuffers3KHR - Bind strided address ranges as vertex buffers to a command buffer and dynamically set strides (vkCmdBindVertexBuffers3KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - firstBinding: is the index of the first vertex input binding whose state is updated by the command.
+//   - bindingCount: is the number of vertex input bindings whose state is updated by the command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers3KHR.html
+func CmdBindVertexBuffers3KHR(commandBuffer CommandBuffer, firstBinding uint32, bindingInfos []BindVertexBuffer3InfoKHR) {
+	c_bindingInfos := make([]RawBindVertexBuffer3InfoKHR, len(bindingInfos))
+	for i := range bindingInfos {
+		if raw := bindingInfos[i].Raw(); raw != nil {
+			c_bindingInfos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBindVertexBuffers3KHR, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(bindingInfos)), uintptr(unsafe.Pointer(SliceData(c_bindingInfos))))
 }
 
 // CmdBlitImage - Copy regions of an image, potentially performing format conversion, (vkCmdBlitImage).
@@ -795,6 +2533,107 @@ func CmdBlitImage(commandBuffer CommandBuffer, srcImage Image, srcImageLayout Im
 func CmdBlitImage2(commandBuffer CommandBuffer, blitImageInfo *BlitImageInfo2) {
 	c_blitImageInfo := blitImageInfo.Raw()
 	CallSyscall(pfnCmdBlitImage2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_blitImageInfo)))
+}
+
+// CmdBlitImage2KHR executes vkCmdBlitImage2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBlitImage2KHR.html
+func CmdBlitImage2KHR() {
+	CallSyscall(pfnCmdBlitImage2KHR)
+}
+
+// CmdBuildAccelerationStructureNV - Build an acceleration structure (vkCmdBuildAccelerationStructureNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: contains the shared information for the acceleration structure's structure.
+//   - instanceData: is the buffer containing an array of VkAccelerationStructureInstanceKHR structures defining acceleration structures. This parameter must be NULL for bottom level acceleration structures.
+//   - instanceOffset: is the offset in bytes (relative to the start of instanceData) at which the instance data is located.
+//   - update: specifies whether to update the dst acceleration structure with the data in src.
+//   - dst: is a pointer to the target acceleration structure for the build.
+//   - src: is a pointer to an existing acceleration structure that is to be used to update the dst acceleration structure.
+//   - scratch: is the VkBuffer that will be used as scratch memory for the build.
+//   - scratchOffset: is the offset in bytes relative to the start of scratch that will be used as a scratch memory.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructureNV.html
+func CmdBuildAccelerationStructureNV(commandBuffer CommandBuffer, info *AccelerationStructureInfoNV, instanceData Buffer, instanceOffset DeviceSize, update Bool32, dst AccelerationStructureNV, src AccelerationStructureNV, scratch Buffer, scratchOffset DeviceSize) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdBuildAccelerationStructureNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)), uintptr(instanceData), uintptr(instanceOffset), uintptr(update), uintptr(dst), uintptr(src), uintptr(scratch), uintptr(scratchOffset))
+}
+
+// CmdBuildAccelerationStructuresIndirectKHR - Build an acceleration structure with some parameters provided on the device (vkCmdBuildAccelerationStructuresIndirectKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - infoCount: is the number of acceleration structures to build.
+//   - infos: is a pointer to an array of infoCount VkAccelerationStructureBuildGeometryInfoKHR structures defining the geometry used to build each acceleration structure.
+//   - indirectDeviceAddresses: is a pointer to an array of infoCount buffer device addresses which point to pInfos[i].geometryCount VkAccelerationStructureBuildRangeInfoKHR structures defining dynamic offsets to the addresses where geometry data is stored, as defined by pInfos[i].
+//   - indirectStrides: is a pointer to an array of infoCount byte strides between elements of pIndirectDeviceAddresses.
+//   - maxPrimitiveCounts: is a pointer to an array of infoCount pointers to arrays of pInfos[i].geometryCount values indicating the maximum number of primitives that will be built by this command for each geometry.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructuresIndirectKHR.html
+func CmdBuildAccelerationStructuresIndirectKHR(commandBuffer CommandBuffer, infos []AccelerationStructureBuildGeometryInfoKHR, indirectDeviceAddresses *DeviceAddress, indirectStrides *uint32, maxPrimitiveCounts **uint32) {
+	c_infos := make([]RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBuildAccelerationStructuresIndirectKHR, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(SliceData(c_infos))), uintptr(unsafe.Pointer(indirectDeviceAddresses)), uintptr(unsafe.Pointer(indirectStrides)), uintptr(unsafe.Pointer(maxPrimitiveCounts)))
+}
+
+// CmdBuildAccelerationStructuresKHR - Build an acceleration structure (vkCmdBuildAccelerationStructuresKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - infoCount: is the number of acceleration structures to build. It specifies the number of the pInfos structures and ppBuildRangeInfos pointers that must be provided.
+//   - infos: is a pointer to an array of infoCount VkAccelerationStructureBuildGeometryInfoKHR structures defining the geometry used to build each acceleration structure.
+//   - buildRangeInfos: is a pointer to an array of infoCount pointers to arrays of VkAccelerationStructureBuildRangeInfoKHR structures. Each ppBuildRangeInfos[i] is a pointer to an array of pInfos[i].geometryCount VkAccelerationStructureBuildRangeInfoKHR structures defining dynamic offsets to the addresses where geometry data is stored, as defined by pInfos[i].
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructuresKHR.html
+func CmdBuildAccelerationStructuresKHR(commandBuffer CommandBuffer, infos []AccelerationStructureBuildGeometryInfoKHR, buildRangeInfos **AccelerationStructureBuildRangeInfoKHR) {
+	c_infos := make([]RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBuildAccelerationStructuresKHR, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(SliceData(c_infos))), uintptr(unsafe.Pointer(buildRangeInfos)))
+}
+
+// CmdBuildClusterAccelerationStructureIndirectNV - Build or move cluster acceleration structures (vkCmdBuildClusterAccelerationStructureIndirectNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - commandInfos: is a pointer to a VkClusterAccelerationStructureCommandsInfoNV structure containing parameters required for building or moving the cluster acceleration structure.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildClusterAccelerationStructureIndirectNV.html
+func CmdBuildClusterAccelerationStructureIndirectNV(commandBuffer CommandBuffer, commandInfos *ClusterAccelerationStructureCommandsInfoNV) {
+	c_commandInfos := commandInfos.Raw()
+	CallSyscall(pfnCmdBuildClusterAccelerationStructureIndirectNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_commandInfos)))
+}
+
+// CmdBuildMicromapsEXT - Build a micromap (vkCmdBuildMicromapsEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - infoCount: is the number of micromaps to build. It specifies the number of the pInfos structures that must be provided.
+//   - infos: is a pointer to an array of infoCount VkMicromapBuildInfoEXT structures defining the data used to build each micromap.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildMicromapsEXT.html
+func CmdBuildMicromapsEXT(commandBuffer CommandBuffer, infos []MicromapBuildInfoEXT) {
+	c_infos := make([]RawMicromapBuildInfoEXT, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdBuildMicromapsEXT, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(SliceData(c_infos))))
+}
+
+// CmdBuildPartitionedAccelerationStructuresNV - Command for building a PTLAS (vkCmdBuildPartitionedAccelerationStructuresNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - buildInfo: is a pointer to a VkBuildPartitionedAccelerationStructureInfoNV structure containing parameters required for building a PTLAS.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildPartitionedAccelerationStructuresNV.html
+func CmdBuildPartitionedAccelerationStructuresNV(commandBuffer CommandBuffer, buildInfo *BuildPartitionedAccelerationStructureInfoNV) {
+	c_buildInfo := buildInfo.Raw()
+	CallSyscall(pfnCmdBuildPartitionedAccelerationStructuresNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_buildInfo)))
 }
 
 // CmdClearAttachments - Clear regions within bound framebuffer attachments (vkCmdClearAttachments).
@@ -856,6 +2695,68 @@ func CmdClearDepthStencilImage(commandBuffer CommandBuffer, image Image, imageLa
 	CallSyscall(pfnCmdClearDepthStencilImage, uintptr(commandBuffer), uintptr(image), uintptr(imageLayout), uintptr(unsafe.Pointer(c_depthStencil)), uintptr(len(ranges)), uintptr(unsafe.Pointer(SliceData(c_ranges))))
 }
 
+// CmdControlVideoCodingKHR - Control video coding parameters (vkCmdControlVideoCodingKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - codingControlInfo: is a pointer to a VkVideoCodingControlInfoKHR structure specifying the control parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdControlVideoCodingKHR.html
+func CmdControlVideoCodingKHR(commandBuffer CommandBuffer, codingControlInfo *VideoCodingControlInfoKHR) {
+	c_codingControlInfo := codingControlInfo.Raw()
+	CallSyscall(pfnCmdControlVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_codingControlInfo)))
+}
+
+// CmdConvertCooperativeVectorMatrixNV - Convert a cooperative vector matrix from one layout and type to another (vkCmdConvertCooperativeVectorMatrixNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - infoCount: is the number of layout conversions to perform.
+//   - infos: is a pointer to an array of VkConvertCooperativeVectorMatrixInfoNV structures containing information about the layout conversion.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdConvertCooperativeVectorMatrixNV.html
+func CmdConvertCooperativeVectorMatrixNV(commandBuffer CommandBuffer, infos []ConvertCooperativeVectorMatrixInfoNV) {
+	c_infos := make([]RawConvertCooperativeVectorMatrixInfoNV, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdConvertCooperativeVectorMatrixNV, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(SliceData(c_infos))))
+}
+
+// CmdCopyAccelerationStructureKHR - Copy an acceleration structure (vkCmdCopyAccelerationStructureKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: is a pointer to a VkCopyAccelerationStructureInfoKHR structure defining the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyAccelerationStructureKHR.html
+func CmdCopyAccelerationStructureKHR(commandBuffer CommandBuffer, info *CopyAccelerationStructureInfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdCopyAccelerationStructureKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdCopyAccelerationStructureNV - Copy an acceleration structure (vkCmdCopyAccelerationStructureNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - dst: is the target acceleration structure for the copy.
+//   - src: is the source acceleration structure for the copy.
+//   - mode: is a VkCopyAccelerationStructureModeKHR value specifying additional operations to perform during the copy.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyAccelerationStructureNV.html
+func CmdCopyAccelerationStructureNV(commandBuffer CommandBuffer, dst AccelerationStructureNV, src AccelerationStructureNV, mode CopyAccelerationStructureModeKHR) {
+	CallSyscall(pfnCmdCopyAccelerationStructureNV, uintptr(commandBuffer), uintptr(dst), uintptr(src), uintptr(mode))
+}
+
+// CmdCopyAccelerationStructureToMemoryKHR - Copy an acceleration structure to device memory (vkCmdCopyAccelerationStructureToMemoryKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: is a pointer to a VkCopyAccelerationStructureToMemoryInfoKHR structure defining the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyAccelerationStructureToMemoryKHR.html
+func CmdCopyAccelerationStructureToMemoryKHR(commandBuffer CommandBuffer, info *CopyAccelerationStructureToMemoryInfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdCopyAccelerationStructureToMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 // CmdCopyBuffer - Copy data between buffer regions (vkCmdCopyBuffer).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -884,6 +2785,12 @@ func CmdCopyBuffer(commandBuffer CommandBuffer, srcBuffer Buffer, dstBuffer Buff
 func CmdCopyBuffer2(commandBuffer CommandBuffer, copyBufferInfo *CopyBufferInfo2) {
 	c_copyBufferInfo := copyBufferInfo.Raw()
 	CallSyscall(pfnCmdCopyBuffer2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyBufferInfo)))
+}
+
+// CmdCopyBuffer2KHR executes vkCmdCopyBuffer2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer2KHR.html
+func CmdCopyBuffer2KHR() {
+	CallSyscall(pfnCmdCopyBuffer2KHR)
 }
 
 // CmdCopyBufferToImage - Copy data from a buffer into an image (vkCmdCopyBufferToImage).
@@ -915,6 +2822,22 @@ func CmdCopyBufferToImage(commandBuffer CommandBuffer, srcBuffer Buffer, dstImag
 func CmdCopyBufferToImage2(commandBuffer CommandBuffer, copyBufferToImageInfo *CopyBufferToImageInfo2) {
 	c_copyBufferToImageInfo := copyBufferToImageInfo.Raw()
 	CallSyscall(pfnCmdCopyBufferToImage2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyBufferToImageInfo)))
+}
+
+// CmdCopyBufferToImage2KHR executes vkCmdCopyBufferToImage2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBufferToImage2KHR.html
+func CmdCopyBufferToImage2KHR() {
+	CallSyscall(pfnCmdCopyBufferToImage2KHR)
+}
+
+// CmdCopyGpaSessionResultsAMD - Copying GPA session results (vkCmdCopyGpaSessionResultsAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - gpaSession: is the handle of the GPA session that is the destination of the copy.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyGpaSessionResultsAMD.html
+func CmdCopyGpaSessionResultsAMD(commandBuffer CommandBuffer, gpaSession GpaSessionAMD) {
+	CallSyscall(pfnCmdCopyGpaSessionResultsAMD, uintptr(commandBuffer), uintptr(gpaSession))
 }
 
 // CmdCopyImage - Copy data between images (vkCmdCopyImage).
@@ -949,6 +2872,12 @@ func CmdCopyImage2(commandBuffer CommandBuffer, copyImageInfo *CopyImageInfo2) {
 	CallSyscall(pfnCmdCopyImage2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyImageInfo)))
 }
 
+// CmdCopyImage2KHR executes vkCmdCopyImage2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImage2KHR.html
+func CmdCopyImage2KHR() {
+	CallSyscall(pfnCmdCopyImage2KHR)
+}
+
 // CmdCopyImageToBuffer - Copy image data into a buffer (vkCmdCopyImageToBuffer).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -980,6 +2909,144 @@ func CmdCopyImageToBuffer2(commandBuffer CommandBuffer, copyImageToBufferInfo *C
 	CallSyscall(pfnCmdCopyImageToBuffer2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyImageToBufferInfo)))
 }
 
+// CmdCopyImageToBuffer2KHR executes vkCmdCopyImageToBuffer2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer2KHR.html
+func CmdCopyImageToBuffer2KHR() {
+	CallSyscall(pfnCmdCopyImageToBuffer2KHR)
+}
+
+// CmdCopyImageToMemoryKHR - Copy data from an image to memory ranges (vkCmdCopyImageToMemoryKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyMemoryInfo: a pointer to a VkCopyDeviceMemoryImageInfoKHR structure describing the copies to perform.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToMemoryKHR.html
+func CmdCopyImageToMemoryKHR(commandBuffer CommandBuffer, copyMemoryInfo *CopyDeviceMemoryImageInfoKHR) {
+	c_copyMemoryInfo := copyMemoryInfo.Raw()
+	CallSyscall(pfnCmdCopyImageToMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
+}
+
+// CmdCopyMemoryIndirectKHR - Copy data between memory regions (vkCmdCopyMemoryIndirectKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyMemoryIndirectInfo: is a pointer to a VkCopyMemoryIndirectInfoKHR structure containing the copy parameters, including the number of copies to execute and a strided array of VkCopyMemoryIndirectCommandKHR structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryIndirectKHR.html
+func CmdCopyMemoryIndirectKHR(commandBuffer CommandBuffer, copyMemoryIndirectInfo *CopyMemoryIndirectInfoKHR) {
+	c_copyMemoryIndirectInfo := copyMemoryIndirectInfo.Raw()
+	CallSyscall(pfnCmdCopyMemoryIndirectKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryIndirectInfo)))
+}
+
+// CmdCopyMemoryIndirectNV - Copy data between memory regions (vkCmdCopyMemoryIndirectNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyBufferAddress: is the memory address specifying the copy parameters. It is laid out as an array of VkCopyMemoryIndirectCommandNV structures.
+//   - copyCount: is the number of copies to execute, and can be zero.
+//   - stride: is the stride in bytes between successive sets of copy parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryIndirectNV.html
+func CmdCopyMemoryIndirectNV(commandBuffer CommandBuffer, copyBufferAddress DeviceAddress, copyCount uint32, stride uint32) {
+	CallSyscall(pfnCmdCopyMemoryIndirectNV, uintptr(commandBuffer), uintptr(copyBufferAddress), uintptr(copyCount), uintptr(stride))
+}
+
+// CmdCopyMemoryKHR - Copy data between memory ranges (vkCmdCopyMemoryKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyMemoryInfo: a pointer to a VkCopyDeviceMemoryInfoKHR structure describing the copies to perform.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryKHR.html
+func CmdCopyMemoryKHR(commandBuffer CommandBuffer, copyMemoryInfo *CopyDeviceMemoryInfoKHR) {
+	c_copyMemoryInfo := copyMemoryInfo.Raw()
+	CallSyscall(pfnCmdCopyMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
+}
+
+// CmdCopyMemoryToAccelerationStructureKHR - Copy device memory to an acceleration structure (vkCmdCopyMemoryToAccelerationStructureKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: is a pointer to a VkCopyMemoryToAccelerationStructureInfoKHR structure defining the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToAccelerationStructureKHR.html
+func CmdCopyMemoryToAccelerationStructureKHR(commandBuffer CommandBuffer, info *CopyMemoryToAccelerationStructureInfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdCopyMemoryToAccelerationStructureKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdCopyMemoryToImageIndirectKHR - Copy data from a memory region to an image object (vkCmdCopyMemoryToImageIndirectKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyMemoryToImageIndirectInfo: is a pointer to a VkCopyMemoryToImageIndirectInfoKHR structure which contains the copy parameters, including the number of copies to execute and a strided array of VkCopyMemoryToImageIndirectCommandKHR structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToImageIndirectKHR.html
+func CmdCopyMemoryToImageIndirectKHR(commandBuffer CommandBuffer, copyMemoryToImageIndirectInfo *CopyMemoryToImageIndirectInfoKHR) {
+	c_copyMemoryToImageIndirectInfo := copyMemoryToImageIndirectInfo.Raw()
+	CallSyscall(pfnCmdCopyMemoryToImageIndirectKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryToImageIndirectInfo)))
+}
+
+// CmdCopyMemoryToImageIndirectNV - Copy data from a memory region to an image object (vkCmdCopyMemoryToImageIndirectNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyBufferAddress: is the address specifying the copy parameters which are laid out in memory as an array of VkCopyMemoryToImageIndirectCommandNV structures.
+//   - copyCount: is the number of copies to execute, and can be zero.
+//   - stride: is the byte stride between successive sets of copy parameters.
+//   - dstImage: is the destination image.
+//   - dstImageLayout: is the layout of the destination image subresources for the copy.
+//   - imageSubresources: is a pointer to an array of copyCount VkImageSubresourceLayers structures, specifying the image subresources of the destination image data for the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToImageIndirectNV.html
+func CmdCopyMemoryToImageIndirectNV(commandBuffer CommandBuffer, copyBufferAddress DeviceAddress, stride uint32, dstImage Image, dstImageLayout ImageLayout, imageSubresources []ImageSubresourceLayers) {
+	c_imageSubresources := make([]RawImageSubresourceLayers, len(imageSubresources))
+	for i := range imageSubresources {
+		if raw := imageSubresources[i].Raw(); raw != nil {
+			c_imageSubresources[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdCopyMemoryToImageIndirectNV, uintptr(commandBuffer), uintptr(copyBufferAddress), uintptr(len(imageSubresources)), uintptr(stride), uintptr(dstImage), uintptr(dstImageLayout), uintptr(unsafe.Pointer(SliceData(c_imageSubresources))))
+}
+
+// CmdCopyMemoryToImageKHR - Copy data from memory ranges to an image (vkCmdCopyMemoryToImageKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyMemoryInfo: a pointer to a VkCopyDeviceMemoryImageInfoKHR structure describing the copies to perform.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToImageKHR.html
+func CmdCopyMemoryToImageKHR(commandBuffer CommandBuffer, copyMemoryInfo *CopyDeviceMemoryImageInfoKHR) {
+	c_copyMemoryInfo := copyMemoryInfo.Raw()
+	CallSyscall(pfnCmdCopyMemoryToImageKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
+}
+
+// CmdCopyMemoryToMicromapEXT - Copy device memory to a micromap (vkCmdCopyMemoryToMicromapEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: is a pointer to a VkCopyMemoryToMicromapInfoEXT structure defining the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToMicromapEXT.html
+func CmdCopyMemoryToMicromapEXT(commandBuffer CommandBuffer, info *CopyMemoryToMicromapInfoEXT) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdCopyMemoryToMicromapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdCopyMicromapEXT - Copy a micromap (vkCmdCopyMicromapEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: is a pointer to a VkCopyMicromapInfoEXT structure defining the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMicromapEXT.html
+func CmdCopyMicromapEXT(commandBuffer CommandBuffer, info *CopyMicromapInfoEXT) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdCopyMicromapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdCopyMicromapToMemoryEXT - Copy a micromap to device memory (vkCmdCopyMicromapToMemoryEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: is an a pointer to a VkCopyMicromapToMemoryInfoEXT structure defining the copy operation.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMicromapToMemoryEXT.html
+func CmdCopyMicromapToMemoryEXT(commandBuffer CommandBuffer, info *CopyMicromapToMemoryInfoEXT) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdCopyMicromapToMemoryEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 // CmdCopyQueryPoolResults - Copy the results of queries in a query pool to a buffer object (vkCmdCopyQueryPoolResults).
 // Parameters:
 //   - commandBuffer: is the command buffer into which this command will be recorded.
@@ -994,6 +3061,147 @@ func CmdCopyImageToBuffer2(commandBuffer CommandBuffer, copyImageToBufferInfo *C
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyQueryPoolResults.html
 func CmdCopyQueryPoolResults(commandBuffer CommandBuffer, queryPool QueryPool, firstQuery uint32, queryCount uint32, dstBuffer Buffer, dstOffset DeviceSize, stride DeviceSize, flags QueryResultFlags) {
 	CallSyscall(pfnCmdCopyQueryPoolResults, uintptr(commandBuffer), uintptr(queryPool), uintptr(firstQuery), uintptr(queryCount), uintptr(dstBuffer), uintptr(dstOffset), uintptr(stride), uintptr(flags))
+}
+
+// CmdCopyQueryPoolResultsToMemoryKHR - Copy the results of queries in a query pool to a memory range (vkCmdCopyQueryPoolResultsToMemoryKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//   - queryPool: is the query pool managing the queries containing the desired results.
+//   - firstQuery: is the initial query index.
+//   - queryCount: is the number of queries. firstQuery and queryCount together define a range of queries.
+//   - dstRange: is a pointer to a VkStridedDeviceAddressRangeKHR describing a range of memory addressed with a stride that will receive the results of the copy command.
+//   - dstFlags: is a VkAddressCommandFlagsKHR value defining the flags for the destination address range.
+//   - queryResultFlags: is a bitmask of VkQueryResultFlagBits specifying how and when results are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyQueryPoolResultsToMemoryKHR.html
+func CmdCopyQueryPoolResultsToMemoryKHR(commandBuffer CommandBuffer, queryPool QueryPool, firstQuery uint32, queryCount uint32, dstRange *StridedDeviceAddressRangeKHR, dstFlags AddressCommandFlagsKHR, queryResultFlags QueryResultFlags) {
+	c_dstRange := dstRange.Raw()
+	CallSyscall(pfnCmdCopyQueryPoolResultsToMemoryKHR, uintptr(commandBuffer), uintptr(queryPool), uintptr(firstQuery), uintptr(queryCount), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(queryResultFlags))
+}
+
+// CmdCopyTensorARM - Copy data between tensors (vkCmdCopyTensorARM).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - copyTensorInfo: is a pointer to VkCopyTensorInfoARM structure describing the copy parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyTensorARM.html
+func CmdCopyTensorARM(commandBuffer CommandBuffer, copyTensorInfo *CopyTensorInfoARM) {
+	c_copyTensorInfo := copyTensorInfo.Raw()
+	CallSyscall(pfnCmdCopyTensorARM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyTensorInfo)))
+}
+
+// CmdCuLaunchKernelNVX - Stub description of vkCmdCuLaunchKernelNVX (vkCmdCuLaunchKernelNVX).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCuLaunchKernelNVX.html
+func CmdCuLaunchKernelNVX(commandBuffer CommandBuffer, launchInfo *CuLaunchInfoNVX) {
+	c_launchInfo := launchInfo.Raw()
+	CallSyscall(pfnCmdCuLaunchKernelNVX, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_launchInfo)))
+}
+
+// CmdCudaLaunchKernelNV - Dispatch compute work items (vkCmdCudaLaunchKernelNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - launchInfo: is a pointer to a VkCudaLaunchInfoNV structure in which the grid (similar to workgroup) dimension, function handle and related arguments are defined.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCudaLaunchKernelNV.html
+func CmdCudaLaunchKernelNV(commandBuffer CommandBuffer, launchInfo *CudaLaunchInfoNV) {
+	c_launchInfo := launchInfo.Raw()
+	CallSyscall(pfnCmdCudaLaunchKernelNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_launchInfo)))
+}
+
+// CmdDebugMarkerBeginEXT - Open a command buffer marker region (vkCmdDebugMarkerBeginEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - markerInfo: is a pointer to a VkDebugMarkerMarkerInfoEXT structure specifying the parameters of the marker region to open.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDebugMarkerBeginEXT.html
+func CmdDebugMarkerBeginEXT(commandBuffer CommandBuffer, markerInfo *DebugMarkerMarkerInfoEXT) {
+	c_markerInfo := markerInfo.Raw()
+	CallSyscall(pfnCmdDebugMarkerBeginEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+}
+
+// CmdDebugMarkerEndEXT - Close a command buffer marker region (vkCmdDebugMarkerEndEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDebugMarkerEndEXT.html
+func CmdDebugMarkerEndEXT(commandBuffer CommandBuffer) {
+	CallSyscall(pfnCmdDebugMarkerEndEXT, uintptr(commandBuffer))
+}
+
+// CmdDebugMarkerInsertEXT - Insert a marker label into a command buffer (vkCmdDebugMarkerInsertEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - markerInfo: is a pointer to a VkDebugMarkerMarkerInfoEXT structure specifying the parameters of the marker to insert.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDebugMarkerInsertEXT.html
+func CmdDebugMarkerInsertEXT(commandBuffer CommandBuffer, markerInfo *DebugMarkerMarkerInfoEXT) {
+	c_markerInfo := markerInfo.Raw()
+	CallSyscall(pfnCmdDebugMarkerInsertEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+}
+
+// CmdDecodeVideoKHR - Launch a video decode operation (vkCmdDecodeVideoKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - decodeInfo: is a pointer to a VkVideoDecodeInfoKHR structure specifying the parameters of the video decode operations.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecodeVideoKHR.html
+func CmdDecodeVideoKHR(commandBuffer CommandBuffer, decodeInfo *VideoDecodeInfoKHR) {
+	c_decodeInfo := decodeInfo.Raw()
+	CallSyscall(pfnCmdDecodeVideoKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_decodeInfo)))
+}
+
+// CmdDecompressMemoryEXT - Decompress data between memory regions (vkCmdDecompressMemoryEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - decompressMemoryInfoEXT: is a pointer to a VkDecompressMemoryInfoEXT structure describing the decompression parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryEXT.html
+func CmdDecompressMemoryEXT(commandBuffer CommandBuffer, decompressMemoryInfoEXT *DecompressMemoryInfoEXT) {
+	c_decompressMemoryInfoEXT := decompressMemoryInfoEXT.Raw()
+	CallSyscall(pfnCmdDecompressMemoryEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_decompressMemoryInfoEXT)))
+}
+
+// CmdDecompressMemoryIndirectCountEXT - Indirect decompress data between memory regions (vkCmdDecompressMemoryIndirectCountEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - decompressionMethod: is a bitmask of VkMemoryDecompressionMethodFlagBitsEXT with a single bit set specifying the method used to decompress data.
+//   - indirectCommandsAddress: is the device address containing decompression parameters laid out as an array of VkDecompressMemoryRegionEXT structures.
+//   - indirectCommandsCountAddress: is the device address containing a 32-bit integer value specifying the decompression count.
+//   - maxDecompressionCount: is maximum number of decompressions that will be executed. The actual number of executed decompressions is the minimum of the count specified in indirectCommandsCountAddress and maxDecompressionCount.
+//   - stride: is the byte stride between successive sets of decompression parameters located starting from indirectCommandsAddress.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryIndirectCountEXT.html
+func CmdDecompressMemoryIndirectCountEXT(commandBuffer CommandBuffer, decompressionMethod MemoryDecompressionMethodFlagsEXT, indirectCommandsAddress DeviceAddress, indirectCommandsCountAddress DeviceAddress, maxDecompressionCount uint32, stride uint32) {
+	CallSyscall(pfnCmdDecompressMemoryIndirectCountEXT, uintptr(commandBuffer), uintptr(decompressionMethod), uintptr(indirectCommandsAddress), uintptr(indirectCommandsCountAddress), uintptr(maxDecompressionCount), uintptr(stride))
+}
+
+// CmdDecompressMemoryIndirectCountNV - Indirect decompress data between memory regions (vkCmdDecompressMemoryIndirectCountNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - indirectCommandsAddress: is the device address containing decompression parameters laid out as an array of VkDecompressMemoryRegionNV structures.
+//   - indirectCommandsCountAddress: is the device address containing a 32-bit integer value specifying the decompression count.
+//   - stride: is the byte stride between successive sets of decompression parameters located starting from indirectCommandsAddress.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryIndirectCountNV.html
+func CmdDecompressMemoryIndirectCountNV(commandBuffer CommandBuffer, indirectCommandsAddress DeviceAddress, indirectCommandsCountAddress DeviceAddress, stride uint32) {
+	CallSyscall(pfnCmdDecompressMemoryIndirectCountNV, uintptr(commandBuffer), uintptr(indirectCommandsAddress), uintptr(indirectCommandsCountAddress), uintptr(stride))
+}
+
+// CmdDecompressMemoryNV - Decompress memory containing compressed data (vkCmdDecompressMemoryNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - decompressRegionCount: is the number of memory regions to decompress.
+//   - decompressMemoryRegions: is a pointer to an array of decompressRegionCount VkDecompressMemoryRegionNV structures specifying decompression parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryNV.html
+func CmdDecompressMemoryNV(commandBuffer CommandBuffer, decompressMemoryRegions []DecompressMemoryRegionNV) {
+	c_decompressMemoryRegions := make([]RawDecompressMemoryRegionNV, len(decompressMemoryRegions))
+	for i := range decompressMemoryRegions {
+		if raw := decompressMemoryRegions[i].Raw(); raw != nil {
+			c_decompressMemoryRegions[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdDecompressMemoryNV, uintptr(commandBuffer), uintptr(len(decompressMemoryRegions)), uintptr(unsafe.Pointer(SliceData(c_decompressMemoryRegions))))
 }
 
 // CmdDispatch - Dispatch compute work items (vkCmdDispatch).
@@ -1023,6 +3231,56 @@ func CmdDispatchBase(commandBuffer CommandBuffer, baseGroupX uint32, baseGroupY 
 	CallSyscall(pfnCmdDispatchBase, uintptr(commandBuffer), uintptr(baseGroupX), uintptr(baseGroupY), uintptr(baseGroupZ), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
 }
 
+// CmdDispatchDataGraphARM - Dispatch a data graph pipeline within a session (vkCmdDispatchDataGraphARM).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - session: is the VkDataGraphPipelineSessionARM that data graph pipeline being dispatched will use.
+//   - info: is NULL or a pointer to a VkDataGraphPipelineDispatchInfoARM structure.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchDataGraphARM.html
+func CmdDispatchDataGraphARM(commandBuffer CommandBuffer, session DataGraphPipelineSessionARM, info *DataGraphPipelineDispatchInfoARM) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDispatchDataGraphARM, uintptr(commandBuffer), uintptr(session), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdDispatchGraphAMDX - Dispatch an execution graph (vkCmdDispatchGraphAMDX).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - scratch: is the address of scratch memory to be used.
+//   - scratchSize: is a range in bytes of scratch memory to be used.
+//   - countInfo: is a host pointer to a VkDispatchGraphCountInfoAMDX structure defining the nodes which will be initially executed.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchGraphAMDX.html
+func CmdDispatchGraphAMDX(commandBuffer CommandBuffer, scratch DeviceAddress, scratchSize DeviceSize, countInfo *DispatchGraphCountInfoAMDX) {
+	c_countInfo := countInfo.Raw()
+	CallSyscall(pfnCmdDispatchGraphAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(unsafe.Pointer(c_countInfo)))
+}
+
+// CmdDispatchGraphIndirectAMDX - Dispatch an execution graph with node and payload parameters read on the device (vkCmdDispatchGraphIndirectAMDX).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - scratch: is the address of scratch memory to be used.
+//   - scratchSize: is a range in bytes of scratch memory to be used.
+//   - countInfo: is a host pointer to a VkDispatchGraphCountInfoAMDX structure defining the nodes which will be initially executed.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchGraphIndirectAMDX.html
+func CmdDispatchGraphIndirectAMDX(commandBuffer CommandBuffer, scratch DeviceAddress, scratchSize DeviceSize, countInfo *DispatchGraphCountInfoAMDX) {
+	c_countInfo := countInfo.Raw()
+	CallSyscall(pfnCmdDispatchGraphIndirectAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(unsafe.Pointer(c_countInfo)))
+}
+
+// CmdDispatchGraphIndirectCountAMDX - Dispatch an execution graph with all parameters read on the device (vkCmdDispatchGraphIndirectCountAMDX).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - scratch: is the address of scratch memory to be used.
+//   - scratchSize: is a range in bytes of scratch memory to be used.
+//   - countInfo: is a device address of a VkDispatchGraphCountInfoAMDX structure defining the nodes which will be initially executed.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchGraphIndirectCountAMDX.html
+func CmdDispatchGraphIndirectCountAMDX(commandBuffer CommandBuffer, scratch DeviceAddress, scratchSize DeviceSize, countInfo DeviceAddress) {
+	CallSyscall(pfnCmdDispatchGraphIndirectCountAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(countInfo))
+}
+
 // CmdDispatchIndirect - Dispatch compute work items with indirect parameters (vkCmdDispatchIndirect).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1032,6 +3290,28 @@ func CmdDispatchBase(commandBuffer CommandBuffer, baseGroupX uint32, baseGroupY 
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect.html
 func CmdDispatchIndirect(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize) {
 	CallSyscall(pfnCmdDispatchIndirect, uintptr(commandBuffer), uintptr(buffer), uintptr(offset))
+}
+
+// CmdDispatchIndirect2KHR - Dispatch compute work items with indirect parameters through an address range (vkCmdDispatchIndirect2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDispatchIndirect2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect2KHR.html
+func CmdDispatchIndirect2KHR(commandBuffer CommandBuffer, info *DispatchIndirect2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDispatchIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdDispatchTileQCOM - Dispatch per-tile work items (vkCmdDispatchTileQCOM).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - dispatchTileInfo: is a pointer to a VkDispatchTileInfoQCOM structure containing information about the area-based dispatch.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchTileQCOM.html
+func CmdDispatchTileQCOM(commandBuffer CommandBuffer, dispatchTileInfo *DispatchTileInfoQCOM) {
+	c_dispatchTileInfo := dispatchTileInfo.Raw()
+	CallSyscall(pfnCmdDispatchTileQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dispatchTileInfo)))
 }
 
 // CmdDraw - Draw primitives (vkCmdDraw).
@@ -1045,6 +3325,29 @@ func CmdDispatchIndirect(commandBuffer CommandBuffer, buffer Buffer, offset Devi
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDraw.html
 func CmdDraw(commandBuffer CommandBuffer, vertexCount uint32, instanceCount uint32, firstVertex uint32, firstInstance uint32) {
 	CallSyscall(pfnCmdDraw, uintptr(commandBuffer), uintptr(vertexCount), uintptr(instanceCount), uintptr(firstVertex), uintptr(firstInstance))
+}
+
+// CmdDrawClusterHUAWEI - Draw cluster culling work items (vkCmdDrawClusterHUAWEI).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - groupCountX: is the number of local workgroups to dispatch in the X dimension.
+//   - groupCountY: is the number of local workgroups to dispatch in the Y dimension.
+//   - groupCountZ: is the number of local workgroups to dispatch in the Z dimension.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawClusterHUAWEI.html
+func CmdDrawClusterHUAWEI(commandBuffer CommandBuffer, groupCountX uint32, groupCountY uint32, groupCountZ uint32) {
+	CallSyscall(pfnCmdDrawClusterHUAWEI, uintptr(commandBuffer), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
+}
+
+// CmdDrawClusterIndirectHUAWEI - Issue an indirect cluster culling draw into a command buffer (vkCmdDrawClusterIndirectHUAWEI).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - buffer: is the buffer containing draw parameters.
+//   - offset: is the byte offset into buffer where parameters begin.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawClusterIndirectHUAWEI.html
+func CmdDrawClusterIndirectHUAWEI(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize) {
+	CallSyscall(pfnCmdDrawClusterIndirectHUAWEI, uintptr(commandBuffer), uintptr(buffer), uintptr(offset))
 }
 
 // CmdDrawIndexed - Draw primitives with indexed vertices (vkCmdDrawIndexed).
@@ -1074,6 +3377,17 @@ func CmdDrawIndexedIndirect(commandBuffer CommandBuffer, buffer Buffer, offset D
 	CallSyscall(pfnCmdDrawIndexedIndirect, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
 }
 
+// CmdDrawIndexedIndirect2KHR - Draw primitives with indirect parameters through an address range and with indexed vertices (vkCmdDrawIndexedIndirect2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDrawIndirect2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirect2KHR.html
+func CmdDrawIndexedIndirect2KHR(commandBuffer CommandBuffer, info *DrawIndirect2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDrawIndexedIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 // CmdDrawIndexedIndirectCount - Draw parameters with indirect parameters, indexed vertices, and draw count (vkCmdDrawIndexedIndirectCount).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command is recorded.
@@ -1089,6 +3403,17 @@ func CmdDrawIndexedIndirectCount(commandBuffer CommandBuffer, buffer Buffer, off
 	CallSyscall(pfnCmdDrawIndexedIndirectCount, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
 }
 
+// CmdDrawIndexedIndirectCount2KHR - Draw primitives with indirect parameters and draw count through address ranges and with indexed vertices (vkCmdDrawIndexedIndirectCount2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDrawIndirectCount2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirectCount2KHR.html
+func CmdDrawIndexedIndirectCount2KHR(commandBuffer CommandBuffer, info *DrawIndirectCount2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDrawIndexedIndirectCount2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 // CmdDrawIndirect - Draw primitives with indirect parameters (vkCmdDrawIndirect).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command is recorded.
@@ -1100,6 +3425,38 @@ func CmdDrawIndexedIndirectCount(commandBuffer CommandBuffer, buffer Buffer, off
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirect.html
 func CmdDrawIndirect(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize, drawCount uint32, stride uint32) {
 	CallSyscall(pfnCmdDrawIndirect, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
+}
+
+// CmdDrawIndirect2KHR - Draw primitives with indirect parameters through an address range (vkCmdDrawIndirect2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDrawIndirect2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirect2KHR.html
+func CmdDrawIndirect2KHR(commandBuffer CommandBuffer, info *DrawIndirect2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDrawIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdDrawIndirectByteCount2EXT - Draw primitives with indirect parameters where the vertex count is derived from the counter byte value in the counter memory range (vkCmdDrawIndirectByteCount2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - instanceCount: is the number of instances to draw.
+//   - firstInstance: is the instance ID of the first instance to draw.
+//   - counterInfo: is a pointer to a VkBindTransformFeedbackBuffer2InfoEXT defining the range of memory that the byte count is read from.
+//   - counterOffset: is subtracted from the byte count.
+//   - vertexStride: is the stride in bytes between each element of the vertex data that is used to calculate the vertex count from the counter value. This value is typically the same value that was used in the graphics pipeline state when the transform feedback was captured as the XfbStride.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectByteCount2EXT.html
+func CmdDrawIndirectByteCount2EXT(commandBuffer CommandBuffer, instanceCount uint32, firstInstance uint32, counterInfo *BindTransformFeedbackBuffer2InfoEXT, counterOffset uint32, vertexStride uint32) {
+	c_counterInfo := counterInfo.Raw()
+	CallSyscall(pfnCmdDrawIndirectByteCount2EXT, uintptr(commandBuffer), uintptr(instanceCount), uintptr(firstInstance), uintptr(unsafe.Pointer(c_counterInfo)), uintptr(counterOffset), uintptr(vertexStride))
+}
+
+// CmdDrawIndirectByteCountEXT - Draw primitives where the vertex count is derived from the counter byte value in the counter buffer (vkCmdDrawIndirectByteCountEXT).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectByteCountEXT.html
+func CmdDrawIndirectByteCountEXT(commandBuffer CommandBuffer, instanceCount uint32, firstInstance uint32, counterBuffer Buffer, counterBufferOffset DeviceSize, counterOffset uint32, vertexStride uint32) {
+	CallSyscall(pfnCmdDrawIndirectByteCountEXT, uintptr(commandBuffer), uintptr(instanceCount), uintptr(firstInstance), uintptr(counterBuffer), uintptr(counterBufferOffset), uintptr(counterOffset), uintptr(vertexStride))
 }
 
 // CmdDrawIndirectCount - Draw primitives with indirect parameters and draw count (vkCmdDrawIndirectCount).
@@ -1117,6 +3474,223 @@ func CmdDrawIndirectCount(commandBuffer CommandBuffer, buffer Buffer, offset Dev
 	CallSyscall(pfnCmdDrawIndirectCount, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
 }
 
+// CmdDrawIndirectCount2KHR - Draw primitives with indirect parameters and draw count through address ranges (vkCmdDrawIndirectCount2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDrawIndirectCount2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectCount2KHR.html
+func CmdDrawIndirectCount2KHR(commandBuffer CommandBuffer, info *DrawIndirectCount2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDrawIndirectCount2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdDrawMeshTasksEXT - Draw mesh task work items (vkCmdDrawMeshTasksEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - groupCountX: is the number of local workgroups to dispatch in the X dimension.
+//   - groupCountY: is the number of local workgroups to dispatch in the Y dimension.
+//   - groupCountZ: is the number of local workgroups to dispatch in the Z dimension.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksEXT.html
+func CmdDrawMeshTasksEXT(commandBuffer CommandBuffer, groupCountX uint32, groupCountY uint32, groupCountZ uint32) {
+	CallSyscall(pfnCmdDrawMeshTasksEXT, uintptr(commandBuffer), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
+}
+
+// CmdDrawMeshTasksIndirect2EXT - Issue a mesh tasks draw with indirect parameters through an address range (vkCmdDrawMeshTasksIndirect2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDrawIndirect2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirect2EXT.html
+func CmdDrawMeshTasksIndirect2EXT(commandBuffer CommandBuffer, info *DrawIndirect2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDrawMeshTasksIndirect2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdDrawMeshTasksIndirectCount2EXT - Perform an indirect mesh tasks draw with the draw count sourced from an address range (vkCmdDrawMeshTasksIndirectCount2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - info: is a pointer to a VkDrawIndirectCount2InfoKHR structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCount2EXT.html
+func CmdDrawMeshTasksIndirectCount2EXT(commandBuffer CommandBuffer, info *DrawIndirectCount2InfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdDrawMeshTasksIndirectCount2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdDrawMeshTasksIndirectCountEXT - Perform an indirect mesh tasks draw with the draw count sourced from a buffer (vkCmdDrawMeshTasksIndirectCountEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - buffer: is the buffer containing draw parameters.
+//   - offset: is the byte offset into buffer where parameters begin.
+//   - countBuffer: is the buffer containing the draw count.
+//   - countBufferOffset: is the byte offset into countBuffer where the draw count begins.
+//   - maxDrawCount: specifies the maximum number of draws that will be executed. The actual number of executed draw calls is the minimum of the count specified in countBuffer and maxDrawCount.
+//   - stride: is the byte stride between successive sets of draw parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountEXT.html
+func CmdDrawMeshTasksIndirectCountEXT(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize, countBuffer Buffer, countBufferOffset DeviceSize, maxDrawCount uint32, stride uint32) {
+	CallSyscall(pfnCmdDrawMeshTasksIndirectCountEXT, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
+}
+
+// CmdDrawMeshTasksIndirectCountNV - Perform an indirect mesh tasks draw with the draw count sourced from a buffer (vkCmdDrawMeshTasksIndirectCountNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - buffer: is the buffer containing draw parameters.
+//   - offset: is the byte offset into buffer where parameters begin.
+//   - countBuffer: is the buffer containing the draw count.
+//   - countBufferOffset: is the byte offset into countBuffer where the draw count begins.
+//   - maxDrawCount: specifies the maximum number of draws that will be executed. The actual number of executed draw calls is the minimum of the count specified in countBuffer and maxDrawCount.
+//   - stride: is the byte stride between successive sets of draw parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountNV.html
+func CmdDrawMeshTasksIndirectCountNV(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize, countBuffer Buffer, countBufferOffset DeviceSize, maxDrawCount uint32, stride uint32) {
+	CallSyscall(pfnCmdDrawMeshTasksIndirectCountNV, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
+}
+
+// CmdDrawMeshTasksIndirectEXT - Issue an indirect mesh tasks draw into a command buffer (vkCmdDrawMeshTasksIndirectEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - buffer: is the buffer containing draw parameters.
+//   - offset: is the byte offset into buffer where parameters begin.
+//   - drawCount: is the number of draws to execute, and can be zero.
+//   - stride: is the byte stride between successive sets of draw parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectEXT.html
+func CmdDrawMeshTasksIndirectEXT(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize, drawCount uint32, stride uint32) {
+	CallSyscall(pfnCmdDrawMeshTasksIndirectEXT, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
+}
+
+// CmdDrawMeshTasksIndirectNV - Issue an indirect mesh tasks draw into a command buffer (vkCmdDrawMeshTasksIndirectNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - buffer: is the buffer containing draw parameters.
+//   - offset: is the byte offset into buffer where parameters begin.
+//   - drawCount: is the number of draws to execute, and can be zero.
+//   - stride: is the byte stride between successive sets of draw parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectNV.html
+func CmdDrawMeshTasksIndirectNV(commandBuffer CommandBuffer, buffer Buffer, offset DeviceSize, drawCount uint32, stride uint32) {
+	CallSyscall(pfnCmdDrawMeshTasksIndirectNV, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
+}
+
+// CmdDrawMeshTasksNV - Draw mesh task work items (vkCmdDrawMeshTasksNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - taskCount: is the number of local workgroups to dispatch in the X dimension. Y and Z dimension are implicitly set to one.
+//   - firstTask: is the X component of the first workgroup ID.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksNV.html
+func CmdDrawMeshTasksNV(commandBuffer CommandBuffer, taskCount uint32, firstTask uint32) {
+	CallSyscall(pfnCmdDrawMeshTasksNV, uintptr(commandBuffer), uintptr(taskCount), uintptr(firstTask))
+}
+
+// CmdDrawMultiEXT - Draw primitives (vkCmdDrawMultiEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - drawCount: is the number of draws to execute, and can be zero.
+//   - vertexInfo: is a pointer to an array of VkMultiDrawInfoEXT with vertex information to be drawn.
+//   - instanceCount: is the number of instances per draw.
+//   - firstInstance: is the instance ID of the first instance in each draw.
+//   - stride: is the byte stride between consecutive elements of pVertexInfo.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMultiEXT.html
+func CmdDrawMultiEXT(commandBuffer CommandBuffer, vertexInfo []MultiDrawInfoEXT, instanceCount uint32, firstInstance uint32, stride uint32) {
+	c_vertexInfo := make([]RawMultiDrawInfoEXT, len(vertexInfo))
+	for i := range vertexInfo {
+		if raw := vertexInfo[i].Raw(); raw != nil {
+			c_vertexInfo[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdDrawMultiEXT, uintptr(commandBuffer), uintptr(len(vertexInfo)), uintptr(unsafe.Pointer(SliceData(c_vertexInfo))), uintptr(instanceCount), uintptr(firstInstance), uintptr(stride))
+}
+
+// CmdDrawMultiIndexedEXT - Draw primitives (vkCmdDrawMultiIndexedEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - drawCount: is the number of draws to execute, and can be zero.
+//   - indexInfo: is a pointer to an array of VkMultiDrawIndexedInfoEXT with index information to be drawn.
+//   - instanceCount: is the number of instances per draw.
+//   - firstInstance: is the instance ID of the first instance in each draw.
+//   - stride: is the byte stride between consecutive elements of pIndexInfo.
+//   - vertexOffset: is NULL or a pointer to the value added to the vertex index before indexing into the vertex buffer. When specified, VkMultiDrawIndexedInfoEXT::pname:offset is ignored.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMultiIndexedEXT.html
+func CmdDrawMultiIndexedEXT(commandBuffer CommandBuffer, indexInfo []MultiDrawIndexedInfoEXT, instanceCount uint32, firstInstance uint32, stride uint32, vertexOffset *int32) {
+	c_indexInfo := make([]RawMultiDrawIndexedInfoEXT, len(indexInfo))
+	for i := range indexInfo {
+		if raw := indexInfo[i].Raw(); raw != nil {
+			c_indexInfo[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdDrawMultiIndexedEXT, uintptr(commandBuffer), uintptr(len(indexInfo)), uintptr(unsafe.Pointer(SliceData(c_indexInfo))), uintptr(instanceCount), uintptr(firstInstance), uintptr(stride), uintptr(unsafe.Pointer(vertexOffset)))
+}
+
+// CmdEncodeVideoKHR - Launch video encode operations (vkCmdEncodeVideoKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - encodeInfo: is a pointer to a VkVideoEncodeInfoKHR structure specifying the parameters of the video encode operations.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEncodeVideoKHR.html
+func CmdEncodeVideoKHR(commandBuffer CommandBuffer, encodeInfo *VideoEncodeInfoKHR) {
+	c_encodeInfo := encodeInfo.Raw()
+	CallSyscall(pfnCmdEncodeVideoKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_encodeInfo)))
+}
+
+// CmdEndConditionalRenderingEXT - Define the end of a conditional rendering block (vkCmdEndConditionalRenderingEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndConditionalRenderingEXT.html
+func CmdEndConditionalRenderingEXT(commandBuffer CommandBuffer) {
+	CallSyscall(pfnCmdEndConditionalRenderingEXT, uintptr(commandBuffer))
+}
+
+// CmdEndDebugUtilsLabelEXT - Close a command buffer label region (vkCmdEndDebugUtilsLabelEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndDebugUtilsLabelEXT.html
+func CmdEndDebugUtilsLabelEXT(commandBuffer CommandBuffer) {
+	CallSyscall(pfnCmdEndDebugUtilsLabelEXT, uintptr(commandBuffer))
+}
+
+// CmdEndGpaSampleAMD - Ending a sample (vkCmdEndGpaSampleAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - gpaSession: is the handle of the GPA session that is recording the sample.
+//   - sampleID: is a unique sample ID returned by a previous call to vkCmdBeginGpaSampleAMD.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndGpaSampleAMD.html
+func CmdEndGpaSampleAMD(commandBuffer CommandBuffer, gpaSession GpaSessionAMD, sampleID uint32) {
+	CallSyscall(pfnCmdEndGpaSampleAMD, uintptr(commandBuffer), uintptr(gpaSession), uintptr(sampleID))
+}
+
+// CmdEndGpaSessionAMD - End a GPA session (vkCmdEndGpaSessionAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - gpaSession: is the handle of the GPA session to end.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndGpaSessionAMD.html
+func CmdEndGpaSessionAMD(commandBuffer CommandBuffer, gpaSession GpaSessionAMD) (result Result) {
+	r1, _, _ := CallSyscall(pfnCmdEndGpaSessionAMD, uintptr(commandBuffer), uintptr(gpaSession))
+	return Result(r1)
+}
+
+// CmdEndPerTileExecutionQCOM - End per-tile execution mode (vkCmdEndPerTileExecutionQCOM).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - perTileEndInfo: is a pointer to a VkPerTileEndInfoQCOM structure containing information about how the _per-tile execution model_ is ended.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndPerTileExecutionQCOM.html
+func CmdEndPerTileExecutionQCOM(commandBuffer CommandBuffer, perTileEndInfo *PerTileEndInfoQCOM) {
+	c_perTileEndInfo := perTileEndInfo.Raw()
+	CallSyscall(pfnCmdEndPerTileExecutionQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_perTileEndInfo)))
+}
+
 // CmdEndQuery - Ends a query (vkCmdEndQuery).
 // Parameters:
 //   - commandBuffer: is the command buffer into which this command will be recorded.
@@ -1126,6 +3700,18 @@ func CmdDrawIndirectCount(commandBuffer CommandBuffer, buffer Buffer, offset Dev
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndQuery.html
 func CmdEndQuery(commandBuffer CommandBuffer, queryPool QueryPool, query uint32) {
 	CallSyscall(pfnCmdEndQuery, uintptr(commandBuffer), uintptr(queryPool), uintptr(query))
+}
+
+// CmdEndQueryIndexedEXT - Ends a query (vkCmdEndQueryIndexedEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//   - queryPool: is the query pool that is managing the results of the query.
+//   - query: is the query index within the query pool where the result is stored.
+//   - index: is the query type specific index.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndQueryIndexedEXT.html
+func CmdEndQueryIndexedEXT(commandBuffer CommandBuffer, queryPool QueryPool, query uint32, index uint32) {
+	CallSyscall(pfnCmdEndQueryIndexedEXT, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(index))
 }
 
 // CmdEndRenderPass - End the current render pass (vkCmdEndRenderPass).
@@ -1157,6 +3743,68 @@ func CmdEndRendering(commandBuffer CommandBuffer) {
 	CallSyscall(pfnCmdEndRendering, uintptr(commandBuffer))
 }
 
+// CmdEndRendering2KHR - End a dynamic render pass instance (vkCmdEndRendering2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - renderingEndInfo: is NULL or a pointer to a VkRenderingEndInfoKHR structure containing information about how the render pass will be ended.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndRendering2KHR.html
+func CmdEndRendering2KHR(commandBuffer CommandBuffer, renderingEndInfo *RenderingEndInfoKHR) {
+	c_renderingEndInfo := renderingEndInfo.Raw()
+	CallSyscall(pfnCmdEndRendering2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_renderingEndInfo)))
+}
+
+// CmdEndShaderInstrumentationARM - End shader instrumentation (vkCmdEndShaderInstrumentationARM).
+// Parameters:
+//   - commandBuffer: is the command buffer into which this command will be recorded.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndShaderInstrumentationARM.html
+func CmdEndShaderInstrumentationARM(commandBuffer CommandBuffer) {
+	CallSyscall(pfnCmdEndShaderInstrumentationARM, uintptr(commandBuffer))
+}
+
+// CmdEndTransformFeedback2EXT - Make transform feedback inactive in the command buffer (vkCmdEndTransformFeedback2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - counterRangeCount: is the size of the pCounterInfos array.
+//   - counterInfos: is NULL or a pointer to an array of VkBindTransformFeedbackBuffer2InfoEXT structures defining memory ranges used to write counters used to later resume transform feedback.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndTransformFeedback2EXT.html
+func CmdEndTransformFeedback2EXT(commandBuffer CommandBuffer, firstCounterRange uint32, counterInfos []BindTransformFeedbackBuffer2InfoEXT) {
+	c_counterInfos := make([]RawBindTransformFeedbackBuffer2InfoEXT, len(counterInfos))
+	for i := range counterInfos {
+		if raw := counterInfos[i].Raw(); raw != nil {
+			c_counterInfos[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdEndTransformFeedback2EXT, uintptr(commandBuffer), uintptr(firstCounterRange), uintptr(len(counterInfos)), uintptr(unsafe.Pointer(SliceData(c_counterInfos))))
+}
+
+// CmdEndTransformFeedbackEXT - Make transform feedback inactive in the command buffer (vkCmdEndTransformFeedbackEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - firstCounterBuffer: is the index of the first transform feedback buffer corresponding to pCounterBuffers[0] and pCounterBufferOffsets[0].
+//   - counterBufferCount: is the size of the pCounterBuffers and pCounterBufferOffsets arrays.
+//   - counterBuffers: is NULL or a pointer to an array of VkBuffer handles to counter buffers. The counter buffers are used to record the current byte positions of each transform feedback buffer where the next vertex output data would be captured. This can be used by a subsequent vkCmdBeginTransformFeedbackEXT call to resume transform feedback capture from this position. It can also be used by vkCmdDrawIndirectByteCountEXT to determine the vertex count of the draw call.
+//   - counterBufferOffsets: is NULL or a pointer to an array of basetype:VkDeviceSize values specifying offsets within each of the pCounterBuffers where the counter values can be written. The location in each counter buffer at these offsets must be large enough to contain 4 bytes of data. The data stored at this location is the byte offset from the start of the transform feedback buffer binding where the next vertex data would be written. If pCounterBufferOffsets is NULL, then it is assumed the offsets are zero.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndTransformFeedbackEXT.html
+func CmdEndTransformFeedbackEXT(commandBuffer CommandBuffer, firstCounterBuffer uint32, counterBuffers []Buffer, counterBufferOffsets *DeviceSize) {
+	c_counterBuffers := SliceData(counterBuffers)
+	CallSyscall(pfnCmdEndTransformFeedbackEXT, uintptr(commandBuffer), uintptr(firstCounterBuffer), uintptr(len(counterBuffers)), uintptr(unsafe.Pointer(c_counterBuffers)), uintptr(unsafe.Pointer(counterBufferOffsets)))
+}
+
+// CmdEndVideoCodingKHR - End video coding scope (vkCmdEndVideoCodingKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer in which to record the command.
+//   - endCodingInfo: is a pointer to a VkVideoEndCodingInfoKHR structure specifying the parameters for ending the video coding scope.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndVideoCodingKHR.html
+func CmdEndVideoCodingKHR(commandBuffer CommandBuffer, endCodingInfo *VideoEndCodingInfoKHR) {
+	c_endCodingInfo := endCodingInfo.Raw()
+	CallSyscall(pfnCmdEndVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_endCodingInfo)))
+}
+
 // CmdExecuteCommands - Execute a secondary command buffer from a primary command buffer (vkCmdExecuteCommands).
 // Parameters:
 //   - commandBuffer: is a handle to a primary command buffer that the secondary command buffers are executed in.
@@ -1167,6 +3815,30 @@ func CmdEndRendering(commandBuffer CommandBuffer) {
 func CmdExecuteCommands(commandBuffer CommandBuffer, commandBuffers []CommandBuffer) {
 	c_commandBuffers := SliceData(commandBuffers)
 	CallSyscall(pfnCmdExecuteCommands, uintptr(commandBuffer), uintptr(len(commandBuffers)), uintptr(unsafe.Pointer(c_commandBuffers)))
+}
+
+// CmdExecuteGeneratedCommandsEXT - Generate and execute commands on the device (vkCmdExecuteGeneratedCommandsEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - isPreprocessed: represents whether the input data has already been preprocessed on the device. If it is VK_FALSE this command will implicitly trigger the preprocessing step, otherwise not.
+//   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoEXT structure containing parameters affecting the generation of commands.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdExecuteGeneratedCommandsEXT.html
+func CmdExecuteGeneratedCommandsEXT(commandBuffer CommandBuffer, isPreprocessed Bool32, generatedCommandsInfo *GeneratedCommandsInfoEXT) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	CallSyscall(pfnCmdExecuteGeneratedCommandsEXT, uintptr(commandBuffer), uintptr(isPreprocessed), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
+}
+
+// CmdExecuteGeneratedCommandsNV - Generate and execute commands on the device (vkCmdExecuteGeneratedCommandsNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - isPreprocessed: represents whether the input data has already been preprocessed on the device. If it is VK_FALSE this command will implicitly trigger the preprocessing step, otherwise not.
+//   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoNV structure containing parameters affecting the generation of commands.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdExecuteGeneratedCommandsNV.html
+func CmdExecuteGeneratedCommandsNV(commandBuffer CommandBuffer, isPreprocessed Bool32, generatedCommandsInfo *GeneratedCommandsInfoNV) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	CallSyscall(pfnCmdExecuteGeneratedCommandsNV, uintptr(commandBuffer), uintptr(isPreprocessed), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
 }
 
 // CmdFillBuffer - Fill a region of a buffer with a fixed value (vkCmdFillBuffer).
@@ -1180,6 +3852,42 @@ func CmdExecuteCommands(commandBuffer CommandBuffer, commandBuffers []CommandBuf
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdFillBuffer.html
 func CmdFillBuffer(commandBuffer CommandBuffer, dstBuffer Buffer, dstOffset DeviceSize, size DeviceSize, data uint32) {
 	CallSyscall(pfnCmdFillBuffer, uintptr(commandBuffer), uintptr(dstBuffer), uintptr(dstOffset), uintptr(size), uintptr(data))
+}
+
+// CmdFillMemoryKHR - Fill a memory range with a fixed 4-byte bit pattern (vkCmdFillMemoryKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - dstRange: is a pointer to the VkDeviceAddressRangeKHR selecting the memory range to be filled.
+//   - dstFlags: is a VkAddressCommandFlagsKHR value defining the copy flags for the destination address range.
+//   - data: is the 4-byte word written repeatedly to the destination range to fill size bytes of data.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdFillMemoryKHR.html
+func CmdFillMemoryKHR(commandBuffer CommandBuffer, dstRange *DeviceAddressRangeKHR, dstFlags AddressCommandFlagsKHR, data uint32) {
+	c_dstRange := dstRange.Raw()
+	CallSyscall(pfnCmdFillMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(data))
+}
+
+// CmdInitializeGraphScratchMemoryAMDX - Initialize scratch memory for an execution graph (vkCmdInitializeGraphScratchMemoryAMDX).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - executionGraph: is the execution graph pipeline to initialize the scratch memory for.
+//   - scratch: is the address of scratch memory to be initialized.
+//   - scratchSize: is a range in bytes of scratch memory to be initialized.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdInitializeGraphScratchMemoryAMDX.html
+func CmdInitializeGraphScratchMemoryAMDX(commandBuffer CommandBuffer, executionGraph Pipeline, scratch DeviceAddress, scratchSize DeviceSize) {
+	CallSyscall(pfnCmdInitializeGraphScratchMemoryAMDX, uintptr(commandBuffer), uintptr(executionGraph), uintptr(scratch), uintptr(scratchSize))
+}
+
+// CmdInsertDebugUtilsLabelEXT - Insert a label into a command buffer (vkCmdInsertDebugUtilsLabelEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command is recorded.
+//   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label to insert.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdInsertDebugUtilsLabelEXT.html
+func CmdInsertDebugUtilsLabelEXT(commandBuffer CommandBuffer, labelInfo *DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	CallSyscall(pfnCmdInsertDebugUtilsLabelEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_labelInfo)))
 }
 
 // CmdNextSubpass - Transition to the next subpass of a render pass (vkCmdNextSubpass).
@@ -1203,6 +3911,18 @@ func CmdNextSubpass2(commandBuffer CommandBuffer, subpassBeginInfo *SubpassBegin
 	c_subpassBeginInfo := subpassBeginInfo.Raw()
 	c_subpassEndInfo := subpassEndInfo.Raw()
 	CallSyscall(pfnCmdNextSubpass2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_subpassBeginInfo)), uintptr(unsafe.Pointer(c_subpassEndInfo)))
+}
+
+// CmdOpticalFlowExecuteNV - Calculate optical flow vectors (vkCmdOpticalFlowExecuteNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - session: is the optical flow session object on which this command is operating.
+//   - executeInfo: Info is a pointer to a VkOpticalFlowExecuteInfoNV.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdOpticalFlowExecuteNV.html
+func CmdOpticalFlowExecuteNV(commandBuffer CommandBuffer, session OpticalFlowSessionNV, executeInfo *OpticalFlowExecuteInfoNV) {
+	c_executeInfo := executeInfo.Raw()
+	CallSyscall(pfnCmdOpticalFlowExecuteNV, uintptr(commandBuffer), uintptr(session), uintptr(unsafe.Pointer(c_executeInfo)))
 }
 
 // CmdPipelineBarrier - Insert a memory dependency (vkCmdPipelineBarrier).
@@ -1252,6 +3972,35 @@ func CmdPipelineBarrier2(commandBuffer CommandBuffer, dependencyInfo *Dependency
 	CallSyscall(pfnCmdPipelineBarrier2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dependencyInfo)))
 }
 
+// CmdPipelineBarrier2KHR executes vkCmdPipelineBarrier2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier2KHR.html
+func CmdPipelineBarrier2KHR() {
+	CallSyscall(pfnCmdPipelineBarrier2KHR)
+}
+
+// CmdPreprocessGeneratedCommandsEXT - Performs preprocessing for generated commands (vkCmdPreprocessGeneratedCommandsEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer which does the preprocessing.
+//   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoEXT structure containing parameters affecting the preprocessing step.
+//   - stateCommandBuffer: is a command buffer from which to snapshot current states affecting the preprocessing step. When a graphics command action token is used, graphics state is snapshotted. When a compute action command token is used, compute state is snapshotted. When a ray tracing action command token is used, ray tracing state is snapshotted. It can be deleted at any time after this command has been recorded.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPreprocessGeneratedCommandsEXT.html
+func CmdPreprocessGeneratedCommandsEXT(commandBuffer CommandBuffer, generatedCommandsInfo *GeneratedCommandsInfoEXT, stateCommandBuffer CommandBuffer) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	CallSyscall(pfnCmdPreprocessGeneratedCommandsEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_generatedCommandsInfo)), uintptr(stateCommandBuffer))
+}
+
+// CmdPreprocessGeneratedCommandsNV - Performs preprocessing for generated commands (vkCmdPreprocessGeneratedCommandsNV).
+// Parameters:
+//   - commandBuffer: is the command buffer which does the preprocessing.
+//   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoNV structure containing parameters affecting the preprocessing step.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPreprocessGeneratedCommandsNV.html
+func CmdPreprocessGeneratedCommandsNV(commandBuffer CommandBuffer, generatedCommandsInfo *GeneratedCommandsInfoNV) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	CallSyscall(pfnCmdPreprocessGeneratedCommandsNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
+}
+
 // CmdPushConstants - Update the values of push constants (vkCmdPushConstants).
 // Parameters:
 //   - commandBuffer: is the command buffer in which the push constant update will be recorded.
@@ -1275,6 +4024,17 @@ func CmdPushConstants(commandBuffer CommandBuffer, layout PipelineLayout, stageF
 func CmdPushConstants2(commandBuffer CommandBuffer, pushConstantsInfo *PushConstantsInfo) {
 	c_pushConstantsInfo := pushConstantsInfo.Raw()
 	CallSyscall(pfnCmdPushConstants2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_pushConstantsInfo)))
+}
+
+// CmdPushDataEXT - Update the values of push data (vkCmdPushDataEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer in which the push data update will be recorded.
+//   - pushDataInfo: is a pointer to a VkPushDataInfoEXT structure.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDataEXT.html
+func CmdPushDataEXT(commandBuffer CommandBuffer, pushDataInfo *PushDataInfoEXT) {
+	c_pushDataInfo := pushDataInfo.Raw()
+	CallSyscall(pfnCmdPushDataEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_pushDataInfo)))
 }
 
 // CmdPushDescriptorSet - Pushes descriptor updates into a command buffer (vkCmdPushDescriptorSet).
@@ -1332,6 +4092,17 @@ func CmdPushDescriptorSetWithTemplate2(commandBuffer CommandBuffer, pushDescript
 	CallSyscall(pfnCmdPushDescriptorSetWithTemplate2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_pushDescriptorSetWithTemplateInfo)))
 }
 
+// CmdRefreshObjectsKHR - Execute a pipelined refresh of a list of objects (vkCmdRefreshObjectsKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - refreshObjects: is a pointer to a VkRefreshObjectListKHR structure specifying the list of objects to refresh.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdRefreshObjectsKHR.html
+func CmdRefreshObjectsKHR(commandBuffer CommandBuffer, refreshObjects *RefreshObjectListKHR) {
+	c_refreshObjects := refreshObjects.Raw()
+	CallSyscall(pfnCmdRefreshObjectsKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_refreshObjects)))
+}
+
 // CmdResetEvent - Reset an event object to non-signaled state (vkCmdResetEvent).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command is recorded.
@@ -1352,6 +4123,12 @@ func CmdResetEvent(commandBuffer CommandBuffer, event Event, stageMask PipelineS
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent2.html
 func CmdResetEvent2(commandBuffer CommandBuffer, event Event, stageMask PipelineStageFlags2) {
 	CallSyscall(pfnCmdResetEvent2, uintptr(commandBuffer), uintptr(event), uintptr(stageMask))
+}
+
+// CmdResetEvent2KHR executes vkCmdResetEvent2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent2KHR.html
+func CmdResetEvent2KHR() {
+	CallSyscall(pfnCmdResetEvent2KHR)
 }
 
 // CmdResetQueryPool - Reset queries in a query pool (vkCmdResetQueryPool).
@@ -1398,6 +4175,42 @@ func CmdResolveImage2(commandBuffer CommandBuffer, resolveImageInfo *ResolveImag
 	CallSyscall(pfnCmdResolveImage2, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_resolveImageInfo)))
 }
 
+// CmdResolveImage2KHR executes vkCmdResolveImage2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdResolveImage2KHR.html
+func CmdResolveImage2KHR() {
+	CallSyscall(pfnCmdResolveImage2KHR)
+}
+
+// CmdSetAlphaToCoverageEnableEXT - Specify the alpha to coverage enable state dynamically for a command buffer (vkCmdSetAlphaToCoverageEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - alphaToCoverageEnable: specifies the alphaToCoverageEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetAlphaToCoverageEnableEXT.html
+func CmdSetAlphaToCoverageEnableEXT(commandBuffer CommandBuffer, alphaToCoverageEnable Bool32) {
+	CallSyscall(pfnCmdSetAlphaToCoverageEnableEXT, uintptr(commandBuffer), uintptr(alphaToCoverageEnable))
+}
+
+// CmdSetAlphaToOneEnableEXT - Specify the alpha to one enable state dynamically for a command buffer (vkCmdSetAlphaToOneEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - alphaToOneEnable: specifies the alphaToOneEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetAlphaToOneEnableEXT.html
+func CmdSetAlphaToOneEnableEXT(commandBuffer CommandBuffer, alphaToOneEnable Bool32) {
+	CallSyscall(pfnCmdSetAlphaToOneEnableEXT, uintptr(commandBuffer), uintptr(alphaToOneEnable))
+}
+
+// CmdSetAttachmentFeedbackLoopEnableEXT - Specify whether attachment feedback loops are enabled dynamically on a command buffer (vkCmdSetAttachmentFeedbackLoopEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - aspectMask: specifies the types of attachments for which feedback loops will be enabled. Attachment types whose aspects are not included in aspectMask will have feedback loops disabled.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetAttachmentFeedbackLoopEnableEXT.html
+func CmdSetAttachmentFeedbackLoopEnableEXT(commandBuffer CommandBuffer, aspectMask ImageAspectFlags) {
+	CallSyscall(pfnCmdSetAttachmentFeedbackLoopEnableEXT, uintptr(commandBuffer), uintptr(aspectMask))
+}
+
 // CmdSetBlendConstants - Set the values of blend constants (vkCmdSetBlendConstants).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1408,6 +4221,191 @@ func CmdSetBlendConstants(commandBuffer CommandBuffer, blendConstants float32) {
 	CallSyscall(pfnCmdSetBlendConstants, uintptr(commandBuffer), uintptr(blendConstants))
 }
 
+// CmdSetCheckpointNV - Insert diagnostic checkpoint in command stream (vkCmdSetCheckpointNV).
+// Parameters:
+//   - commandBuffer: is the command buffer that will receive the marker
+//   - checkpointMarker: is an opaque application-provided value that will be associated with the checkpoint.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCheckpointNV.html
+func CmdSetCheckpointNV(commandBuffer CommandBuffer, checkpointMarker unsafe.Pointer) {
+	CallSyscall(pfnCmdSetCheckpointNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(checkpointMarker)))
+}
+
+// CmdSetCoarseSampleOrderNV - Set order of coverage samples for coarse fragments dynamically for a command buffer (vkCmdSetCoarseSampleOrderNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - sampleOrderType: specifies the mechanism used to order coverage samples in fragments larger than one pixel.
+//   - customSampleOrderCount: specifies the number of custom sample orderings to use when ordering coverage samples.
+//   - customSampleOrders: is a pointer to an array of VkCoarseSampleOrderCustomNV structures, each structure specifying the coverage sample order for a single combination of fragment area and coverage sample count.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoarseSampleOrderNV.html
+func CmdSetCoarseSampleOrderNV(commandBuffer CommandBuffer, sampleOrderType CoarseSampleOrderTypeNV, customSampleOrders []CoarseSampleOrderCustomNV) {
+	c_customSampleOrders := make([]RawCoarseSampleOrderCustomNV, len(customSampleOrders))
+	for i := range customSampleOrders {
+		if raw := customSampleOrders[i].Raw(); raw != nil {
+			c_customSampleOrders[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetCoarseSampleOrderNV, uintptr(commandBuffer), uintptr(sampleOrderType), uintptr(len(customSampleOrders)), uintptr(unsafe.Pointer(SliceData(c_customSampleOrders))))
+}
+
+// CmdSetColorBlendAdvancedEXT - Specify the advanced color blend state dynamically for a command buffer (vkCmdSetColorBlendAdvancedEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstAttachment: the first color attachment the advanced blend parameters apply to.
+//   - attachmentCount: the number of VkColorBlendAdvancedEXT elements in the pColorBlendAdvanced array.
+//   - colorBlendAdvanced: an array of VkColorBlendAdvancedEXT structs that specify the advanced color blend parameters for the corresponding attachments.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendAdvancedEXT.html
+func CmdSetColorBlendAdvancedEXT(commandBuffer CommandBuffer, firstAttachment uint32, colorBlendAdvanced []ColorBlendAdvancedEXT) {
+	c_colorBlendAdvanced := make([]RawColorBlendAdvancedEXT, len(colorBlendAdvanced))
+	for i := range colorBlendAdvanced {
+		if raw := colorBlendAdvanced[i].Raw(); raw != nil {
+			c_colorBlendAdvanced[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetColorBlendAdvancedEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendAdvanced)), uintptr(unsafe.Pointer(SliceData(c_colorBlendAdvanced))))
+}
+
+// CmdSetColorBlendEnableEXT - Specify the blendEnable for each attachment dynamically for a command buffer (vkCmdSetColorBlendEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstAttachment: the first color attachment the color blending enable applies.
+//   - attachmentCount: the number of color blending enables in the pColorBlendEnables array.
+//   - colorBlendEnables: an array of booleans to indicate whether color blending is enabled for the corresponding attachment.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEnableEXT.html
+func CmdSetColorBlendEnableEXT(commandBuffer CommandBuffer, firstAttachment uint32, colorBlendEnables []Bool32) {
+	c_colorBlendEnables := SliceData(colorBlendEnables)
+	CallSyscall(pfnCmdSetColorBlendEnableEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendEnables)), uintptr(unsafe.Pointer(c_colorBlendEnables)))
+}
+
+// CmdSetColorBlendEquationEXT - Specify the blend factors and operations dynamically for a command buffer (vkCmdSetColorBlendEquationEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstAttachment: the first color attachment the color blend factors and operations apply to.
+//   - attachmentCount: the number of VkColorBlendEquationEXT elements in the pColorBlendEquations array.
+//   - colorBlendEquations: an array of VkColorBlendEquationEXT structs that specify the color blend factors and operations for the corresponding attachments.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEquationEXT.html
+func CmdSetColorBlendEquationEXT(commandBuffer CommandBuffer, firstAttachment uint32, colorBlendEquations []ColorBlendEquationEXT) {
+	c_colorBlendEquations := make([]RawColorBlendEquationEXT, len(colorBlendEquations))
+	for i := range colorBlendEquations {
+		if raw := colorBlendEquations[i].Raw(); raw != nil {
+			c_colorBlendEquations[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetColorBlendEquationEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendEquations)), uintptr(unsafe.Pointer(SliceData(c_colorBlendEquations))))
+}
+
+// CmdSetColorWriteEnableEXT - Enable or disable writes to a color attachment dynamically for a command buffer (vkCmdSetColorWriteEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - attachmentCount: is the number of basetype:VkBool32 elements in pColorWriteEnables.
+//   - colorWriteEnables: is a pointer to an array of per target attachment boolean values specifying whether color writes are enabled for the given attachment.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteEnableEXT.html
+func CmdSetColorWriteEnableEXT(commandBuffer CommandBuffer, colorWriteEnables []Bool32) {
+	c_colorWriteEnables := SliceData(colorWriteEnables)
+	CallSyscall(pfnCmdSetColorWriteEnableEXT, uintptr(commandBuffer), uintptr(len(colorWriteEnables)), uintptr(unsafe.Pointer(c_colorWriteEnables)))
+}
+
+// CmdSetColorWriteMaskEXT - Specify the color write masks for each attachment dynamically for a command buffer (vkCmdSetColorWriteMaskEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstAttachment: the first color attachment the color write masks apply to.
+//   - attachmentCount: the number of VkColorComponentFlags values in the pColorWriteMasks array.
+//   - colorWriteMasks: an array of VkColorComponentFlags values that specify the color write masks of the corresponding attachments.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteMaskEXT.html
+func CmdSetColorWriteMaskEXT(commandBuffer CommandBuffer, firstAttachment uint32, colorWriteMasks []ColorComponentFlags) {
+	c_colorWriteMasks := SliceData(colorWriteMasks)
+	CallSyscall(pfnCmdSetColorWriteMaskEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorWriteMasks)), uintptr(unsafe.Pointer(c_colorWriteMasks)))
+}
+
+// CmdSetComputeOccupancyPriorityNV - Set the compute occupancy priority for subsequent compute dispatches (vkCmdSetComputeOccupancyPriorityNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - parameters: is a pointer to a VkComputeOccupancyPriorityParametersNV structure specifying the occupancy priority parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetComputeOccupancyPriorityNV.html
+func CmdSetComputeOccupancyPriorityNV(commandBuffer CommandBuffer, parameters *ComputeOccupancyPriorityParametersNV) {
+	c_parameters := parameters.Raw()
+	CallSyscall(pfnCmdSetComputeOccupancyPriorityNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_parameters)))
+}
+
+// CmdSetConservativeRasterizationModeEXT - Specify the conservative rasterization mode dynamically for a command buffer (vkCmdSetConservativeRasterizationModeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - conservativeRasterizationMode: specifies the conservativeRasterizationMode state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetConservativeRasterizationModeEXT.html
+func CmdSetConservativeRasterizationModeEXT(commandBuffer CommandBuffer, conservativeRasterizationMode ConservativeRasterizationModeEXT) {
+	CallSyscall(pfnCmdSetConservativeRasterizationModeEXT, uintptr(commandBuffer), uintptr(conservativeRasterizationMode))
+}
+
+// CmdSetCoverageModulationModeNV - Specify the coverage modulation mode dynamically for a command buffer (vkCmdSetCoverageModulationModeNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - coverageModulationMode: specifies the coverageModulationMode state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationModeNV.html
+func CmdSetCoverageModulationModeNV(commandBuffer CommandBuffer, coverageModulationMode CoverageModulationModeNV) {
+	CallSyscall(pfnCmdSetCoverageModulationModeNV, uintptr(commandBuffer), uintptr(coverageModulationMode))
+}
+
+// CmdSetCoverageModulationTableEnableNV - Specify the coverage modulation table enable state dynamically for a command buffer (vkCmdSetCoverageModulationTableEnableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - coverageModulationTableEnable: specifies the coverageModulationTableEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationTableEnableNV.html
+func CmdSetCoverageModulationTableEnableNV(commandBuffer CommandBuffer, coverageModulationTableEnable Bool32) {
+	CallSyscall(pfnCmdSetCoverageModulationTableEnableNV, uintptr(commandBuffer), uintptr(coverageModulationTableEnable))
+}
+
+// CmdSetCoverageModulationTableNV - Specify the coverage modulation table dynamically for a command buffer (vkCmdSetCoverageModulationTableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - coverageModulationTableCount: specifies the number of elements in pCoverageModulationTable.
+//   - coverageModulationTable: specifies the table of modulation factors containing a value for each number of covered samples.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationTableNV.html
+func CmdSetCoverageModulationTableNV(commandBuffer CommandBuffer, coverageModulationTable []float32) {
+	c_coverageModulationTable := SliceData(coverageModulationTable)
+	CallSyscall(pfnCmdSetCoverageModulationTableNV, uintptr(commandBuffer), uintptr(len(coverageModulationTable)), uintptr(unsafe.Pointer(c_coverageModulationTable)))
+}
+
+// CmdSetCoverageReductionModeNV - Specify the coverage reduction mode dynamically for a command buffer (vkCmdSetCoverageReductionModeNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - coverageReductionMode: specifies the coverageReductionMode state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageReductionModeNV.html
+func CmdSetCoverageReductionModeNV(commandBuffer CommandBuffer, coverageReductionMode CoverageReductionModeNV) {
+	CallSyscall(pfnCmdSetCoverageReductionModeNV, uintptr(commandBuffer), uintptr(coverageReductionMode))
+}
+
+// CmdSetCoverageToColorEnableNV - Specify the coverage to color enable state dynamically for a command buffer (vkCmdSetCoverageToColorEnableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - coverageToColorEnable: specifies the coverageToColorEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageToColorEnableNV.html
+func CmdSetCoverageToColorEnableNV(commandBuffer CommandBuffer, coverageToColorEnable Bool32) {
+	CallSyscall(pfnCmdSetCoverageToColorEnableNV, uintptr(commandBuffer), uintptr(coverageToColorEnable))
+}
+
+// CmdSetCoverageToColorLocationNV - Specify the coverage to color location dynamically for a command buffer (vkCmdSetCoverageToColorLocationNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - coverageToColorLocation: specifies the coverageToColorLocation state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageToColorLocationNV.html
+func CmdSetCoverageToColorLocationNV(commandBuffer CommandBuffer, coverageToColorLocation uint32) {
+	CallSyscall(pfnCmdSetCoverageToColorLocationNV, uintptr(commandBuffer), uintptr(coverageToColorLocation))
+}
+
 // CmdSetCullMode - Set cull mode dynamically for a command buffer (vkCmdSetCullMode).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1416,6 +4414,12 @@ func CmdSetBlendConstants(commandBuffer CommandBuffer, blendConstants float32) {
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullMode.html
 func CmdSetCullMode(commandBuffer CommandBuffer, cullMode CullModeFlags) {
 	CallSyscall(pfnCmdSetCullMode, uintptr(commandBuffer), uintptr(cullMode))
+}
+
+// CmdSetCullModeEXT executes vkCmdSetCullModeEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullModeEXT.html
+func CmdSetCullModeEXT() {
+	CallSyscall(pfnCmdSetCullModeEXT)
 }
 
 // CmdSetDepthBias - Set depth bias factors and clamp dynamically for a command buffer (vkCmdSetDepthBias).
@@ -1430,6 +4434,17 @@ func CmdSetDepthBias(commandBuffer CommandBuffer, depthBiasConstantFactor float3
 	CallSyscall(pfnCmdSetDepthBias, uintptr(commandBuffer), uintptr(depthBiasConstantFactor), uintptr(depthBiasClamp), uintptr(depthBiasSlopeFactor))
 }
 
+// CmdSetDepthBias2EXT - Set depth bias factors and clamp dynamically for a command buffer (vkCmdSetDepthBias2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - depthBiasInfo: is a pointer to a VkDepthBiasInfoEXT structure specifying depth bias parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBias2EXT.html
+func CmdSetDepthBias2EXT(commandBuffer CommandBuffer, depthBiasInfo *DepthBiasInfoEXT) {
+	c_depthBiasInfo := depthBiasInfo.Raw()
+	CallSyscall(pfnCmdSetDepthBias2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_depthBiasInfo)))
+}
+
 // CmdSetDepthBiasEnable - Control whether to bias fragment depth values dynamically for a command buffer (vkCmdSetDepthBiasEnable).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1438,6 +4453,12 @@ func CmdSetDepthBias(commandBuffer CommandBuffer, depthBiasConstantFactor float3
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBiasEnable.html
 func CmdSetDepthBiasEnable(commandBuffer CommandBuffer, depthBiasEnable Bool32) {
 	CallSyscall(pfnCmdSetDepthBiasEnable, uintptr(commandBuffer), uintptr(depthBiasEnable))
+}
+
+// CmdSetDepthBiasEnableEXT executes vkCmdSetDepthBiasEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBiasEnableEXT.html
+func CmdSetDepthBiasEnableEXT() {
+	CallSyscall(pfnCmdSetDepthBiasEnableEXT)
 }
 
 // CmdSetDepthBounds - Set depth bounds range dynamically for a command buffer (vkCmdSetDepthBounds).
@@ -1461,6 +4482,54 @@ func CmdSetDepthBoundsTestEnable(commandBuffer CommandBuffer, depthBoundsTestEna
 	CallSyscall(pfnCmdSetDepthBoundsTestEnable, uintptr(commandBuffer), uintptr(depthBoundsTestEnable))
 }
 
+// CmdSetDepthBoundsTestEnableEXT executes vkCmdSetDepthBoundsTestEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBoundsTestEnableEXT.html
+func CmdSetDepthBoundsTestEnableEXT() {
+	CallSyscall(pfnCmdSetDepthBoundsTestEnableEXT)
+}
+
+// CmdSetDepthClampEnableEXT - Specify dynamically whether depth clamping is enabled in the command buffer (vkCmdSetDepthClampEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - depthClampEnable: specifies whether depth clamping is enabled.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClampEnableEXT.html
+func CmdSetDepthClampEnableEXT(commandBuffer CommandBuffer, depthClampEnable Bool32) {
+	CallSyscall(pfnCmdSetDepthClampEnableEXT, uintptr(commandBuffer), uintptr(depthClampEnable))
+}
+
+// CmdSetDepthClampRangeEXT - Set the viewport depth clamp range dynamically for a command buffer (vkCmdSetDepthClampRangeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - depthClampMode: determines how the clamp range is determined for each viewport.
+//   - depthClampRange: sets the depth clamp range for all viewports if depthClampMode is VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClampRangeEXT.html
+func CmdSetDepthClampRangeEXT(commandBuffer CommandBuffer, depthClampMode DepthClampModeEXT, depthClampRange *DepthClampRangeEXT) {
+	c_depthClampRange := depthClampRange.Raw()
+	CallSyscall(pfnCmdSetDepthClampRangeEXT, uintptr(commandBuffer), uintptr(depthClampMode), uintptr(unsafe.Pointer(c_depthClampRange)))
+}
+
+// CmdSetDepthClipEnableEXT - Specify dynamically whether depth clipping is enabled in the command buffer (vkCmdSetDepthClipEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - depthClipEnable: specifies whether depth clipping is enabled.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClipEnableEXT.html
+func CmdSetDepthClipEnableEXT(commandBuffer CommandBuffer, depthClipEnable Bool32) {
+	CallSyscall(pfnCmdSetDepthClipEnableEXT, uintptr(commandBuffer), uintptr(depthClipEnable))
+}
+
+// CmdSetDepthClipNegativeOneToOneEXT - Specify the negative one to one depth clip mode dynamically for a command buffer (vkCmdSetDepthClipNegativeOneToOneEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - negativeOneToOne: specifies the negativeOneToOne state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClipNegativeOneToOneEXT.html
+func CmdSetDepthClipNegativeOneToOneEXT(commandBuffer CommandBuffer, negativeOneToOne Bool32) {
+	CallSyscall(pfnCmdSetDepthClipNegativeOneToOneEXT, uintptr(commandBuffer), uintptr(negativeOneToOne))
+}
+
 // CmdSetDepthCompareOp - Set depth comparison operator dynamically for a command buffer (vkCmdSetDepthCompareOp).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1469,6 +4538,12 @@ func CmdSetDepthBoundsTestEnable(commandBuffer CommandBuffer, depthBoundsTestEna
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOp.html
 func CmdSetDepthCompareOp(commandBuffer CommandBuffer, depthCompareOp CompareOp) {
 	CallSyscall(pfnCmdSetDepthCompareOp, uintptr(commandBuffer), uintptr(depthCompareOp))
+}
+
+// CmdSetDepthCompareOpEXT executes vkCmdSetDepthCompareOpEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOpEXT.html
+func CmdSetDepthCompareOpEXT() {
+	CallSyscall(pfnCmdSetDepthCompareOpEXT)
 }
 
 // CmdSetDepthTestEnable - Set depth test enable dynamically for a command buffer (vkCmdSetDepthTestEnable).
@@ -1481,6 +4556,12 @@ func CmdSetDepthTestEnable(commandBuffer CommandBuffer, depthTestEnable Bool32) 
 	CallSyscall(pfnCmdSetDepthTestEnable, uintptr(commandBuffer), uintptr(depthTestEnable))
 }
 
+// CmdSetDepthTestEnableEXT executes vkCmdSetDepthTestEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthTestEnableEXT.html
+func CmdSetDepthTestEnableEXT() {
+	CallSyscall(pfnCmdSetDepthTestEnableEXT)
+}
+
 // CmdSetDepthWriteEnable - Set depth write enable dynamically for a command buffer (vkCmdSetDepthWriteEnable).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1491,6 +4572,39 @@ func CmdSetDepthWriteEnable(commandBuffer CommandBuffer, depthWriteEnable Bool32
 	CallSyscall(pfnCmdSetDepthWriteEnable, uintptr(commandBuffer), uintptr(depthWriteEnable))
 }
 
+// CmdSetDepthWriteEnableEXT executes vkCmdSetDepthWriteEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnableEXT.html
+func CmdSetDepthWriteEnableEXT() {
+	CallSyscall(pfnCmdSetDepthWriteEnableEXT)
+}
+
+// CmdSetDescriptorBufferOffsets2EXT - Setting descriptor buffer offsets in a command buffer (vkCmdSetDescriptorBufferOffsets2EXT).
+// Parameters:
+//   - commandBuffer: is the command buffer in which the descriptor buffer offsets will be set.
+//   - setDescriptorBufferOffsetsInfo: is a pointer to a VkSetDescriptorBufferOffsetsInfoEXT structure.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDescriptorBufferOffsets2EXT.html
+func CmdSetDescriptorBufferOffsets2EXT(commandBuffer CommandBuffer, setDescriptorBufferOffsetsInfo *SetDescriptorBufferOffsetsInfoEXT) {
+	c_setDescriptorBufferOffsetsInfo := setDescriptorBufferOffsetsInfo.Raw()
+	CallSyscall(pfnCmdSetDescriptorBufferOffsets2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_setDescriptorBufferOffsetsInfo)))
+}
+
+// CmdSetDescriptorBufferOffsetsEXT - Setting descriptor buffer offsets in a command buffer (vkCmdSetDescriptorBufferOffsetsEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer in which the descriptor buffer offsets will be set.
+//   - pipelineBindPoint: is a VkPipelineBindPoint indicating the type of the pipeline that will use the descriptors.
+//   - layout: is a VkPipelineLayout object used to program the bindings.
+//   - firstSet: is the number of the first set to be bound.
+//   - setCount: is the number of elements in the pBufferIndices and pOffsets arrays.
+//   - bufferIndices: is a pointer to an array of indices into the descriptor buffer binding points set by vkCmdBindDescriptorBuffersEXT.
+//   - offsets: is a pointer to an array of basetype:VkDeviceSize offsets to apply to the bound descriptor buffers.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDescriptorBufferOffsetsEXT.html
+func CmdSetDescriptorBufferOffsetsEXT(commandBuffer CommandBuffer, pipelineBindPoint PipelineBindPoint, layout PipelineLayout, firstSet uint32, bufferIndices []uint32, offsets *DeviceSize) {
+	c_bufferIndices := SliceData(bufferIndices)
+	CallSyscall(pfnCmdSetDescriptorBufferOffsetsEXT, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(layout), uintptr(firstSet), uintptr(len(bufferIndices)), uintptr(unsafe.Pointer(c_bufferIndices)), uintptr(unsafe.Pointer(offsets)))
+}
+
 // CmdSetDeviceMask - Modify device mask of a command buffer (vkCmdSetDeviceMask).
 // Parameters:
 //   - commandBuffer: is command buffer whose current device mask is modified.
@@ -1499,6 +4613,55 @@ func CmdSetDepthWriteEnable(commandBuffer CommandBuffer, depthWriteEnable Bool32
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDeviceMask.html
 func CmdSetDeviceMask(commandBuffer CommandBuffer, deviceMask uint32) {
 	CallSyscall(pfnCmdSetDeviceMask, uintptr(commandBuffer), uintptr(deviceMask))
+}
+
+// CmdSetDiscardRectangleEXT - Set discard rectangles dynamically for a command buffer (vkCmdSetDiscardRectangleEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstDiscardRectangle: is the index of the first discard rectangle whose state is updated by the command.
+//   - discardRectangleCount: is the number of discard rectangles whose state are updated by the command.
+//   - discardRectangles: is a pointer to an array of VkRect2D structures specifying discard rectangles.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleEXT.html
+func CmdSetDiscardRectangleEXT(commandBuffer CommandBuffer, firstDiscardRectangle uint32, discardRectangles []Rect2D) {
+	c_discardRectangles := make([]RawRect2D, len(discardRectangles))
+	for i := range discardRectangles {
+		if raw := discardRectangles[i].Raw(); raw != nil {
+			c_discardRectangles[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetDiscardRectangleEXT, uintptr(commandBuffer), uintptr(firstDiscardRectangle), uintptr(len(discardRectangles)), uintptr(unsafe.Pointer(SliceData(c_discardRectangles))))
+}
+
+// CmdSetDiscardRectangleEnableEXT - Enable discard rectangles dynamically for a command buffer (vkCmdSetDiscardRectangleEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - discardRectangleEnable: specifies whether discard rectangles are enabled or not.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleEnableEXT.html
+func CmdSetDiscardRectangleEnableEXT(commandBuffer CommandBuffer, discardRectangleEnable Bool32) {
+	CallSyscall(pfnCmdSetDiscardRectangleEnableEXT, uintptr(commandBuffer), uintptr(discardRectangleEnable))
+}
+
+// CmdSetDiscardRectangleModeEXT - Sets the discard rectangle mode dynamically for a command buffer (vkCmdSetDiscardRectangleModeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - discardRectangleMode: specifies the discard rectangle mode for all discard rectangles, either inclusive or exclusive.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleModeEXT.html
+func CmdSetDiscardRectangleModeEXT(commandBuffer CommandBuffer, discardRectangleMode DiscardRectangleModeEXT) {
+	CallSyscall(pfnCmdSetDiscardRectangleModeEXT, uintptr(commandBuffer), uintptr(discardRectangleMode))
+}
+
+// CmdSetDispatchParametersARM - Set parameters that affect dispatch commands (vkCmdSetDispatchParametersARM).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - dispatchParameters: is a pointer to a VkDispatchParametersARM structure specifying the dispatch parameters to be set.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDispatchParametersARM.html
+func CmdSetDispatchParametersARM(commandBuffer CommandBuffer, dispatchParameters *DispatchParametersARM) {
+	c_dispatchParameters := dispatchParameters.Raw()
+	CallSyscall(pfnCmdSetDispatchParametersARM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dispatchParameters)))
 }
 
 // CmdSetEvent - Set an event object to signaled state (vkCmdSetEvent).
@@ -1524,6 +4687,76 @@ func CmdSetEvent2(commandBuffer CommandBuffer, event Event, dependencyInfo *Depe
 	CallSyscall(pfnCmdSetEvent2, uintptr(commandBuffer), uintptr(event), uintptr(unsafe.Pointer(c_dependencyInfo)))
 }
 
+// CmdSetEvent2KHR executes vkCmdSetEvent2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetEvent2KHR.html
+func CmdSetEvent2KHR() {
+	CallSyscall(pfnCmdSetEvent2KHR)
+}
+
+// CmdSetExclusiveScissorEnableNV - Dynamically enable each exclusive scissor for a command buffer (vkCmdSetExclusiveScissorEnableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstExclusiveScissor: is the index of the first exclusive scissor rectangle whose state is updated by the command.
+//   - exclusiveScissorCount: is the number of exclusive scissor rectangles updated by the command.
+//   - exclusiveScissorEnables: is a pointer to an array of basetype:VkBool32 values defining whether the exclusive scissor is enabled.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetExclusiveScissorEnableNV.html
+func CmdSetExclusiveScissorEnableNV(commandBuffer CommandBuffer, firstExclusiveScissor uint32, exclusiveScissorEnables []Bool32) {
+	c_exclusiveScissorEnables := SliceData(exclusiveScissorEnables)
+	CallSyscall(pfnCmdSetExclusiveScissorEnableNV, uintptr(commandBuffer), uintptr(firstExclusiveScissor), uintptr(len(exclusiveScissorEnables)), uintptr(unsafe.Pointer(c_exclusiveScissorEnables)))
+}
+
+// CmdSetExclusiveScissorNV - Set exclusive scissor rectangles dynamically for a command buffer (vkCmdSetExclusiveScissorNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstExclusiveScissor: is the index of the first exclusive scissor rectangle whose state is updated by the command.
+//   - exclusiveScissorCount: is the number of exclusive scissor rectangles updated by the command.
+//   - exclusiveScissors: is a pointer to an array of VkRect2D structures defining exclusive scissor rectangles.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetExclusiveScissorNV.html
+func CmdSetExclusiveScissorNV(commandBuffer CommandBuffer, firstExclusiveScissor uint32, exclusiveScissors []Rect2D) {
+	c_exclusiveScissors := make([]RawRect2D, len(exclusiveScissors))
+	for i := range exclusiveScissors {
+		if raw := exclusiveScissors[i].Raw(); raw != nil {
+			c_exclusiveScissors[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetExclusiveScissorNV, uintptr(commandBuffer), uintptr(firstExclusiveScissor), uintptr(len(exclusiveScissors)), uintptr(unsafe.Pointer(SliceData(c_exclusiveScissors))))
+}
+
+// CmdSetExtraPrimitiveOverestimationSizeEXT - Specify the conservative rasterization extra primitive overestimation size dynamically for a command buffer (vkCmdSetExtraPrimitiveOverestimationSizeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - extraPrimitiveOverestimationSize: specifies the extraPrimitiveOverestimationSize.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetExtraPrimitiveOverestimationSizeEXT.html
+func CmdSetExtraPrimitiveOverestimationSizeEXT(commandBuffer CommandBuffer, extraPrimitiveOverestimationSize float32) {
+	CallSyscall(pfnCmdSetExtraPrimitiveOverestimationSizeEXT, uintptr(commandBuffer), uintptr(extraPrimitiveOverestimationSize))
+}
+
+// CmdSetFragmentShadingRateEnumNV - Set pipeline fragment shading rate dynamically for a command buffer using enums (vkCmdSetFragmentShadingRateEnumNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - shadingRate: specifies a VkFragmentShadingRateNV enum indicating the pipeline fragment shading rate for subsequent drawing commands.
+//   - combinerOps: specifies a VkFragmentShadingRateCombinerOpKHR determining how the pipeline, primitive, and attachment shading rates are combined for fragments generated by subsequent drawing commands.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetFragmentShadingRateEnumNV.html
+func CmdSetFragmentShadingRateEnumNV(commandBuffer CommandBuffer, shadingRate FragmentShadingRateNV, combinerOps FragmentShadingRateCombinerOpKHR) {
+	CallSyscall(pfnCmdSetFragmentShadingRateEnumNV, uintptr(commandBuffer), uintptr(shadingRate), uintptr(combinerOps))
+}
+
+// CmdSetFragmentShadingRateKHR - Set pipeline fragment shading rate and combiner operation dynamically for a command buffer (vkCmdSetFragmentShadingRateKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - fragmentSize: specifies the pipeline fragment shading rate for subsequent drawing commands.
+//   - combinerOps: specifies a VkFragmentShadingRateCombinerOpKHR determining how the pipeline, primitive, and attachment shading rates are combined for fragments generated by subsequent drawing commands.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetFragmentShadingRateKHR.html
+func CmdSetFragmentShadingRateKHR(commandBuffer CommandBuffer, fragmentSize *Extent2D, combinerOps FragmentShadingRateCombinerOpKHR) {
+	c_fragmentSize := fragmentSize.Raw()
+	CallSyscall(pfnCmdSetFragmentShadingRateKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_fragmentSize)), uintptr(combinerOps))
+}
+
 // CmdSetFrontFace - Set front face orientation dynamically for a command buffer (vkCmdSetFrontFace).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1532,6 +4765,22 @@ func CmdSetEvent2(commandBuffer CommandBuffer, event Event, dependencyInfo *Depe
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFace.html
 func CmdSetFrontFace(commandBuffer CommandBuffer, frontFace FrontFace) {
 	CallSyscall(pfnCmdSetFrontFace, uintptr(commandBuffer), uintptr(frontFace))
+}
+
+// CmdSetFrontFaceEXT executes vkCmdSetFrontFaceEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFaceEXT.html
+func CmdSetFrontFaceEXT() {
+	CallSyscall(pfnCmdSetFrontFaceEXT)
+}
+
+// CmdSetLineRasterizationModeEXT - Specify the line rasterization mode dynamically for a command buffer (vkCmdSetLineRasterizationModeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - lineRasterizationMode: specifies the lineRasterizationMode state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineRasterizationModeEXT.html
+func CmdSetLineRasterizationModeEXT(commandBuffer CommandBuffer, lineRasterizationMode LineRasterizationModeEXT) {
+	CallSyscall(pfnCmdSetLineRasterizationModeEXT, uintptr(commandBuffer), uintptr(lineRasterizationMode))
 }
 
 // CmdSetLineStipple - Set line stipple dynamically for a command buffer (vkCmdSetLineStipple).
@@ -1545,6 +4794,28 @@ func CmdSetLineStipple(commandBuffer CommandBuffer, lineStippleFactor uint32, li
 	CallSyscall(pfnCmdSetLineStipple, uintptr(commandBuffer), uintptr(lineStippleFactor), uintptr(lineStipplePattern))
 }
 
+// CmdSetLineStippleEXT executes vkCmdSetLineStippleEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineStippleEXT.html
+func CmdSetLineStippleEXT() {
+	CallSyscall(pfnCmdSetLineStippleEXT)
+}
+
+// CmdSetLineStippleEnableEXT - Specify the line stipple enable dynamically for a command buffer (vkCmdSetLineStippleEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - stippledLineEnable: specifies the stippledLineEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineStippleEnableEXT.html
+func CmdSetLineStippleEnableEXT(commandBuffer CommandBuffer, stippledLineEnable Bool32) {
+	CallSyscall(pfnCmdSetLineStippleEnableEXT, uintptr(commandBuffer), uintptr(stippledLineEnable))
+}
+
+// CmdSetLineStippleKHR executes vkCmdSetLineStippleKHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineStippleKHR.html
+func CmdSetLineStippleKHR() {
+	CallSyscall(pfnCmdSetLineStippleKHR)
+}
+
 // CmdSetLineWidth - Set line width dynamically for a command buffer (vkCmdSetLineWidth).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1553,6 +4824,84 @@ func CmdSetLineStipple(commandBuffer CommandBuffer, lineStippleFactor uint32, li
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineWidth.html
 func CmdSetLineWidth(commandBuffer CommandBuffer, lineWidth float32) {
 	CallSyscall(pfnCmdSetLineWidth, uintptr(commandBuffer), uintptr(lineWidth))
+}
+
+// CmdSetLogicOpEXT - Select which logical operation to apply for blend state dynamically for a command buffer (vkCmdSetLogicOpEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - logicOp: specifies the logical operation to apply for blend state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLogicOpEXT.html
+func CmdSetLogicOpEXT(commandBuffer CommandBuffer, logicOp LogicOp) {
+	CallSyscall(pfnCmdSetLogicOpEXT, uintptr(commandBuffer), uintptr(logicOp))
+}
+
+// CmdSetLogicOpEnableEXT - Specify dynamically whether logical operations are enabled for a command buffer (vkCmdSetLogicOpEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - logicOpEnable: specifies whether logical operations are enabled.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLogicOpEnableEXT.html
+func CmdSetLogicOpEnableEXT(commandBuffer CommandBuffer, logicOpEnable Bool32) {
+	CallSyscall(pfnCmdSetLogicOpEnableEXT, uintptr(commandBuffer), uintptr(logicOpEnable))
+}
+
+// CmdSetPatchControlPointsEXT - Specify the number of control points per patch dynamically for a command buffer (vkCmdSetPatchControlPointsEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - patchControlPoints: specifies the number of control points per patch.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPatchControlPointsEXT.html
+func CmdSetPatchControlPointsEXT(commandBuffer CommandBuffer, patchControlPoints uint32) {
+	CallSyscall(pfnCmdSetPatchControlPointsEXT, uintptr(commandBuffer), uintptr(patchControlPoints))
+}
+
+// CmdSetPerformanceMarkerINTEL - Markers (vkCmdSetPerformanceMarkerINTEL).
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPerformanceMarkerINTEL.html
+func CmdSetPerformanceMarkerINTEL(commandBuffer CommandBuffer, markerInfo *PerformanceMarkerInfoINTEL) (result Result) {
+	c_markerInfo := markerInfo.Raw()
+	r1, _, _ := CallSyscall(pfnCmdSetPerformanceMarkerINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+	return Result(r1)
+}
+
+// CmdSetPerformanceOverrideINTEL - Performance override settings (vkCmdSetPerformanceOverrideINTEL).
+// Parameters:
+//   - commandBuffer: is the command buffer where the override takes place.
+//   - overrideInfo: is a pointer to a VkPerformanceOverrideInfoINTEL structure selecting the parameter to override.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPerformanceOverrideINTEL.html
+func CmdSetPerformanceOverrideINTEL(commandBuffer CommandBuffer, overrideInfo *PerformanceOverrideInfoINTEL) (result Result) {
+	c_overrideInfo := overrideInfo.Raw()
+	r1, _, _ := CallSyscall(pfnCmdSetPerformanceOverrideINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_overrideInfo)))
+	return Result(r1)
+}
+
+// CmdSetPerformanceStreamMarkerINTEL - Markers (vkCmdSetPerformanceStreamMarkerINTEL).
+// Parameters:
+//   - commandBuffer: is a VkCommandBuffer into which a stream marker is added.
+//   - markerInfo: is a pointer to a VkPerformanceStreamMarkerInfoINTEL structure describing the marker to insert.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPerformanceStreamMarkerINTEL.html
+func CmdSetPerformanceStreamMarkerINTEL(commandBuffer CommandBuffer, markerInfo *PerformanceStreamMarkerInfoINTEL) (result Result) {
+	c_markerInfo := markerInfo.Raw()
+	r1, _, _ := CallSyscall(pfnCmdSetPerformanceStreamMarkerINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+	return Result(r1)
+}
+
+// CmdSetPolygonModeEXT - Specify polygon mode dynamically for a command buffer (vkCmdSetPolygonModeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - polygonMode: specifies polygon mode.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPolygonModeEXT.html
+func CmdSetPolygonModeEXT(commandBuffer CommandBuffer, polygonMode PolygonMode) {
+	CallSyscall(pfnCmdSetPolygonModeEXT, uintptr(commandBuffer), uintptr(polygonMode))
 }
 
 // CmdSetPrimitiveRestartEnable - Set primitive assembly restart state dynamically for a command buffer (vkCmdSetPrimitiveRestartEnable).
@@ -1565,6 +4914,22 @@ func CmdSetPrimitiveRestartEnable(commandBuffer CommandBuffer, primitiveRestartE
 	CallSyscall(pfnCmdSetPrimitiveRestartEnable, uintptr(commandBuffer), uintptr(primitiveRestartEnable))
 }
 
+// CmdSetPrimitiveRestartEnableEXT executes vkCmdSetPrimitiveRestartEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartEnableEXT.html
+func CmdSetPrimitiveRestartEnableEXT() {
+	CallSyscall(pfnCmdSetPrimitiveRestartEnableEXT)
+}
+
+// CmdSetPrimitiveRestartIndexEXT - Set primitive assembly restart index dynamically for a command buffer (vkCmdSetPrimitiveRestartIndexEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - primitiveRestartIndex: controls which special vertex index value is treated as restarting the assembly of primitives. This overrides the default restart index value as defined as part of the description of the VkPipelineInputAssemblyStateCreateInfo::pname:primitiveRestartEnable state. Default values are applied when binding an index buffer.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartIndexEXT.html
+func CmdSetPrimitiveRestartIndexEXT(commandBuffer CommandBuffer, primitiveRestartIndex uint32) {
+	CallSyscall(pfnCmdSetPrimitiveRestartIndexEXT, uintptr(commandBuffer), uintptr(primitiveRestartIndex))
+}
+
 // CmdSetPrimitiveTopology - Set primitive topology state dynamically for a command buffer (vkCmdSetPrimitiveTopology).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1575,6 +4940,42 @@ func CmdSetPrimitiveTopology(commandBuffer CommandBuffer, primitiveTopology Prim
 	CallSyscall(pfnCmdSetPrimitiveTopology, uintptr(commandBuffer), uintptr(primitiveTopology))
 }
 
+// CmdSetPrimitiveTopologyEXT executes vkCmdSetPrimitiveTopologyEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopologyEXT.html
+func CmdSetPrimitiveTopologyEXT() {
+	CallSyscall(pfnCmdSetPrimitiveTopologyEXT)
+}
+
+// CmdSetProvokingVertexModeEXT - Specify the provoking vertex mode dynamically for a command buffer (vkCmdSetProvokingVertexModeEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - provokingVertexMode: specifies the provokingVertexMode state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetProvokingVertexModeEXT.html
+func CmdSetProvokingVertexModeEXT(commandBuffer CommandBuffer, provokingVertexMode ProvokingVertexModeEXT) {
+	CallSyscall(pfnCmdSetProvokingVertexModeEXT, uintptr(commandBuffer), uintptr(provokingVertexMode))
+}
+
+// CmdSetRasterizationSamplesEXT - Specify the rasterization samples dynamically for a command buffer (vkCmdSetRasterizationSamplesEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - rasterizationSamples: specifies rasterizationSamples.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationSamplesEXT.html
+func CmdSetRasterizationSamplesEXT(commandBuffer CommandBuffer, rasterizationSamples SampleCountFlagBits) {
+	CallSyscall(pfnCmdSetRasterizationSamplesEXT, uintptr(commandBuffer), uintptr(rasterizationSamples))
+}
+
+// CmdSetRasterizationStreamEXT - Specify the rasterization stream dynamically for a command buffer (vkCmdSetRasterizationStreamEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - rasterizationStream: specifies the rasterizationStream state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationStreamEXT.html
+func CmdSetRasterizationStreamEXT(commandBuffer CommandBuffer, rasterizationStream uint32) {
+	CallSyscall(pfnCmdSetRasterizationStreamEXT, uintptr(commandBuffer), uintptr(rasterizationStream))
+}
+
 // CmdSetRasterizerDiscardEnable - Control whether primitives are discarded before the rasterization stage dynamically for a command buffer (vkCmdSetRasterizerDiscardEnable).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1583,6 +4984,22 @@ func CmdSetPrimitiveTopology(commandBuffer CommandBuffer, primitiveTopology Prim
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizerDiscardEnable.html
 func CmdSetRasterizerDiscardEnable(commandBuffer CommandBuffer, rasterizerDiscardEnable Bool32) {
 	CallSyscall(pfnCmdSetRasterizerDiscardEnable, uintptr(commandBuffer), uintptr(rasterizerDiscardEnable))
+}
+
+// CmdSetRasterizerDiscardEnableEXT executes vkCmdSetRasterizerDiscardEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizerDiscardEnableEXT.html
+func CmdSetRasterizerDiscardEnableEXT() {
+	CallSyscall(pfnCmdSetRasterizerDiscardEnableEXT)
+}
+
+// CmdSetRayTracingPipelineStackSizeKHR - Set the stack size dynamically for a ray tracing pipeline (vkCmdSetRayTracingPipelineStackSizeKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - pipelineStackSize: is the stack size to use for subsequent ray tracing trace commands.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRayTracingPipelineStackSizeKHR.html
+func CmdSetRayTracingPipelineStackSizeKHR(commandBuffer CommandBuffer, pipelineStackSize uint32) {
+	CallSyscall(pfnCmdSetRayTracingPipelineStackSizeKHR, uintptr(commandBuffer), uintptr(pipelineStackSize))
 }
 
 // CmdSetRenderingAttachmentLocations - Set color attachment location mappings for a command buffer (vkCmdSetRenderingAttachmentLocations).
@@ -1605,6 +5022,48 @@ func CmdSetRenderingAttachmentLocations(commandBuffer CommandBuffer, locationInf
 func CmdSetRenderingInputAttachmentIndices(commandBuffer CommandBuffer, inputAttachmentIndexInfo *RenderingInputAttachmentIndexInfo) {
 	c_inputAttachmentIndexInfo := inputAttachmentIndexInfo.Raw()
 	CallSyscall(pfnCmdSetRenderingInputAttachmentIndices, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_inputAttachmentIndexInfo)))
+}
+
+// CmdSetRepresentativeFragmentTestEnableNV - Specify the representative fragment test enable dynamically for a command buffer (vkCmdSetRepresentativeFragmentTestEnableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - representativeFragmentTestEnable: specifies the representativeFragmentTestEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRepresentativeFragmentTestEnableNV.html
+func CmdSetRepresentativeFragmentTestEnableNV(commandBuffer CommandBuffer, representativeFragmentTestEnable Bool32) {
+	CallSyscall(pfnCmdSetRepresentativeFragmentTestEnableNV, uintptr(commandBuffer), uintptr(representativeFragmentTestEnable))
+}
+
+// CmdSetSampleLocationsEXT - Set sample locations dynamically for a command buffer (vkCmdSetSampleLocationsEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - sampleLocationsInfo: is the sample locations state to set.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleLocationsEXT.html
+func CmdSetSampleLocationsEXT(commandBuffer CommandBuffer, sampleLocationsInfo *SampleLocationsInfoEXT) {
+	c_sampleLocationsInfo := sampleLocationsInfo.Raw()
+	CallSyscall(pfnCmdSetSampleLocationsEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_sampleLocationsInfo)))
+}
+
+// CmdSetSampleLocationsEnableEXT - Specify the samples locations enable state dynamically for a command buffer (vkCmdSetSampleLocationsEnableEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - sampleLocationsEnable: specifies the sampleLocationsEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleLocationsEnableEXT.html
+func CmdSetSampleLocationsEnableEXT(commandBuffer CommandBuffer, sampleLocationsEnable Bool32) {
+	CallSyscall(pfnCmdSetSampleLocationsEnableEXT, uintptr(commandBuffer), uintptr(sampleLocationsEnable))
+}
+
+// CmdSetSampleMaskEXT - Specify the sample mask dynamically for a command buffer (vkCmdSetSampleMaskEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - samples: specifies the number of sample bits in the pSampleMask.
+//   - sampleMask: is a pointer to an array of basetype:VkSampleMask values, where the array size is based on the samples parameter. If the maintenance10 feature is enabled, and this parameter is set to NULL, it is treated as if the mask has all bits set to 1.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleMaskEXT.html
+func CmdSetSampleMaskEXT(commandBuffer CommandBuffer, samples SampleCountFlagBits, sampleMask *SampleMask) {
+	CallSyscall(pfnCmdSetSampleMaskEXT, uintptr(commandBuffer), uintptr(samples), uintptr(unsafe.Pointer(sampleMask)))
 }
 
 // CmdSetScissor - Set scissor rectangles dynamically for a command buffer (vkCmdSetScissor).
@@ -1642,6 +5101,22 @@ func CmdSetScissorWithCount(commandBuffer CommandBuffer, scissors []Rect2D) {
 	CallSyscall(pfnCmdSetScissorWithCount, uintptr(commandBuffer), uintptr(len(scissors)), uintptr(unsafe.Pointer(SliceData(c_scissors))))
 }
 
+// CmdSetScissorWithCountEXT executes vkCmdSetScissorWithCountEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCountEXT.html
+func CmdSetScissorWithCountEXT() {
+	CallSyscall(pfnCmdSetScissorWithCountEXT)
+}
+
+// CmdSetShadingRateImageEnableNV - Specify the shading rate image enable state dynamically for a command buffer (vkCmdSetShadingRateImageEnableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - shadingRateImageEnable: specifies the shadingRateImageEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetShadingRateImageEnableNV.html
+func CmdSetShadingRateImageEnableNV(commandBuffer CommandBuffer, shadingRateImageEnable Bool32) {
+	CallSyscall(pfnCmdSetShadingRateImageEnableNV, uintptr(commandBuffer), uintptr(shadingRateImageEnable))
+}
+
 // CmdSetStencilCompareMask - Set stencil compare mask dynamically for a command buffer (vkCmdSetStencilCompareMask).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1667,6 +5142,12 @@ func CmdSetStencilOp(commandBuffer CommandBuffer, faceMask StencilFaceFlags, fai
 	CallSyscall(pfnCmdSetStencilOp, uintptr(commandBuffer), uintptr(faceMask), uintptr(failOp), uintptr(passOp), uintptr(depthFailOp), uintptr(compareOp))
 }
 
+// CmdSetStencilOpEXT executes vkCmdSetStencilOpEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilOpEXT.html
+func CmdSetStencilOpEXT() {
+	CallSyscall(pfnCmdSetStencilOpEXT)
+}
+
 // CmdSetStencilReference - Set stencil reference value dynamically for a command buffer (vkCmdSetStencilReference).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1688,6 +5169,12 @@ func CmdSetStencilTestEnable(commandBuffer CommandBuffer, stencilTestEnable Bool
 	CallSyscall(pfnCmdSetStencilTestEnable, uintptr(commandBuffer), uintptr(stencilTestEnable))
 }
 
+// CmdSetStencilTestEnableEXT executes vkCmdSetStencilTestEnableEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilTestEnableEXT.html
+func CmdSetStencilTestEnableEXT() {
+	CallSyscall(pfnCmdSetStencilTestEnableEXT)
+}
+
 // CmdSetStencilWriteMask - Set stencil write mask dynamically for a command buffer (vkCmdSetStencilWriteMask).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1697,6 +5184,41 @@ func CmdSetStencilTestEnable(commandBuffer CommandBuffer, stencilTestEnable Bool
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilWriteMask.html
 func CmdSetStencilWriteMask(commandBuffer CommandBuffer, faceMask StencilFaceFlags, writeMask uint32) {
 	CallSyscall(pfnCmdSetStencilWriteMask, uintptr(commandBuffer), uintptr(faceMask), uintptr(writeMask))
+}
+
+// CmdSetTessellationDomainOriginEXT - Specify the origin of the tessellation domain space dynamically for a command buffer (vkCmdSetTessellationDomainOriginEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - domainOrigin: specifies the origin of the tessellation domain space.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetTessellationDomainOriginEXT.html
+func CmdSetTessellationDomainOriginEXT(commandBuffer CommandBuffer, domainOrigin TessellationDomainOrigin) {
+	CallSyscall(pfnCmdSetTessellationDomainOriginEXT, uintptr(commandBuffer), uintptr(domainOrigin))
+}
+
+// CmdSetVertexInputEXT - Set the vertex input state dynamically for a command buffer (vkCmdSetVertexInputEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - vertexBindingDescriptionCount: is the number of vertex binding descriptions provided in pVertexBindingDescriptions.
+//   - vertexBindingDescriptions: is a pointer to an array of VkVertexInputBindingDescription2EXT structures.
+//   - vertexAttributeDescriptionCount: is the number of vertex attribute descriptions provided in pVertexAttributeDescriptions.
+//   - vertexAttributeDescriptions: is a pointer to an array of VkVertexInputAttributeDescription2EXT structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetVertexInputEXT.html
+func CmdSetVertexInputEXT(commandBuffer CommandBuffer, vertexBindingDescriptions []VertexInputBindingDescription2EXT, vertexAttributeDescriptions []VertexInputAttributeDescription2EXT) {
+	c_vertexBindingDescriptions := make([]RawVertexInputBindingDescription2EXT, len(vertexBindingDescriptions))
+	for i := range vertexBindingDescriptions {
+		if raw := vertexBindingDescriptions[i].Raw(); raw != nil {
+			c_vertexBindingDescriptions[i] = *raw
+		}
+	}
+	c_vertexAttributeDescriptions := make([]RawVertexInputAttributeDescription2EXT, len(vertexAttributeDescriptions))
+	for i := range vertexAttributeDescriptions {
+		if raw := vertexAttributeDescriptions[i].Raw(); raw != nil {
+			c_vertexAttributeDescriptions[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetVertexInputEXT, uintptr(commandBuffer), uintptr(len(vertexBindingDescriptions)), uintptr(unsafe.Pointer(SliceData(c_vertexBindingDescriptions))), uintptr(len(vertexAttributeDescriptions)), uintptr(unsafe.Pointer(SliceData(c_vertexAttributeDescriptions))))
 }
 
 // CmdSetViewport - Set the viewport dynamically for a command buffer (vkCmdSetViewport).
@@ -1717,6 +5239,70 @@ func CmdSetViewport(commandBuffer CommandBuffer, firstViewport uint32, viewports
 	CallSyscall(pfnCmdSetViewport, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(viewports)), uintptr(unsafe.Pointer(SliceData(c_viewports))))
 }
 
+// CmdSetViewportShadingRatePaletteNV - Set shading rate image palettes dynamically for a command buffer (vkCmdSetViewportShadingRatePaletteNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstViewport: is the index of the first viewport whose shading rate palette is updated by the command.
+//   - viewportCount: is the number of viewports whose shading rate palettes are updated by the command.
+//   - shadingRatePalettes: is a pointer to an array of VkShadingRatePaletteNV structures defining the palette for each viewport.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportShadingRatePaletteNV.html
+func CmdSetViewportShadingRatePaletteNV(commandBuffer CommandBuffer, firstViewport uint32, shadingRatePalettes []ShadingRatePaletteNV) {
+	c_shadingRatePalettes := make([]RawShadingRatePaletteNV, len(shadingRatePalettes))
+	for i := range shadingRatePalettes {
+		if raw := shadingRatePalettes[i].Raw(); raw != nil {
+			c_shadingRatePalettes[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetViewportShadingRatePaletteNV, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(shadingRatePalettes)), uintptr(unsafe.Pointer(SliceData(c_shadingRatePalettes))))
+}
+
+// CmdSetViewportSwizzleNV - Specify the viewport swizzle state dynamically for a command buffer (vkCmdSetViewportSwizzleNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstViewport: is the index of the first viewport whose parameters are updated by the command.
+//   - viewportCount: is the number of viewports whose parameters are updated by the command.
+//   - viewportSwizzles: is a pointer to an array of VkViewportSwizzleNV structures specifying viewport swizzles.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportSwizzleNV.html
+func CmdSetViewportSwizzleNV(commandBuffer CommandBuffer, firstViewport uint32, viewportSwizzles []ViewportSwizzleNV) {
+	c_viewportSwizzles := make([]RawViewportSwizzleNV, len(viewportSwizzles))
+	for i := range viewportSwizzles {
+		if raw := viewportSwizzles[i].Raw(); raw != nil {
+			c_viewportSwizzles[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetViewportSwizzleNV, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(viewportSwizzles)), uintptr(unsafe.Pointer(SliceData(c_viewportSwizzles))))
+}
+
+// CmdSetViewportWScalingEnableNV - Specify the viewport W scaling enable state dynamically for a command buffer (vkCmdSetViewportWScalingEnableNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - viewportWScalingEnable: specifies the viewportWScalingEnable state.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWScalingEnableNV.html
+func CmdSetViewportWScalingEnableNV(commandBuffer CommandBuffer, viewportWScalingEnable Bool32) {
+	CallSyscall(pfnCmdSetViewportWScalingEnableNV, uintptr(commandBuffer), uintptr(viewportWScalingEnable))
+}
+
+// CmdSetViewportWScalingNV - Set the viewport W scaling dynamically for a command buffer (vkCmdSetViewportWScalingNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - firstViewport: is the index of the first viewport whose parameters are updated by the command.
+//   - viewportCount: is the number of viewports whose parameters are updated by the command.
+//   - viewportWScalings: is a pointer to an array of VkViewportWScalingNV structures specifying viewport parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWScalingNV.html
+func CmdSetViewportWScalingNV(commandBuffer CommandBuffer, firstViewport uint32, viewportWScalings []ViewportWScalingNV) {
+	c_viewportWScalings := make([]RawViewportWScalingNV, len(viewportWScalings))
+	for i := range viewportWScalings {
+		if raw := viewportWScalings[i].Raw(); raw != nil {
+			c_viewportWScalings[i] = *raw
+		}
+	}
+	CallSyscall(pfnCmdSetViewportWScalingNV, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(viewportWScalings)), uintptr(unsafe.Pointer(SliceData(c_viewportWScalings))))
+}
+
 // CmdSetViewportWithCount - Set the viewport count and viewports dynamically for a command buffer (vkCmdSetViewportWithCount).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1734,6 +5320,92 @@ func CmdSetViewportWithCount(commandBuffer CommandBuffer, viewports []Viewport) 
 	CallSyscall(pfnCmdSetViewportWithCount, uintptr(commandBuffer), uintptr(len(viewports)), uintptr(unsafe.Pointer(SliceData(c_viewports))))
 }
 
+// CmdSetViewportWithCountEXT executes vkCmdSetViewportWithCountEXT.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWithCountEXT.html
+func CmdSetViewportWithCountEXT() {
+	CallSyscall(pfnCmdSetViewportWithCountEXT)
+}
+
+// CmdSubpassShadingHUAWEI - Dispatch compute work items (vkCmdSubpassShadingHUAWEI).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSubpassShadingHUAWEI.html
+func CmdSubpassShadingHUAWEI(commandBuffer CommandBuffer) {
+	CallSyscall(pfnCmdSubpassShadingHUAWEI, uintptr(commandBuffer))
+}
+
+// CmdTraceRaysIndirect2KHR - Initialize an indirect ray tracing dispatch with indirect shader binding tables (vkCmdTraceRaysIndirect2KHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - indirectDeviceAddress: is a buffer device address which is a pointer to a VkTraceRaysIndirectCommand2KHR structure containing the trace ray parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirect2KHR.html
+func CmdTraceRaysIndirect2KHR(commandBuffer CommandBuffer, indirectDeviceAddress DeviceAddress) {
+	CallSyscall(pfnCmdTraceRaysIndirect2KHR, uintptr(commandBuffer), uintptr(indirectDeviceAddress))
+}
+
+// CmdTraceRaysIndirectKHR - Initialize an indirect ray tracing dispatch (vkCmdTraceRaysIndirectKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - raygenShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the ray generation shader stage.
+//   - missShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the miss shader stage.
+//   - hitShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the hit shader stage.
+//   - callableShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the callable shader stage.
+//   - indirectDeviceAddress: is a buffer device address which is a pointer to a VkTraceRaysIndirectCommandKHR structure containing the trace ray parameters.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirectKHR.html
+func CmdTraceRaysIndirectKHR(commandBuffer CommandBuffer, raygenShaderBindingTable *StridedDeviceAddressRegionKHR, missShaderBindingTable *StridedDeviceAddressRegionKHR, hitShaderBindingTable *StridedDeviceAddressRegionKHR, callableShaderBindingTable *StridedDeviceAddressRegionKHR, indirectDeviceAddress DeviceAddress) {
+	c_raygenShaderBindingTable := raygenShaderBindingTable.Raw()
+	c_missShaderBindingTable := missShaderBindingTable.Raw()
+	c_hitShaderBindingTable := hitShaderBindingTable.Raw()
+	c_callableShaderBindingTable := callableShaderBindingTable.Raw()
+	CallSyscall(pfnCmdTraceRaysIndirectKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_raygenShaderBindingTable)), uintptr(unsafe.Pointer(c_missShaderBindingTable)), uintptr(unsafe.Pointer(c_hitShaderBindingTable)), uintptr(unsafe.Pointer(c_callableShaderBindingTable)), uintptr(indirectDeviceAddress))
+}
+
+// CmdTraceRaysKHR - Initialize a ray tracing dispatch (vkCmdTraceRaysKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - raygenShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the ray generation shader stage.
+//   - missShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the miss shader stage.
+//   - hitShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the hit shader stage.
+//   - callableShaderBindingTable: is a VkStridedDeviceAddressRegionKHR that holds the shader binding table data for the callable shader stage.
+//   - width: is the width of the ray trace query dimensions.
+//   - height: is height of the ray trace query dimensions.
+//   - depth: is depth of the ray trace query dimensions.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysKHR.html
+func CmdTraceRaysKHR(commandBuffer CommandBuffer, raygenShaderBindingTable *StridedDeviceAddressRegionKHR, missShaderBindingTable *StridedDeviceAddressRegionKHR, hitShaderBindingTable *StridedDeviceAddressRegionKHR, callableShaderBindingTable *StridedDeviceAddressRegionKHR, width uint32, height uint32, depth uint32) {
+	c_raygenShaderBindingTable := raygenShaderBindingTable.Raw()
+	c_missShaderBindingTable := missShaderBindingTable.Raw()
+	c_hitShaderBindingTable := hitShaderBindingTable.Raw()
+	c_callableShaderBindingTable := callableShaderBindingTable.Raw()
+	CallSyscall(pfnCmdTraceRaysKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_raygenShaderBindingTable)), uintptr(unsafe.Pointer(c_missShaderBindingTable)), uintptr(unsafe.Pointer(c_hitShaderBindingTable)), uintptr(unsafe.Pointer(c_callableShaderBindingTable)), uintptr(width), uintptr(height), uintptr(depth))
+}
+
+// CmdTraceRaysNV - Initialize a ray tracing dispatch (vkCmdTraceRaysNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - raygenShaderBindingTableBuffer: is the buffer object that holds the shader binding table data for the ray generation shader stage.
+//   - raygenShaderBindingOffset: is the offset in bytes (relative to raygenShaderBindingTableBuffer) of the ray generation shader being used for the trace.
+//   - missShaderBindingTableBuffer: is the buffer object that holds the shader binding table data for the miss shader stage.
+//   - missShaderBindingOffset: is the offset in bytes (relative to missShaderBindingTableBuffer) of the miss shader being used for the trace.
+//   - missShaderBindingStride: is the size in bytes of each shader binding table record in missShaderBindingTableBuffer.
+//   - hitShaderBindingTableBuffer: is the buffer object that holds the shader binding table data for the hit shader stages.
+//   - hitShaderBindingOffset: is the offset in bytes (relative to hitShaderBindingTableBuffer) of the hit shader group being used for the trace.
+//   - hitShaderBindingStride: is the size in bytes of each shader binding table record in hitShaderBindingTableBuffer.
+//   - callableShaderBindingTableBuffer: is the buffer object that holds the shader binding table data for the callable shader stage.
+//   - callableShaderBindingOffset: is the offset in bytes (relative to callableShaderBindingTableBuffer) of the callable shader being used for the trace.
+//   - callableShaderBindingStride: is the size in bytes of each shader binding table record in callableShaderBindingTableBuffer.
+//   - width: is the width of the ray trace query dimensions.
+//   - height: is height of the ray trace query dimensions.
+//   - depth: is depth of the ray trace query dimensions.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysNV.html
+func CmdTraceRaysNV(commandBuffer CommandBuffer, raygenShaderBindingTableBuffer Buffer, raygenShaderBindingOffset DeviceSize, missShaderBindingTableBuffer Buffer, missShaderBindingOffset DeviceSize, missShaderBindingStride DeviceSize, hitShaderBindingTableBuffer Buffer, hitShaderBindingOffset DeviceSize, hitShaderBindingStride DeviceSize, callableShaderBindingTableBuffer Buffer, callableShaderBindingOffset DeviceSize, callableShaderBindingStride DeviceSize, width uint32, height uint32, depth uint32) {
+	CallSyscall(pfnCmdTraceRaysNV, uintptr(commandBuffer), uintptr(raygenShaderBindingTableBuffer), uintptr(raygenShaderBindingOffset), uintptr(missShaderBindingTableBuffer), uintptr(missShaderBindingOffset), uintptr(missShaderBindingStride), uintptr(hitShaderBindingTableBuffer), uintptr(hitShaderBindingOffset), uintptr(hitShaderBindingStride), uintptr(callableShaderBindingTableBuffer), uintptr(callableShaderBindingOffset), uintptr(callableShaderBindingStride), uintptr(width), uintptr(height), uintptr(depth))
+}
+
 // CmdUpdateBuffer - Update a buffer\ (vkCmdUpdateBuffer).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1746,6 +5418,32 @@ func CmdSetViewportWithCount(commandBuffer CommandBuffer, viewports []Viewport) 
 func CmdUpdateBuffer(commandBuffer CommandBuffer, dstBuffer Buffer, dstOffset DeviceSize, data []unsafe.Pointer) {
 	c_data := SliceData(data)
 	CallSyscall(pfnCmdUpdateBuffer, uintptr(commandBuffer), uintptr(dstBuffer), uintptr(dstOffset), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+}
+
+// CmdUpdateMemoryKHR - Update the content of device memory from host memory (vkCmdUpdateMemoryKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - dstRange: is a pointer to the VkDeviceAddressRangeKHR selecting the memory range to be updated.
+//   - dstFlags: is a VkAddressCommandFlagsKHR value defining the copy flags for the destination address range.
+//   - dataSize: is the number of bytes to update, and must be a multiple of 4.
+//   - data: is a pointer to the source data for the buffer update, and must be at least dataSize bytes in size.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdUpdateMemoryKHR.html
+func CmdUpdateMemoryKHR(commandBuffer CommandBuffer, dstRange *DeviceAddressRangeKHR, dstFlags AddressCommandFlagsKHR, data []unsafe.Pointer) {
+	c_dstRange := dstRange.Raw()
+	c_data := SliceData(data)
+	CallSyscall(pfnCmdUpdateMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+}
+
+// CmdUpdatePipelineIndirectBufferNV - Update the indirect compute pipeline\ (vkCmdUpdatePipelineIndirectBufferNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - pipelineBindPoint: is a VkPipelineBindPoint value specifying the type of pipeline whose metadata will be saved.
+//   - pipeline: is the pipeline whose metadata will be saved.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdUpdatePipelineIndirectBufferNV.html
+func CmdUpdatePipelineIndirectBufferNV(commandBuffer CommandBuffer, pipelineBindPoint PipelineBindPoint, pipeline Pipeline) {
+	CallSyscall(pfnCmdUpdatePipelineIndirectBufferNV, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline))
 }
 
 // CmdWaitEvents - Wait for one or more events and insert a set of memory (vkCmdWaitEvents).
@@ -1800,6 +5498,94 @@ func CmdWaitEvents2(commandBuffer CommandBuffer, events []Event, dependencyInfos
 	CallSyscall(pfnCmdWaitEvents2, uintptr(commandBuffer), uintptr(len(events)), uintptr(unsafe.Pointer(c_events)), uintptr(unsafe.Pointer(c_dependencyInfos)))
 }
 
+// CmdWaitEvents2KHR executes vkCmdWaitEvents2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWaitEvents2KHR.html
+func CmdWaitEvents2KHR() {
+	CallSyscall(pfnCmdWaitEvents2KHR)
+}
+
+// CmdWriteAccelerationStructuresPropertiesKHR - Write acceleration structure result parameters to query results. (vkCmdWriteAccelerationStructuresPropertiesKHR).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - accelerationStructureCount: is the count of acceleration structures for which to query the property.
+//   - accelerationStructures: is a pointer to an array of existing previously built acceleration structures.
+//   - queryType: is a VkQueryType value specifying the type of queries managed by the pool.
+//   - queryPool: is the query pool that will manage the results of the query.
+//   - firstQuery: is the first query index within the query pool that will contain the accelerationStructureCount number of results.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteAccelerationStructuresPropertiesKHR.html
+func CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer CommandBuffer, accelerationStructures []AccelerationStructureKHR, queryType QueryType, queryPool QueryPool, firstQuery uint32) {
+	c_accelerationStructures := SliceData(accelerationStructures)
+	CallSyscall(pfnCmdWriteAccelerationStructuresPropertiesKHR, uintptr(commandBuffer), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
+}
+
+// CmdWriteAccelerationStructuresPropertiesNV - Write acceleration structure result parameters to query results. (vkCmdWriteAccelerationStructuresPropertiesNV).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - accelerationStructureCount: is the count of acceleration structures for which to query the property.
+//   - accelerationStructures: is a pointer to an array of existing previously built acceleration structures.
+//   - queryType: is a VkQueryType value specifying the type of queries managed by the pool.
+//   - queryPool: is the query pool that will manage the results of the query.
+//   - firstQuery: is the first query index within the query pool that will contain the accelerationStructureCount number of results.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteAccelerationStructuresPropertiesNV.html
+func CmdWriteAccelerationStructuresPropertiesNV(commandBuffer CommandBuffer, accelerationStructures []AccelerationStructureNV, queryType QueryType, queryPool QueryPool, firstQuery uint32) {
+	c_accelerationStructures := SliceData(accelerationStructures)
+	CallSyscall(pfnCmdWriteAccelerationStructuresPropertiesNV, uintptr(commandBuffer), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
+}
+
+// CmdWriteBufferMarker2AMD - Execute a pipelined write of a marker value into a buffer (vkCmdWriteBufferMarker2AMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - stage: specifies the pipeline stage whose completion triggers the marker write.
+//   - dstBuffer: is the buffer where the marker will be written.
+//   - dstOffset: is the byte offset into the buffer where the marker will be written.
+//   - marker: is the 32-bit value of the marker.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteBufferMarker2AMD.html
+func CmdWriteBufferMarker2AMD(commandBuffer CommandBuffer, stage PipelineStageFlags2, dstBuffer Buffer, dstOffset DeviceSize, marker uint32) {
+	CallSyscall(pfnCmdWriteBufferMarker2AMD, uintptr(commandBuffer), uintptr(stage), uintptr(dstBuffer), uintptr(dstOffset), uintptr(marker))
+}
+
+// CmdWriteBufferMarkerAMD - Execute a pipelined write of a marker value into a buffer (vkCmdWriteBufferMarkerAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - pipelineStage: is a VkPipelineStageFlagBits value specifying the pipeline stage whose completion triggers the marker write.
+//   - dstBuffer: is the buffer where the marker will be written to.
+//   - dstOffset: is the byte offset into the buffer where the marker will be written to.
+//   - marker: is the 32-bit value of the marker.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteBufferMarkerAMD.html
+func CmdWriteBufferMarkerAMD(commandBuffer CommandBuffer, pipelineStage PipelineStageFlagBits, dstBuffer Buffer, dstOffset DeviceSize, marker uint32) {
+	CallSyscall(pfnCmdWriteBufferMarkerAMD, uintptr(commandBuffer), uintptr(pipelineStage), uintptr(dstBuffer), uintptr(dstOffset), uintptr(marker))
+}
+
+// CmdWriteMarkerToMemoryAMD - Execute a pipelined write of a marker value into a memory range (vkCmdWriteMarkerToMemoryAMD).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - info: specifies a pointer to an VkMemoryMarkerInfoAMD structure defining parameters of this command.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteMarkerToMemoryAMD.html
+func CmdWriteMarkerToMemoryAMD(commandBuffer CommandBuffer, info *MemoryMarkerInfoAMD) {
+	c_info := info.Raw()
+	CallSyscall(pfnCmdWriteMarkerToMemoryAMD, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
+// CmdWriteMicromapsPropertiesEXT - Write micromap result parameters to query results. (vkCmdWriteMicromapsPropertiesEXT).
+// Parameters:
+//   - commandBuffer: is the command buffer into which the command will be recorded.
+//   - micromapCount: is the count of micromaps for which to query the property.
+//   - micromaps: is a pointer to an array of existing previously built micromaps.
+//   - queryType: is a VkQueryType value specifying the type of queries managed by the pool.
+//   - queryPool: is the query pool that will manage the results of the query.
+//   - firstQuery: is the first query index within the query pool that will contain the micromapCount number of results.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteMicromapsPropertiesEXT.html
+func CmdWriteMicromapsPropertiesEXT(commandBuffer CommandBuffer, micromaps []MicromapEXT, queryType QueryType, queryPool QueryPool, firstQuery uint32) {
+	c_micromaps := SliceData(micromaps)
+	CallSyscall(pfnCmdWriteMicromapsPropertiesEXT, uintptr(commandBuffer), uintptr(len(micromaps)), uintptr(unsafe.Pointer(c_micromaps)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
+}
+
 // CmdWriteTimestamp - Write a device timestamp into a query object (vkCmdWriteTimestamp).
 // Parameters:
 //   - commandBuffer: is the command buffer into which the command will be recorded.
@@ -1822,6 +5608,70 @@ func CmdWriteTimestamp(commandBuffer CommandBuffer, pipelineStage PipelineStageF
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2.html
 func CmdWriteTimestamp2(commandBuffer CommandBuffer, stage PipelineStageFlags2, queryPool QueryPool, query uint32) {
 	CallSyscall(pfnCmdWriteTimestamp2, uintptr(commandBuffer), uintptr(stage), uintptr(queryPool), uintptr(query))
+}
+
+// CmdWriteTimestamp2KHR executes vkCmdWriteTimestamp2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2KHR.html
+func CmdWriteTimestamp2KHR() {
+	CallSyscall(pfnCmdWriteTimestamp2KHR)
+}
+
+// CompileDeferredNV - Deferred compilation of shaders (vkCompileDeferredNV).
+// Parameters:
+//   - device: is the logical device containing the ray tracing pipeline.
+//   - pipeline: is the ray tracing pipeline object containing the shaders.
+//   - shader: is the index of the shader to compile.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCompileDeferredNV.html
+func CompileDeferredNV(device Device, pipeline Pipeline, shader uint32) (result Result) {
+	r1, _, _ := CallSyscall(pfnCompileDeferredNV, uintptr(device), uintptr(pipeline), uintptr(shader))
+	return Result(r1)
+}
+
+// ConvertCooperativeVectorMatrixNV - Convert a cooperative vector matrix from one layout and type to another (vkConvertCooperativeVectorMatrixNV).
+// Parameters:
+//   - device: is the device.
+//   - info: is a pointer to a VkConvertCooperativeVectorMatrixInfoNV structure containing information about the layout conversion.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkConvertCooperativeVectorMatrixNV.html
+func ConvertCooperativeVectorMatrixNV(device Device, info *ConvertCooperativeVectorMatrixInfoNV) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnConvertCooperativeVectorMatrixNV, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
+// CopyAccelerationStructureKHR - Copy an acceleration structure on the host (vkCopyAccelerationStructureKHR).
+// Parameters:
+//   - device: is the device which owns the acceleration structures.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - info: is a pointer to a VkCopyAccelerationStructureInfoKHR structure defining the copy operation.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyAccelerationStructureKHR.html
+func CopyAccelerationStructureKHR(device Device, deferredOperation DeferredOperationKHR, info *CopyAccelerationStructureInfoKHR) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnCopyAccelerationStructureKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
+// CopyAccelerationStructureToMemoryKHR - Serialize an acceleration structure on the host (vkCopyAccelerationStructureToMemoryKHR).
+// Parameters:
+//   - device: is the device which owns pInfo->src.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - info: is a pointer to a VkCopyAccelerationStructureToMemoryInfoKHR structure defining the copy operation.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyAccelerationStructureToMemoryKHR.html
+func CopyAccelerationStructureToMemoryKHR(device Device, deferredOperation DeferredOperationKHR, info *CopyAccelerationStructureToMemoryInfoKHR) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnCopyAccelerationStructureToMemoryKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
 }
 
 // CopyImageToImage - Copy image data using the host (vkCopyImageToImage).
@@ -1852,6 +5702,21 @@ func CopyImageToMemory(device Device, copyImageToMemoryInfo *CopyImageToMemoryIn
 	return Result(r1)
 }
 
+// CopyMemoryToAccelerationStructureKHR - Deserialize an acceleration structure on the host (vkCopyMemoryToAccelerationStructureKHR).
+// Parameters:
+//   - device: is the device which owns pInfo->dst.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - info: is a pointer to a VkCopyMemoryToAccelerationStructureInfoKHR structure defining the copy operation.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMemoryToAccelerationStructureKHR.html
+func CopyMemoryToAccelerationStructureKHR(device Device, deferredOperation DeferredOperationKHR, info *CopyMemoryToAccelerationStructureInfoKHR) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnCopyMemoryToAccelerationStructureKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
 // CopyMemoryToImage - Copy data from host memory into an image (vkCopyMemoryToImage).
 // Parameters:
 //   - device: is the device which owns pCopyMemoryToImageInfo->dstImage.
@@ -1864,6 +5729,119 @@ func CopyMemoryToImage(device Device, copyMemoryToImageInfo *CopyMemoryToImageIn
 	c_copyMemoryToImageInfo := copyMemoryToImageInfo.Raw()
 	r1, _, _ := CallSyscall(pfnCopyMemoryToImage, uintptr(device), uintptr(unsafe.Pointer(c_copyMemoryToImageInfo)))
 	return Result(r1)
+}
+
+// CopyMemoryToMicromapEXT - Deserialize a micromap on the host (vkCopyMemoryToMicromapEXT).
+// Parameters:
+//   - device: is the device which owns pInfo->dst.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - info: is a pointer to a VkCopyMemoryToMicromapInfoEXT structure defining the copy operation.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMemoryToMicromapEXT.html
+func CopyMemoryToMicromapEXT(device Device, deferredOperation DeferredOperationKHR, info *CopyMemoryToMicromapInfoEXT) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnCopyMemoryToMicromapEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
+// CopyMicromapEXT - Copy a micromap on the host (vkCopyMicromapEXT).
+// Parameters:
+//   - device: is the device which owns the micromaps.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - info: is a pointer to a VkCopyMicromapInfoEXT structure defining the copy operation.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMicromapEXT.html
+func CopyMicromapEXT(device Device, deferredOperation DeferredOperationKHR, info *CopyMicromapInfoEXT) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnCopyMicromapEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
+// CopyMicromapToMemoryEXT - Serialize a micromap on the host (vkCopyMicromapToMemoryEXT).
+// Parameters:
+//   - device: is the device which owns pInfo->src.
+//   - deferredOperation: is an optional VkDeferredOperationKHR to request deferral for this command.
+//   - info: is a pointer to a VkCopyMicromapToMemoryInfoEXT structure defining the copy operation.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMicromapToMemoryEXT.html
+func CopyMicromapToMemoryEXT(device Device, deferredOperation DeferredOperationKHR, info *CopyMicromapToMemoryInfoEXT) (result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnCopyMicromapToMemoryEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return Result(r1)
+}
+
+// CreateAccelerationStructure2KHR - Create a new acceleration structure object using a device address (vkCreateAccelerationStructure2KHR).
+// Parameters:
+//   - device: is the logical device that creates the acceleration structure object.
+//   - createInfo: is a pointer to a VkAccelerationStructureCreateInfo2KHR structure containing parameters affecting creation of the acceleration structure.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - accelerationStructure: is a pointer to a VkAccelerationStructureKHR handle in which the resulting acceleration structure object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR, VK_ERROR_VALIDATION_FAILED, VK_ERROR_UNKNOWN
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructure2KHR.html
+func CreateAccelerationStructure2KHR(device Device, createInfo *AccelerationStructureCreateInfo2KHR, allocator *AllocationCallbacks) (accelerationStructure AccelerationStructureKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateAccelerationStructure2KHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&accelerationStructure)))
+	return accelerationStructure, Result(r1)
+}
+
+// CreateAccelerationStructureKHR - Create a new acceleration structure object (vkCreateAccelerationStructureKHR).
+// Parameters:
+//   - device: is the logical device that creates the acceleration structure object.
+//   - createInfo: is a pointer to a VkAccelerationStructureCreateInfoKHR structure containing parameters affecting creation of the acceleration structure.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - accelerationStructure: is a pointer to a VkAccelerationStructureKHR handle in which the resulting acceleration structure object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureKHR.html
+func CreateAccelerationStructureKHR(device Device, createInfo *AccelerationStructureCreateInfoKHR, allocator *AllocationCallbacks) (accelerationStructure AccelerationStructureKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateAccelerationStructureKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&accelerationStructure)))
+	return accelerationStructure, Result(r1)
+}
+
+// CreateAccelerationStructureNV - Create a new acceleration structure object (vkCreateAccelerationStructureNV).
+// Parameters:
+//   - device: is the logical device that creates the buffer object.
+//   - createInfo: is a pointer to a VkAccelerationStructureCreateInfoNV structure containing parameters affecting creation of the acceleration structure.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - accelerationStructure: is a pointer to a VkAccelerationStructureNV handle in which the resulting acceleration structure object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureNV.html
+func CreateAccelerationStructureNV(device Device, createInfo *AccelerationStructureCreateInfoNV, allocator *AllocationCallbacks) (accelerationStructure AccelerationStructureNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateAccelerationStructureNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&accelerationStructure)))
+	return accelerationStructure, Result(r1)
+}
+
+// CreateAndroidSurfaceKHR - Create a VkSurfaceKHR object for an Android native window (vkCreateAndroidSurfaceKHR).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkAndroidSurfaceCreateInfoKHR structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAndroidSurfaceKHR.html
+func CreateAndroidSurfaceKHR(instance Instance, createInfo *AndroidSurfaceCreateInfoKHR, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateAndroidSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
 }
 
 // CreateBuffer - Create a new buffer object (vkCreateBuffer).
@@ -1881,6 +5859,23 @@ func CreateBuffer(device Device, createInfo *BufferCreateInfo, allocator *Alloca
 	c_allocator := allocator.Raw()
 	r1, _, _ := CallSyscall(pfnCreateBuffer, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&buffer)))
 	return buffer, Result(r1)
+}
+
+// CreateBufferCollectionFUCHSIA - Create a new buffer collection (vkCreateBufferCollectionFUCHSIA).
+// Parameters:
+//   - device: is the logical device that creates the VkBufferCollectionFUCHSIA
+//   - createInfo: is a pointer to a VkBufferCollectionCreateInfoFUCHSIA structure containing parameters affecting creation of the buffer collection
+//   - allocator: is a pointer to a VkAllocationCallbacks structure controlling host memory allocation as described in the Memory Allocation chapter
+//   - collection: is a pointer to a VkBufferCollectionFUCHSIA handle in which the resulting buffer collection object is returned
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateBufferCollectionFUCHSIA.html
+func CreateBufferCollectionFUCHSIA(device Device, createInfo *BufferCollectionCreateInfoFUCHSIA, allocator *AllocationCallbacks) (collection BufferCollectionFUCHSIA, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateBufferCollectionFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&collection)))
+	return collection, Result(r1)
 }
 
 // CreateBufferView - Create a new buffer view object (vkCreateBufferView).
@@ -1933,6 +5928,153 @@ func CreateComputePipelines(device Device, pipelineCache PipelineCache, createIn
 	c_allocator := allocator.Raw()
 	r1, _, _ := CallSyscall(pfnCreateComputePipelines, uintptr(device), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
 	return pipelines, Result(r1)
+}
+
+// CreateCuFunctionNVX - Stub description of vkCreateCuFunctionNVX (vkCreateCuFunctionNVX).
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCuFunctionNVX.html
+func CreateCuFunctionNVX(device Device, createInfo *CuFunctionCreateInfoNVX, allocator *AllocationCallbacks) (function CuFunctionNVX, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateCuFunctionNVX, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&function)))
+	return function, Result(r1)
+}
+
+// CreateCuModuleNVX - Stub description of vkCreateCuModuleNVX (vkCreateCuModuleNVX).
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCuModuleNVX.html
+func CreateCuModuleNVX(device Device, createInfo *CuModuleCreateInfoNVX, allocator *AllocationCallbacks) (module CuModuleNVX, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateCuModuleNVX, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&module)))
+	return module, Result(r1)
+}
+
+// CreateCudaFunctionNV - Creates a new CUDA function object (vkCreateCudaFunctionNV).
+// Parameters:
+//   - device: is the logical device that creates the shader module.
+//   - createInfo: is a pointer to a VkCudaFunctionCreateInfoNV structure.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - function: is a pointer to a VkCudaFunctionNV handle in which the resulting CUDA function object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCudaFunctionNV.html
+func CreateCudaFunctionNV(device Device, createInfo *CudaFunctionCreateInfoNV, allocator *AllocationCallbacks) (function CudaFunctionNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateCudaFunctionNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&function)))
+	return function, Result(r1)
+}
+
+// CreateCudaModuleNV - Creates a new CUDA module object (vkCreateCudaModuleNV).
+// Parameters:
+//   - device: is the logical device that creates the shader module.
+//   - createInfo: is a pointer to a VkCudaModuleCreateInfoNV structure.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - module: is a pointer to a VkCudaModuleNV handle in which the resulting CUDA module object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCudaModuleNV.html
+func CreateCudaModuleNV(device Device, createInfo *CudaModuleCreateInfoNV, allocator *AllocationCallbacks) (module CudaModuleNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateCudaModuleNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&module)))
+	return module, Result(r1)
+}
+
+// CreateDataGraphPipelineSessionARM - Create a data graph pipeline session (vkCreateDataGraphPipelineSessionARM).
+// Parameters:
+//   - device: is the logical device that creates the data graph pipeline session.
+//   - createInfo: is a pointer to a VkDataGraphPipelineSessionCreateInfoARM structure.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - session: is a pointer to a VkDataGraphPipelineSessionARM handle in which the resulting data graph pipeline session object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDataGraphPipelineSessionARM.html
+func CreateDataGraphPipelineSessionARM(device Device, createInfo *DataGraphPipelineSessionCreateInfoARM, allocator *AllocationCallbacks) (session DataGraphPipelineSessionARM, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDataGraphPipelineSessionARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&session)))
+	return session, Result(r1)
+}
+
+// CreateDataGraphPipelinesARM - Create data graph pipeline objects (vkCreateDataGraphPipelinesARM).
+// Parameters:
+//   - device: is the logical device that creates the data graph pipelines.
+//   - deferredOperation: is VK_NULL_HANDLE or the handle of a valid VkDeferredOperationKHR request deferral object for this command.
+//   - pipelineCache: is either VK_NULL_HANDLE, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that cache is enabled for the duration of the command.
+//   - createInfoCount: is the length of the pCreateInfos and pPipelines arrays.
+//   - createInfos: is a pointer to an array of VkDataGraphPipelineCreateInfoARM structures.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - pipelines: is a pointer to an array of VkPipeline handles in which the resulting data graph pipelines objects are returned.
+//
+// Success codes: VK_SUCCESS, VK_PIPELINE_COMPILE_REQUIRED_EXT
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDataGraphPipelinesARM.html
+func CreateDataGraphPipelinesARM(device Device, deferredOperation DeferredOperationKHR, pipelineCache PipelineCache, createInfos []DataGraphPipelineCreateInfoARM, allocator *AllocationCallbacks) (pipelines Pipeline, result Result) {
+	c_createInfos := make([]RawDataGraphPipelineCreateInfoARM, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDataGraphPipelinesARM, uintptr(device), uintptr(deferredOperation), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, Result(r1)
+}
+
+// CreateDebugReportCallbackEXT - Create a debug report callback object (vkCreateDebugReportCallbackEXT).
+// Parameters:
+//   - instance: is the instance the callback will be logged on.
+//   - createInfo: is a pointer to a VkDebugReportCallbackCreateInfoEXT structure defining the conditions under which this callback will be called.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - callback: is a pointer to a VkDebugReportCallbackEXT handle in which the created object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDebugReportCallbackEXT.html
+func CreateDebugReportCallbackEXT(instance Instance, createInfo *DebugReportCallbackCreateInfoEXT, allocator *AllocationCallbacks) (callback DebugReportCallbackEXT, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDebugReportCallbackEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&callback)))
+	return callback, Result(r1)
+}
+
+// CreateDebugUtilsMessengerEXT - Create a debug messenger object (vkCreateDebugUtilsMessengerEXT).
+// Parameters:
+//   - instance: is the instance the messenger will be used with.
+//   - createInfo: is a pointer to a VkDebugUtilsMessengerCreateInfoEXT structure containing the callback pointer, as well as defining conditions under which this messenger will trigger the callback.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - messenger: is a pointer to a VkDebugUtilsMessengerEXT handle in which the created object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDebugUtilsMessengerEXT.html
+func CreateDebugUtilsMessengerEXT(instance Instance, createInfo *DebugUtilsMessengerCreateInfoEXT, allocator *AllocationCallbacks) (messenger DebugUtilsMessengerEXT, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDebugUtilsMessengerEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&messenger)))
+	return messenger, Result(r1)
+}
+
+// CreateDeferredOperationKHR - Create a deferred operation handle (vkCreateDeferredOperationKHR).
+// Parameters:
+//   - device: is the device which owns operation.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - deferredOperation: is a pointer to a handle in which the created VkDeferredOperationKHR is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDeferredOperationKHR.html
+func CreateDeferredOperationKHR(device Device, allocator *AllocationCallbacks) (deferredOperation DeferredOperationKHR, result Result) {
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDeferredOperationKHR, uintptr(device), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&deferredOperation)))
+	return deferredOperation, Result(r1)
 }
 
 // CreateDescriptorPool - Creates a descriptor pool object (vkCreateDescriptorPool).
@@ -2003,6 +6145,58 @@ func CreateDevice(physicalDevice PhysicalDevice, createInfo *DeviceCreateInfo, a
 	return device, Result(r1)
 }
 
+// CreateDirectFBSurfaceEXT - Create a VkSurfaceKHR object for a DirectFB surface (vkCreateDirectFBSurfaceEXT).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkDirectFBSurfaceCreateInfoEXT structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDirectFBSurfaceEXT.html
+func CreateDirectFBSurfaceEXT(instance Instance, createInfo *DirectFBSurfaceCreateInfoEXT, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDirectFBSurfaceEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateDisplayModeKHR - Create a display mode (vkCreateDisplayModeKHR).
+// Parameters:
+//   - physicalDevice: is the physical device associated with display.
+//   - display: is the display to create an additional mode for.
+//   - createInfo: is a pointer to a VkDisplayModeCreateInfoKHR structure describing the new mode to create.
+//   - allocator: is the allocator used for host memory allocated for the display mode object when there is no more specific allocator available (see Memory Allocation).
+//   - mode: is a pointer to a VkDisplayModeKHR handle in which the mode created is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDisplayModeKHR.html
+func CreateDisplayModeKHR(physicalDevice PhysicalDevice, display DisplayKHR, createInfo *DisplayModeCreateInfoKHR, allocator *AllocationCallbacks) (mode DisplayModeKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDisplayModeKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&mode)))
+	return mode, Result(r1)
+}
+
+// CreateDisplayPlaneSurfaceKHR - Create a VkSurfaceKHR structure representing a display plane and mode (vkCreateDisplayPlaneSurfaceKHR).
+// Parameters:
+//   - instance: is the instance corresponding to the physical device the targeted display is on.
+//   - createInfo: is a pointer to a VkDisplaySurfaceCreateInfoKHR structure specifying which mode, plane, and other parameters to use, as described below.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDisplayPlaneSurfaceKHR.html
+func CreateDisplayPlaneSurfaceKHR(instance Instance, createInfo *DisplaySurfaceCreateInfoKHR, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateDisplayPlaneSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
 // CreateEvent - Create a new event object (vkCreateEvent).
 // Parameters:
 //   - device: is the logical device that creates the event.
@@ -2018,6 +6212,47 @@ func CreateEvent(device Device, createInfo *EventCreateInfo, allocator *Allocati
 	c_allocator := allocator.Raw()
 	r1, _, _ := CallSyscall(pfnCreateEvent, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&event)))
 	return event, Result(r1)
+}
+
+// CreateExecutionGraphPipelinesAMDX - Creates a new execution graph pipeline object (vkCreateExecutionGraphPipelinesAMDX).
+// Parameters:
+//   - device: is the logical device that creates the execution graph pipelines.
+//   - pipelineCache: is either VK_NULL_HANDLE, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that cache is enabled for the duration of the command. The implementation must not access this object outside of the duration of this command.
+//   - createInfoCount: is the length of the pCreateInfos and pPipelines arrays.
+//   - createInfos: is a pointer to an array of VkExecutionGraphPipelineCreateInfoAMDX structures.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - pipelines: is a pointer to an array of VkPipeline handles in which the resulting execution graph pipeline objects are returned.
+//
+// Success codes: VK_SUCCESS, VK_PIPELINE_COMPILE_REQUIRED_EXT
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateExecutionGraphPipelinesAMDX.html
+func CreateExecutionGraphPipelinesAMDX(device Device, pipelineCache PipelineCache, createInfos []ExecutionGraphPipelineCreateInfoAMDX, allocator *AllocationCallbacks) (pipelines Pipeline, result Result) {
+	c_createInfos := make([]RawExecutionGraphPipelineCreateInfoAMDX, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateExecutionGraphPipelinesAMDX, uintptr(device), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, Result(r1)
+}
+
+// CreateExternalComputeQueueNV - Create an external compute queue for use by a compatible external API. (vkCreateExternalComputeQueueNV).
+// Parameters:
+//   - device: is the VkDevice that the external queue will be a part of.
+//   - createInfo: is a pointer to a VkExternalComputeQueueCreateInfoNV structure specifying configuration info for creating the external queue.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - externalQueue: is a pointer to a VkExternalComputeQueueNV object that will be filled with the handle for the created external queue.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateExternalComputeQueueNV.html
+func CreateExternalComputeQueueNV(device Device, createInfo *ExternalComputeQueueCreateInfoNV, allocator *AllocationCallbacks) (externalQueue ExternalComputeQueueNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateExternalComputeQueueNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&externalQueue)))
+	return externalQueue, Result(r1)
 }
 
 // CreateFence - Create a new fence object (vkCreateFence).
@@ -2054,6 +6289,23 @@ func CreateFramebuffer(device Device, createInfo *FramebufferCreateInfo, allocat
 	return framebuffer, Result(r1)
 }
 
+// CreateGpaSessionAMD - Create a new GPA session object (vkCreateGpaSessionAMD).
+// Parameters:
+//   - device: is the logical device that creates the GPA session object.
+//   - createInfo: is a pointer to a VkGpaSessionCreateInfoAMD structure containing information about how the GPA session object is to be created.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - gpaSession: is a pointer to a handle in which the resulting GPA session object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateGpaSessionAMD.html
+func CreateGpaSessionAMD(device Device, createInfo *GpaSessionCreateInfoAMD, allocator *AllocationCallbacks) (gpaSession GpaSessionAMD, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateGpaSessionAMD, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&gpaSession)))
+	return gpaSession, Result(r1)
+}
+
 // CreateGraphicsPipelines - Create graphics pipelines (vkCreateGraphicsPipelines).
 // Parameters:
 //   - device: is the logical device that creates the graphics pipelines.
@@ -2078,6 +6330,40 @@ func CreateGraphicsPipelines(device Device, pipelineCache PipelineCache, createI
 	return pipelines, Result(r1)
 }
 
+// CreateHeadlessSurfaceEXT - Create a headless VkSurfaceKHR object (vkCreateHeadlessSurfaceEXT).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkHeadlessSurfaceCreateInfoEXT structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateHeadlessSurfaceEXT.html
+func CreateHeadlessSurfaceEXT(instance Instance, createInfo *HeadlessSurfaceCreateInfoEXT, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateHeadlessSurfaceEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateIOSSurfaceMVK - Create a VkSurfaceKHR object for an iOS UIView (vkCreateIOSSurfaceMVK).
+// Parameters:
+//   - instance: is the instance with which to associate the surface.
+//   - createInfo: is a pointer to a VkIOSSurfaceCreateInfoMVK structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIOSSurfaceMVK.html
+func CreateIOSSurfaceMVK(instance Instance, createInfo *IOSSurfaceCreateInfoMVK, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateIOSSurfaceMVK, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
 // CreateImage - Create a new image object (vkCreateImage).
 // Parameters:
 //   - device: is the logical device that creates the image.
@@ -2093,6 +6379,23 @@ func CreateImage(device Device, createInfo *ImageCreateInfo, allocator *Allocati
 	c_allocator := allocator.Raw()
 	r1, _, _ := CallSyscall(pfnCreateImage, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&image)))
 	return image, Result(r1)
+}
+
+// CreateImagePipeSurfaceFUCHSIA - Create a VkSurfaceKHR object for a Fuchsia ImagePipe (vkCreateImagePipeSurfaceFUCHSIA).
+// Parameters:
+//   - instance: is the instance to associate with the surface.
+//   - createInfo: is a pointer to a VkImagePipeSurfaceCreateInfoFUCHSIA structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateImagePipeSurfaceFUCHSIA.html
+func CreateImagePipeSurfaceFUCHSIA(instance Instance, createInfo *ImagePipeSurfaceCreateInfoFUCHSIA, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateImagePipeSurfaceFUCHSIA, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
 }
 
 // CreateImageView - Create an image view from an existing image (vkCreateImageView).
@@ -2112,6 +6415,57 @@ func CreateImageView(device Device, createInfo *ImageViewCreateInfo, allocator *
 	return view, Result(r1)
 }
 
+// CreateIndirectCommandsLayoutEXT - Create an indirect command layout object (vkCreateIndirectCommandsLayoutEXT).
+// Parameters:
+//   - device: is the logical device that creates the indirect command layout.
+//   - createInfo: is a pointer to a VkIndirectCommandsLayoutCreateInfoEXT structure containing parameters affecting creation of the indirect command layout.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - indirectCommandsLayout: is a pointer to a VkIndirectCommandsLayoutEXT handle in which the resulting indirect command layout is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIndirectCommandsLayoutEXT.html
+func CreateIndirectCommandsLayoutEXT(device Device, createInfo *IndirectCommandsLayoutCreateInfoEXT, allocator *AllocationCallbacks) (indirectCommandsLayout IndirectCommandsLayoutEXT, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateIndirectCommandsLayoutEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&indirectCommandsLayout)))
+	return indirectCommandsLayout, Result(r1)
+}
+
+// CreateIndirectCommandsLayoutNV - Create an indirect command layout object (vkCreateIndirectCommandsLayoutNV).
+// Parameters:
+//   - device: is the logical device that creates the indirect command layout.
+//   - createInfo: is a pointer to a VkIndirectCommandsLayoutCreateInfoNV structure containing parameters affecting creation of the indirect command layout.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - indirectCommandsLayout: is a pointer to a VkIndirectCommandsLayoutNV handle in which the resulting indirect command layout is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIndirectCommandsLayoutNV.html
+func CreateIndirectCommandsLayoutNV(device Device, createInfo *IndirectCommandsLayoutCreateInfoNV, allocator *AllocationCallbacks) (indirectCommandsLayout IndirectCommandsLayoutNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateIndirectCommandsLayoutNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&indirectCommandsLayout)))
+	return indirectCommandsLayout, Result(r1)
+}
+
+// CreateIndirectExecutionSetEXT - Create an indirect execution set (vkCreateIndirectExecutionSetEXT).
+// Parameters:
+//   - device: is the logical device that creates the indirect execution set.
+//   - createInfo: is a pointer to a VkIndirectExecutionSetCreateInfoEXT structure containing parameters affecting creation of the indirect execution set.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - indirectExecutionSet: is a pointer to a VkIndirectExecutionSetEXT handle in which the resulting indirect execution set is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIndirectExecutionSetEXT.html
+func CreateIndirectExecutionSetEXT(device Device, createInfo *IndirectExecutionSetCreateInfoEXT, allocator *AllocationCallbacks) (indirectExecutionSet IndirectExecutionSetEXT, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateIndirectExecutionSetEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&indirectExecutionSet)))
+	return indirectExecutionSet, Result(r1)
+}
+
 // CreateInstance - Create a new Vulkan instance (vkCreateInstance).
 // Parameters:
 //   - createInfo: is a pointer to a VkInstanceCreateInfo structure controlling creation of the instance.
@@ -2126,6 +6480,91 @@ func CreateInstance(createInfo *InstanceCreateInfo, allocator *AllocationCallbac
 	c_allocator := allocator.Raw()
 	r1, _, _ := CallSyscall(pfnCreateInstance, uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&instance)))
 	return instance, Result(r1)
+}
+
+// CreateMacOSSurfaceMVK - Create a VkSurfaceKHR object for a macOS NSView (vkCreateMacOSSurfaceMVK).
+// Parameters:
+//   - instance: is the instance with which to associate the surface.
+//   - createInfo: is a pointer to a VkMacOSSurfaceCreateInfoMVK structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateMacOSSurfaceMVK.html
+func CreateMacOSSurfaceMVK(instance Instance, createInfo *MacOSSurfaceCreateInfoMVK, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateMacOSSurfaceMVK, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateMetalSurfaceEXT - Create a VkSurfaceKHR object for CAMetalLayer (vkCreateMetalSurfaceEXT).
+// Parameters:
+//   - instance: is the instance with which to associate the surface.
+//   - createInfo: is a pointer to a VkMetalSurfaceCreateInfoEXT structure specifying parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateMetalSurfaceEXT.html
+func CreateMetalSurfaceEXT(instance Instance, createInfo *MetalSurfaceCreateInfoEXT, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateMetalSurfaceEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateMicromapEXT - Create a new micromap object (vkCreateMicromapEXT).
+// Parameters:
+//   - device: is the logical device that creates the micromap structure object.
+//   - createInfo: is a pointer to a VkMicromapCreateInfoEXT structure containing parameters affecting creation of the micromap.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - micromap: is a pointer to a VkMicromapEXT handle in which the resulting micromap object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateMicromapEXT.html
+func CreateMicromapEXT(device Device, createInfo *MicromapCreateInfoEXT, allocator *AllocationCallbacks) (micromap MicromapEXT, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateMicromapEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&micromap)))
+	return micromap, Result(r1)
+}
+
+// CreateOpticalFlowSessionNV - Creates an optical flow session object (vkCreateOpticalFlowSessionNV).
+// Parameters:
+//   - device: is the logical device that creates the optical flow session object.
+//   - createInfo: is a pointer to a VkOpticalFlowSessionCreateInfoNV structure containing parameters specifying the creation of the optical flow session.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - session: is a pointer to a VkOpticalFlowSessionNV handle specifying the optical flow session object which will be created by this function when it returns VK_SUCCESS
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateOpticalFlowSessionNV.html
+func CreateOpticalFlowSessionNV(device Device, createInfo *OpticalFlowSessionCreateInfoNV, allocator *AllocationCallbacks) (session OpticalFlowSessionNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateOpticalFlowSessionNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&session)))
+	return session, Result(r1)
+}
+
+// CreatePipelineBinariesKHR - Create pipeline binaries from a pipeline or previously retrieved data (vkCreatePipelineBinariesKHR).
+// Parameters:
+//   - device: is the logical device that creates the pipeline binary objects.
+//   - createInfo: is a pointer to a VkPipelineBinaryCreateInfoKHR structure that contains the data to create the pipeline binaries from.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - binaries: is a pointer to a VkPipelineBinaryHandlesInfoKHR structure in which the resulting pipeline binaries are returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE, VK_PIPELINE_BINARY_MISSING_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreatePipelineBinariesKHR.html
+func CreatePipelineBinariesKHR(device Device, createInfo *PipelineBinaryCreateInfoKHR, allocator *AllocationCallbacks) (binaries PipelineBinaryHandlesInfoKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreatePipelineBinariesKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&binaries)))
+	return binaries, Result(r1)
 }
 
 // CreatePipelineCache - Creates a new pipeline cache (vkCreatePipelineCache).
@@ -2196,6 +6635,55 @@ func CreateQueryPool(device Device, createInfo *QueryPoolCreateInfo, allocator *
 	return queryPool, Result(r1)
 }
 
+// CreateRayTracingPipelinesKHR - Creates a new ray tracing pipeline object (vkCreateRayTracingPipelinesKHR).
+// Parameters:
+//   - device: is the logical device that creates the ray tracing pipelines.
+//   - deferredOperation: is VK_NULL_HANDLE or the handle of a valid VkDeferredOperationKHR request deferral object for this command.
+//   - pipelineCache: is either VK_NULL_HANDLE, indicating that pipeline caching is disabled, or to enable caching, the handle of a valid VkPipelineCache object. The implementation must not access this object outside of the duration of this command.
+//   - createInfoCount: is the length of the pCreateInfos and pPipelines arrays.
+//   - createInfos: is a pointer to an array of VkRayTracingPipelineCreateInfoKHR structures.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - pipelines: is a pointer to an array in which the resulting ray tracing pipeline objects are returned.
+//
+// Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR, VK_PIPELINE_COMPILE_REQUIRED_EXT
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS, VK_ERROR_NO_PIPELINE_MATCH, VK_ERROR_OUT_OF_POOL_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateRayTracingPipelinesKHR.html
+func CreateRayTracingPipelinesKHR(device Device, deferredOperation DeferredOperationKHR, pipelineCache PipelineCache, createInfos []RayTracingPipelineCreateInfoKHR, allocator *AllocationCallbacks) (pipelines Pipeline, result Result) {
+	c_createInfos := make([]RawRayTracingPipelineCreateInfoKHR, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateRayTracingPipelinesKHR, uintptr(device), uintptr(deferredOperation), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, Result(r1)
+}
+
+// CreateRayTracingPipelinesNV - Creates a new ray tracing pipeline object (vkCreateRayTracingPipelinesNV).
+// Parameters:
+//   - device: is the logical device that creates the ray tracing pipelines.
+//   - pipelineCache: is either VK_NULL_HANDLE, indicating that pipeline caching is disabled, or to enable caching, the handle of a valid VkPipelineCache object. The implementation must not access this object outside of the duration of this command.
+//   - createInfoCount: is the length of the pCreateInfos and pPipelines arrays.
+//   - createInfos: is a pointer to an array of VkRayTracingPipelineCreateInfoNV structures.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - pipelines: is a pointer to an array in which the resulting ray tracing pipeline objects are returned.
+//
+// Success codes: VK_SUCCESS, VK_PIPELINE_COMPILE_REQUIRED_EXT
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NO_PIPELINE_MATCH, VK_ERROR_OUT_OF_POOL_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateRayTracingPipelinesNV.html
+func CreateRayTracingPipelinesNV(device Device, pipelineCache PipelineCache, createInfos []RayTracingPipelineCreateInfoNV, allocator *AllocationCallbacks) (pipelines Pipeline, result Result) {
+	c_createInfos := make([]RawRayTracingPipelineCreateInfoNV, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateRayTracingPipelinesNV, uintptr(device), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, Result(r1)
+}
+
 // CreateRenderPass - Create a new render pass object (vkCreateRenderPass).
 // Parameters:
 //   - device: is the logical device that creates the render pass.
@@ -2264,6 +6752,23 @@ func CreateSamplerYcbcrConversion(device Device, createInfo *SamplerYcbcrConvers
 	return ycbcrConversion, Result(r1)
 }
 
+// CreateScreenSurfaceQNX - Create a VkSurfaceKHR object for a QNX Screen window (vkCreateScreenSurfaceQNX).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkScreenSurfaceCreateInfoQNX structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateScreenSurfaceQNX.html
+func CreateScreenSurfaceQNX(instance Instance, createInfo *ScreenSurfaceCreateInfoQNX, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateScreenSurfaceQNX, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
 // CreateSemaphore - Create a new queue semaphore object (vkCreateSemaphore).
 // Parameters:
 //   - device: is the logical device that creates the semaphore.
@@ -2279,6 +6784,40 @@ func CreateSemaphore(device Device, createInfo *SemaphoreCreateInfo, allocator *
 	c_allocator := allocator.Raw()
 	r1, _, _ := CallSyscall(pfnCreateSemaphore, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&semaphore)))
 	return semaphore, Result(r1)
+}
+
+// CreateSemaphoreSciSyncPoolNV - Create a VkSemaphoreSciSyncPoolNV object (vkCreateSemaphoreSciSyncPoolNV).
+// Parameters:
+//   - device: is the logical device that creates the semaphore pool.
+//   - createInfo: is a pointer to a VkSemaphoreSciSyncPoolCreateInfoNV structure containing information about the semaphore SciSync pool being created.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - semaphorePool: is a pointer to a handle in which the resulting semaphore pool object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSemaphoreSciSyncPoolNV.html
+func CreateSemaphoreSciSyncPoolNV(device Device, createInfo *SemaphoreSciSyncPoolCreateInfoNV, allocator *AllocationCallbacks) (semaphorePool SemaphoreSciSyncPoolNV, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateSemaphoreSciSyncPoolNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&semaphorePool)))
+	return semaphorePool, Result(r1)
+}
+
+// CreateShaderInstrumentationARM - Create a new shader instrumentation object (vkCreateShaderInstrumentationARM).
+// Parameters:
+//   - device: is the logical device that creates the shader instrumentation object.
+//   - createInfo: is a pointer to a VkShaderInstrumentationCreateInfoARM structure containing information about how the shader instrumentation object is to be created.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - instrumentation: is a pointer to a handle in which the resulting shader instrumentation object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateShaderInstrumentationARM.html
+func CreateShaderInstrumentationARM(device Device, createInfo *ShaderInstrumentationCreateInfoARM, allocator *AllocationCallbacks) (instrumentation ShaderInstrumentationARM, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateShaderInstrumentationARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&instrumentation)))
+	return instrumentation, Result(r1)
 }
 
 // CreateShaderModule - Creates a new shader module object (vkCreateShaderModule).
@@ -2298,6 +6837,373 @@ func CreateShaderModule(device Device, createInfo *ShaderModuleCreateInfo, alloc
 	return shaderModule, Result(r1)
 }
 
+// CreateShadersEXT - Create one or more new shaders (vkCreateShadersEXT).
+// Parameters:
+//   - device: is the logical device that creates the shader objects.
+//   - createInfoCount: is the length of the pCreateInfos and pShaders arrays.
+//   - createInfos: is a pointer to an array of VkShaderCreateInfoEXT structures.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - shaders: is a pointer to an array of VkShaderEXT handles in which the resulting shader objects are returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPATIBLE_SHADER_BINARY_EXT
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateShadersEXT.html
+func CreateShadersEXT(device Device, createInfos []ShaderCreateInfoEXT, allocator *AllocationCallbacks) (shaders ShaderEXT, result Result) {
+	c_createInfos := make([]RawShaderCreateInfoEXT, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateShadersEXT, uintptr(device), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&shaders)))
+	return shaders, Result(r1)
+}
+
+// CreateSharedSwapchainsKHR - Create multiple swapchains that share presentable images (vkCreateSharedSwapchainsKHR).
+// Parameters:
+//   - device: is the device to create the swapchains for.
+//   - swapchainCount: is the number of swapchains to create.
+//   - createInfos: is a pointer to an array of VkSwapchainCreateInfoKHR structures specifying the parameters of the created swapchains.
+//   - allocator: is the allocator used for host memory allocated for the swapchain objects when there is no more specific allocator available (see Memory Allocation).
+//   - swapchains: is a pointer to an array of VkSwapchainKHR handles in which the created swapchain objects will be returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INCOMPATIBLE_DISPLAY_KHR, VK_ERROR_DEVICE_LOST, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSharedSwapchainsKHR.html
+func CreateSharedSwapchainsKHR(device Device, createInfos []SwapchainCreateInfoKHR, allocator *AllocationCallbacks) (swapchains SwapchainKHR, result Result) {
+	c_createInfos := make([]RawSwapchainCreateInfoKHR, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateSharedSwapchainsKHR, uintptr(device), uintptr(len(createInfos)), uintptr(unsafe.Pointer(SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&swapchains)))
+	return swapchains, Result(r1)
+}
+
+// CreateStreamDescriptorSurfaceGGP - Create a VkSurfaceKHR object for a Google Games Platform stream (vkCreateStreamDescriptorSurfaceGGP).
+// Parameters:
+//   - instance: is the instance to associate with the surface.
+//   - createInfo: is a pointer to a VkStreamDescriptorSurfaceCreateInfoGGP structure containing parameters that affect the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateStreamDescriptorSurfaceGGP.html
+func CreateStreamDescriptorSurfaceGGP(instance Instance, createInfo *StreamDescriptorSurfaceCreateInfoGGP, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateStreamDescriptorSurfaceGGP, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateSurfaceOHOS - Create a VkSurfaceKHR object for an Open Harmony OS native window (vkCreateSurfaceOHOS).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkSurfaceCreateInfoOHOS structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSurfaceOHOS.html
+func CreateSurfaceOHOS(instance Instance, createInfo *SurfaceCreateInfoOHOS, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateSurfaceOHOS, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateSwapchainKHR - Create a swapchain (vkCreateSwapchainKHR).
+// Parameters:
+//   - device: is the device to create the swapchain for.
+//   - createInfo: is a pointer to a VkSwapchainCreateInfoKHR structure specifying the parameters of the created swapchain.
+//   - allocator: is the allocator used for host memory allocated for the swapchain object when there is no more specific allocator available (see Memory Allocation).
+//   - swapchain: is a pointer to a VkSwapchainKHR handle in which the created swapchain object will be returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_COMPRESSION_EXHAUSTED_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSwapchainKHR.html
+func CreateSwapchainKHR(device Device, createInfo *SwapchainCreateInfoKHR, allocator *AllocationCallbacks) (swapchain SwapchainKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateSwapchainKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&swapchain)))
+	return swapchain, Result(r1)
+}
+
+// CreateTensorARM - Create a new tensor object (vkCreateTensorARM).
+// Parameters:
+//   - device: is the logical device that creates the tensor.
+//   - createInfo: is a pointer to a VkTensorCreateInfoARM structure containing parameters to be used to create the tensor.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - tensor: is a pointer to a VkTensorARM handle in which the resulting tensor object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateTensorARM.html
+func CreateTensorARM(device Device, createInfo *TensorCreateInfoARM, allocator *AllocationCallbacks) (tensor TensorARM, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateTensorARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&tensor)))
+	return tensor, Result(r1)
+}
+
+// CreateTensorViewARM - Create an tensor view from an existing tensor (vkCreateTensorViewARM).
+// Parameters:
+//   - device: is the logical device that creates the tensor view.
+//   - createInfo: is a pointer to an instance of the VkTensorViewCreateInfoARM structure containing parameters to be used to create the tensor view.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - view: is a pointer to a VkTensorViewARM handle in which the resulting tensor view object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateTensorViewARM.html
+func CreateTensorViewARM(device Device, createInfo *TensorViewCreateInfoARM, allocator *AllocationCallbacks) (view TensorViewARM, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateTensorViewARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&view)))
+	return view, Result(r1)
+}
+
+// CreateUbmSurfaceSEC - Create a VkSurfaceKHR object for a UBM surface (vkCreateUbmSurfaceSEC).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkUbmSurfaceCreateInfoSEC structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateUbmSurfaceSEC.html
+func CreateUbmSurfaceSEC(instance Instance, createInfo *UbmSurfaceCreateInfoSEC, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateUbmSurfaceSEC, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateValidationCacheEXT - Creates a new validation cache (vkCreateValidationCacheEXT).
+// Parameters:
+//   - device: is the logical device that creates the validation cache object.
+//   - createInfo: is a pointer to a VkValidationCacheCreateInfoEXT structure containing the initial parameters for the validation cache object.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - validationCache: is a pointer to a VkValidationCacheEXT handle in which the resulting validation cache object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateValidationCacheEXT.html
+func CreateValidationCacheEXT(device Device, createInfo *ValidationCacheCreateInfoEXT, allocator *AllocationCallbacks) (validationCache ValidationCacheEXT, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateValidationCacheEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&validationCache)))
+	return validationCache, Result(r1)
+}
+
+// CreateViSurfaceNN - Create a VkSurfaceKHR object for a VI layer (vkCreateViSurfaceNN).
+// Parameters:
+//   - instance: is the instance with which to associate the surface.
+//   - createInfo: is a pointer to a VkViSurfaceCreateInfoNN structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateViSurfaceNN.html
+func CreateViSurfaceNN(instance Instance, createInfo *ViSurfaceCreateInfoNN, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateViSurfaceNN, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateVideoSessionKHR - Creates a video session object (vkCreateVideoSessionKHR).
+// Parameters:
+//   - device: is the logical device that creates the video session.
+//   - createInfo: is a pointer to a VkVideoSessionCreateInfoKHR structure containing parameters to be used to create the video session.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - videoSession: is a pointer to a VkVideoSessionKHR handle in which the resulting video session object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR, VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionKHR.html
+func CreateVideoSessionKHR(device Device, createInfo *VideoSessionCreateInfoKHR, allocator *AllocationCallbacks) (videoSession VideoSessionKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateVideoSessionKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&videoSession)))
+	return videoSession, Result(r1)
+}
+
+// CreateVideoSessionParametersKHR - Creates video session parameters object (vkCreateVideoSessionParametersKHR).
+// Parameters:
+//   - device: is the logical device that creates the video session parameters object.
+//   - createInfo: is a pointer to VkVideoSessionParametersCreateInfoKHR structure containing parameters to be used to create the video session parameters object.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - videoSessionParameters: is a pointer to a VkVideoSessionParametersKHR handle in which the resulting video session parameters object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionParametersKHR.html
+func CreateVideoSessionParametersKHR(device Device, createInfo *VideoSessionParametersCreateInfoKHR, allocator *AllocationCallbacks) (videoSessionParameters VideoSessionParametersKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateVideoSessionParametersKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&videoSessionParameters)))
+	return videoSessionParameters, Result(r1)
+}
+
+// CreateWaylandSurfaceKHR - Create a VkSurfaceKHR object for a Wayland window (vkCreateWaylandSurfaceKHR).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkWaylandSurfaceCreateInfoKHR structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateWaylandSurfaceKHR.html
+func CreateWaylandSurfaceKHR(instance Instance, createInfo *WaylandSurfaceCreateInfoKHR, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateWaylandSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateWin32SurfaceKHR - Create a VkSurfaceKHR object for a Win32 native window (vkCreateWin32SurfaceKHR).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkWin32SurfaceCreateInfoKHR structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateWin32SurfaceKHR.html
+func CreateWin32SurfaceKHR(instance Instance, createInfo *Win32SurfaceCreateInfoKHR, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateWin32SurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateXcbSurfaceKHR - Create a VkSurfaceKHR object for a X11 window, using the XCB client-side library (vkCreateXcbSurfaceKHR).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkXcbSurfaceCreateInfoKHR structure containing parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateXcbSurfaceKHR.html
+func CreateXcbSurfaceKHR(instance Instance, createInfo *XcbSurfaceCreateInfoKHR, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateXcbSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// CreateXlibSurfaceKHR - Create a VkSurfaceKHR object for an X11 window, using the Xlib client-side library (vkCreateXlibSurfaceKHR).
+// Parameters:
+//   - instance: is the instance to associate the surface with.
+//   - createInfo: is a pointer to a VkXlibSurfaceCreateInfoKHR structure containing the parameters affecting the creation of the surface object.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//   - surface: is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateXlibSurfaceKHR.html
+func CreateXlibSurfaceKHR(instance Instance, createInfo *XlibSurfaceCreateInfoKHR, allocator *AllocationCallbacks) (surface SurfaceKHR, result Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnCreateXlibSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, Result(r1)
+}
+
+// DebugMarkerSetObjectNameEXT - Give an application-defined name to an object (vkDebugMarkerSetObjectNameEXT).
+// Parameters:
+//   - device: is the device that created the object.
+//   - nameInfo: is a pointer to a VkDebugMarkerObjectNameInfoEXT structure specifying the parameters of the name to set on the object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDebugMarkerSetObjectNameEXT.html
+func DebugMarkerSetObjectNameEXT(device Device, nameInfo *DebugMarkerObjectNameInfoEXT) (result Result) {
+	c_nameInfo := nameInfo.Raw()
+	r1, _, _ := CallSyscall(pfnDebugMarkerSetObjectNameEXT, uintptr(device), uintptr(unsafe.Pointer(c_nameInfo)))
+	return Result(r1)
+}
+
+// DebugMarkerSetObjectTagEXT - Attach arbitrary data to an object (vkDebugMarkerSetObjectTagEXT).
+// Parameters:
+//   - device: is the device that created the object.
+//   - tagInfo: is a pointer to a VkDebugMarkerObjectTagInfoEXT structure specifying the parameters of the tag to attach to the object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDebugMarkerSetObjectTagEXT.html
+func DebugMarkerSetObjectTagEXT(device Device, tagInfo *DebugMarkerObjectTagInfoEXT) (result Result) {
+	c_tagInfo := tagInfo.Raw()
+	r1, _, _ := CallSyscall(pfnDebugMarkerSetObjectTagEXT, uintptr(device), uintptr(unsafe.Pointer(c_tagInfo)))
+	return Result(r1)
+}
+
+// DebugReportMessageEXT - Inject a message into a debug stream (vkDebugReportMessageEXT).
+// Parameters:
+//   - instance: is the debug stream's VkInstance.
+//   - flags: specifies the VkDebugReportFlagBitsEXT classification of this event/message.
+//   - objectType: is a VkDebugReportObjectTypeEXT specifying the type of object being used or created at the time the event was triggered.
+//   - object: is the object where the issue was detected. object can be VK_NULL_HANDLE if there is no object associated with the event.
+//   - location: is an application-defined value.
+//   - messageCode: is an application-defined value.
+//   - layerPrefix: is the abbreviation of the component making this event/message.
+//   - message: is a null-terminated UTF-8 string detailing the trigger conditions.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDebugReportMessageEXT.html
+func DebugReportMessageEXT(instance Instance, flags DebugReportFlagsEXT, objectType DebugReportObjectTypeEXT, object uint64, location uintptr, messageCode int32, layerPrefix string, message string) {
+	c_layerPrefix := StringToNullTerminated(layerPrefix)
+	c_message := StringToNullTerminated(message)
+	CallSyscall(pfnDebugReportMessageEXT, uintptr(instance), uintptr(flags), uintptr(objectType), uintptr(object), uintptr(location), uintptr(messageCode), uintptr(unsafe.Pointer(c_layerPrefix)), uintptr(unsafe.Pointer(c_message)))
+}
+
+// DeferredOperationJoinKHR - Assign a thread to a deferred operation (vkDeferredOperationJoinKHR).
+// Parameters:
+//   - device: is the device which owns operation.
+//   - operation: is the deferred operation that the calling thread should work on.
+//
+// Success codes: VK_SUCCESS, VK_THREAD_DONE_KHR, VK_THREAD_IDLE_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDeferredOperationJoinKHR.html
+func DeferredOperationJoinKHR(device Device, operation DeferredOperationKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnDeferredOperationJoinKHR, uintptr(device), uintptr(operation))
+	return Result(r1)
+}
+
+// DestroyAccelerationStructureKHR - Destroy an acceleration structure object (vkDestroyAccelerationStructureKHR).
+// Parameters:
+//   - device: is the logical device that destroys the acceleration structure.
+//   - accelerationStructure: is the acceleration structure to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyAccelerationStructureKHR.html
+func DestroyAccelerationStructureKHR(device Device, accelerationStructure AccelerationStructureKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyAccelerationStructureKHR, uintptr(device), uintptr(accelerationStructure), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyAccelerationStructureNV - Destroy an acceleration structure object (vkDestroyAccelerationStructureNV).
+// Parameters:
+//   - device: is the logical device that destroys the buffer.
+//   - accelerationStructure: is the acceleration structure to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyAccelerationStructureNV.html
+func DestroyAccelerationStructureNV(device Device, accelerationStructure AccelerationStructureNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyAccelerationStructureNV, uintptr(device), uintptr(accelerationStructure), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 // DestroyBuffer - Destroy a buffer object (vkDestroyBuffer).
 // Parameters:
 //   - device: is the logical device that destroys the buffer.
@@ -2308,6 +7214,18 @@ func CreateShaderModule(device Device, createInfo *ShaderModuleCreateInfo, alloc
 func DestroyBuffer(device Device, buffer Buffer, allocator *AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	CallSyscall(pfnDestroyBuffer, uintptr(device), uintptr(buffer), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyBufferCollectionFUCHSIA - Destroy a buffer collection (vkDestroyBufferCollectionFUCHSIA).
+// Parameters:
+//   - device: is the logical device that creates the VkBufferCollectionFUCHSIA
+//   - collection: is the VkBufferCollectionFUCHSIA handle
+//   - allocator: is a pointer to a VkAllocationCallbacks structure controlling host memory allocation as described in the Memory Allocation chapter
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyBufferCollectionFUCHSIA.html
+func DestroyBufferCollectionFUCHSIA(device Device, collection BufferCollectionFUCHSIA, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyBufferCollectionFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_allocator)))
 }
 
 // DestroyBufferView - Destroy a buffer view object (vkDestroyBufferView).
@@ -2332,6 +7250,92 @@ func DestroyBufferView(device Device, bufferView BufferView, allocator *Allocati
 func DestroyCommandPool(device Device, commandPool CommandPool, allocator *AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	CallSyscall(pfnDestroyCommandPool, uintptr(device), uintptr(commandPool), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyCuFunctionNVX - Stub description of vkDestroyCuFunctionNVX (vkDestroyCuFunctionNVX).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCuFunctionNVX.html
+func DestroyCuFunctionNVX(device Device, function CuFunctionNVX, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyCuFunctionNVX, uintptr(device), uintptr(function), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyCuModuleNVX - Stub description of vkDestroyCuModuleNVX (vkDestroyCuModuleNVX).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCuModuleNVX.html
+func DestroyCuModuleNVX(device Device, module CuModuleNVX, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyCuModuleNVX, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyCudaFunctionNV - Destroy a CUDA function (vkDestroyCudaFunctionNV).
+// Parameters:
+//   - device: is the logical device that destroys the Function.
+//   - function: is the handle of the CUDA function to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCudaFunctionNV.html
+func DestroyCudaFunctionNV(device Device, function CudaFunctionNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyCudaFunctionNV, uintptr(device), uintptr(function), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyCudaModuleNV - Destroy a CUDA module (vkDestroyCudaModuleNV).
+// Parameters:
+//   - device: is the logical device that destroys the shader module.
+//   - module: is the handle of the CUDA module to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCudaModuleNV.html
+func DestroyCudaModuleNV(device Device, module CudaModuleNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyCudaModuleNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyDataGraphPipelineSessionARM - Destroy a data graph pipeline session object (vkDestroyDataGraphPipelineSessionARM).
+// Parameters:
+//   - device: is the logical device that destroys the data graph pipeline session.
+//   - session: is the handle of the data graph pipeline session to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDataGraphPipelineSessionARM.html
+func DestroyDataGraphPipelineSessionARM(device Device, session DataGraphPipelineSessionARM, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyDataGraphPipelineSessionARM, uintptr(device), uintptr(session), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyDebugReportCallbackEXT - Destroy a debug report callback object (vkDestroyDebugReportCallbackEXT).
+// Parameters:
+//   - instance: is the instance where the callback was created.
+//   - callback: is the VkDebugReportCallbackEXT object to destroy. callback is an externally synchronized object and must not be used on more than one thread at a time. This means that vkDestroyDebugReportCallbackEXT must not be called when a callback is active.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDebugReportCallbackEXT.html
+func DestroyDebugReportCallbackEXT(instance Instance, callback DebugReportCallbackEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyDebugReportCallbackEXT, uintptr(instance), uintptr(callback), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyDebugUtilsMessengerEXT - Destroy a debug messenger object (vkDestroyDebugUtilsMessengerEXT).
+// Parameters:
+//   - instance: is the instance where the callback was created.
+//   - messenger: is the VkDebugUtilsMessengerEXT object to destroy. messenger is an externally synchronized object and must not be used on more than one thread at a time. This means that vkDestroyDebugUtilsMessengerEXT must not be called when a callback is active.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDebugUtilsMessengerEXT.html
+func DestroyDebugUtilsMessengerEXT(instance Instance, messenger DebugUtilsMessengerEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyDebugUtilsMessengerEXT, uintptr(instance), uintptr(messenger), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyDeferredOperationKHR - Destroy a deferred operation handle (vkDestroyDeferredOperationKHR).
+// Parameters:
+//   - device: is the device which owns operation.
+//   - operation: is the completed operation to be destroyed.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDeferredOperationKHR.html
+func DestroyDeferredOperationKHR(device Device, operation DeferredOperationKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyDeferredOperationKHR, uintptr(device), uintptr(operation), uintptr(unsafe.Pointer(c_allocator)))
 }
 
 // DestroyDescriptorPool - Destroy a descriptor pool object (vkDestroyDescriptorPool).
@@ -2393,6 +7397,18 @@ func DestroyEvent(device Device, event Event, allocator *AllocationCallbacks) {
 	CallSyscall(pfnDestroyEvent, uintptr(device), uintptr(event), uintptr(unsafe.Pointer(c_allocator)))
 }
 
+// DestroyExternalComputeQueueNV - Destroys an external queue. (vkDestroyExternalComputeQueueNV).
+// Parameters:
+//   - device: is the logical device that destroys the external queue.
+//   - externalQueue: is the VkExternalComputeQueueNV to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyExternalComputeQueueNV.html
+func DestroyExternalComputeQueueNV(device Device, externalQueue ExternalComputeQueueNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyExternalComputeQueueNV, uintptr(device), uintptr(externalQueue), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 // DestroyFence - Destroy a fence object (vkDestroyFence).
 // Parameters:
 //   - device: is the logical device that destroys the fence.
@@ -2415,6 +7431,18 @@ func DestroyFence(device Device, fence Fence, allocator *AllocationCallbacks) {
 func DestroyFramebuffer(device Device, framebuffer Framebuffer, allocator *AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	CallSyscall(pfnDestroyFramebuffer, uintptr(device), uintptr(framebuffer), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyGpaSessionAMD - Destroy a GPA session object (vkDestroyGpaSessionAMD).
+// Parameters:
+//   - device: is the logical device that destroys the GPA session.
+//   - gpaSession: is the handle of the GPA session to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyGpaSessionAMD.html
+func DestroyGpaSessionAMD(device Device, gpaSession GpaSessionAMD, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyGpaSessionAMD, uintptr(device), uintptr(gpaSession), uintptr(unsafe.Pointer(c_allocator)))
 }
 
 // DestroyImage - Destroy an image object (vkDestroyImage).
@@ -2441,6 +7469,42 @@ func DestroyImageView(device Device, imageView ImageView, allocator *AllocationC
 	CallSyscall(pfnDestroyImageView, uintptr(device), uintptr(imageView), uintptr(unsafe.Pointer(c_allocator)))
 }
 
+// DestroyIndirectCommandsLayoutEXT - Destroy an indirect commands layout (vkDestroyIndirectCommandsLayoutEXT).
+// Parameters:
+//   - device: is the logical device that destroys the layout.
+//   - indirectCommandsLayout: is the layout to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyIndirectCommandsLayoutEXT.html
+func DestroyIndirectCommandsLayoutEXT(device Device, indirectCommandsLayout IndirectCommandsLayoutEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyIndirectCommandsLayoutEXT, uintptr(device), uintptr(indirectCommandsLayout), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyIndirectCommandsLayoutNV - Destroy an indirect commands layout (vkDestroyIndirectCommandsLayoutNV).
+// Parameters:
+//   - device: is the logical device that destroys the layout.
+//   - indirectCommandsLayout: is the layout to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyIndirectCommandsLayoutNV.html
+func DestroyIndirectCommandsLayoutNV(device Device, indirectCommandsLayout IndirectCommandsLayoutNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyIndirectCommandsLayoutNV, uintptr(device), uintptr(indirectCommandsLayout), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyIndirectExecutionSetEXT - Destroy an indirect execution set (vkDestroyIndirectExecutionSetEXT).
+// Parameters:
+//   - device: is the logical device that owns the indirect execution set.
+//   - indirectExecutionSet: is the indirect execution set to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyIndirectExecutionSetEXT.html
+func DestroyIndirectExecutionSetEXT(device Device, indirectExecutionSet IndirectExecutionSetEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyIndirectExecutionSetEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 // DestroyInstance - Destroy an instance of Vulkan (vkDestroyInstance).
 // Parameters:
 //   - instance: is the handle of the instance to destroy.
@@ -2450,6 +7514,30 @@ func DestroyImageView(device Device, imageView ImageView, allocator *AllocationC
 func DestroyInstance(instance Instance, allocator *AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	CallSyscall(pfnDestroyInstance, uintptr(instance), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyMicromapEXT - Destroy a micromap object (vkDestroyMicromapEXT).
+// Parameters:
+//   - device: is the logical device that destroys the micromap.
+//   - micromap: is the micromap to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyMicromapEXT.html
+func DestroyMicromapEXT(device Device, micromap MicromapEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyMicromapEXT, uintptr(device), uintptr(micromap), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyOpticalFlowSessionNV - Destroy optical flow session object (vkDestroyOpticalFlowSessionNV).
+// Parameters:
+//   - device: is the device that was used for the creation of the optical flow session.
+//   - session: is the optical flow session to be destroyed.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyOpticalFlowSessionNV.html
+func DestroyOpticalFlowSessionNV(device Device, session OpticalFlowSessionNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyOpticalFlowSessionNV, uintptr(device), uintptr(session), uintptr(unsafe.Pointer(c_allocator)))
 }
 
 // DestroyPipeline - Destroy a pipeline object (vkDestroyPipeline).
@@ -2462,6 +7550,18 @@ func DestroyInstance(instance Instance, allocator *AllocationCallbacks) {
 func DestroyPipeline(device Device, pipeline Pipeline, allocator *AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	CallSyscall(pfnDestroyPipeline, uintptr(device), uintptr(pipeline), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyPipelineBinaryKHR - Destroy a pipeline binary (vkDestroyPipelineBinaryKHR).
+// Parameters:
+//   - device: is the logical device that created the pipeline binary object.
+//   - pipelineBinary: is the handle of the pipeline binary object to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyPipelineBinaryKHR.html
+func DestroyPipelineBinaryKHR(device Device, pipelineBinary PipelineBinaryKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyPipelineBinaryKHR, uintptr(device), uintptr(pipelineBinary), uintptr(unsafe.Pointer(c_allocator)))
 }
 
 // DestroyPipelineCache - Destroy a pipeline cache object (vkDestroyPipelineCache).
@@ -2560,6 +7660,42 @@ func DestroySemaphore(device Device, semaphore Semaphore, allocator *AllocationC
 	CallSyscall(pfnDestroySemaphore, uintptr(device), uintptr(semaphore), uintptr(unsafe.Pointer(c_allocator)))
 }
 
+// DestroySemaphoreSciSyncPoolNV - Destroy a VkSemaphoreSciSyncPoolNV object (vkDestroySemaphoreSciSyncPoolNV).
+// Parameters:
+//   - device: is the logical device that destroys the semaphore SciSync pool.
+//   - semaphorePool: is the handle of the semaphore SciSync pool to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySemaphoreSciSyncPoolNV.html
+func DestroySemaphoreSciSyncPoolNV(device Device, semaphorePool SemaphoreSciSyncPoolNV, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroySemaphoreSciSyncPoolNV, uintptr(device), uintptr(semaphorePool), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyShaderEXT - Destroy a shader object (vkDestroyShaderEXT).
+// Parameters:
+//   - device: is the logical device that destroys the shader object.
+//   - shader: is the handle of the shader object to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderEXT.html
+func DestroyShaderEXT(device Device, shader ShaderEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyShaderEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyShaderInstrumentationARM - Destroy a shader instrumentation object (vkDestroyShaderInstrumentationARM).
+// Parameters:
+//   - device: is the logical device that destroys the shader instrumentation.
+//   - instrumentation: is the handle of the shader instrumentation to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderInstrumentationARM.html
+func DestroyShaderInstrumentationARM(device Device, instrumentation ShaderInstrumentationARM, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyShaderInstrumentationARM, uintptr(device), uintptr(instrumentation), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 // DestroyShaderModule - Destroy a shader module (vkDestroyShaderModule).
 // Parameters:
 //   - device: is the logical device that destroys the shader module.
@@ -2572,6 +7708,90 @@ func DestroyShaderModule(device Device, shaderModule ShaderModule, allocator *Al
 	CallSyscall(pfnDestroyShaderModule, uintptr(device), uintptr(shaderModule), uintptr(unsafe.Pointer(c_allocator)))
 }
 
+// DestroySurfaceKHR - Destroy a VkSurfaceKHR object (vkDestroySurfaceKHR).
+// Parameters:
+//   - instance: is the instance used to create the surface.
+//   - surface: is the surface to destroy.
+//   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySurfaceKHR.html
+func DestroySurfaceKHR(instance Instance, surface SurfaceKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroySurfaceKHR, uintptr(instance), uintptr(surface), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroySwapchainKHR - Destroy a swapchain object (vkDestroySwapchainKHR).
+// Parameters:
+//   - device: is the VkDevice associated with swapchain.
+//   - swapchain: is the swapchain to destroy.
+//   - allocator: is the allocator used for host memory allocated for the swapchain object when there is no more specific allocator available (see Memory Allocation).
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySwapchainKHR.html
+func DestroySwapchainKHR(device Device, swapchain SwapchainKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroySwapchainKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyTensorARM - Destroy a tensor object (vkDestroyTensorARM).
+// Parameters:
+//   - device: is the logical device that destroys the tensor.
+//   - tensor: is the tensor to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyTensorARM.html
+func DestroyTensorARM(device Device, tensor TensorARM, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyTensorARM, uintptr(device), uintptr(tensor), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyTensorViewARM - Destroy a tensor view object (vkDestroyTensorViewARM).
+// Parameters:
+//   - device: is the logical device that destroys the tensor view.
+//   - tensorView: is the tensor view to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyTensorViewARM.html
+func DestroyTensorViewARM(device Device, tensorView TensorViewARM, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyTensorViewARM, uintptr(device), uintptr(tensorView), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyValidationCacheEXT - Destroy a validation cache object (vkDestroyValidationCacheEXT).
+// Parameters:
+//   - device: is the logical device that destroys the validation cache object.
+//   - validationCache: is the handle of the validation cache to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyValidationCacheEXT.html
+func DestroyValidationCacheEXT(device Device, validationCache ValidationCacheEXT, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyValidationCacheEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyVideoSessionKHR - Destroy video session object (vkDestroyVideoSessionKHR).
+// Parameters:
+//   - device: is the logical device that destroys the video session.
+//   - videoSession: is the video session to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionKHR.html
+func DestroyVideoSessionKHR(device Device, videoSession VideoSessionKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyVideoSessionKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(c_allocator)))
+}
+
+// DestroyVideoSessionParametersKHR - Destroy video session parameters object (vkDestroyVideoSessionParametersKHR).
+// Parameters:
+//   - device: is the logical device that destroys the video session parameters object.
+//   - videoSessionParameters: is the video session parameters object to destroy.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionParametersKHR.html
+func DestroyVideoSessionParametersKHR(device Device, videoSessionParameters VideoSessionParametersKHR, allocator *AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	CallSyscall(pfnDestroyVideoSessionParametersKHR, uintptr(device), uintptr(videoSessionParameters), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 // DeviceWaitIdle - Wait for a device to become idle (vkDeviceWaitIdle).
 // Parameters:
 //   - device: is the logical device to idle.
@@ -2581,6 +7801,21 @@ func DestroyShaderModule(device Device, shaderModule ShaderModule, allocator *Al
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDeviceWaitIdle.html
 func DeviceWaitIdle(device Device) (result Result) {
 	r1, _, _ := CallSyscall(pfnDeviceWaitIdle, uintptr(device))
+	return Result(r1)
+}
+
+// DisplayPowerControlEXT - Set the power state of a display (vkDisplayPowerControlEXT).
+// Parameters:
+//   - device: is a logical device associated with display.
+//   - display: is the display whose power state is modified.
+//   - displayPowerInfo: is a pointer to a VkDisplayPowerInfoEXT structure specifying the new power state of display.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDisplayPowerControlEXT.html
+func DisplayPowerControlEXT(device Device, display DisplayKHR, displayPowerInfo *DisplayPowerInfoEXT) (result Result) {
+	c_displayPowerInfo := displayPowerInfo.Raw()
+	r1, _, _ := CallSyscall(pfnDisplayPowerControlEXT, uintptr(device), uintptr(display), uintptr(unsafe.Pointer(c_displayPowerInfo)))
 	return Result(r1)
 }
 
@@ -2720,6 +7955,78 @@ func EnumeratePhysicalDeviceGroups(instance Instance) (physicalDeviceGroupProper
 	return physicalDeviceGroupProperties, Result(r1)
 }
 
+// EnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM - Reports properties of the by region performance counters available on a queue family of a device (vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device whose queue family by region performance counter properties will be queried.
+//   - queueFamilyIndex: is the index into the queue family of the physical device we want to get properties for.
+//   - counterCount: is a pointer to an integer related to the number of counters available or queried, as described below.
+//   - counters: is either NULL or a pointer to an array of VkPerformanceCounterARM structures.
+//   - counterDescriptions: is either NULL or a pointer to an array of VkPerformanceCounterDescriptionARM structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM.html
+func EnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM(physicalDevice PhysicalDevice, queueFamilyIndex uint32, counterDescriptions *PerformanceCounterDescriptionARM) (counters []PerformanceCounterARM, result Result) {
+	c_counterDescriptions := counterDescriptions.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	counters = make([]PerformanceCounterARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&counters[0]))
+	r1, _, _ = CallSyscall(pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	return counters, Result(r1)
+}
+
+// EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR - Reports properties of the performance query counters available on a queue family of a device (vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device whose queue family performance query counter properties will be queried.
+//   - queueFamilyIndex: is the index into the queue family of the physical device we want to get properties for.
+//   - counterCount: is a pointer to an integer related to the number of counters available or queried, as described below.
+//   - counters: is either NULL or a pointer to an array of VkPerformanceCounterKHR structures.
+//   - counterDescriptions: is either NULL or a pointer to an array of VkPerformanceCounterDescriptionKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR.html
+func EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice PhysicalDevice, queueFamilyIndex uint32, counterDescriptions *PerformanceCounterDescriptionKHR) (counters []PerformanceCounterKHR, result Result) {
+	c_counterDescriptions := counterDescriptions.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	counters = make([]PerformanceCounterKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&counters[0]))
+	r1, _, _ = CallSyscall(pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	return counters, Result(r1)
+}
+
+// EnumeratePhysicalDeviceShaderInstrumentationMetricsARM - Returns properties describing what shader instrumentation metrics are supported (vkEnumeratePhysicalDeviceShaderInstrumentationMetricsARM).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - descriptionCount: is a pointer to an integer related to the number of shader instrumentation metrics available or queried.
+//   - descriptions: is either NULL or a pointer to an array of VkShaderInstrumentationMetricDescriptionARM structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDeviceShaderInstrumentationMetricsARM.html
+func EnumeratePhysicalDeviceShaderInstrumentationMetricsARM(physicalDevice PhysicalDevice) (descriptions []ShaderInstrumentationMetricDescriptionARM, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	descriptions = make([]ShaderInstrumentationMetricDescriptionARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&descriptions[0]))
+	r1, _, _ = CallSyscall(pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return descriptions, Result(r1)
+}
+
 // EnumeratePhysicalDevices - Enumerates the physical devices accessible to a Vulkan instance (vkEnumeratePhysicalDevices).
 // Parameters:
 //   - instance: is a handle to a Vulkan instance previously created with vkCreateInstance.
@@ -2740,6 +8047,17 @@ func EnumeratePhysicalDevices(instance Instance) (physicalDevices []PhysicalDevi
 	call2ArgsPtr := uintptr(unsafe.Pointer(&physicalDevices[0]))
 	r1, _, _ = CallSyscall(pfnEnumeratePhysicalDevices, uintptr(instance), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
 	return physicalDevices, Result(r1)
+}
+
+// ExportMetalObjectsEXT - Export Metal objects from the corresponding Vulkan objects (vkExportMetalObjectsEXT).
+// Parameters:
+//   - device: is the device that created the Vulkan objects.
+//   - metalObjectsInfo: is a pointer to a VkExportMetalObjectsInfoEXT structure whose pNext chain contains structures, each identifying a Vulkan object and providing a pointer through which the Metal object will be returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkExportMetalObjectsEXT.html
+func ExportMetalObjectsEXT(device Device) (metalObjectsInfo ExportMetalObjectsInfoEXT) {
+	CallSyscall(pfnExportMetalObjectsEXT, uintptr(device), uintptr(unsafe.Pointer(&metalObjectsInfo)))
+	return metalObjectsInfo
 }
 
 // FlushMappedMemoryRanges - Flush mapped memory ranges (vkFlushMappedMemoryRanges).
@@ -2803,6 +8121,105 @@ func FreeMemory(device Device, memory DeviceMemory, allocator *AllocationCallbac
 	CallSyscall(pfnFreeMemory, uintptr(device), uintptr(memory), uintptr(unsafe.Pointer(c_allocator)))
 }
 
+// GetAccelerationStructureBuildSizesKHR - Retrieve the required size for an acceleration structure (vkGetAccelerationStructureBuildSizesKHR).
+// Parameters:
+//   - device: is the logical device that will be used for creating the acceleration structure.
+//   - buildType: defines whether host or device operations (or both) are being queried for.
+//   - buildInfo: is a pointer to a VkAccelerationStructureBuildGeometryInfoKHR structure describing parameters of a build operation.
+//   - maxPrimitiveCounts: is a pointer to an array of pBuildInfo->geometryCount uint32_t values defining the number of primitives built into each geometry.
+//   - sizeInfo: is a pointer to a VkAccelerationStructureBuildSizesInfoKHR structure which returns the size required for an acceleration structure and the sizes required for the scratch buffers, given the build parameters. The size requirements for a scratch buffer may be zero.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureBuildSizesKHR.html
+func GetAccelerationStructureBuildSizesKHR(device Device, buildType AccelerationStructureBuildTypeKHR, buildInfo *AccelerationStructureBuildGeometryInfoKHR, maxPrimitiveCounts *uint32) (sizeInfo AccelerationStructureBuildSizesInfoKHR) {
+	c_buildInfo := buildInfo.Raw()
+	CallSyscall(pfnGetAccelerationStructureBuildSizesKHR, uintptr(device), uintptr(buildType), uintptr(unsafe.Pointer(c_buildInfo)), uintptr(unsafe.Pointer(maxPrimitiveCounts)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
+// GetAccelerationStructureDeviceAddressKHR - Query an address of an acceleration structure (vkGetAccelerationStructureDeviceAddressKHR).
+// Parameters:
+//   - device: is the logical device that the acceleration structure was created on.
+//   - info: is a pointer to a VkAccelerationStructureDeviceAddressInfoKHR structure specifying the acceleration structure to retrieve an address for.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureDeviceAddressKHR.html
+func GetAccelerationStructureDeviceAddressKHR(device Device, info *AccelerationStructureDeviceAddressInfoKHR) (result DeviceAddress) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetAccelerationStructureDeviceAddressKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return DeviceAddress(r1)
+}
+
+// GetAccelerationStructureHandleNV - Get opaque acceleration structure handle (vkGetAccelerationStructureHandleNV).
+// Parameters:
+//   - device: is the logical device that owns the acceleration structures.
+//   - accelerationStructure: is the acceleration structure.
+//   - dataSize: is the size in bytes of the buffer pointed to by pData.
+//   - data: is a pointer to an application-allocated buffer where the results will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureHandleNV.html
+func GetAccelerationStructureHandleNV(device Device, accelerationStructure AccelerationStructureNV, data []unsafe.Pointer) (result Result) {
+	c_data := SliceData(data)
+	r1, _, _ := CallSyscall(pfnGetAccelerationStructureHandleNV, uintptr(device), uintptr(accelerationStructure), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+	return Result(r1)
+}
+
+// GetAccelerationStructureMemoryRequirementsNV - Get acceleration structure memory requirements (vkGetAccelerationStructureMemoryRequirementsNV).
+// Parameters:
+//   - device: is the logical device on which the acceleration structure was created.
+//   - info: is a pointer to a VkAccelerationStructureMemoryRequirementsInfoNV structure specifying the acceleration structure to get memory requirements for.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2KHR structure in which the requested acceleration structure memory requirements are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureMemoryRequirementsNV.html
+func GetAccelerationStructureMemoryRequirementsNV(device Device, info *AccelerationStructureMemoryRequirementsInfoNV) (memoryRequirements MemoryRequirements2) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetAccelerationStructureMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetAccelerationStructureOpaqueCaptureDescriptorDataEXT - Get acceleration structure opaque capture descriptor data (vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkAccelerationStructureCaptureDescriptorDataInfoEXT structure specifying the acceleration structure.
+//   - data: is a pointer to an application-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT.html
+func GetAccelerationStructureOpaqueCaptureDescriptorDataEXT(device Device, info *AccelerationStructureCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
+}
+
+// GetAndroidHardwareBufferPropertiesANDROID - Get Properties of External Memory Android Hardware Buffers (vkGetAndroidHardwareBufferPropertiesANDROID).
+// Parameters:
+//   - device: is the logical device that will be importing buffer.
+//   - buffer: is the Android hardware buffer which will be imported.
+//   - properties: is a pointer to a VkAndroidHardwareBufferPropertiesANDROID structure in which the properties of buffer are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAndroidHardwareBufferPropertiesANDROID.html
+func GetAndroidHardwareBufferPropertiesANDROID(device Device, buffer uintptr) (properties AndroidHardwareBufferPropertiesANDROID, result Result) {
+	r1, _, _ := CallSyscall(pfnGetAndroidHardwareBufferPropertiesANDROID, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
+// GetBufferCollectionPropertiesFUCHSIA - Retrieve properties from a buffer collection (vkGetBufferCollectionPropertiesFUCHSIA).
+// Parameters:
+//   - device: is the logical device handle
+//   - collection: is the VkBufferCollectionFUCHSIA handle
+//   - properties: is a pointer to the retrieved VkBufferCollectionPropertiesFUCHSIA struct
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferCollectionPropertiesFUCHSIA.html
+func GetBufferCollectionPropertiesFUCHSIA(device Device, collection BufferCollectionFUCHSIA) (properties BufferCollectionPropertiesFUCHSIA, result Result) {
+	r1, _, _ := CallSyscall(pfnGetBufferCollectionPropertiesFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
 // GetBufferDeviceAddress - Query an address of a buffer (vkGetBufferDeviceAddress).
 // Parameters:
 //   - device: is the logical device that the buffer was created on.
@@ -2852,6 +8269,56 @@ func GetBufferOpaqueCaptureAddress(device Device, info *BufferDeviceAddressInfo)
 	return uint64(r1)
 }
 
+// GetBufferOpaqueCaptureDescriptorDataEXT - Get buffer opaque capture descriptor data (vkGetBufferOpaqueCaptureDescriptorDataEXT).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkBufferCaptureDescriptorDataInfoEXT structure specifying the buffer.
+//   - data: is a pointer to an application-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferOpaqueCaptureDescriptorDataEXT.html
+func GetBufferOpaqueCaptureDescriptorDataEXT(device Device, info *BufferCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetBufferOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
+}
+
+// GetCalibratedTimestampsKHR - Query calibrated timestamps (vkGetCalibratedTimestampsKHR).
+// Parameters:
+//   - device: is the logical device used to perform the query.
+//   - timestampCount: is the number of timestamps to query.
+//   - timestampInfos: is a pointer to an array of timestampCount VkCalibratedTimestampInfoKHR structures, describing the time domains the calibrated timestamps should be captured from.
+//   - timestamps: is a pointer to an array of timestampCount 64-bit unsigned integer values in which the requested calibrated timestamp values are returned.
+//   - maxDeviation: is a pointer to a 64-bit unsigned integer value in which the strictly positive maximum deviation, in nanoseconds, of the calibrated timestamp values is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetCalibratedTimestampsKHR.html
+func GetCalibratedTimestampsKHR(device Device, timestampInfos []CalibratedTimestampInfoKHR, timestamps *uint64) (maxDeviation uint64, result Result) {
+	c_timestampInfos := make([]RawCalibratedTimestampInfoKHR, len(timestampInfos))
+	for i := range timestampInfos {
+		if raw := timestampInfos[i].Raw(); raw != nil {
+			c_timestampInfos[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnGetCalibratedTimestampsKHR, uintptr(device), uintptr(len(timestampInfos)), uintptr(unsafe.Pointer(SliceData(c_timestampInfos))), uintptr(unsafe.Pointer(timestamps)), uintptr(unsafe.Pointer(&maxDeviation)))
+	return maxDeviation, Result(r1)
+}
+
+// GetClusterAccelerationStructureBuildSizesNV - Retrieve the buffer allocation requirements for cluster geometry command (vkGetClusterAccelerationStructureBuildSizesNV).
+// Parameters:
+//   - device: is the logical device that owns the acceleration structure.
+//   - info: is a pointer to a VkClusterAccelerationStructureInputInfoNV structure containing parameters required for the memory requirements query.
+//   - sizeInfo: is a pointer to a VkAccelerationStructureBuildSizesInfoKHR structure which returns the size required for an acceleration structure and scratch buffer, given the build parameters. The size requirements for a scratch buffer may be zero.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetClusterAccelerationStructureBuildSizesNV.html
+func GetClusterAccelerationStructureBuildSizesNV(device Device, info *ClusterAccelerationStructureInputInfoNV) (sizeInfo AccelerationStructureBuildSizesInfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetClusterAccelerationStructureBuildSizesNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
 // GetCommandPoolMemoryConsumption - Get memory usage information for a command pool object (vkGetCommandPoolMemoryConsumption).
 // Parameters:
 //   - device: is the logical device that owns the command pool.
@@ -2863,6 +8330,190 @@ func GetBufferOpaqueCaptureAddress(device Device, info *BufferDeviceAddressInfo)
 func GetCommandPoolMemoryConsumption(device Device, commandPool CommandPool, commandBuffer CommandBuffer) (consumption CommandPoolMemoryConsumption) {
 	CallSyscall(pfnGetCommandPoolMemoryConsumption, uintptr(device), uintptr(commandPool), uintptr(commandBuffer), uintptr(unsafe.Pointer(&consumption)))
 	return consumption
+}
+
+// GetCudaModuleCacheNV - Get CUDA module cache (vkGetCudaModuleCacheNV).
+// Parameters:
+//   - device: is the logical device that destroys the Function.
+//   - module: is the CUDA module.
+//   - cacheSize: is a pointer containing the amount of bytes to be copied in pCacheData
+//   - cacheData: is a pointer to a buffer in which to copy the binary cache
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetCudaModuleCacheNV.html
+func GetCudaModuleCacheNV(device Device, module CudaModuleNV) (cacheData []unsafe.Pointer, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetCudaModuleCacheNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	cacheData = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&cacheData[0]))
+	r1, _, _ = CallSyscall(pfnGetCudaModuleCacheNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return cacheData, Result(r1)
+}
+
+// GetDataGraphPipelineAvailablePropertiesARM - Query available properties of a data graph pipeline (vkGetDataGraphPipelineAvailablePropertiesARM).
+// Parameters:
+//   - device: is the logical device that created the data graph pipeline.
+//   - pipelineInfo: is a VkDataGraphPipelineInfoARM that describes the VkPipeline being queried.
+//   - propertiesCount: is a pointer to an integer related to the number of properties available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDataGraphPipelinePropertyARM enums.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelineAvailablePropertiesARM.html
+func GetDataGraphPipelineAvailablePropertiesARM(device Device, pipelineInfo *DataGraphPipelineInfoARM) (properties []DataGraphPipelinePropertyARM, result Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetDataGraphPipelineAvailablePropertiesARM, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DataGraphPipelinePropertyARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetDataGraphPipelineAvailablePropertiesARM, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetDataGraphPipelinePropertiesARM - Query properties of a data graph pipeline (vkGetDataGraphPipelinePropertiesARM).
+// Parameters:
+//   - device: is the logical device that created the data graph pipeline.
+//   - pipelineInfo: is a VkDataGraphPipelineInfoARM that describes the VkPipeline being queried.
+//   - propertiesCount: is the length of the pProperties array.
+//   - properties: is a pointer to an array of VkDataGraphPipelinePropertyQueryResultARM structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelinePropertiesARM.html
+func GetDataGraphPipelinePropertiesARM(device Device, pipelineInfo *DataGraphPipelineInfoARM, properties []DataGraphPipelinePropertyQueryResultARM) (result Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	c_properties := make([]RawDataGraphPipelinePropertyQueryResultARM, len(properties))
+	for i := range properties {
+		if raw := properties[i].Raw(); raw != nil {
+			c_properties[i] = *raw
+		}
+	}
+	r1, _, _ := CallSyscall(pfnGetDataGraphPipelinePropertiesARM, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(len(properties)), uintptr(unsafe.Pointer(SliceData(c_properties))))
+	return Result(r1)
+}
+
+// GetDataGraphPipelineSessionBindPointRequirementsARM - Get the bind point requirements of a data graph pipeline session (vkGetDataGraphPipelineSessionBindPointRequirementsARM).
+// Parameters:
+//   - device: is the logical device that owns the data graph pipeline session.
+//   - info: is a pointer to a VkDataGraphPipelineSessionBindPointRequirementsInfoARM structure containing parameters for the bind point requirements query.
+//   - bindPointRequirementCount: is a pointer to an integer related to the number of bind point available or queried, as described below.
+//   - bindPointRequirements: is either NULL or a pointer to an array of VkDataGraphPipelineSessionBindPointRequirementARM structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelineSessionBindPointRequirementsARM.html
+func GetDataGraphPipelineSessionBindPointRequirementsARM(device Device, info *DataGraphPipelineSessionBindPointRequirementsInfoARM) (bindPointRequirements []DataGraphPipelineSessionBindPointRequirementARM, result Result) {
+	c_info := info.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetDataGraphPipelineSessionBindPointRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	bindPointRequirements = make([]DataGraphPipelineSessionBindPointRequirementARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&bindPointRequirements[0]))
+	r1, _, _ = CallSyscall(pfnGetDataGraphPipelineSessionBindPointRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return bindPointRequirements, Result(r1)
+}
+
+// GetDataGraphPipelineSessionMemoryRequirementsARM - Get the memory requirements of a data graph pipeline session (vkGetDataGraphPipelineSessionMemoryRequirementsARM).
+// Parameters:
+//   - device: is the logical device that owns the data graph pipeline session.
+//   - info: is a pointer to a VkDataGraphPipelineSessionMemoryRequirementsInfoARM structure containing parameters for the memory requirements query.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the data graph pipeline session object are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelineSessionMemoryRequirementsARM.html
+func GetDataGraphPipelineSessionMemoryRequirementsARM(device Device, info *DataGraphPipelineSessionMemoryRequirementsInfoARM) (memoryRequirements MemoryRequirements2) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetDataGraphPipelineSessionMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetDeferredOperationMaxConcurrencyKHR - Query the maximum concurrency on a deferred operation (vkGetDeferredOperationMaxConcurrencyKHR).
+// Parameters:
+//   - device: is the device which owns operation.
+//   - operation: is the deferred operation to be queried.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeferredOperationMaxConcurrencyKHR.html
+func GetDeferredOperationMaxConcurrencyKHR(device Device, operation DeferredOperationKHR) (result uint32) {
+	r1, _, _ := CallSyscall(pfnGetDeferredOperationMaxConcurrencyKHR, uintptr(device), uintptr(operation))
+	return uint32(r1)
+}
+
+// GetDeferredOperationResultKHR - Query the result of a deferred operation (vkGetDeferredOperationResultKHR).
+// Parameters:
+//   - device: is the device which owns operation.
+//   - operation: is the operation whose deferred result is being queried.
+//
+// Success codes: VK_SUCCESS, VK_NOT_READY
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeferredOperationResultKHR.html
+func GetDeferredOperationResultKHR(device Device, operation DeferredOperationKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnGetDeferredOperationResultKHR, uintptr(device), uintptr(operation))
+	return Result(r1)
+}
+
+// GetDescriptorEXT - To get a descriptor to place in a buffer (vkGetDescriptorEXT).
+// Parameters:
+//   - device: is the logical device that gets the descriptor.
+//   - descriptorInfo: is a pointer to a VkDescriptorGetInfoEXT structure specifying the parameters of the descriptor to get.
+//   - dataSize: is the amount of the descriptor data to get in bytes.
+//   - descriptor: is a pointer to an application-allocated buffer where the descriptor will be written.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorEXT.html
+func GetDescriptorEXT(device Device, descriptorInfo *DescriptorGetInfoEXT, descriptor []unsafe.Pointer) {
+	c_descriptorInfo := descriptorInfo.Raw()
+	c_descriptor := SliceData(descriptor)
+	CallSyscall(pfnGetDescriptorEXT, uintptr(device), uintptr(unsafe.Pointer(c_descriptorInfo)), uintptr(len(descriptor)), uintptr(unsafe.Pointer(c_descriptor)))
+}
+
+// GetDescriptorSetHostMappingVALVE - Stub description of vkGetDescriptorSetHostMappingVALVE (vkGetDescriptorSetHostMappingVALVE).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetHostMappingVALVE.html
+func GetDescriptorSetHostMappingVALVE(device Device, descriptorSet DescriptorSet) (data unsafe.Pointer) {
+	CallSyscall(pfnGetDescriptorSetHostMappingVALVE, uintptr(device), uintptr(descriptorSet), uintptr(unsafe.Pointer(&data)))
+	return data
+}
+
+// GetDescriptorSetLayoutBindingOffsetEXT - Get the offset of a binding within a descriptor set layout (vkGetDescriptorSetLayoutBindingOffsetEXT).
+// Parameters:
+//   - device: is the logical device that gets the offset.
+//   - layout: is the descriptor set layout being queried.
+//   - binding: is the binding number being queried.
+//   - offset: is a pointer to basetype:VkDeviceSize where the byte offset of the binding will be written.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutBindingOffsetEXT.html
+func GetDescriptorSetLayoutBindingOffsetEXT(device Device, layout DescriptorSetLayout, binding uint32) (offset DeviceSize) {
+	CallSyscall(pfnGetDescriptorSetLayoutBindingOffsetEXT, uintptr(device), uintptr(layout), uintptr(binding), uintptr(unsafe.Pointer(&offset)))
+	return offset
+}
+
+// GetDescriptorSetLayoutHostMappingInfoVALVE - Stub description of vkGetDescriptorSetLayoutHostMappingInfoVALVE (vkGetDescriptorSetLayoutHostMappingInfoVALVE).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutHostMappingInfoVALVE.html
+func GetDescriptorSetLayoutHostMappingInfoVALVE(device Device, bindingReference *DescriptorSetBindingReferenceVALVE) (hostMapping DescriptorSetLayoutHostMappingInfoVALVE) {
+	c_bindingReference := bindingReference.Raw()
+	CallSyscall(pfnGetDescriptorSetLayoutHostMappingInfoVALVE, uintptr(device), uintptr(unsafe.Pointer(c_bindingReference)), uintptr(unsafe.Pointer(&hostMapping)))
+	return hostMapping
+}
+
+// GetDescriptorSetLayoutSizeEXT - Get the size of a descriptor set layout in memory (vkGetDescriptorSetLayoutSizeEXT).
+// Parameters:
+//   - device: is the logical device that gets the size.
+//   - layout: is the descriptor set layout being queried.
+//   - layoutSizeInBytes: is a pointer to basetype:VkDeviceSize where the size in bytes will be written.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSizeEXT.html
+func GetDescriptorSetLayoutSizeEXT(device Device, layout DescriptorSetLayout) (layoutSizeInBytes DeviceSize) {
+	CallSyscall(pfnGetDescriptorSetLayoutSizeEXT, uintptr(device), uintptr(layout), uintptr(unsafe.Pointer(&layoutSizeInBytes)))
+	return layoutSizeInBytes
 }
 
 // GetDescriptorSetLayoutSupport - Query whether a descriptor set layout can be created (vkGetDescriptorSetLayoutSupport).
@@ -2878,6 +8529,19 @@ func GetDescriptorSetLayoutSupport(device Device, createInfo *DescriptorSetLayou
 	return support
 }
 
+// GetDeviceAccelerationStructureCompatibilityKHR - Check if a serialized acceleration structure is compatible with the current device (vkGetDeviceAccelerationStructureCompatibilityKHR).
+// Parameters:
+//   - device: is the device to check the version against.
+//   - versionInfo: is a pointer to a VkAccelerationStructureVersionInfoKHR structure specifying version information to check against the device.
+//   - compatibility: is a pointer to a VkAccelerationStructureCompatibilityKHR value in which compatibility information is returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceAccelerationStructureCompatibilityKHR.html
+func GetDeviceAccelerationStructureCompatibilityKHR(device Device, versionInfo *AccelerationStructureVersionInfoKHR) (compatibility AccelerationStructureCompatibilityKHR) {
+	c_versionInfo := versionInfo.Raw()
+	CallSyscall(pfnGetDeviceAccelerationStructureCompatibilityKHR, uintptr(device), uintptr(unsafe.Pointer(c_versionInfo)), uintptr(unsafe.Pointer(&compatibility)))
+	return compatibility
+}
+
 // GetDeviceBufferMemoryRequirements - Returns the memory requirements for specified Vulkan object (vkGetDeviceBufferMemoryRequirements).
 // Parameters:
 //   - device: is the logical device intended to own the buffer.
@@ -2889,6 +8553,68 @@ func GetDeviceBufferMemoryRequirements(device Device, info *DeviceBufferMemoryRe
 	c_info := info.Raw()
 	CallSyscall(pfnGetDeviceBufferMemoryRequirements, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
 	return memoryRequirements
+}
+
+// GetDeviceCombinedImageSamplerIndexNVX - Get the handle for an image view and sampler index (vkGetDeviceCombinedImageSamplerIndexNVX).
+// Parameters:
+//   - device: is the logical device that will use the result handle.
+//   - imageViewIndex: is the index within the resource heap.
+//   - samplerIndex: is the index within the sampler heap.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceCombinedImageSamplerIndexNVX.html
+func GetDeviceCombinedImageSamplerIndexNVX(device Device, imageViewIndex uint64, samplerIndex uint64) (result uint64) {
+	r1, _, _ := CallSyscall(pfnGetDeviceCombinedImageSamplerIndexNVX, uintptr(device), uintptr(imageViewIndex), uintptr(samplerIndex))
+	return uint64(r1)
+}
+
+// GetDeviceFaultDebugInfoKHR - Retrieve vendor-specific crash dump data for the specified logical device (vkGetDeviceFaultDebugInfoKHR).
+// Parameters:
+//   - device: is the logical device from which to query the crash dump.
+//   - debugInfo: is a pointer to a VkDeviceFaultDebugInfoKHR structure which will be populated with the vendor binary data crash dump binary, as described below.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_NOT_ENOUGH_SPACE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultDebugInfoKHR.html
+func GetDeviceFaultDebugInfoKHR(device Device) (debugInfo DeviceFaultDebugInfoKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetDeviceFaultDebugInfoKHR, uintptr(device), uintptr(unsafe.Pointer(&debugInfo)))
+	return debugInfo, Result(r1)
+}
+
+// GetDeviceFaultInfoEXT - Reports fault information for the specified device (vkGetDeviceFaultInfoEXT).
+// Parameters:
+//   - device: is the logical device from which to query the diagnostic fault information.
+//   - faultCounts: is a pointer to a VkDeviceFaultCountsEXT structure in which counts for structures describing additional fault information are returned.
+//   - faultInfo: is NULL or a pointer to a VkDeviceFaultInfoEXT structure in which fault information is returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultInfoEXT.html
+func GetDeviceFaultInfoEXT(device Device, faultCounts *DeviceFaultCountsEXT) (faultInfo DeviceFaultInfoEXT, result Result) {
+	c_faultCounts := faultCounts.Raw()
+	r1, _, _ := CallSyscall(pfnGetDeviceFaultInfoEXT, uintptr(device), uintptr(unsafe.Pointer(c_faultCounts)), uintptr(unsafe.Pointer(&faultInfo)))
+	return faultInfo, Result(r1)
+}
+
+// GetDeviceFaultReportsKHR - Reports fault information for the specified device (vkGetDeviceFaultReportsKHR).
+// Parameters:
+//   - device: is the logical device from which to query the diagnostic fault information.
+//   - timeout: is the timeout period in units of nanoseconds. timeout is adjusted to the closest value allowed by the implementation-dependent timeout accuracy, which may be substantially longer than one nanosecond, and may be longer than the requested period.
+//   - faultInfo: is NULL or a pointer to an array of VkDeviceFaultInfoKHR structures in which fault information is returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE, VK_TIMEOUT
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultReportsKHR.html
+func GetDeviceFaultReportsKHR(device Device, timeout uint64) (faultInfo []DeviceFaultInfoKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetDeviceFaultReportsKHR, uintptr(device), uintptr(timeout), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	faultInfo = make([]DeviceFaultInfoKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&faultInfo[0]))
+	r1, _, _ = CallSyscall(pfnGetDeviceFaultReportsKHR, uintptr(device), uintptr(timeout), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return faultInfo, Result(r1)
 }
 
 // GetDeviceGroupPeerMemoryFeatures - Query supported peer memory features of a device (vkGetDeviceGroupPeerMemoryFeatures).
@@ -2903,6 +8629,48 @@ func GetDeviceBufferMemoryRequirements(device Device, info *DeviceBufferMemoryRe
 func GetDeviceGroupPeerMemoryFeatures(device Device, heapIndex uint32, localDeviceIndex uint32, remoteDeviceIndex uint32) (peerMemoryFeatures PeerMemoryFeatureFlags) {
 	CallSyscall(pfnGetDeviceGroupPeerMemoryFeatures, uintptr(device), uintptr(heapIndex), uintptr(localDeviceIndex), uintptr(remoteDeviceIndex), uintptr(unsafe.Pointer(&peerMemoryFeatures)))
 	return peerMemoryFeatures
+}
+
+// GetDeviceGroupPresentCapabilitiesKHR - Query present capabilities from other physical devices (vkGetDeviceGroupPresentCapabilitiesKHR).
+// Parameters:
+//   - device: is the logical device.
+//   - deviceGroupPresentCapabilities: is a pointer to a VkDeviceGroupPresentCapabilitiesKHR structure in which the device's capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupPresentCapabilitiesKHR.html
+func GetDeviceGroupPresentCapabilitiesKHR(device Device) (deviceGroupPresentCapabilities DeviceGroupPresentCapabilitiesKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetDeviceGroupPresentCapabilitiesKHR, uintptr(device), uintptr(unsafe.Pointer(&deviceGroupPresentCapabilities)))
+	return deviceGroupPresentCapabilities, Result(r1)
+}
+
+// GetDeviceGroupSurfacePresentModes2EXT - Query device group present capabilities for a surface (vkGetDeviceGroupSurfacePresentModes2EXT).
+// Parameters:
+//   - device: is the logical device.
+//   - surfaceInfo: is a pointer to a VkPhysicalDeviceSurfaceInfo2KHR structure describing the surface and other fixed parameters that would be consumed by vkCreateSwapchainKHR.
+//   - modes: is a pointer to a VkDeviceGroupPresentModeFlagsKHR in which the supported device group present modes for the surface are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupSurfacePresentModes2EXT.html
+func GetDeviceGroupSurfacePresentModes2EXT(device Device, surfaceInfo *PhysicalDeviceSurfaceInfo2KHR) (modes DeviceGroupPresentModeFlagsKHR, result Result) {
+	c_surfaceInfo := surfaceInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetDeviceGroupSurfacePresentModes2EXT, uintptr(device), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&modes)))
+	return modes, Result(r1)
+}
+
+// GetDeviceGroupSurfacePresentModesKHR - Query present capabilities for a surface (vkGetDeviceGroupSurfacePresentModesKHR).
+// Parameters:
+//   - device: is the logical device.
+//   - surface: is the surface.
+//   - modes: is a pointer to a VkDeviceGroupPresentModeFlagsKHR in which the supported device group present modes for the surface are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupSurfacePresentModesKHR.html
+func GetDeviceGroupSurfacePresentModesKHR(device Device, surface SurfaceKHR) (modes DeviceGroupPresentModeFlagsKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetDeviceGroupSurfacePresentModesKHR, uintptr(device), uintptr(surface), uintptr(unsafe.Pointer(&modes)))
+	return modes, Result(r1)
 }
 
 // GetDeviceImageMemoryRequirements - Returns the memory requirements for specified Vulkan object (vkGetDeviceImageMemoryRequirements).
@@ -2977,6 +8745,19 @@ func GetDeviceMemoryOpaqueCaptureAddress(device Device, info *DeviceMemoryOpaque
 	return uint64(r1)
 }
 
+// GetDeviceMicromapCompatibilityEXT - Check if a serialized micromap is compatible with the current device (vkGetDeviceMicromapCompatibilityEXT).
+// Parameters:
+//   - device: is the device to check the version against.
+//   - versionInfo: is a pointer to a VkMicromapVersionInfoEXT structure specifying version information to check against the device.
+//   - compatibility: is a pointer to a VkAccelerationStructureCompatibilityKHR value in which compatibility information is returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceMicromapCompatibilityEXT.html
+func GetDeviceMicromapCompatibilityEXT(device Device, versionInfo *MicromapVersionInfoEXT) (compatibility AccelerationStructureCompatibilityKHR) {
+	c_versionInfo := versionInfo.Raw()
+	CallSyscall(pfnGetDeviceMicromapCompatibilityEXT, uintptr(device), uintptr(unsafe.Pointer(c_versionInfo)), uintptr(unsafe.Pointer(&compatibility)))
+	return compatibility
+}
+
 // GetDeviceQueue - Get a queue handle from a device (vkGetDeviceQueue).
 // Parameters:
 //   - device: is the logical device that owns the queue.
@@ -3003,6 +8784,187 @@ func GetDeviceQueue2(device Device, queueInfo *DeviceQueueInfo2) (queue Queue) {
 	return queue
 }
 
+// GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI - Query maximum supported subpass shading workgroup size for a give render pass (vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI).
+// Parameters:
+//   - device: is a handle to a local device object that was used to create the given render pass.
+//   - renderpass: is a handle to a render pass object describing the environment in which the pipeline will be used. The pipeline must only be used with a render pass instance compatible with the one provided. See Render Pass Compatibility for more information.
+//   - maxWorkgroupSize: is a pointer to a VkExtent2D structure.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI.html
+func GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(device Device, renderpass RenderPass) (maxWorkgroupSize Extent2D, result Result) {
+	r1, _, _ := CallSyscall(pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI, uintptr(device), uintptr(renderpass), uintptr(unsafe.Pointer(&maxWorkgroupSize)))
+	return maxWorkgroupSize, Result(r1)
+}
+
+// GetDeviceTensorMemoryRequirementsARM - Returns the memory requirements for specified tensor creation infos (vkGetDeviceTensorMemoryRequirementsARM).
+// Parameters:
+//   - device: is the logical device intended to own the tensor.
+//   - info: is a pointer to a VkDeviceTensorMemoryRequirementsARM structure containing parameters required for the memory requirements query.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the tensor object are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceTensorMemoryRequirementsARM.html
+func GetDeviceTensorMemoryRequirementsARM(device Device, info *DeviceTensorMemoryRequirementsARM) (memoryRequirements MemoryRequirements2) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetDeviceTensorMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetDisplayModeProperties2KHR - Query information about the available display modes. (vkGetDisplayModeProperties2KHR).
+// Parameters:
+//   - physicalDevice: is the physical device associated with display.
+//   - display: is the display to query.
+//   - propertyCount: is a pointer to an integer related to the number of display modes available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDisplayModeProperties2KHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayModeProperties2KHR.html
+func GetDisplayModeProperties2KHR(physicalDevice PhysicalDevice, display DisplayKHR) (properties []DisplayModeProperties2KHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetDisplayModeProperties2KHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DisplayModeProperties2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetDisplayModeProperties2KHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetDisplayModePropertiesKHR - Query the set of mode properties supported by the display (vkGetDisplayModePropertiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device associated with display.
+//   - display: is the display to query.
+//   - propertyCount: is a pointer to an integer related to the number of display modes available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDisplayModePropertiesKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayModePropertiesKHR.html
+func GetDisplayModePropertiesKHR(physicalDevice PhysicalDevice, display DisplayKHR) (properties []DisplayModePropertiesKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetDisplayModePropertiesKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DisplayModePropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetDisplayModePropertiesKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetDisplayPlaneCapabilities2KHR - Query capabilities of a mode and plane combination (vkGetDisplayPlaneCapabilities2KHR).
+// Parameters:
+//   - physicalDevice: is the physical device associated with pDisplayPlaneInfo.
+//   - displayPlaneInfo: is a pointer to a VkDisplayPlaneInfo2KHR structure describing the plane and mode.
+//   - capabilities: is a pointer to a VkDisplayPlaneCapabilities2KHR structure in which the capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayPlaneCapabilities2KHR.html
+func GetDisplayPlaneCapabilities2KHR(physicalDevice PhysicalDevice, displayPlaneInfo *DisplayPlaneInfo2KHR) (capabilities DisplayPlaneCapabilities2KHR, result Result) {
+	c_displayPlaneInfo := displayPlaneInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetDisplayPlaneCapabilities2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_displayPlaneInfo)), uintptr(unsafe.Pointer(&capabilities)))
+	return capabilities, Result(r1)
+}
+
+// GetDisplayPlaneCapabilitiesKHR - Query capabilities of a mode and plane combination (vkGetDisplayPlaneCapabilitiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device associated with the display specified by mode
+//   - mode: is the display mode the application intends to program when using the specified plane. Note this parameter also implicitly specifies a display.
+//   - planeIndex: is the plane which the application intends to use with the display, and is less than the number of display planes supported by the device.
+//   - capabilities: is a pointer to a VkDisplayPlaneCapabilitiesKHR structure in which the capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayPlaneCapabilitiesKHR.html
+func GetDisplayPlaneCapabilitiesKHR(physicalDevice PhysicalDevice, mode DisplayModeKHR, planeIndex uint32) (capabilities DisplayPlaneCapabilitiesKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetDisplayPlaneCapabilitiesKHR, uintptr(physicalDevice), uintptr(mode), uintptr(planeIndex), uintptr(unsafe.Pointer(&capabilities)))
+	return capabilities, Result(r1)
+}
+
+// GetDisplayPlaneSupportedDisplaysKHR - Query the list of displays a plane supports (vkGetDisplayPlaneSupportedDisplaysKHR).
+// Parameters:
+//   - physicalDevice: is a physical device.
+//   - planeIndex: is the plane which the application wishes to use, and must be in the range [0, physical device plane count - 1].
+//   - displayCount: is a pointer to an integer related to the number of displays available or queried, as described below.
+//   - displays: is either NULL or a pointer to an array of VkDisplayKHR handles.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayPlaneSupportedDisplaysKHR.html
+func GetDisplayPlaneSupportedDisplaysKHR(physicalDevice PhysicalDevice, planeIndex uint32) (displays []DisplayKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetDisplayPlaneSupportedDisplaysKHR, uintptr(physicalDevice), uintptr(planeIndex), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	displays = make([]DisplayKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&displays[0]))
+	r1, _, _ = CallSyscall(pfnGetDisplayPlaneSupportedDisplaysKHR, uintptr(physicalDevice), uintptr(planeIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return displays, Result(r1)
+}
+
+// GetDrmDisplayEXT - Query the VkDisplayKHR corresponding to a DRM connector ID (vkGetDrmDisplayEXT).
+// Parameters:
+//   - physicalDevice: is the physical device to query the display from.
+//   - drmFd: is the DRM primary file descriptor.
+//   - connectorId: is the identifier of the specified DRM connector.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDrmDisplayEXT.html
+func GetDrmDisplayEXT(physicalDevice PhysicalDevice, drmFd int32, connectorId uint32) (display DisplayKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetDrmDisplayEXT, uintptr(physicalDevice), uintptr(drmFd), uintptr(connectorId), uintptr(unsafe.Pointer(&display)))
+	return display, Result(r1)
+}
+
+// GetDynamicRenderingTilePropertiesQCOM - Get the properties when using dynamic rendering (vkGetDynamicRenderingTilePropertiesQCOM).
+// Parameters:
+//   - device: is a logical device associated with the render pass.
+//   - renderingInfo: is a pointer to the VkRenderingInfo structure specifying details of the render pass instance in dynamic rendering.
+//   - properties: is a pointer to a VkTilePropertiesQCOM structure in which the properties are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDynamicRenderingTilePropertiesQCOM.html
+func GetDynamicRenderingTilePropertiesQCOM(device Device, renderingInfo *RenderingInfo) (properties TilePropertiesQCOM, result Result) {
+	c_renderingInfo := renderingInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetDynamicRenderingTilePropertiesQCOM, uintptr(device), uintptr(unsafe.Pointer(c_renderingInfo)), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
+// GetEncodedVideoSessionParametersKHR - Get encoded parameter sets from a video session parameters object (vkGetEncodedVideoSessionParametersKHR).
+// Parameters:
+//   - device: is the logical device that owns the video session parameters object.
+//   - videoSessionParametersInfo: is a pointer to a VkVideoEncodeSessionParametersGetInfoKHR structure specifying the parameters of the encoded parameter data to retrieve.
+//   - feedbackInfo: is either NULL or a pointer to a VkVideoEncodeSessionParametersFeedbackInfoKHR structure in which feedback about the requested parameter data is returned.
+//   - dataSize: is a pointer to a size_t value related to the amount of encode parameter data returned, as described below.
+//   - data: is either NULL or a pointer to a buffer to write the encoded parameter data to.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetEncodedVideoSessionParametersKHR.html
+func GetEncodedVideoSessionParametersKHR(device Device, videoSessionParametersInfo *VideoEncodeSessionParametersGetInfoKHR, feedbackInfo *VideoEncodeSessionParametersFeedbackInfoKHR) (data []unsafe.Pointer, result Result) {
+	c_videoSessionParametersInfo := videoSessionParametersInfo.Raw()
+	c_feedbackInfo := feedbackInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetEncodedVideoSessionParametersKHR, uintptr(device), uintptr(unsafe.Pointer(c_videoSessionParametersInfo)), uintptr(unsafe.Pointer(c_feedbackInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = CallSyscall(pfnGetEncodedVideoSessionParametersKHR, uintptr(device), uintptr(unsafe.Pointer(c_videoSessionParametersInfo)), uintptr(unsafe.Pointer(c_feedbackInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, Result(r1)
+}
+
 // GetEventStatus - Retrieve the status of an event object (vkGetEventStatus).
 // Parameters:
 //   - device: is the logical device that owns the event.
@@ -3014,6 +8976,49 @@ func GetDeviceQueue2(device Device, queueInfo *DeviceQueueInfo2) (queue Queue) {
 func GetEventStatus(device Device, event Event) (result Result) {
 	r1, _, _ := CallSyscall(pfnGetEventStatus, uintptr(device), uintptr(event))
 	return Result(r1)
+}
+
+// GetExecutionGraphPipelineNodeIndexAMDX - Query internal id of a node in an execution graph (vkGetExecutionGraphPipelineNodeIndexAMDX).
+// Parameters:
+//   - device: is the logical device that executionGraph was created on.
+//   - executionGraph: is the execution graph pipeline to query the internal node index for.
+//   - nodeInfo: is a pointer to a VkPipelineShaderStageNodeCreateInfoAMDX structure identifying the name and index of the node to query.
+//   - nodeIndex: is the returned internal node index of the identified node.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetExecutionGraphPipelineNodeIndexAMDX.html
+func GetExecutionGraphPipelineNodeIndexAMDX(device Device, executionGraph Pipeline, nodeInfo *PipelineShaderStageNodeCreateInfoAMDX) (nodeIndex uint32, result Result) {
+	c_nodeInfo := nodeInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetExecutionGraphPipelineNodeIndexAMDX, uintptr(device), uintptr(executionGraph), uintptr(unsafe.Pointer(c_nodeInfo)), uintptr(unsafe.Pointer(&nodeIndex)))
+	return nodeIndex, Result(r1)
+}
+
+// GetExecutionGraphPipelineScratchSizeAMDX - Query scratch space required to dispatch an execution graph (vkGetExecutionGraphPipelineScratchSizeAMDX).
+// Parameters:
+//   - device: is the logical device that executionGraph was created on.
+//   - executionGraph: is the execution graph pipeline to query the scratch space for.
+//   - sizeInfo: is a pointer to a VkExecutionGraphPipelineScratchSizeAMDX structure that will contain the required scratch size.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetExecutionGraphPipelineScratchSizeAMDX.html
+func GetExecutionGraphPipelineScratchSizeAMDX(device Device, executionGraph Pipeline) (sizeInfo ExecutionGraphPipelineScratchSizeAMDX, result Result) {
+	r1, _, _ := CallSyscall(pfnGetExecutionGraphPipelineScratchSizeAMDX, uintptr(device), uintptr(executionGraph), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo, Result(r1)
+}
+
+// GetExternalComputeQueueDataNV - Retrieves data necessary for compatible external API initialization (vkGetExternalComputeQueueDataNV).
+// Parameters:
+//   - externalQueue: is the VkExternalComputeQueueNV to query the data for.
+//   - params: is a pointer to a VkExternalComputeQueueDataParamsNV structure specifying parameters required for retrieval of the implementation-specific data.
+//   - data: is a pointer to application-allocated memory in which the requested data will be returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetExternalComputeQueueDataNV.html
+func GetExternalComputeQueueDataNV(externalQueue ExternalComputeQueueNV, params *ExternalComputeQueueDataParamsNV) (data unsafe.Pointer) {
+	c_params := params.Raw()
+	CallSyscall(pfnGetExternalComputeQueueDataNV, uintptr(externalQueue), uintptr(unsafe.Pointer(c_params)), uintptr(unsafe.Pointer(&data)))
+	return data
 }
 
 // GetFaultData - Query fault information (vkGetFaultData).
@@ -3040,6 +9045,51 @@ func GetFaultData(device Device, faultQueryBehavior FaultQueryBehavior, unrecord
 	return faults, Result(r1)
 }
 
+// GetFenceFdKHR - Get a POSIX file descriptor handle for a fence (vkGetFenceFdKHR).
+// Parameters:
+//   - device: is the logical device that created the fence being exported.
+//   - getFdInfo: is a pointer to a VkFenceGetFdInfoKHR structure containing parameters of the export operation.
+//   - fd: will return the file descriptor representing the fence payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceFdKHR.html
+func GetFenceFdKHR(device Device, getFdInfo *FenceGetFdInfoKHR) (fd int32, result Result) {
+	c_getFdInfo := getFdInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetFenceFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
+	return fd, Result(r1)
+}
+
+// GetFenceSciSyncFenceNV - Get a stext:NvSciSyncFence handle for a fence (vkGetFenceSciSyncFenceNV).
+// Parameters:
+//   - device: is the logical device that created the fence being exported.
+//   - getSciSyncHandleInfo: is a pointer to a VkFenceGetSciSyncInfoNV structure containing parameters of the export operation.
+//   - handle: is a pointer to a stext:NvSciSyncFence which will contain the fence payload on return.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncFenceNV.html
+func GetFenceSciSyncFenceNV(device Device, getSciSyncHandleInfo *FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result Result) {
+	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetFenceSciSyncObjNV - Get a stext:NvSciSyncObj handle for a fence (vkGetFenceSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the fence being exported.
+//   - getSciSyncHandleInfo: is a pointer to a VkFenceGetSciSyncInfoNV structure containing parameters of the export operation.
+//   - handle: will return the stext:NvSciSyncObj handle representing the fence payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncObjNV.html
+func GetFenceSciSyncObjNV(device Device, getSciSyncHandleInfo *FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result Result) {
+	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
 // GetFenceStatus - Return the status of a fence (vkGetFenceStatus).
 // Parameters:
 //   - device: is the logical device that owns the fence.
@@ -3051,6 +9101,134 @@ func GetFaultData(device Device, faultQueryBehavior FaultQueryBehavior, unrecord
 func GetFenceStatus(device Device, fence Fence) (result Result) {
 	r1, _, _ := CallSyscall(pfnGetFenceStatus, uintptr(device), uintptr(fence))
 	return Result(r1)
+}
+
+// GetFenceWin32HandleKHR - Get a Windows HANDLE for a fence (vkGetFenceWin32HandleKHR).
+// Parameters:
+//   - device: is the logical device that created the fence being exported.
+//   - getWin32HandleInfo: is a pointer to a VkFenceGetWin32HandleInfoKHR structure containing parameters of the export operation.
+//   - handle: will return the Windows handle representing the fence state.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceWin32HandleKHR.html
+func GetFenceWin32HandleKHR(device Device, getWin32HandleInfo *FenceGetWin32HandleInfoKHR) (handle uintptr, result Result) {
+	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetFenceWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetFramebufferTilePropertiesQCOM - Get tile properties from the attachments in framebuffer (vkGetFramebufferTilePropertiesQCOM).
+// Parameters:
+//   - device: is a logical device associated with the framebuffer.
+//   - framebuffer: is a handle of the framebuffer to query.
+//   - propertiesCount: is a pointer to an integer related to the number of tile properties available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkTilePropertiesQCOM structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFramebufferTilePropertiesQCOM.html
+func GetFramebufferTilePropertiesQCOM(device Device, framebuffer Framebuffer) (properties []TilePropertiesQCOM, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetFramebufferTilePropertiesQCOM, uintptr(device), uintptr(framebuffer), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]TilePropertiesQCOM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetFramebufferTilePropertiesQCOM, uintptr(device), uintptr(framebuffer), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetGeneratedCommandsMemoryRequirementsEXT - Retrieve the buffer allocation requirements for generated commands (vkGetGeneratedCommandsMemoryRequirementsEXT).
+// Parameters:
+//   - device: is the logical device that owns the buffer.
+//   - info: is a pointer to a VkGeneratedCommandsMemoryRequirementsInfoEXT structure containing parameters required for the memory requirements query.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the buffer object are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGeneratedCommandsMemoryRequirementsEXT.html
+func GetGeneratedCommandsMemoryRequirementsEXT(device Device, info *GeneratedCommandsMemoryRequirementsInfoEXT) (memoryRequirements MemoryRequirements2) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetGeneratedCommandsMemoryRequirementsEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetGeneratedCommandsMemoryRequirementsNV - Retrieve the buffer allocation requirements for generated commands (vkGetGeneratedCommandsMemoryRequirementsNV).
+// Parameters:
+//   - device: is the logical device that owns the buffer.
+//   - info: is a pointer to a VkGeneratedCommandsMemoryRequirementsInfoNV structure containing parameters required for the memory requirements query.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the buffer object are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGeneratedCommandsMemoryRequirementsNV.html
+func GetGeneratedCommandsMemoryRequirementsNV(device Device, info *GeneratedCommandsMemoryRequirementsInfoNV) (memoryRequirements MemoryRequirements2) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetGeneratedCommandsMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetGpaDeviceClockInfoAMD - Getting device clocks and ratios (vkGetGpaDeviceClockInfoAMD).
+// Parameters:
+//   - device: is the logical device to get clock information from.
+//   - info: is a pointer to a VkGpaDeviceGetClockInfoAMD structure in which the clock values are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGpaDeviceClockInfoAMD.html
+func GetGpaDeviceClockInfoAMD(device Device) (info GpaDeviceGetClockInfoAMD, result Result) {
+	r1, _, _ := CallSyscall(pfnGetGpaDeviceClockInfoAMD, uintptr(device), uintptr(unsafe.Pointer(&info)))
+	return info, Result(r1)
+}
+
+// GetGpaSessionResultsAMD - Getting the status of a GPA session (vkGetGpaSessionResultsAMD).
+// Parameters:
+//   - device: is the logical device used to create the GPA session.
+//   - gpaSession: is the session whose results are queried.
+//   - sampleID: is the sample ID, returned by vkCmdBeginGpaSampleAMD, whose results are to be queried.
+//   - sizeInBytes: is a pointer to a size_t value related to the size of the results data, as described below.
+//   - data: is either NULL or a pointer to an array of pSizeInBytes bytes where the results will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGpaSessionResultsAMD.html
+func GetGpaSessionResultsAMD(device Device, gpaSession GpaSessionAMD, sampleID uint32) (data []unsafe.Pointer, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetGpaSessionResultsAMD, uintptr(device), uintptr(gpaSession), uintptr(sampleID), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = CallSyscall(pfnGetGpaSessionResultsAMD, uintptr(device), uintptr(gpaSession), uintptr(sampleID), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, Result(r1)
+}
+
+// GetGpaSessionStatusAMD - Getting the status of a GPA session (vkGetGpaSessionStatusAMD).
+// Parameters:
+//   - device: is the logical device used to create the GPA session.
+//   - gpaSession: is the session whose status is queried.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGpaSessionStatusAMD.html
+func GetGpaSessionStatusAMD(device Device, gpaSession GpaSessionAMD) (result Result) {
+	r1, _, _ := CallSyscall(pfnGetGpaSessionStatusAMD, uintptr(device), uintptr(gpaSession))
+	return Result(r1)
+}
+
+// GetImageDrmFormatModifierPropertiesEXT - Returns an image\ (vkGetImageDrmFormatModifierPropertiesEXT).
+// Parameters:
+//   - device: is the logical device that owns the image.
+//   - image: is the queried image.
+//   - properties: is a pointer to a VkImageDrmFormatModifierPropertiesEXT structure in which properties of the image's _DRM format modifier_ are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageDrmFormatModifierPropertiesEXT.html
+func GetImageDrmFormatModifierPropertiesEXT(device Device, image Image) (properties ImageDrmFormatModifierPropertiesEXT, result Result) {
+	r1, _, _ := CallSyscall(pfnGetImageDrmFormatModifierPropertiesEXT, uintptr(device), uintptr(image), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
 }
 
 // GetImageMemoryRequirements - Returns the memory requirements for specified Vulkan object (vkGetImageMemoryRequirements).
@@ -3076,6 +9254,37 @@ func GetImageMemoryRequirements2(device Device, info *ImageMemoryRequirementsInf
 	c_info := info.Raw()
 	CallSyscall(pfnGetImageMemoryRequirements2, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
 	return memoryRequirements
+}
+
+// GetImageOpaqueCaptureDataEXT - Get image opaque capture descriptor data for descriptor heap replay (vkGetImageOpaqueCaptureDataEXT).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - imageCount: is the number of images to retrieve data from.
+//   - images: is a pointer to an array of VkImage objects to retrieve the opaque capture data from.
+//   - datas: is a pointer to an array of VkHostAddressRangeEXT structures defining the host address ranges where each image's opaque capture data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageOpaqueCaptureDataEXT.html
+func GetImageOpaqueCaptureDataEXT(device Device, images []Image) (datas HostAddressRangeEXT, result Result) {
+	c_images := SliceData(images)
+	r1, _, _ := CallSyscall(pfnGetImageOpaqueCaptureDataEXT, uintptr(device), uintptr(len(images)), uintptr(unsafe.Pointer(c_images)), uintptr(unsafe.Pointer(&datas)))
+	return datas, Result(r1)
+}
+
+// GetImageOpaqueCaptureDescriptorDataEXT - Get image opaque capture descriptor data (vkGetImageOpaqueCaptureDescriptorDataEXT).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkImageCaptureDescriptorDataInfoEXT structure specifying the image.
+//   - data: is a pointer to an application-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageOpaqueCaptureDescriptorDataEXT.html
+func GetImageOpaqueCaptureDescriptorDataEXT(device Device, info *ImageCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetImageOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
 }
 
 // GetImageSparseMemoryRequirements - Query the memory requirements for a sparse image (vkGetImageSparseMemoryRequirements).
@@ -3149,6 +9358,626 @@ func GetImageSubresourceLayout2(device Device, image Image, subresource *ImageSu
 	return layout
 }
 
+// GetImageViewAddressNVX - Get the device address of an image view (vkGetImageViewAddressNVX).
+// Parameters:
+//   - device: is the logical device that owns the image view.
+//   - imageView: is a handle to the image view.
+//   - properties: contains the device address and size when the call returns.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewAddressNVX.html
+func GetImageViewAddressNVX(device Device, imageView ImageView) (properties ImageViewAddressPropertiesNVX, result Result) {
+	r1, _, _ := CallSyscall(pfnGetImageViewAddressNVX, uintptr(device), uintptr(imageView), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
+// GetImageViewHandle64NVX - Get the 64-bit handle for an image view for a specific descriptor type (vkGetImageViewHandle64NVX).
+// Parameters:
+//   - device: is the logical device that owns the image view.
+//   - info: describes the image view to query and type of handle.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewHandle64NVX.html
+func GetImageViewHandle64NVX(device Device, info *ImageViewHandleInfoNVX) (result uint64) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetImageViewHandle64NVX, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return uint64(r1)
+}
+
+// GetImageViewHandleNVX - Get the handle for an image view for a specific descriptor type (vkGetImageViewHandleNVX).
+// Parameters:
+//   - device: is the logical device that owns the image view.
+//   - info: describes the image view to query and type of handle.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewHandleNVX.html
+func GetImageViewHandleNVX(device Device, info *ImageViewHandleInfoNVX) (result uint32) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetImageViewHandleNVX, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return uint32(r1)
+}
+
+// GetImageViewOpaqueCaptureDescriptorDataEXT - Get image view opaque capture descriptor data (vkGetImageViewOpaqueCaptureDescriptorDataEXT).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkImageViewCaptureDescriptorDataInfoEXT structure specifying the image view.
+//   - data: is a pointer to an application-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewOpaqueCaptureDescriptorDataEXT.html
+func GetImageViewOpaqueCaptureDescriptorDataEXT(device Device, info *ImageViewCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetImageViewOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
+}
+
+// GetLatencyTimingsLegacyNV - Stub description of vkGetLatencyTimingsLegacyNV (vkGetLatencyTimingsLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetLatencyTimingsLegacyNV.html
+func GetLatencyTimingsLegacyNV(device Device) (timings unsafe.Pointer) {
+	CallSyscall(pfnGetLatencyTimingsLegacyNV, uintptr(device), uintptr(unsafe.Pointer(&timings)))
+	return timings
+}
+
+// GetLatencyTimingsNV - Get latency marker results (vkGetLatencyTimingsNV).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to return data from.
+//   - latencyMarkerInfo: is a pointer to a VkGetLatencyMarkerInfoNV structure specifying the parameters for returning latency information.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetLatencyTimingsNV.html
+func GetLatencyTimingsNV(device Device, swapchain SwapchainKHR) (latencyMarkerInfo GetLatencyMarkerInfoNV) {
+	CallSyscall(pfnGetLatencyTimingsNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&latencyMarkerInfo)))
+	return latencyMarkerInfo
+}
+
+// GetMemoryAndroidHardwareBufferANDROID - Get an Android hardware buffer for a memory object (vkGetMemoryAndroidHardwareBufferANDROID).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - info: is a pointer to a VkMemoryGetAndroidHardwareBufferInfoANDROID structure containing parameters of the export operation.
+//   - buffer: will return an Android hardware buffer referencing the payload of the device memory object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryAndroidHardwareBufferANDROID.html
+func GetMemoryAndroidHardwareBufferANDROID(device Device, info *MemoryGetAndroidHardwareBufferInfoANDROID) (buffer uintptr, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryAndroidHardwareBufferANDROID, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&buffer)))
+	return buffer, Result(r1)
+}
+
+// GetMemoryFdKHR - Get a POSIX file descriptor for a memory object (vkGetMemoryFdKHR).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - getFdInfo: is a pointer to a VkMemoryGetFdInfoKHR structure containing parameters of the export operation.
+//   - fd: will return a file descriptor referencing the payload of the device memory object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryFdKHR.html
+func GetMemoryFdKHR(device Device, getFdInfo *MemoryGetFdInfoKHR) (fd int32, result Result) {
+	c_getFdInfo := getFdInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
+	return fd, Result(r1)
+}
+
+// GetMemoryFdPropertiesKHR - Get Properties of External Memory File Descriptors (vkGetMemoryFdPropertiesKHR).
+// Parameters:
+//   - device: is the logical device that will be importing fd.
+//   - handleType: is a VkExternalMemoryHandleTypeFlagBits value specifying the type of the handle fd.
+//   - fd: is the handle which will be imported.
+//   - memoryFdProperties: is a pointer to a VkMemoryFdPropertiesKHR structure in which the properties of the handle fd are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryFdPropertiesKHR.html
+func GetMemoryFdPropertiesKHR(device Device, handleType ExternalMemoryHandleTypeFlagBits, fd int32) (memoryFdProperties MemoryFdPropertiesKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetMemoryFdPropertiesKHR, uintptr(device), uintptr(handleType), uintptr(fd), uintptr(unsafe.Pointer(&memoryFdProperties)))
+	return memoryFdProperties, Result(r1)
+}
+
+// GetMemoryHostPointerPropertiesEXT - Get properties of external memory host pointer (vkGetMemoryHostPointerPropertiesEXT).
+// Parameters:
+//   - device: is the logical device that will be importing pHostPointer.
+//   - handleType: is a VkExternalMemoryHandleTypeFlagBits value specifying the type of the handle pHostPointer.
+//   - hostPointer: is the host pointer to import from.
+//   - memoryHostPointerProperties: is a pointer to a VkMemoryHostPointerPropertiesEXT structure in which the host pointer properties are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryHostPointerPropertiesEXT.html
+func GetMemoryHostPointerPropertiesEXT(device Device, handleType ExternalMemoryHandleTypeFlagBits, hostPointer unsafe.Pointer) (memoryHostPointerProperties MemoryHostPointerPropertiesEXT, result Result) {
+	r1, _, _ := CallSyscall(pfnGetMemoryHostPointerPropertiesEXT, uintptr(device), uintptr(handleType), uintptr(unsafe.Pointer(hostPointer)), uintptr(unsafe.Pointer(&memoryHostPointerProperties)))
+	return memoryHostPointerProperties, Result(r1)
+}
+
+// GetMemoryMetalHandleEXT - Get a Metal handle for a memory object (vkGetMemoryMetalHandleEXT).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - getMetalHandleInfo: is a pointer to a VkMemoryGetMetalHandleInfoEXT structure containing parameters of the export operation.
+//   - handle: will return the Metal handle representing the payload of the device memory object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryMetalHandleEXT.html
+func GetMemoryMetalHandleEXT(device Device, getMetalHandleInfo *MemoryGetMetalHandleInfoEXT) (handle unsafe.Pointer, result Result) {
+	c_getMetalHandleInfo := getMetalHandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryMetalHandleEXT, uintptr(device), uintptr(unsafe.Pointer(c_getMetalHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetMemoryMetalHandlePropertiesEXT - Get Properties of External Memory Metal Handles (vkGetMemoryMetalHandlePropertiesEXT).
+// Parameters:
+//   - device: is the logical device that will be importing pHandle.
+//   - handleType: is a VkExternalMemoryHandleTypeFlagBits value specifying the type of the handle pHandle.
+//   - handle: is the handle which will be imported.
+//   - memoryMetalHandleProperties: is a pointer to a VkMemoryMetalHandlePropertiesEXT structure in which properties of pHandle are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryMetalHandlePropertiesEXT.html
+func GetMemoryMetalHandlePropertiesEXT(device Device, handleType ExternalMemoryHandleTypeFlagBits, handle unsafe.Pointer) (memoryMetalHandleProperties MemoryMetalHandlePropertiesEXT, result Result) {
+	r1, _, _ := CallSyscall(pfnGetMemoryMetalHandlePropertiesEXT, uintptr(device), uintptr(handleType), uintptr(unsafe.Pointer(handle)), uintptr(unsafe.Pointer(&memoryMetalHandleProperties)))
+	return memoryMetalHandleProperties, Result(r1)
+}
+
+// GetMemoryNativeBufferOHOS - Obtain an OH_NativeBuffer object (vkGetMemoryNativeBufferOHOS).
+// Parameters:
+//   - device: is a valid Vulkan device object.
+//   - info: is a pointer pointing to a VkMemoryGetNativeBufferInfoOHOS structure.
+//   - buffer: is a pointer to an basetype:OH_NativeBuffer object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryNativeBufferOHOS.html
+func GetMemoryNativeBufferOHOS(device Device, info *MemoryGetNativeBufferInfoOHOS) (buffer uintptr, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryNativeBufferOHOS, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&buffer)))
+	return buffer, Result(r1)
+}
+
+// GetMemoryRemoteAddressNV - Get an address for a memory object accessible by remote devices (vkGetMemoryRemoteAddressNV).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - memoryGetRemoteAddressInfo: is a pointer to a VkMemoryGetRemoteAddressInfoNV structure containing parameters of the export operation.
+//   - address: is a pointer to a basetype:VkRemoteAddressNV value in which an address representing the payload of the device memory object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryRemoteAddressNV.html
+func GetMemoryRemoteAddressNV(device Device, memoryGetRemoteAddressInfo *MemoryGetRemoteAddressInfoNV) (address RemoteAddressNV, result Result) {
+	c_memoryGetRemoteAddressInfo := memoryGetRemoteAddressInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryRemoteAddressNV, uintptr(device), uintptr(unsafe.Pointer(c_memoryGetRemoteAddressInfo)), uintptr(unsafe.Pointer(&address)))
+	return address, Result(r1)
+}
+
+// GetMemorySciBufNV - Get a stext:NvSciBufObj handle for a memory object (vkGetMemorySciBufNV).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - getSciBufInfo: is a pointer to a VkMemoryGetSciBufInfoNV structure containing parameters of the export operation.
+//   - handle: will return the stext:NvSciBufObj representing the payload of the device memory object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemorySciBufNV.html
+func GetMemorySciBufNV(device Device, getSciBufInfo *MemoryGetSciBufInfoNV) (handle uintptr, result Result) {
+	c_getSciBufInfo := getSciBufInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemorySciBufNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciBufInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetMemoryWin32HandleKHR - Get a Windows HANDLE for a memory object (vkGetMemoryWin32HandleKHR).
+// Parameters:
+//   - device: is the logical device that created the device memory being exported.
+//   - getWin32HandleInfo: is a pointer to a VkMemoryGetWin32HandleInfoKHR structure containing parameters of the export operation.
+//   - handle: will return the Windows handle representing the payload of the device memory object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryWin32HandleKHR.html
+func GetMemoryWin32HandleKHR(device Device, getWin32HandleInfo *MemoryGetWin32HandleInfoKHR) (handle uintptr, result Result) {
+	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetMemoryWin32HandleNV - Retrieve Win32 handle to a device memory object (vkGetMemoryWin32HandleNV).
+// Parameters:
+//   - device: is the logical device that owns the memory.
+//   - memory: is the VkDeviceMemory object.
+//   - handleType: is a bitmask of VkExternalMemoryHandleTypeFlagBitsNV containing a single bit specifying the type of handle requested.
+//   - handle: is a pointer to a Windows HANDLE in which the handle is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryWin32HandleNV.html
+func GetMemoryWin32HandleNV(device Device, memory DeviceMemory, handleType ExternalMemoryHandleTypeFlagsNV) (handle uintptr, result Result) {
+	r1, _, _ := CallSyscall(pfnGetMemoryWin32HandleNV, uintptr(device), uintptr(memory), uintptr(handleType), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetMemoryWin32HandlePropertiesKHR - Get Properties of External Memory Win32 Handles (vkGetMemoryWin32HandlePropertiesKHR).
+// Parameters:
+//   - device: is the logical device that will be importing handle.
+//   - handleType: is a VkExternalMemoryHandleTypeFlagBits value specifying the type of the handle handle.
+//   - handle: is the handle which will be imported.
+//   - memoryWin32HandleProperties: is a pointer to a VkMemoryWin32HandlePropertiesKHR structure in which properties of handle are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryWin32HandlePropertiesKHR.html
+func GetMemoryWin32HandlePropertiesKHR(device Device, handleType ExternalMemoryHandleTypeFlagBits, handle uintptr) (memoryWin32HandleProperties MemoryWin32HandlePropertiesKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetMemoryWin32HandlePropertiesKHR, uintptr(device), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memoryWin32HandleProperties)))
+	return memoryWin32HandleProperties, Result(r1)
+}
+
+// GetMemoryZirconHandleFUCHSIA - Get a Zircon handle for an external memory object (vkGetMemoryZirconHandleFUCHSIA).
+// Parameters:
+//   - device: is the VkDevice.
+//   - getZirconHandleInfo: is a pointer to a VkMemoryGetZirconHandleInfoFUCHSIA structure.
+//   - zirconHandle: is a pointer to a zx_handle_t which holds the resulting Zircon handle.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryZirconHandleFUCHSIA.html
+func GetMemoryZirconHandleFUCHSIA(device Device, getZirconHandleInfo *MemoryGetZirconHandleInfoFUCHSIA) (zirconHandle uint32, result Result) {
+	c_getZirconHandleInfo := getZirconHandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetMemoryZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_getZirconHandleInfo)), uintptr(unsafe.Pointer(&zirconHandle)))
+	return zirconHandle, Result(r1)
+}
+
+// GetMemoryZirconHandlePropertiesFUCHSIA - Get a Zircon handle properties for an external memory object (vkGetMemoryZirconHandlePropertiesFUCHSIA).
+// Parameters:
+//   - device: is the VkDevice.
+//   - handleType: is a VkExternalMemoryHandleTypeFlagBits value specifying the type of zirconHandle
+//   - zirconHandle: is a zx_handle_t (Zircon) handle to the external resource.
+//   - memoryZirconHandleProperties: is a pointer to a VkMemoryZirconHandlePropertiesFUCHSIA structure in which the result will be stored.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryZirconHandlePropertiesFUCHSIA.html
+func GetMemoryZirconHandlePropertiesFUCHSIA(device Device, handleType ExternalMemoryHandleTypeFlagBits, zirconHandle uint32) (memoryZirconHandleProperties MemoryZirconHandlePropertiesFUCHSIA, result Result) {
+	r1, _, _ := CallSyscall(pfnGetMemoryZirconHandlePropertiesFUCHSIA, uintptr(device), uintptr(handleType), uintptr(zirconHandle), uintptr(unsafe.Pointer(&memoryZirconHandleProperties)))
+	return memoryZirconHandleProperties, Result(r1)
+}
+
+// GetMicromapBuildSizesEXT - Retrieve the required size for a micromap (vkGetMicromapBuildSizesEXT).
+// Parameters:
+//   - device: is the logical device that will be used for creating the micromap.
+//   - buildType: defines whether host or device operations (or both) are being queried for.
+//   - buildInfo: is a pointer to a VkMicromapBuildInfoEXT structure describing parameters of a build operation.
+//   - sizeInfo: is a pointer to a VkMicromapBuildSizesInfoEXT structure which returns the size required for a micromap and the sizes required for the scratch buffers, given the build parameters. The size requirements for a scratch buffer may be zero.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMicromapBuildSizesEXT.html
+func GetMicromapBuildSizesEXT(device Device, buildType AccelerationStructureBuildTypeKHR, buildInfo *MicromapBuildInfoEXT) (sizeInfo MicromapBuildSizesInfoEXT) {
+	c_buildInfo := buildInfo.Raw()
+	CallSyscall(pfnGetMicromapBuildSizesEXT, uintptr(device), uintptr(buildType), uintptr(unsafe.Pointer(c_buildInfo)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
+// GetNativeBufferPropertiesOHOS - Obtain the properties of an OH_NativeBuffer Object (vkGetNativeBufferPropertiesOHOS).
+// Parameters:
+//   - device: is the logical device that will be importing buffer.
+//   - buffer: is the basetype:OH_NativeBuffer object specifies the buffer for which its properties are to be queried.
+//   - properties: is a pointer to a VkNativeBufferPropertiesOHOS structure in which the properties of buffer are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetNativeBufferPropertiesOHOS.html
+func GetNativeBufferPropertiesOHOS(device Device, buffer uintptr) (properties NativeBufferPropertiesOHOS, result Result) {
+	r1, _, _ := CallSyscall(pfnGetNativeBufferPropertiesOHOS, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
+// GetPartitionedAccelerationStructuresBuildSizesNV - Retrieve the buffer allocation requirements for partitioned acceleration structure command (vkGetPartitionedAccelerationStructuresBuildSizesNV).
+// Parameters:
+//   - device: is the logical device that owns the acceleration structure.
+//   - info: is a pointer to a VkPartitionedAccelerationStructureInstancesInputNV structure containing parameters required for the memory requirements query.
+//   - sizeInfo: is a pointer to a VkAccelerationStructureBuildSizesInfoKHR structure which returns the size required for an acceleration structure and the sizes required for the scratch buffers, given the build parameters. The size requirements for a scratch buffer may be zero.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPartitionedAccelerationStructuresBuildSizesNV.html
+func GetPartitionedAccelerationStructuresBuildSizesNV(device Device, info *PartitionedAccelerationStructureInstancesInputNV) (sizeInfo AccelerationStructureBuildSizesInfoKHR) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetPartitionedAccelerationStructuresBuildSizesNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
+// GetPastPresentationTimingEXT - Obtain timing of previously-presented images (vkGetPastPresentationTimingEXT).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - pastPresentationTimingInfo: is a pointer to an instance of the VkPastPresentationTimingInfoEXT structure.
+//   - pastPresentationTimingProperties: is a pointer to an instance of the VkPastPresentationTimingPropertiesEXT structure.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPastPresentationTimingEXT.html
+func GetPastPresentationTimingEXT(device Device, pastPresentationTimingInfo *PastPresentationTimingInfoEXT) (pastPresentationTimingProperties PastPresentationTimingPropertiesEXT, result Result) {
+	c_pastPresentationTimingInfo := pastPresentationTimingInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetPastPresentationTimingEXT, uintptr(device), uintptr(unsafe.Pointer(c_pastPresentationTimingInfo)), uintptr(unsafe.Pointer(&pastPresentationTimingProperties)))
+	return pastPresentationTimingProperties, Result(r1)
+}
+
+// GetPastPresentationTimingGOOGLE - Obtain timing of a previously-presented image (vkGetPastPresentationTimingGOOGLE).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to obtain presentation timing information duration for.
+//   - presentationTimingCount: is a pointer to an integer related to the number of VkPastPresentationTimingGOOGLE structures to query, as described below.
+//   - presentationTimings: is either NULL or a pointer to an array of VkPastPresentationTimingGOOGLE structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPastPresentationTimingGOOGLE.html
+func GetPastPresentationTimingGOOGLE(device Device, swapchain SwapchainKHR) (presentationTimings []PastPresentationTimingGOOGLE, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPastPresentationTimingGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	presentationTimings = make([]PastPresentationTimingGOOGLE, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&presentationTimings[0]))
+	r1, _, _ = CallSyscall(pfnGetPastPresentationTimingGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return presentationTimings, Result(r1)
+}
+
+// GetPerformanceParameterINTEL - Query performance capabilities of the device (vkGetPerformanceParameterINTEL).
+// Parameters:
+//   - device: is the logical device to query.
+//   - parameter: is the parameter to query.
+//   - value: is a pointer to a VkPerformanceValueINTEL structure in which the type and value of the parameter are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPerformanceParameterINTEL.html
+func GetPerformanceParameterINTEL(device Device, parameter PerformanceParameterTypeINTEL) (value PerformanceValueINTEL, result Result) {
+	r1, _, _ := CallSyscall(pfnGetPerformanceParameterINTEL, uintptr(device), uintptr(parameter), uintptr(unsafe.Pointer(&value)))
+	return value, Result(r1)
+}
+
+// GetPhysicalDeviceCalibrateableTimeDomainsKHR - Query calibrateable time domains (vkGetPhysicalDeviceCalibrateableTimeDomainsKHR).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the set of calibrateable time domains.
+//   - timeDomainCount: is a pointer to an integer related to the number of calibrateable time domains available or queried, as described below.
+//   - timeDomains: is either NULL or a pointer to an array of VkTimeDomainKHR values, indicating the supported calibrateable time domains.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCalibrateableTimeDomainsKHR.html
+func GetPhysicalDeviceCalibrateableTimeDomainsKHR(physicalDevice PhysicalDevice) (timeDomains []TimeDomainKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	timeDomains = make([]TimeDomainKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&timeDomains[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return timeDomains, Result(r1)
+}
+
+// GetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV - Returns properties describing what cooperative matrix types are supported (vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - propertyCount: is a pointer to an integer related to the number of cooperative matrix properties available or queried.
+//   - properties: is either NULL or a pointer to an array of VkCooperativeMatrixFlexibleDimensionsPropertiesNV structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV.html
+func GetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV(physicalDevice PhysicalDevice) (properties []CooperativeMatrixFlexibleDimensionsPropertiesNV, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]CooperativeMatrixFlexibleDimensionsPropertiesNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceCooperativeMatrixProperties2EXT - Returns properties describing what cooperative matrix types are supported (vkGetPhysicalDeviceCooperativeMatrixProperties2EXT).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - cooperativeMatrixInfo: is a pointer to a VkPhysicalDeviceCooperativeMatrixInfo2EXT structure describing which cooperative matrix properties to query.
+//   - propertyCount: is a pointer to an integer related to the number of cooperative matrix properties available or queried.
+//   - properties: is either NULL or a pointer to an array of VkCooperativeMatrixProperties2EXT structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeMatrixProperties2EXT.html
+func GetPhysicalDeviceCooperativeMatrixProperties2EXT(physicalDevice PhysicalDevice, cooperativeMatrixInfo *PhysicalDeviceCooperativeMatrixInfo2EXT) (properties []CooperativeMatrixProperties2EXT, result Result) {
+	c_cooperativeMatrixInfo := cooperativeMatrixInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixProperties2EXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_cooperativeMatrixInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]CooperativeMatrixProperties2EXT, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixProperties2EXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_cooperativeMatrixInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceCooperativeMatrixPropertiesKHR - Returns properties describing what cooperative matrix types are supported (vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - propertyCount: is a pointer to an integer related to the number of cooperative matrix properties available or queried.
+//   - properties: is either NULL or a pointer to an array of VkCooperativeMatrixPropertiesKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR.html
+func GetPhysicalDeviceCooperativeMatrixPropertiesKHR(physicalDevice PhysicalDevice) (properties []CooperativeMatrixPropertiesKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]CooperativeMatrixPropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceCooperativeMatrixPropertiesNV - Returns properties describing what cooperative matrix types are supported (vkGetPhysicalDeviceCooperativeMatrixPropertiesNV).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - propertyCount: is a pointer to an integer related to the number of cooperative matrix properties available or queried.
+//   - properties: is either NULL or a pointer to an array of VkCooperativeMatrixPropertiesNV structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeMatrixPropertiesNV.html
+func GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice PhysicalDevice) (properties []CooperativeMatrixPropertiesNV, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]CooperativeMatrixPropertiesNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceCooperativeVectorPropertiesNV - Returns properties describing what cooperative vector types are supported (vkGetPhysicalDeviceCooperativeVectorPropertiesNV).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - propertyCount: is a pointer to an integer related to the number of cooperative vector properties available or queried.
+//   - properties: is either NULL or a pointer to an array of VkCooperativeVectorPropertiesNV structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeVectorPropertiesNV.html
+func GetPhysicalDeviceCooperativeVectorPropertiesNV(physicalDevice PhysicalDevice) (properties []CooperativeVectorPropertiesNV, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceCooperativeVectorPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]CooperativeVectorPropertiesNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceCooperativeVectorPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceDescriptorSizeEXT - Report specific descriptor sizes for each descriptor type (vkGetPhysicalDeviceDescriptorSizeEXT).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the descriptor sizes.
+//   - descriptorType: is a VkDescriptorType specifying the type of heap descriptor to query the size for.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDescriptorSizeEXT.html
+func GetPhysicalDeviceDescriptorSizeEXT(physicalDevice PhysicalDevice, descriptorType DescriptorType) (result DeviceSize) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceDescriptorSizeEXT, uintptr(physicalDevice), uintptr(descriptorType))
+	return DeviceSize(r1)
+}
+
+// GetPhysicalDeviceDirectFBPresentationSupportEXT - Query physical device for presentation with DirectFB (vkGetPhysicalDeviceDirectFBPresentationSupportEXT).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//   - dfb: is a pointer to the IDirectFB main interface of DirectFB.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDirectFBPresentationSupportEXT.html
+func GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice PhysicalDevice, queueFamilyIndex uint32) (dfb uintptr) {
+	CallSyscall(pfnGetPhysicalDeviceDirectFBPresentationSupportEXT, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&dfb)))
+	return dfb
+}
+
+// GetPhysicalDeviceDisplayPlaneProperties2KHR - Query information about the available display planes. (vkGetPhysicalDeviceDisplayPlaneProperties2KHR).
+// Parameters:
+//   - physicalDevice: is a physical device.
+//   - propertyCount: is a pointer to an integer related to the number of display planes available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDisplayPlaneProperties2KHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayPlaneProperties2KHR.html
+func GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice PhysicalDevice) (properties []DisplayPlaneProperties2KHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceDisplayPlaneProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DisplayPlaneProperties2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceDisplayPlaneProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceDisplayPlanePropertiesKHR - Query the plane properties (vkGetPhysicalDeviceDisplayPlanePropertiesKHR).
+// Parameters:
+//   - physicalDevice: is a physical device.
+//   - propertyCount: is a pointer to an integer related to the number of display planes available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDisplayPlanePropertiesKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayPlanePropertiesKHR.html
+func GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice PhysicalDevice) (properties []DisplayPlanePropertiesKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceDisplayPlanePropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DisplayPlanePropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceDisplayPlanePropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceDisplayProperties2KHR - Query information about the available displays (vkGetPhysicalDeviceDisplayProperties2KHR).
+// Parameters:
+//   - physicalDevice: is a physical device.
+//   - propertyCount: is a pointer to an integer related to the number of display devices available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDisplayProperties2KHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayProperties2KHR.html
+func GetPhysicalDeviceDisplayProperties2KHR(physicalDevice PhysicalDevice) (properties []DisplayProperties2KHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceDisplayProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DisplayProperties2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceDisplayProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceDisplayPropertiesKHR - Query information about the available displays (vkGetPhysicalDeviceDisplayPropertiesKHR).
+// Parameters:
+//   - physicalDevice: is a physical device.
+//   - propertyCount: is a pointer to an integer related to the number of display devices available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkDisplayPropertiesKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayPropertiesKHR.html
+func GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice PhysicalDevice) (properties []DisplayPropertiesKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceDisplayPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]DisplayPropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceDisplayPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
 // GetPhysicalDeviceExternalBufferProperties - Query external handle types supported by buffers (vkGetPhysicalDeviceExternalBufferProperties).
 // Parameters:
 //   - physicalDevice: is the physical device from which to query the buffer capabilities.
@@ -3175,6 +10004,40 @@ func GetPhysicalDeviceExternalFenceProperties(physicalDevice PhysicalDevice, ext
 	return externalFenceProperties
 }
 
+// GetPhysicalDeviceExternalImageFormatPropertiesNV - Determine image capabilities compatible with external memory handle types (vkGetPhysicalDeviceExternalImageFormatPropertiesNV).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the image capabilities
+//   - format: is the image format, corresponding to VkImageCreateInfo::pname:format.
+//   - typ: is the image type, corresponding to VkImageCreateInfo::pname:imageType.
+//   - tiling: is the image tiling, corresponding to VkImageCreateInfo::pname:tiling.
+//   - usage: is the intended usage of the image, corresponding to VkImageCreateInfo::pname:usage.
+//   - flags: is a bitmask describing additional parameters of the image, corresponding to VkImageCreateInfo::pname:flags.
+//   - externalHandleType: is either one of the bits from VkExternalMemoryHandleTypeFlagBitsNV, or 0.
+//   - externalImageFormatProperties: is a pointer to a VkExternalImageFormatPropertiesNV structure in which capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalImageFormatPropertiesNV.html
+func GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice PhysicalDevice, format Format, typ ImageType, tiling ImageTiling, usage ImageUsageFlags, flags ImageCreateFlags, externalHandleType ExternalMemoryHandleTypeFlagsNV) (externalImageFormatProperties ExternalImageFormatPropertiesNV, result Result) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceExternalImageFormatPropertiesNV, uintptr(physicalDevice), uintptr(format), uintptr(typ), uintptr(tiling), uintptr(usage), uintptr(flags), uintptr(externalHandleType), uintptr(unsafe.Pointer(&externalImageFormatProperties)))
+	return externalImageFormatProperties, Result(r1)
+}
+
+// GetPhysicalDeviceExternalMemorySciBufPropertiesNV - Get physical device properties of External Memory stext:NvSciBufObj Handles (vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device whose properties will be queried.
+//   - handleType: is the type of the handle handle.
+//   - handle: is the stext:NvSciBuffObj handle which will be imported.
+//   - memorySciBufProperties: is a pointer to a VkMemorySciBufPropertiesNV structure.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV.html
+func GetPhysicalDeviceExternalMemorySciBufPropertiesNV(physicalDevice PhysicalDevice, handleType ExternalMemoryHandleTypeFlagBits, handle uintptr) (memorySciBufProperties MemorySciBufPropertiesNV, result Result) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV, uintptr(physicalDevice), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memorySciBufProperties)))
+	return memorySciBufProperties, Result(r1)
+}
+
 // GetPhysicalDeviceExternalSemaphoreProperties - Function for querying external semaphore handle capabilities. (vkGetPhysicalDeviceExternalSemaphoreProperties).
 // Parameters:
 //   - physicalDevice: is the physical device from which to query the semaphore capabilities.
@@ -3186,6 +10049,19 @@ func GetPhysicalDeviceExternalSemaphoreProperties(physicalDevice PhysicalDevice,
 	c_externalSemaphoreInfo := externalSemaphoreInfo.Raw()
 	CallSyscall(pfnGetPhysicalDeviceExternalSemaphoreProperties, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_externalSemaphoreInfo)), uintptr(unsafe.Pointer(&externalSemaphoreProperties)))
 	return externalSemaphoreProperties
+}
+
+// GetPhysicalDeviceExternalTensorPropertiesARM - Function for querying external tensor handle capabilities. (vkGetPhysicalDeviceExternalTensorPropertiesARM).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the tensor capabilities.
+//   - externalTensorInfo: is a pointer to a VkPhysicalDeviceExternalTensorInfoARM structure describing the parameters that would be consumed by vkCreateTensorARM.
+//   - externalTensorProperties: is a pointer to a VkExternalTensorPropertiesARM structure in which the capabilities are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalTensorPropertiesARM.html
+func GetPhysicalDeviceExternalTensorPropertiesARM(physicalDevice PhysicalDevice, externalTensorInfo *PhysicalDeviceExternalTensorInfoARM) (externalTensorProperties ExternalTensorPropertiesARM) {
+	c_externalTensorInfo := externalTensorInfo.Raw()
+	CallSyscall(pfnGetPhysicalDeviceExternalTensorPropertiesARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_externalTensorInfo)), uintptr(unsafe.Pointer(&externalTensorProperties)))
+	return externalTensorProperties
 }
 
 // GetPhysicalDeviceFeatures - Reports capabilities of a physical device (vkGetPhysicalDeviceFeatures).
@@ -3232,6 +10108,28 @@ func GetPhysicalDeviceFormatProperties(physicalDevice PhysicalDevice, format For
 func GetPhysicalDeviceFormatProperties2(physicalDevice PhysicalDevice, format Format) (formatProperties FormatProperties2) {
 	CallSyscall(pfnGetPhysicalDeviceFormatProperties2, uintptr(physicalDevice), uintptr(format), uintptr(unsafe.Pointer(&formatProperties)))
 	return formatProperties
+}
+
+// GetPhysicalDeviceFragmentShadingRatesKHR - Get available shading rates for a physical device (vkGetPhysicalDeviceFragmentShadingRatesKHR).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device whose properties will be queried.
+//   - fragmentShadingRateCount: is a pointer to an integer related to the number of fragment shading rates available or queried, as described below.
+//   - fragmentShadingRates: is either NULL or a pointer to an array of VkPhysicalDeviceFragmentShadingRateKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFragmentShadingRatesKHR.html
+func GetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice PhysicalDevice) (fragmentShadingRates []PhysicalDeviceFragmentShadingRateKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceFragmentShadingRatesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	fragmentShadingRates = make([]PhysicalDeviceFragmentShadingRateKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&fragmentShadingRates[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceFragmentShadingRatesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return fragmentShadingRates, Result(r1)
 }
 
 // GetPhysicalDeviceImageFormatProperties - Lists physical device\ (vkGetPhysicalDeviceImageFormatProperties).
@@ -3289,6 +10187,65 @@ func GetPhysicalDeviceMemoryProperties2(physicalDevice PhysicalDevice) (memoryPr
 	return memoryProperties
 }
 
+// GetPhysicalDeviceMultisamplePropertiesEXT - Report sample count specific multisampling capabilities of a physical device (vkGetPhysicalDeviceMultisamplePropertiesEXT).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the additional multisampling capabilities.
+//   - samples: is a VkSampleCountFlagBits value specifying the sample count to query capabilities for.
+//   - multisampleProperties: is a pointer to a VkMultisamplePropertiesEXT structure in which information about additional multisampling capabilities specific to the sample count is returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMultisamplePropertiesEXT.html
+func GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice PhysicalDevice, samples SampleCountFlagBits) (multisampleProperties MultisamplePropertiesEXT) {
+	CallSyscall(pfnGetPhysicalDeviceMultisamplePropertiesEXT, uintptr(physicalDevice), uintptr(samples), uintptr(unsafe.Pointer(&multisampleProperties)))
+	return multisampleProperties
+}
+
+// GetPhysicalDeviceOpticalFlowImageFormatsNV - Query image formats for optical flow (vkGetPhysicalDeviceOpticalFlowImageFormatsNV).
+// Parameters:
+//   - physicalDevice: is the physical device being queried.
+//   - opticalFlowImageFormatInfo: is a pointer to a VkOpticalFlowImageFormatInfoNV structure specifying the optical flow usage for which information is returned.
+//   - formatCount: is a pointer to an integer related to the number of optical flow properties available or queried, as described below.
+//   - imageFormatProperties: is a pointer to an array of VkOpticalFlowImageFormatPropertiesNV structures in which supported formats and image parameters are returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_EXTENSION_NOT_PRESENT, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceOpticalFlowImageFormatsNV.html
+func GetPhysicalDeviceOpticalFlowImageFormatsNV(physicalDevice PhysicalDevice, opticalFlowImageFormatInfo *OpticalFlowImageFormatInfoNV) (imageFormatProperties []OpticalFlowImageFormatPropertiesNV, result Result) {
+	c_opticalFlowImageFormatInfo := opticalFlowImageFormatInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceOpticalFlowImageFormatsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	imageFormatProperties = make([]OpticalFlowImageFormatPropertiesNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&imageFormatProperties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceOpticalFlowImageFormatsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return imageFormatProperties, Result(r1)
+}
+
+// GetPhysicalDevicePresentRectanglesKHR - Query present rectangles for a surface on a physical device (vkGetPhysicalDevicePresentRectanglesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - surface: is the surface.
+//   - rectCount: is a pointer to an integer related to the number of rectangles available or queried, as described below.
+//   - rects: is either NULL or a pointer to an array of VkRect2D structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDevicePresentRectanglesKHR.html
+func GetPhysicalDevicePresentRectanglesKHR(physicalDevice PhysicalDevice, surface SurfaceKHR) (rects []Rect2D, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDevicePresentRectanglesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	rects = make([]Rect2D, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&rects[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDevicePresentRectanglesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return rects, Result(r1)
+}
+
 // GetPhysicalDeviceProperties - Returns properties of a physical device (vkGetPhysicalDeviceProperties).
 // Parameters:
 //   - physicalDevice: is the handle to the physical device whose properties will be queried.
@@ -3309,6 +10266,98 @@ func GetPhysicalDeviceProperties(physicalDevice PhysicalDevice) (properties Phys
 func GetPhysicalDeviceProperties2(physicalDevice PhysicalDevice) (properties PhysicalDeviceProperties2) {
 	CallSyscall(pfnGetPhysicalDeviceProperties2, uintptr(physicalDevice), uintptr(unsafe.Pointer(&properties)))
 	return properties
+}
+
+// GetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM - Query the properties of a data graph processing engine and operation set combination for a specific queue family of a physical device (vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM).
+// Parameters:
+//   - physicalDevice: is the physical device to query.
+//   - queueFamilyIndex: is the index of the queue family being queried.
+//   - queueFamilyDataGraphProperties: is a pointer to a VkQueueFamilyDataGraphPropertiesARM structure that selects the processing engine and operation set for which the properties are queried.
+//   - properties: is a pointer to a structure in which the properties are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM.html
+func GetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM(physicalDevice PhysicalDevice, queueFamilyIndex uint32, queueFamilyDataGraphProperties *QueueFamilyDataGraphPropertiesARM) (properties BaseOutStructure, result Result) {
+	c_queueFamilyDataGraphProperties := queueFamilyDataGraphProperties.Raw()
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
+// GetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM - Query image formats for data graph optical flow (vkGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM).
+// Parameters:
+//   - physicalDevice: is the physical device being queried.
+//   - queueFamilyIndex: is the index of the queue family being queried.
+//   - queueFamilyDataGraphProperties: is a pointer to a VkQueueFamilyDataGraphPropertiesARM structure that selects the processing engine and operation set for which the properties are queried.
+//   - opticalFlowImageFormatInfo: is a pointer to a VkDataGraphOpticalFlowImageFormatInfoARM structure specifying the optical flow usage for which information is returned.
+//   - formatCount: is a pointer to an integer related to the number of optical flow properties available or queried, as described below.
+//   - imageFormatProperties: is a pointer to an array of VkDataGraphOpticalFlowImageFormatPropertiesARM structures in which supported formats and image parameters are returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_EXTENSION_NOT_PRESENT, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM.html
+func GetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM(physicalDevice PhysicalDevice, queueFamilyIndex uint32, queueFamilyDataGraphProperties *QueueFamilyDataGraphPropertiesARM, opticalFlowImageFormatInfo *DataGraphOpticalFlowImageFormatInfoARM) (imageFormatProperties []DataGraphOpticalFlowImageFormatPropertiesARM, result Result) {
+	c_queueFamilyDataGraphProperties := queueFamilyDataGraphProperties.Raw()
+	c_opticalFlowImageFormatInfo := opticalFlowImageFormatInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	imageFormatProperties = make([]DataGraphOpticalFlowImageFormatPropertiesARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&imageFormatProperties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return imageFormatProperties, Result(r1)
+}
+
+// GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM - Query the properties of a data graph processing engine for a specific queue family of a physical device (vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM).
+// Parameters:
+//   - physicalDevice: is the physical device to query.
+//   - queueFamilyDataGraphProcessingEngineInfo: is a pointer to a VkPhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoARM structure that specifies the data graph processing engine and queue family to query.
+//   - queueFamilyDataGraphProcessingEngineProperties: is a pointer to a VkQueueFamilyDataGraphProcessingEnginePropertiesARM structure in which the queries properties are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM.html
+func GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM(physicalDevice PhysicalDevice, queueFamilyDataGraphProcessingEngineInfo *PhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoARM) (queueFamilyDataGraphProcessingEngineProperties QueueFamilyDataGraphProcessingEnginePropertiesARM) {
+	c_queueFamilyDataGraphProcessingEngineInfo := queueFamilyDataGraphProcessingEngineInfo.Raw()
+	CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProcessingEngineInfo)), uintptr(unsafe.Pointer(&queueFamilyDataGraphProcessingEngineProperties)))
+	return queueFamilyDataGraphProcessingEngineProperties
+}
+
+// GetPhysicalDeviceQueueFamilyDataGraphPropertiesARM - Query the data processing engines and the operations they support for a given queue family of a physical device (vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM).
+// Parameters:
+//   - physicalDevice: is the physical device to query.
+//   - queueFamilyIndex: is the index of the queue family being queried.
+//   - queueFamilyDataGraphPropertyCount: is a pointer to an integer related to the number of properties available or queried.
+//   - queueFamilyDataGraphProperties: is either NULL or a pointer to an array of VkQueueFamilyDataGraphPropertiesARM structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM.html
+func GetPhysicalDeviceQueueFamilyDataGraphPropertiesARM(physicalDevice PhysicalDevice, queueFamilyIndex uint32) (queueFamilyDataGraphProperties []QueueFamilyDataGraphPropertiesARM, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	queueFamilyDataGraphProperties = make([]QueueFamilyDataGraphPropertiesARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&queueFamilyDataGraphProperties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return queueFamilyDataGraphProperties, Result(r1)
+}
+
+// GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR - Reports the number of passes require for a performance query pool type (vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device whose queue family performance query counter properties will be queried.
+//   - performanceQueryCreateInfo: is a pointer to a VkQueryPoolPerformanceCreateInfoKHR of the performance query that is to be created.
+//   - numPasses: is a pointer to an integer related to the number of passes required to query the performance query pool, as described below.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR.html
+func GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice PhysicalDevice, performanceQueryCreateInfo *QueryPoolPerformanceCreateInfoKHR) (numPasses uint32) {
+	c_performanceQueryCreateInfo := performanceQueryCreateInfo.Raw()
+	CallSyscall(pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_performanceQueryCreateInfo)), uintptr(unsafe.Pointer(&numPasses)))
+	return numPasses
 }
 
 // GetPhysicalDeviceQueueFamilyProperties - Reports properties of the queues of the specified physical device (vkGetPhysicalDeviceQueueFamilyProperties).
@@ -3349,6 +10398,68 @@ func GetPhysicalDeviceQueueFamilyProperties2(physicalDevice PhysicalDevice) (que
 	call2ArgsPtr := uintptr(unsafe.Pointer(&queueFamilyProperties[0]))
 	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceQueueFamilyProperties2, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
 	return queueFamilyProperties, Result(r1)
+}
+
+// GetPhysicalDeviceRefreshableObjectTypesKHR - Query refreshable objects (vkGetPhysicalDeviceRefreshableObjectTypesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the set of refreshable object types.
+//   - refreshableObjectTypeCount: is a pointer to an integer related to the number of refreshable object types available or queried, as described below.
+//   - refreshableObjectTypes: is either NULL or a pointer to an array of VkObjectType values, indicating the supported refreshable object types.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceRefreshableObjectTypesKHR.html
+func GetPhysicalDeviceRefreshableObjectTypesKHR(physicalDevice PhysicalDevice) (refreshableObjectTypes []ObjectType, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceRefreshableObjectTypesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	refreshableObjectTypes = make([]ObjectType, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&refreshableObjectTypes[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceRefreshableObjectTypesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return refreshableObjectTypes, Result(r1)
+}
+
+// GetPhysicalDeviceSciBufAttributesNV - Fill the private attributes of the stext:NvSciBufAttrList struct (vkGetPhysicalDeviceSciBufAttributesNV).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device that will be used to determine the attributes.
+//   - attributes: is an opaque stext:NvSciBufAttrList in which the implementation will set the requested attributes.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciBufAttributesNV.html
+func GetPhysicalDeviceSciBufAttributesNV(physicalDevice PhysicalDevice, attributes uintptr) (result Result) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSciBufAttributesNV, uintptr(physicalDevice), uintptr(attributes))
+	return Result(r1)
+}
+
+// GetPhysicalDeviceSciSyncAttributesNV - Get the implementation-specific NvSciSync attributes (vkGetPhysicalDeviceSciSyncAttributesNV).
+// Parameters:
+//   - physicalDevice: is the handle to the physical device that will be used to determine the attributes.
+//   - sciSyncAttributesInfo: is a pointer to a VkSciSyncAttributesInfoNV structure containing information about how the attributes are to be filled.
+//   - attributes: is an opaque stext:NvSciSyncAttrList in which the implementation will set the requested attributes.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciSyncAttributesNV.html
+func GetPhysicalDeviceSciSyncAttributesNV(physicalDevice PhysicalDevice, sciSyncAttributesInfo *SciSyncAttributesInfoNV, attributes uintptr) (result Result) {
+	c_sciSyncAttributesInfo := sciSyncAttributesInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSciSyncAttributesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_sciSyncAttributesInfo)), uintptr(attributes))
+	return Result(r1)
+}
+
+// GetPhysicalDeviceScreenPresentationSupportQNX - Query physical device for presentation to QNX Screen (vkGetPhysicalDeviceScreenPresentationSupportQNX).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//   - window: is the QNX Screen window object.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceScreenPresentationSupportQNX.html
+func GetPhysicalDeviceScreenPresentationSupportQNX(physicalDevice PhysicalDevice, queueFamilyIndex uint32) (window uintptr) {
+	CallSyscall(pfnGetPhysicalDeviceScreenPresentationSupportQNX, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&window)))
+	return window
 }
 
 // GetPhysicalDeviceSparseImageFormatProperties - Retrieve properties of an image format applied to sparse images (vkGetPhysicalDeviceSparseImageFormatProperties).
@@ -3398,6 +10509,180 @@ func GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice PhysicalDevice
 	return properties, Result(r1)
 }
 
+// GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV - Query supported sample count combinations (vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the set of combinations.
+//   - combinationCount: is a pointer to an integer related to the number of combinations available or queried, as described below.
+//   - combinations: is either NULL or a pointer to an array of VkFramebufferMixedSamplesCombinationNV values, indicating the supported combinations of coverage reduction mode, rasterization samples, and color, depth, stencil attachment sample counts.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV.html
+func GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice PhysicalDevice) (combinations []FramebufferMixedSamplesCombinationNV, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	combinations = make([]FramebufferMixedSamplesCombinationNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&combinations[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return combinations, Result(r1)
+}
+
+// GetPhysicalDeviceSurfaceCapabilities2EXT - Query surface capabilities (vkGetPhysicalDeviceSurfaceCapabilities2EXT).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created, as described for vkCreateSwapchainKHR.
+//   - surface: is the surface that will be associated with the swapchain.
+//   - surfaceCapabilities: is a pointer to a VkSurfaceCapabilities2EXT structure in which the capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceCapabilities2EXT.html
+func GetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice PhysicalDevice, surface SurfaceKHR) (surfaceCapabilities SurfaceCapabilities2EXT, result Result) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfaceCapabilities2EXT, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&surfaceCapabilities)))
+	return surfaceCapabilities, Result(r1)
+}
+
+// GetPhysicalDeviceSurfaceCapabilities2KHR - Reports capabilities of a surface on a physical device (vkGetPhysicalDeviceSurfaceCapabilities2KHR).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created, as described for vkCreateSwapchainKHR.
+//   - surfaceInfo: is a pointer to a VkPhysicalDeviceSurfaceInfo2KHR structure describing the surface and other fixed parameters that would be consumed by vkCreateSwapchainKHR.
+//   - surfaceCapabilities: is a pointer to a VkSurfaceCapabilities2KHR structure in which the capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceCapabilities2KHR.html
+func GetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice PhysicalDevice, surfaceInfo *PhysicalDeviceSurfaceInfo2KHR) (surfaceCapabilities SurfaceCapabilities2KHR, result Result) {
+	c_surfaceInfo := surfaceInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfaceCapabilities2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&surfaceCapabilities)))
+	return surfaceCapabilities, Result(r1)
+}
+
+// GetPhysicalDeviceSurfaceCapabilitiesKHR - Query surface capabilities (vkGetPhysicalDeviceSurfaceCapabilitiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created. See vkCreateSwapchainKHR for details of swapchain creation.
+//   - surface: is the surface that will be associated with the swapchain.
+//   - surfaceCapabilities: is a pointer to a VkSurfaceCapabilitiesKHR structure in which the capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceCapabilitiesKHR.html
+func GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice PhysicalDevice, surface SurfaceKHR) (surfaceCapabilities SurfaceCapabilitiesKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfaceCapabilitiesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&surfaceCapabilities)))
+	return surfaceCapabilities, Result(r1)
+}
+
+// GetPhysicalDeviceSurfaceFormats2KHR - Query color formats supported by surface (vkGetPhysicalDeviceSurfaceFormats2KHR).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created, as described for vkCreateSwapchainKHR.
+//   - surfaceInfo: is a pointer to a VkPhysicalDeviceSurfaceInfo2KHR structure describing the surface and other fixed parameters that would be consumed by vkCreateSwapchainKHR.
+//   - surfaceFormatCount: is a pointer to an integer related to the number of format tuples available or queried, as described below.
+//   - surfaceFormats: is either NULL or a pointer to an array of VkSurfaceFormat2KHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceFormats2KHR.html
+func GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice PhysicalDevice, surfaceInfo *PhysicalDeviceSurfaceInfo2KHR) (surfaceFormats []SurfaceFormat2KHR, result Result) {
+	c_surfaceInfo := surfaceInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfaceFormats2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	surfaceFormats = make([]SurfaceFormat2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&surfaceFormats[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceSurfaceFormats2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return surfaceFormats, Result(r1)
+}
+
+// GetPhysicalDeviceSurfaceFormatsKHR - Query color formats supported by surface (vkGetPhysicalDeviceSurfaceFormatsKHR).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created. See vkCreateSwapchainKHR for details of swapchain creation.
+//   - surface: is the surface that will be associated with the swapchain.
+//   - surfaceFormatCount: is a pointer to an integer related to the number of format pairs available or queried, as described below.
+//   - surfaceFormats: is either NULL or a pointer to an array of VkSurfaceFormatKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html
+func GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice PhysicalDevice, surface SurfaceKHR) (surfaceFormats []SurfaceFormatKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfaceFormatsKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	surfaceFormats = make([]SurfaceFormatKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&surfaceFormats[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceSurfaceFormatsKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return surfaceFormats, Result(r1)
+}
+
+// GetPhysicalDeviceSurfacePresentModes2EXT - Query supported presentation modes (vkGetPhysicalDeviceSurfacePresentModes2EXT).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created, as described for vkCreateSwapchainKHR.
+//   - surfaceInfo: is a pointer to a VkPhysicalDeviceSurfaceInfo2KHR structure describing the surface and other fixed parameters that would be consumed by vkCreateSwapchainKHR.
+//   - presentModeCount: is a pointer to an integer related to the number of presentation modes available or queried, as described below.
+//   - presentModes: is either NULL or a pointer to an array of VkPresentModeKHR values, indicating the supported presentation modes.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfacePresentModes2EXT.html
+func GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice PhysicalDevice, surfaceInfo *PhysicalDeviceSurfaceInfo2KHR) (presentModes []PresentModeKHR, result Result) {
+	c_surfaceInfo := surfaceInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfacePresentModes2EXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	presentModes = make([]PresentModeKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&presentModes[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceSurfacePresentModes2EXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return presentModes, Result(r1)
+}
+
+// GetPhysicalDeviceSurfacePresentModesKHR - Query supported presentation modes (vkGetPhysicalDeviceSurfacePresentModesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device that will be associated with the swapchain to be created. See vkCreateSwapchainKHR for details of swapchain creation.
+//   - surface: is the surface that will be associated with the swapchain.
+//   - presentModeCount: is a pointer to an integer related to the number of presentation modes available or queried, as described below.
+//   - presentModes: is either NULL or a pointer to an array of VkPresentModeKHR values, indicating the supported presentation modes.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfacePresentModesKHR.html
+func GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice PhysicalDevice, surface SurfaceKHR) (presentModes []PresentModeKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfacePresentModesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	presentModes = make([]PresentModeKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&presentModes[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceSurfacePresentModesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return presentModes, Result(r1)
+}
+
+// GetPhysicalDeviceSurfaceSupportKHR - Query if presentation is supported (vkGetPhysicalDeviceSurfaceSupportKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family.
+//   - surface: is the surface.
+//   - supported: is a pointer to a basetype:VkBool32. VK_TRUE indicates support, and VK_FALSE indicates no support.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceSupportKHR.html
+func GetPhysicalDeviceSurfaceSupportKHR(physicalDevice PhysicalDevice, queueFamilyIndex uint32, surface SurfaceKHR) (supported Bool32, result Result) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceSurfaceSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(surface), uintptr(unsafe.Pointer(&supported)))
+	return supported, Result(r1)
+}
+
 // GetPhysicalDeviceToolProperties - Reports properties of tools active on the specified physical device (vkGetPhysicalDeviceToolProperties).
 // Parameters:
 //   - physicalDevice: is the handle to the physical device to query for active tools.
@@ -3418,6 +10703,147 @@ func GetPhysicalDeviceToolProperties(physicalDevice PhysicalDevice) (toolPropert
 	call2ArgsPtr := uintptr(unsafe.Pointer(&toolProperties[0]))
 	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceToolProperties, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
 	return toolProperties, Result(r1)
+}
+
+// GetPhysicalDeviceUbmPresentationSupportSEC - Query physical device for presentation to UBM (vkGetPhysicalDeviceUbmPresentationSupportSEC).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//   - device: is a pointer to the ubm_device associated with a UBM compositor.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceUbmPresentationSupportSEC.html
+func GetPhysicalDeviceUbmPresentationSupportSEC(physicalDevice PhysicalDevice, queueFamilyIndex uint32) (device uintptr) {
+	CallSyscall(pfnGetPhysicalDeviceUbmPresentationSupportSEC, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&device)))
+	return device
+}
+
+// GetPhysicalDeviceVideoCapabilitiesKHR - Query video coding capabilities (vkGetPhysicalDeviceVideoCapabilitiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the video decode or encode capabilities.
+//   - videoProfile: is a pointer to a VkVideoProfileInfoKHR structure.
+//   - capabilities: is a pointer to a VkVideoCapabilitiesKHR structure in which the capabilities are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoCapabilitiesKHR.html
+func GetPhysicalDeviceVideoCapabilitiesKHR(physicalDevice PhysicalDevice, videoProfile *VideoProfileInfoKHR) (capabilities VideoCapabilitiesKHR, result Result) {
+	c_videoProfile := videoProfile.Raw()
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceVideoCapabilitiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoProfile)), uintptr(unsafe.Pointer(&capabilities)))
+	return capabilities, Result(r1)
+}
+
+// GetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR - Query video encode quality level properties (vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device to query the video encode quality level properties for.
+//   - qualityLevelInfo: is a pointer to a VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR structure specifying the video encode profile and quality level to query properties for.
+//   - qualityLevelProperties: is a pointer to a VkVideoEncodeQualityLevelPropertiesKHR structure in which the properties are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR.html
+func GetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice PhysicalDevice, qualityLevelInfo *PhysicalDeviceVideoEncodeQualityLevelInfoKHR) (qualityLevelProperties VideoEncodeQualityLevelPropertiesKHR, result Result) {
+	c_qualityLevelInfo := qualityLevelInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_qualityLevelInfo)), uintptr(unsafe.Pointer(&qualityLevelProperties)))
+	return qualityLevelProperties, Result(r1)
+}
+
+// GetPhysicalDeviceVideoFormatPropertiesKHR - Query supported video decode and encode image formats and capabilities (vkGetPhysicalDeviceVideoFormatPropertiesKHR).
+// Parameters:
+//   - physicalDevice: is the physical device from which to query the video format properties.
+//   - videoFormatInfo: is a pointer to a VkPhysicalDeviceVideoFormatInfoKHR structure specifying the usage and video profiles for which supported image formats and capabilities are returned.
+//   - videoFormatPropertyCount: is a pointer to an integer related to the number of video format properties available or queried, as described below.
+//   - videoFormatProperties: is a pointer to an array of VkVideoFormatPropertiesKHR structures in which supported image formats and capabilities are returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoFormatPropertiesKHR.html
+func GetPhysicalDeviceVideoFormatPropertiesKHR(physicalDevice PhysicalDevice, videoFormatInfo *PhysicalDeviceVideoFormatInfoKHR) (videoFormatProperties []VideoFormatPropertiesKHR, result Result) {
+	c_videoFormatInfo := videoFormatInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceVideoFormatPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoFormatInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	videoFormatProperties = make([]VideoFormatPropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&videoFormatProperties[0]))
+	r1, _, _ = CallSyscall(pfnGetPhysicalDeviceVideoFormatPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoFormatInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return videoFormatProperties, Result(r1)
+}
+
+// GetPhysicalDeviceWaylandPresentationSupportKHR - Query physical device for presentation to Wayland (vkGetPhysicalDeviceWaylandPresentationSupportKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//   - display: is a pointer to the wl_display associated with a Wayland compositor.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceWaylandPresentationSupportKHR.html
+func GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice PhysicalDevice, queueFamilyIndex uint32) (display uintptr) {
+	CallSyscall(pfnGetPhysicalDeviceWaylandPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&display)))
+	return display
+}
+
+// GetPhysicalDeviceWin32PresentationSupportKHR - Query queue family support for presentation on a Win32 display (vkGetPhysicalDeviceWin32PresentationSupportKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceWin32PresentationSupportKHR.html
+func GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice PhysicalDevice, queueFamilyIndex uint32) (result Bool32) {
+	r1, _, _ := CallSyscall(pfnGetPhysicalDeviceWin32PresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex))
+	return Bool32(r1)
+}
+
+// GetPhysicalDeviceXcbPresentationSupportKHR - Query physical device for presentation to X11 server using XCB (vkGetPhysicalDeviceXcbPresentationSupportKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//   - connection: is a pointer to an xcb_connection_t to the X server.
+//   - visual_id: is an X11 visual (xcb_visualid_t).
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceXcbPresentationSupportKHR.html
+func GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice PhysicalDevice, queueFamilyIndex uint32, visual_id uintptr) (connection uintptr) {
+	CallSyscall(pfnGetPhysicalDeviceXcbPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&connection)), uintptr(visual_id))
+	return connection
+}
+
+// GetPhysicalDeviceXlibPresentationSupportKHR - Query physical device for presentation to X11 server using Xlib (vkGetPhysicalDeviceXlibPresentationSupportKHR).
+// Parameters:
+//   - physicalDevice: is the physical device.
+//   - queueFamilyIndex: is the queue family index.
+//   - dpy: is a pointer to an Xlib Display connection to the server.
+//   - visualID: is an X11 visual (VisualID).
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceXlibPresentationSupportKHR.html
+func GetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice PhysicalDevice, queueFamilyIndex uint32, visualID uintptr) (dpy uintptr) {
+	CallSyscall(pfnGetPhysicalDeviceXlibPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&dpy)), uintptr(visualID))
+	return dpy
+}
+
+// GetPipelineBinaryDataKHR - Get the data store from a pipeline binary (vkGetPipelineBinaryDataKHR).
+// Parameters:
+//   - device: is the logical device that created the pipeline binary.
+//   - info: is a pointer to a VkPipelineBinaryDataInfoKHR structure which describes the pipeline binary to get data from.
+//   - pipelineBinaryKey: is a pointer to a VkPipelineBinaryKeyKHR structure where the key for this binary will be written.
+//   - pipelineBinaryDataSize: is a pointer to a size_t value related to the amount of data in the pipeline binary, as described below.
+//   - pipelineBinaryData: is either NULL or a pointer to a buffer.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NOT_ENOUGH_SPACE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineBinaryDataKHR.html
+func GetPipelineBinaryDataKHR(device Device, info *PipelineBinaryDataInfoKHR, pipelineBinaryKey *PipelineBinaryKeyKHR) (pipelineBinaryData []unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	c_pipelineBinaryKey := pipelineBinaryKey.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPipelineBinaryDataKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(c_pipelineBinaryKey)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	pipelineBinaryData = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&pipelineBinaryData[0]))
+	r1, _, _ = CallSyscall(pfnGetPipelineBinaryDataKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(c_pipelineBinaryKey)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return pipelineBinaryData, Result(r1)
 }
 
 // GetPipelineCacheData - Get the data store from a pipeline cache (vkGetPipelineCacheData).
@@ -3441,6 +10867,133 @@ func GetPipelineCacheData(device Device, pipelineCache PipelineCache) (data []un
 	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
 	r1, _, _ = CallSyscall(pfnGetPipelineCacheData, uintptr(device), uintptr(pipelineCache), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
 	return data, Result(r1)
+}
+
+// GetPipelineExecutableInternalRepresentationsKHR - Get internal representations of the pipeline executable (vkGetPipelineExecutableInternalRepresentationsKHR).
+// Parameters:
+//   - device: is the device that created the pipeline.
+//   - executableInfo: describes the pipeline executable being queried.
+//   - internalRepresentationCount: is a pointer to an integer related to the number of internal representations available or queried, as described below.
+//   - internalRepresentations: is either NULL or a pointer to an array of VkPipelineExecutableInternalRepresentationKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineExecutableInternalRepresentationsKHR.html
+func GetPipelineExecutableInternalRepresentationsKHR(device Device, executableInfo *PipelineExecutableInfoKHR) (internalRepresentations []PipelineExecutableInternalRepresentationKHR, result Result) {
+	c_executableInfo := executableInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPipelineExecutableInternalRepresentationsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	internalRepresentations = make([]PipelineExecutableInternalRepresentationKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&internalRepresentations[0]))
+	r1, _, _ = CallSyscall(pfnGetPipelineExecutableInternalRepresentationsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return internalRepresentations, Result(r1)
+}
+
+// GetPipelineExecutablePropertiesKHR - Get the executables associated with a pipeline (vkGetPipelineExecutablePropertiesKHR).
+// Parameters:
+//   - device: is the device that created the pipeline.
+//   - pipelineInfo: describes the pipeline being queried.
+//   - executableCount: is a pointer to an integer related to the number of pipeline executables available or queried, as described below.
+//   - properties: is either NULL or a pointer to an array of VkPipelineExecutablePropertiesKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineExecutablePropertiesKHR.html
+func GetPipelineExecutablePropertiesKHR(device Device, pipelineInfo *PipelineInfoKHR) (properties []PipelineExecutablePropertiesKHR, result Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPipelineExecutablePropertiesKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	properties = make([]PipelineExecutablePropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = CallSyscall(pfnGetPipelineExecutablePropertiesKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, Result(r1)
+}
+
+// GetPipelineExecutableStatisticsKHR - Get compile time statistics associated with a pipeline executable (vkGetPipelineExecutableStatisticsKHR).
+// Parameters:
+//   - device: is the device that created the pipeline.
+//   - executableInfo: describes the pipeline executable being queried.
+//   - statisticCount: is a pointer to an integer related to the number of statistics available or queried, as described below.
+//   - statistics: is either NULL or a pointer to an array of VkPipelineExecutableStatisticKHR structures.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineExecutableStatisticsKHR.html
+func GetPipelineExecutableStatisticsKHR(device Device, executableInfo *PipelineExecutableInfoKHR) (statistics []PipelineExecutableStatisticKHR, result Result) {
+	c_executableInfo := executableInfo.Raw()
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetPipelineExecutableStatisticsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	statistics = make([]PipelineExecutableStatisticKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&statistics[0]))
+	r1, _, _ = CallSyscall(pfnGetPipelineExecutableStatisticsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return statistics, Result(r1)
+}
+
+// GetPipelineIndirectDeviceAddressNV - Get pipeline\ (vkGetPipelineIndirectDeviceAddressNV).
+// Parameters:
+//   - device: is the logical device on which the pipeline was created.
+//   - info: is a pointer to a VkPipelineIndirectDeviceAddressInfoNV structure specifying the pipeline to retrieve the address for.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineIndirectDeviceAddressNV.html
+func GetPipelineIndirectDeviceAddressNV(device Device, info *PipelineIndirectDeviceAddressInfoNV) (result DeviceAddress) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetPipelineIndirectDeviceAddressNV, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return DeviceAddress(r1)
+}
+
+// GetPipelineIndirectMemoryRequirementsNV - Get the memory requirements for the compute indirect pipeline (vkGetPipelineIndirectMemoryRequirementsNV).
+// Parameters:
+//   - device: is the logical device that owns the buffer.
+//   - createInfo: is a VkComputePipelineCreateInfo structure specifying the creation parameters of the compute pipeline whose memory requirements are being queried.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the requested pipeline's memory requirements are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineIndirectMemoryRequirementsNV.html
+func GetPipelineIndirectMemoryRequirementsNV(device Device, createInfo *ComputePipelineCreateInfo) (memoryRequirements MemoryRequirements2) {
+	c_createInfo := createInfo.Raw()
+	CallSyscall(pfnGetPipelineIndirectMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetPipelineKeyKHR - Generate the pipeline key from pipeline creation info (vkGetPipelineKeyKHR).
+// Parameters:
+//   - device: is the logical device that creates the pipeline object.
+//   - pipelineCreateInfo: is NULL or a pointer to a VkPipelineCreateInfoKHR structure.
+//   - pipelineKey: is a pointer to a VkPipelineBinaryKeyKHR structure in which the resulting key is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineKeyKHR.html
+func GetPipelineKeyKHR(device Device, pipelineCreateInfo *PipelineCreateInfoKHR) (pipelineKey PipelineBinaryKeyKHR, result Result) {
+	c_pipelineCreateInfo := pipelineCreateInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetPipelineKeyKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineCreateInfo)), uintptr(unsafe.Pointer(&pipelineKey)))
+	return pipelineKey, Result(r1)
+}
+
+// GetPipelinePropertiesEXT - Query pipeline properties (vkGetPipelinePropertiesEXT).
+// Parameters:
+//   - device: is the logical device that created the pipeline.
+//   - pipelineInfo: is a pointer to a VkPipelineInfoEXT structure which describes the pipeline being queried.
+//   - pipelineProperties: is a pointer to a VkBaseOutStructure structure in which the pipeline properties will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelinePropertiesEXT.html
+func GetPipelinePropertiesEXT(device Device, pipelineInfo *PipelineInfoKHR) (pipelineProperties BaseOutStructure, result Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetPipelinePropertiesEXT, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&pipelineProperties)))
+	return pipelineProperties, Result(r1)
 }
 
 // GetPrivateData - Retrieve data associated with a Vulkan object (vkGetPrivateData).
@@ -3477,6 +11030,124 @@ func GetQueryPoolResults(device Device, queryPool QueryPool, firstQuery uint32, 
 	return Result(r1)
 }
 
+// GetQueueCheckpointData2NV - Retrieve diagnostic checkpoint data (vkGetQueueCheckpointData2NV).
+// Parameters:
+//   - queue: is the VkQueue object the caller would like to retrieve checkpoint data for
+//   - checkpointDataCount: is a pointer to an integer related to the number of checkpoint markers available or queried, as described below.
+//   - checkpointData: is either NULL or a pointer to an array of VkCheckpointData2NV structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetQueueCheckpointData2NV.html
+func GetQueueCheckpointData2NV(queue Queue) (checkpointData []CheckpointData2NV, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetQueueCheckpointData2NV, uintptr(queue), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	checkpointData = make([]CheckpointData2NV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&checkpointData[0]))
+	r1, _, _ = CallSyscall(pfnGetQueueCheckpointData2NV, uintptr(queue), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return checkpointData, Result(r1)
+}
+
+// GetQueueCheckpointDataNV - Retrieve diagnostic checkpoint data (vkGetQueueCheckpointDataNV).
+// Parameters:
+//   - queue: is the VkQueue object the caller would like to retrieve checkpoint data for
+//   - checkpointDataCount: is a pointer to an integer related to the number of checkpoint markers available or queried, as described below.
+//   - checkpointData: is either NULL or a pointer to an array of VkCheckpointDataNV structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetQueueCheckpointDataNV.html
+func GetQueueCheckpointDataNV(queue Queue) (checkpointData []CheckpointDataNV, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetQueueCheckpointDataNV, uintptr(queue), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	checkpointData = make([]CheckpointDataNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&checkpointData[0]))
+	r1, _, _ = CallSyscall(pfnGetQueueCheckpointDataNV, uintptr(queue), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return checkpointData, Result(r1)
+}
+
+// GetRandROutputDisplayEXT - Query the VkDisplayKHR corresponding to an X11 RandR Output (vkGetRandROutputDisplayEXT).
+// Parameters:
+//   - physicalDevice: is the physical device to query the display handle on.
+//   - dpy: is a connection to the X11 server from which rrOutput was queried.
+//   - rrOutput: is an X11 RandR output ID.
+//   - display: is a pointer to a VkDisplayKHR handle where the display is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRandROutputDisplayEXT.html
+func GetRandROutputDisplayEXT(physicalDevice PhysicalDevice, dpy uintptr, rrOutput uintptr) (display DisplayKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetRandROutputDisplayEXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(dpy)), uintptr(rrOutput), uintptr(unsafe.Pointer(&display)))
+	return display, Result(r1)
+}
+
+// GetRayTracingCaptureReplayShaderGroupHandlesKHR - Query opaque capture replay data for pipeline shader group handles (vkGetRayTracingCaptureReplayShaderGroupHandlesKHR).
+// Parameters:
+//   - device: is the logical device containing the ray tracing pipeline.
+//   - pipeline: is the ray tracing pipeline object containing the shaders.
+//   - firstGroup: is the index of the first group to retrieve a handle for from the VkRayTracingPipelineCreateInfoKHR::pname:pGroups array.
+//   - groupCount: is the number of shader handles to retrieve.
+//   - dataSize: is the size in bytes of the buffer pointed to by pData.
+//   - data: is a pointer to an application-allocated buffer where the results will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingCaptureReplayShaderGroupHandlesKHR.html
+func GetRayTracingCaptureReplayShaderGroupHandlesKHR(device Device, pipeline Pipeline, firstGroup uint32, groupCount uint32, data []unsafe.Pointer) (result Result) {
+	c_data := SliceData(data)
+	r1, _, _ := CallSyscall(pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR, uintptr(device), uintptr(pipeline), uintptr(firstGroup), uintptr(groupCount), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+	return Result(r1)
+}
+
+// GetRayTracingShaderGroupHandlesKHR - Query ray tracing pipeline shader group handles (vkGetRayTracingShaderGroupHandlesKHR).
+// Parameters:
+//   - device: is the logical device containing the ray tracing pipeline.
+//   - pipeline: is the ray tracing pipeline object containing the shaders.
+//   - firstGroup: is the index of the first group to retrieve a handle for from the VkRayTracingPipelineCreateInfoKHR::pname:pGroups VkRayTracingPipelineCreateInfoNV::pname:pGroups array.
+//   - groupCount: is the number of shader handles to retrieve.
+//   - dataSize: is the size in bytes of the buffer pointed to by pData.
+//   - data: is a pointer to an application-allocated buffer where the results will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html
+func GetRayTracingShaderGroupHandlesKHR(device Device, pipeline Pipeline, firstGroup uint32, groupCount uint32, data []unsafe.Pointer) (result Result) {
+	c_data := SliceData(data)
+	r1, _, _ := CallSyscall(pfnGetRayTracingShaderGroupHandlesKHR, uintptr(device), uintptr(pipeline), uintptr(firstGroup), uintptr(groupCount), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+	return Result(r1)
+}
+
+// GetRayTracingShaderGroupStackSizeKHR - Query ray tracing pipeline shader group shader stack size (vkGetRayTracingShaderGroupStackSizeKHR).
+// Parameters:
+//   - device: is the logical device containing the ray tracing pipeline.
+//   - pipeline: is the ray tracing pipeline object containing the shaders groups.
+//   - group: is the index of the shader group to query.
+//   - groupShader: is the type of shader from the group to query.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupStackSizeKHR.html
+func GetRayTracingShaderGroupStackSizeKHR(device Device, pipeline Pipeline, group uint32, groupShader ShaderGroupShaderKHR) (result DeviceSize) {
+	r1, _, _ := CallSyscall(pfnGetRayTracingShaderGroupStackSizeKHR, uintptr(device), uintptr(pipeline), uintptr(group), uintptr(groupShader))
+	return DeviceSize(r1)
+}
+
+// GetRefreshCycleDurationGOOGLE - Obtain the RC duration of the PE\ (vkGetRefreshCycleDurationGOOGLE).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to obtain the refresh duration for.
+//   - displayTimingProperties: is a pointer to a VkRefreshCycleDurationGOOGLE structure.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRefreshCycleDurationGOOGLE.html
+func GetRefreshCycleDurationGOOGLE(device Device, swapchain SwapchainKHR) (displayTimingProperties RefreshCycleDurationGOOGLE, result Result) {
+	r1, _, _ := CallSyscall(pfnGetRefreshCycleDurationGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&displayTimingProperties)))
+	return displayTimingProperties, Result(r1)
+}
+
 // GetRenderAreaGranularity - Returns the granularity for optimal render area (vkGetRenderAreaGranularity).
 // Parameters:
 //   - device: is the logical device that owns the render pass.
@@ -3502,6 +11173,35 @@ func GetRenderingAreaGranularity(device Device, renderingAreaInfo *RenderingArea
 	return granularity
 }
 
+// GetSamplerOpaqueCaptureDescriptorDataEXT - Get sampler opaque capture descriptor data (vkGetSamplerOpaqueCaptureDescriptorDataEXT).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkSamplerCaptureDescriptorDataInfoEXT structure specifying the sampler.
+//   - data: is a pointer to an application-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSamplerOpaqueCaptureDescriptorDataEXT.html
+func GetSamplerOpaqueCaptureDescriptorDataEXT(device Device, info *SamplerCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetSamplerOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
+}
+
+// GetScreenBufferPropertiesQNX - Get Properties of External Memory QNX Screen Buffers (vkGetScreenBufferPropertiesQNX).
+// Parameters:
+//   - device: is the logical device that will be importing buffer.
+//   - buffer: is the QNX Screen buffer which will be imported.
+//   - properties: is a pointer to a VkScreenBufferPropertiesQNX structure in which the properties of buffer are returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetScreenBufferPropertiesQNX.html
+func GetScreenBufferPropertiesQNX(device Device, buffer uintptr) (properties ScreenBufferPropertiesQNX, result Result) {
+	r1, _, _ := CallSyscall(pfnGetScreenBufferPropertiesQNX, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
+	return properties, Result(r1)
+}
+
 // GetSemaphoreCounterValue - Query the current state of a timeline semaphore (vkGetSemaphoreCounterValue).
 // Parameters:
 //   - device: is the logical device that owns the semaphore.
@@ -3514,6 +11214,518 @@ func GetRenderingAreaGranularity(device Device, renderingAreaInfo *RenderingArea
 func GetSemaphoreCounterValue(device Device, semaphore Semaphore) (value uint64, result Result) {
 	r1, _, _ := CallSyscall(pfnGetSemaphoreCounterValue, uintptr(device), uintptr(semaphore), uintptr(unsafe.Pointer(&value)))
 	return value, Result(r1)
+}
+
+// GetSemaphoreFdKHR - Get a POSIX file descriptor handle for a semaphore (vkGetSemaphoreFdKHR).
+// Parameters:
+//   - device: is the logical device that created the semaphore being exported.
+//   - getFdInfo: is a pointer to a VkSemaphoreGetFdInfoKHR structure containing parameters of the export operation.
+//   - fd: will return the file descriptor representing the semaphore payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreFdKHR.html
+func GetSemaphoreFdKHR(device Device, getFdInfo *SemaphoreGetFdInfoKHR) (fd int32, result Result) {
+	c_getFdInfo := getFdInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetSemaphoreFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
+	return fd, Result(r1)
+}
+
+// GetSemaphoreSciSyncObjNV - Get a stext:NvSciSyncObj handle for a semaphore (vkGetSemaphoreSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the semaphore being exported.
+//   - getSciSyncInfo: is a pointer to a VkSemaphoreGetSciSyncInfoNV structure containing parameters of the export operation.
+//   - handle: will return the stext:NvSciSyncObj representing the semaphore payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreSciSyncObjNV.html
+func GetSemaphoreSciSyncObjNV(device Device, getSciSyncInfo *SemaphoreGetSciSyncInfoNV) (handle unsafe.Pointer, result Result) {
+	c_getSciSyncInfo := getSciSyncInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetSemaphoreSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetSemaphoreWin32HandleKHR - Get a Windows HANDLE for a semaphore (vkGetSemaphoreWin32HandleKHR).
+// Parameters:
+//   - device: is the logical device that created the semaphore being exported.
+//   - getWin32HandleInfo: is a pointer to a VkSemaphoreGetWin32HandleInfoKHR structure containing parameters of the export operation.
+//   - handle: will return the Windows handle representing the semaphore state.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreWin32HandleKHR.html
+func GetSemaphoreWin32HandleKHR(device Device, getWin32HandleInfo *SemaphoreGetWin32HandleInfoKHR) (handle uintptr, result Result) {
+	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetSemaphoreWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, Result(r1)
+}
+
+// GetSemaphoreZirconHandleFUCHSIA - Get a Zircon event handle for a semaphore (vkGetSemaphoreZirconHandleFUCHSIA).
+// Parameters:
+//   - device: is the logical device that created the semaphore being exported.
+//   - getZirconHandleInfo: is a pointer to a VkSemaphoreGetZirconHandleInfoFUCHSIA structure containing parameters of the export operation.
+//   - zirconHandle: will return the Zircon event handle representing the semaphore payload.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreZirconHandleFUCHSIA.html
+func GetSemaphoreZirconHandleFUCHSIA(device Device, getZirconHandleInfo *SemaphoreGetZirconHandleInfoFUCHSIA) (zirconHandle uint32, result Result) {
+	c_getZirconHandleInfo := getZirconHandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnGetSemaphoreZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_getZirconHandleInfo)), uintptr(unsafe.Pointer(&zirconHandle)))
+	return zirconHandle, Result(r1)
+}
+
+// GetShaderBinaryDataEXT - Get the binary shader code from a shader object (vkGetShaderBinaryDataEXT).
+// Parameters:
+//   - device: is the logical device that shader object was created from.
+//   - shader: is the shader object to retrieve binary shader code from.
+//   - dataSize: is a pointer to a size_t value related to the size of the binary shader code, as described below.
+//   - data: is either NULL or a pointer to a buffer.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderBinaryDataEXT.html
+func GetShaderBinaryDataEXT(device Device, shader ShaderEXT) (data []unsafe.Pointer, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetShaderBinaryDataEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = CallSyscall(pfnGetShaderBinaryDataEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, Result(r1)
+}
+
+// GetShaderInfoAMD - Get information about a shader in a pipeline (vkGetShaderInfoAMD).
+// Parameters:
+//   - device: is the device that created pipeline.
+//   - pipeline: is the target of the query.
+//   - shaderStage: is a VkShaderStageFlagBits specifying the particular shader within the pipeline about which information is being queried.
+//   - infoType: describes what kind of information is being queried.
+//   - infoSize: is a pointer to a value related to the amount of data the query returns, as described below.
+//   - info: is either NULL or a pointer to a buffer.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_FEATURE_NOT_PRESENT, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderInfoAMD.html
+func GetShaderInfoAMD(device Device, pipeline Pipeline, shaderStage ShaderStageFlagBits, infoType ShaderInfoTypeAMD) (info []unsafe.Pointer, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetShaderInfoAMD, uintptr(device), uintptr(pipeline), uintptr(shaderStage), uintptr(infoType), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	info = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&info[0]))
+	r1, _, _ = CallSyscall(pfnGetShaderInfoAMD, uintptr(device), uintptr(pipeline), uintptr(shaderStage), uintptr(infoType), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return info, Result(r1)
+}
+
+// GetShaderInstrumentationValuesARM - Retrieve shader instrumentation data (vkGetShaderInstrumentationValuesARM).
+// Parameters:
+//   - device: is the logical device that was used to capture shader instrumentation data.
+//   - instrumentation: is the shader instrumentation object to retrieve values from
+//   - metricBlockCount: is a pointer to an integer related to the number of metric blocks available or queried.
+//   - metricValues: is either NULL or a pointer to an application-allocated buffer where the results will be written.
+//   - flags: is reserved for future use.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderInstrumentationValuesARM.html
+func GetShaderInstrumentationValuesARM(device Device, instrumentation ShaderInstrumentationARM, metricBlockCount *uint32, flags ShaderInstrumentationValuesFlagsARM) (metricValues unsafe.Pointer, result Result) {
+	r1, _, _ := CallSyscall(pfnGetShaderInstrumentationValuesARM, uintptr(device), uintptr(instrumentation), uintptr(unsafe.Pointer(metricBlockCount)), uintptr(unsafe.Pointer(&metricValues)), uintptr(flags))
+	return metricValues, Result(r1)
+}
+
+// GetShaderModuleCreateInfoIdentifierEXT - Query a unique identifier for a shader module create info (vkGetShaderModuleCreateInfoIdentifierEXT).
+// Parameters:
+//   - device: is the logical device that can create a VkShaderModule from pCreateInfo.
+//   - createInfo: is a pointer to a VkShaderModuleCreateInfo structure.
+//   - identifier: is a pointer to the returned VkShaderModuleIdentifierEXT.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderModuleCreateInfoIdentifierEXT.html
+func GetShaderModuleCreateInfoIdentifierEXT(device Device, createInfo *ShaderModuleCreateInfo) (identifier ShaderModuleIdentifierEXT) {
+	c_createInfo := createInfo.Raw()
+	CallSyscall(pfnGetShaderModuleCreateInfoIdentifierEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(&identifier)))
+	return identifier
+}
+
+// GetShaderModuleIdentifierEXT - Query a unique identifier for a shader module (vkGetShaderModuleIdentifierEXT).
+// Parameters:
+//   - device: is the logical device that created the shader module.
+//   - shaderModule: is the handle of the shader module.
+//   - identifier: is a pointer to the returned VkShaderModuleIdentifierEXT.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderModuleIdentifierEXT.html
+func GetShaderModuleIdentifierEXT(device Device, shaderModule ShaderModule) (identifier ShaderModuleIdentifierEXT) {
+	CallSyscall(pfnGetShaderModuleIdentifierEXT, uintptr(device), uintptr(shaderModule), uintptr(unsafe.Pointer(&identifier)))
+	return identifier
+}
+
+// GetSleepStatusLegacyNV - Stub description of vkGetSleepStatusLegacyNV (vkGetSleepStatusLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSleepStatusLegacyNV.html
+func GetSleepStatusLegacyNV(device Device) (lowLatencyMode Bool32) {
+	CallSyscall(pfnGetSleepStatusLegacyNV, uintptr(device), uintptr(unsafe.Pointer(&lowLatencyMode)))
+	return lowLatencyMode
+}
+
+// GetSwapchainCounterEXT - Query the current value of a surface counter (vkGetSwapchainCounterEXT).
+// Parameters:
+//   - device: is the VkDevice associated with swapchain.
+//   - swapchain: is the swapchain from which to query the counter value.
+//   - counter: is a VkSurfaceCounterFlagBitsEXT value specifying the counter to query.
+//   - counterValue: will return the current value of the counter.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainCounterEXT.html
+func GetSwapchainCounterEXT(device Device, swapchain SwapchainKHR, counter SurfaceCounterFlagBitsEXT) (counterValue uint64, result Result) {
+	r1, _, _ := CallSyscall(pfnGetSwapchainCounterEXT, uintptr(device), uintptr(swapchain), uintptr(counter), uintptr(unsafe.Pointer(&counterValue)))
+	return counterValue, Result(r1)
+}
+
+// GetSwapchainGrallocUsage2ANDROID executes vkGetSwapchainGrallocUsage2ANDROID.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainGrallocUsage2ANDROID.html
+func GetSwapchainGrallocUsage2ANDROID(device Device, format Format, imageUsage ImageUsageFlags, swapchainImageUsage SwapchainImageUsageFlagsANDROID, grallocConsumerUsage *uint64) (grallocProducerUsage uint64, result Result) {
+	r1, _, _ := CallSyscall(pfnGetSwapchainGrallocUsage2ANDROID, uintptr(device), uintptr(format), uintptr(imageUsage), uintptr(swapchainImageUsage), uintptr(unsafe.Pointer(grallocConsumerUsage)), uintptr(unsafe.Pointer(&grallocProducerUsage)))
+	return grallocProducerUsage, Result(r1)
+}
+
+// GetSwapchainGrallocUsageANDROID executes vkGetSwapchainGrallocUsageANDROID.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainGrallocUsageANDROID.html
+func GetSwapchainGrallocUsageANDROID(device Device, format Format, imageUsage ImageUsageFlags) (grallocUsage int32, result Result) {
+	r1, _, _ := CallSyscall(pfnGetSwapchainGrallocUsageANDROID, uintptr(device), uintptr(format), uintptr(imageUsage), uintptr(unsafe.Pointer(&grallocUsage)))
+	return grallocUsage, Result(r1)
+}
+
+// GetSwapchainGrallocUsageOHOS - Obtain the proper Gralloc usage flag according to the given Vulkan device, image format and image usage flag (vkGetSwapchainGrallocUsageOHOS).
+// Parameters:
+//   - device: is a valid VkDevice object used to create the swapchain image.
+//   - format: is a VkFormat value specifying the format of the given image.
+//   - grallocUsage: is a bitmask for setting a mask of zero or more OH_NativeBuffer_Usage, which is defined in the C APIs references documentation of Open Harmony OS Graphics Module.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainGrallocUsageOHOS.html
+func GetSwapchainGrallocUsageOHOS(device Device, format Format, imageUsage ImageUsageFlags) (grallocUsage uint64, result Result) {
+	r1, _, _ := CallSyscall(pfnGetSwapchainGrallocUsageOHOS, uintptr(device), uintptr(format), uintptr(imageUsage), uintptr(unsafe.Pointer(&grallocUsage)))
+	return grallocUsage, Result(r1)
+}
+
+// GetSwapchainImagesKHR - Obtain the array of presentable images associated with a swapchain (vkGetSwapchainImagesKHR).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to query.
+//   - swapchainImageCount: is a pointer to an integer related to the number of presentable images available or queried, as described below.
+//   - swapchainImages: is either NULL or a pointer to an array of VkImage handles.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainImagesKHR.html
+func GetSwapchainImagesKHR(device Device, swapchain SwapchainKHR) (swapchainImages []Image, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetSwapchainImagesKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	swapchainImages = make([]Image, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&swapchainImages[0]))
+	r1, _, _ = CallSyscall(pfnGetSwapchainImagesKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return swapchainImages, Result(r1)
+}
+
+// GetSwapchainStatusKHR - Get a swapchain\ (vkGetSwapchainStatusKHR).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to query.
+//
+// Success codes: VK_SUCCESS, VK_SUBOPTIMAL_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainStatusKHR.html
+func GetSwapchainStatusKHR(device Device, swapchain SwapchainKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnGetSwapchainStatusKHR, uintptr(device), uintptr(swapchain))
+	return Result(r1)
+}
+
+// GetSwapchainTimeDomainPropertiesEXT - Obtain the time domains supported by the PE for the swapchain (vkGetSwapchainTimeDomainPropertiesEXT).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to obtain time domain properties for.
+//   - swapchainTimeDomainProperties: is a pointer to an instance of the VkSwapchainTimeDomainPropertiesEXT structure.
+//   - timeDomainsCounter: is NULL or a pointer to a 64-bit unsigned integer set by the implementation to the current value of the swapchain's internal time domain properties counter.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainTimeDomainPropertiesEXT.html
+func GetSwapchainTimeDomainPropertiesEXT(device Device, swapchain SwapchainKHR, swapchainTimeDomainProperties *SwapchainTimeDomainPropertiesEXT) (timeDomainsCounter uint64, result Result) {
+	c_swapchainTimeDomainProperties := swapchainTimeDomainProperties.Raw()
+	r1, _, _ := CallSyscall(pfnGetSwapchainTimeDomainPropertiesEXT, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_swapchainTimeDomainProperties)), uintptr(unsafe.Pointer(&timeDomainsCounter)))
+	return timeDomainsCounter, Result(r1)
+}
+
+// GetSwapchainTimingPropertiesEXT - Obtain the display timing properties of the PE\ (vkGetSwapchainTimingPropertiesEXT).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to obtain timing properties for.
+//   - swapchainTimingProperties: is a pointer to an instance of the VkSwapchainTimingPropertiesEXT structure.
+//   - swapchainTimingPropertiesCounter: is NULL or a pointer to a 64-bit unsigned integer set by the implementation to the current value of the swapchain's internal timing properties counter.
+//
+// Success codes: VK_SUCCESS, VK_NOT_READY
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainTimingPropertiesEXT.html
+func GetSwapchainTimingPropertiesEXT(device Device, swapchain SwapchainKHR, swapchainTimingProperties *SwapchainTimingPropertiesEXT) (swapchainTimingPropertiesCounter uint64, result Result) {
+	c_swapchainTimingProperties := swapchainTimingProperties.Raw()
+	r1, _, _ := CallSyscall(pfnGetSwapchainTimingPropertiesEXT, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_swapchainTimingProperties)), uintptr(unsafe.Pointer(&swapchainTimingPropertiesCounter)))
+	return swapchainTimingPropertiesCounter, Result(r1)
+}
+
+// GetTensorMemoryRequirementsARM - Returns the memory requirements for specified Vulkan object (vkGetTensorMemoryRequirementsARM).
+// Parameters:
+//   - device: is the logical device that owns the tensor.
+//   - info: is a pointer to a VkTensorMemoryRequirementsInfoARM structure containing parameters required for the memory requirements query.
+//   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the tensor object are returned.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorMemoryRequirementsARM.html
+func GetTensorMemoryRequirementsARM(device Device, info *TensorMemoryRequirementsInfoARM) (memoryRequirements MemoryRequirements2) {
+	c_info := info.Raw()
+	CallSyscall(pfnGetTensorMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
+// GetTensorOpaqueCaptureDataARM - Get tensor opaque capture descriptor data for descriptor heap replay (vkGetTensorOpaqueCaptureDataARM).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - tensorCount: is the number of tensors to retrieve data from.
+//   - tensors: is a pointer to an array of VkTensorARM objects to retrieve the opaque capture data from.
+//   - datas: is a pointer to an array of VkHostAddressRangeEXT structures defining the host address ranges where each tensor's opaque capture data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorOpaqueCaptureDataARM.html
+func GetTensorOpaqueCaptureDataARM(device Device, tensors []TensorARM) (datas HostAddressRangeEXT, result Result) {
+	c_tensors := SliceData(tensors)
+	r1, _, _ := CallSyscall(pfnGetTensorOpaqueCaptureDataARM, uintptr(device), uintptr(len(tensors)), uintptr(unsafe.Pointer(c_tensors)), uintptr(unsafe.Pointer(&datas)))
+	return datas, Result(r1)
+}
+
+// GetTensorOpaqueCaptureDescriptorDataARM - Get tensor opaque capture descriptor data (vkGetTensorOpaqueCaptureDescriptorDataARM).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkTensorCaptureDescriptorDataInfoARM structure specifying the tensor.
+//   - data: is a pointer to a user-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorOpaqueCaptureDescriptorDataARM.html
+func GetTensorOpaqueCaptureDescriptorDataARM(device Device, info *TensorCaptureDescriptorDataInfoARM) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetTensorOpaqueCaptureDescriptorDataARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
+}
+
+// GetTensorViewOpaqueCaptureDescriptorDataARM - Get tensor view opaque capture descriptor data (vkGetTensorViewOpaqueCaptureDescriptorDataARM).
+// Parameters:
+//   - device: is the logical device that gets the data.
+//   - info: is a pointer to a VkTensorViewCaptureDescriptorDataInfoARM structure specifying the tensor view.
+//   - data: is a pointer to a user-allocated buffer where the data will be written.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorViewOpaqueCaptureDescriptorDataARM.html
+func GetTensorViewOpaqueCaptureDescriptorDataARM(device Device, info *TensorViewCaptureDescriptorDataInfoARM) (data unsafe.Pointer, result Result) {
+	c_info := info.Raw()
+	r1, _, _ := CallSyscall(pfnGetTensorViewOpaqueCaptureDescriptorDataARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, Result(r1)
+}
+
+// GetValidationCacheDataEXT - Get the data store from a validation cache (vkGetValidationCacheDataEXT).
+// Parameters:
+//   - device: is the logical device that owns the validation cache.
+//   - validationCache: is the validation cache to retrieve data from.
+//   - dataSize: is a pointer to a value related to the amount of data in the validation cache, as described below.
+//   - data: is either NULL or a pointer to a buffer.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetValidationCacheDataEXT.html
+func GetValidationCacheDataEXT(device Device, validationCache ValidationCacheEXT) (data []unsafe.Pointer, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetValidationCacheDataEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = CallSyscall(pfnGetValidationCacheDataEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, Result(r1)
+}
+
+// GetVideoSessionMemoryRequirementsKHR - Get the memory requirements for a video session (vkGetVideoSessionMemoryRequirementsKHR).
+// Parameters:
+//   - device: is the logical device that owns the video session.
+//   - videoSession: is the video session to query.
+//   - memoryRequirementsCount: is a pointer to an integer related to the number of memory binding requirements available or queried, as described below.
+//   - memoryRequirements: is NULL or a pointer to an array of VkVideoSessionMemoryRequirementsKHR structures in which the memory binding requirements of the video session are returned.
+//
+// Success codes: VK_SUCCESS, VK_INCOMPLETE
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetVideoSessionMemoryRequirementsKHR.html
+func GetVideoSessionMemoryRequirementsKHR(device Device, videoSession VideoSessionKHR) (memoryRequirements []VideoSessionMemoryRequirementsKHR, result Result) {
+	var count uint32
+	r1, _, _ := CallSyscall(pfnGetVideoSessionMemoryRequirementsKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(&count)), 0)
+	if Result(r1) != SUCCESS || count == 0 {
+		return nil, Result(r1)
+	}
+
+	memoryRequirements = make([]VideoSessionMemoryRequirementsKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&memoryRequirements[0]))
+	r1, _, _ = CallSyscall(pfnGetVideoSessionMemoryRequirementsKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return memoryRequirements, Result(r1)
+}
+
+// GetWinrtDisplayNV - Query the VkDisplayKHR corresponding to a WinRT DisplayTarget (vkGetWinrtDisplayNV).
+// Parameters:
+//   - physicalDevice: is the physical device on which to query the display handle.
+//   - deviceRelativeId: is the value of the https: property of a https: that is enumerated by a https: with an https: property matching the deviceLUID property of a VkPhysicalDeviceIDProperties for physicalDevice.
+//   - display: is a pointer to a VkDisplayKHR handle where the display is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetWinrtDisplayNV.html
+func GetWinrtDisplayNV(physicalDevice PhysicalDevice, deviceRelativeId uint32) (display DisplayKHR, result Result) {
+	r1, _, _ := CallSyscall(pfnGetWinrtDisplayNV, uintptr(physicalDevice), uintptr(deviceRelativeId), uintptr(unsafe.Pointer(&display)))
+	return display, Result(r1)
+}
+
+// ImportFenceFdKHR - Import a fence from a POSIX file descriptor (vkImportFenceFdKHR).
+// Parameters:
+//   - device: is the logical device that created the fence.
+//   - importFenceFdInfo: is a pointer to a VkImportFenceFdInfoKHR structure specifying the fence and import parameters.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceFdKHR.html
+func ImportFenceFdKHR(device Device, importFenceFdInfo *ImportFenceFdInfoKHR) (result Result) {
+	c_importFenceFdInfo := importFenceFdInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportFenceFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_importFenceFdInfo)))
+	return Result(r1)
+}
+
+// ImportFenceSciSyncFenceNV - Import a fence from a stext:NvSciSyncFence handle (vkImportFenceSciSyncFenceNV).
+// Parameters:
+//   - device: is the logical device that created the fence.
+//   - importFenceSciSyncInfo: is a pointer to a VkImportFenceSciSyncInfoNV structure containing parameters of the import operation
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncFenceNV.html
+func ImportFenceSciSyncFenceNV(device Device, importFenceSciSyncInfo *ImportFenceSciSyncInfoNV) (result Result) {
+	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
+	return Result(r1)
+}
+
+// ImportFenceSciSyncObjNV - Import a fence from a stext:NvSciSyncObj handle (vkImportFenceSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the fence.
+//   - importFenceSciSyncInfo: is a pointer to a VkImportFenceSciSyncInfoNV structure containing parameters of the import operation
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncObjNV.html
+func ImportFenceSciSyncObjNV(device Device, importFenceSciSyncInfo *ImportFenceSciSyncInfoNV) (result Result) {
+	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
+	return Result(r1)
+}
+
+// ImportFenceWin32HandleKHR - Import a fence from a Windows HANDLE (vkImportFenceWin32HandleKHR).
+// Parameters:
+//   - device: is the logical device that created the fence.
+//   - importFenceWin32HandleInfo: is a pointer to a VkImportFenceWin32HandleInfoKHR structure specifying the fence and import parameters.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceWin32HandleKHR.html
+func ImportFenceWin32HandleKHR(device Device, importFenceWin32HandleInfo *ImportFenceWin32HandleInfoKHR) (result Result) {
+	c_importFenceWin32HandleInfo := importFenceWin32HandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportFenceWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_importFenceWin32HandleInfo)))
+	return Result(r1)
+}
+
+// ImportSemaphoreFdKHR - Import a semaphore from a POSIX file descriptor (vkImportSemaphoreFdKHR).
+// Parameters:
+//   - device: is the logical device that created the semaphore.
+//   - importSemaphoreFdInfo: is a pointer to a VkImportSemaphoreFdInfoKHR structure specifying the semaphore and import parameters.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreFdKHR.html
+func ImportSemaphoreFdKHR(device Device, importSemaphoreFdInfo *ImportSemaphoreFdInfoKHR) (result Result) {
+	c_importSemaphoreFdInfo := importSemaphoreFdInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportSemaphoreFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreFdInfo)))
+	return Result(r1)
+}
+
+// ImportSemaphoreSciSyncObjNV - Import a semaphore from a SciSync handle (vkImportSemaphoreSciSyncObjNV).
+// Parameters:
+//   - device: is the logical device that created the semaphore.
+//   - importSemaphoreSciSyncInfo: is a pointer to a VkImportSemaphoreSciSyncInfoNV structure containing parameters of the import operation
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreSciSyncObjNV.html
+func ImportSemaphoreSciSyncObjNV(device Device, importSemaphoreSciSyncInfo *ImportSemaphoreSciSyncInfoNV) (result Result) {
+	c_importSemaphoreSciSyncInfo := importSemaphoreSciSyncInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportSemaphoreSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreSciSyncInfo)))
+	return Result(r1)
+}
+
+// ImportSemaphoreWin32HandleKHR - Import a semaphore from a Windows HANDLE (vkImportSemaphoreWin32HandleKHR).
+// Parameters:
+//   - device: is the logical device that created the semaphore.
+//   - importSemaphoreWin32HandleInfo: is a pointer to a VkImportSemaphoreWin32HandleInfoKHR structure specifying the semaphore and import parameters.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreWin32HandleKHR.html
+func ImportSemaphoreWin32HandleKHR(device Device, importSemaphoreWin32HandleInfo *ImportSemaphoreWin32HandleInfoKHR) (result Result) {
+	c_importSemaphoreWin32HandleInfo := importSemaphoreWin32HandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportSemaphoreWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreWin32HandleInfo)))
+	return Result(r1)
+}
+
+// ImportSemaphoreZirconHandleFUCHSIA - Import a semaphore from a Zircon event handle (vkImportSemaphoreZirconHandleFUCHSIA).
+// Parameters:
+//   - device: is the logical device that created the semaphore.
+//   - importSemaphoreZirconHandleInfo: is a pointer to a VkImportSemaphoreZirconHandleInfoFUCHSIA structure specifying the semaphore and import parameters.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreZirconHandleFUCHSIA.html
+func ImportSemaphoreZirconHandleFUCHSIA(device Device, importSemaphoreZirconHandleInfo *ImportSemaphoreZirconHandleInfoFUCHSIA) (result Result) {
+	c_importSemaphoreZirconHandleInfo := importSemaphoreZirconHandleInfo.Raw()
+	r1, _, _ := CallSyscall(pfnImportSemaphoreZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreZirconHandleInfo)))
+	return Result(r1)
+}
+
+// InitializePerformanceApiINTEL - Initialize a device for performance queries (vkInitializePerformanceApiINTEL).
+// Parameters:
+//   - device: is the logical device used for the queries.
+//   - initializeInfo: is a pointer to a VkInitializePerformanceApiInfoINTEL structure specifying initialization parameters.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkInitializePerformanceApiINTEL.html
+func InitializePerformanceApiINTEL(device Device, initializeInfo *InitializePerformanceApiInfoINTEL) (result Result) {
+	c_initializeInfo := initializeInfo.Raw()
+	r1, _, _ := CallSyscall(pfnInitializePerformanceApiINTEL, uintptr(device), uintptr(unsafe.Pointer(c_initializeInfo)))
+	return Result(r1)
 }
 
 // InvalidateMappedMemoryRanges - Invalidate ranges of mapped memory objects (vkInvalidateMappedMemoryRanges).
@@ -3533,6 +11745,27 @@ func InvalidateMappedMemoryRanges(device Device, memoryRanges []MappedMemoryRang
 		}
 	}
 	r1, _, _ := CallSyscall(pfnInvalidateMappedMemoryRanges, uintptr(device), uintptr(len(memoryRanges)), uintptr(unsafe.Pointer(SliceData(c_memoryRanges))))
+	return Result(r1)
+}
+
+// LatencySleepLegacyNV - Stub description of vkLatencySleepLegacyNV (vkLatencySleepLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkLatencySleepLegacyNV.html
+func LatencySleepLegacyNV(device Device, signalSemaphore Semaphore, value uint64) {
+	CallSyscall(pfnLatencySleepLegacyNV, uintptr(device), uintptr(signalSemaphore), uintptr(value))
+}
+
+// LatencySleepNV - Trigger low latency mode Sleep (vkLatencySleepNV).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to delay associated CPU work based on VkLatencySubmissionPresentIdNV submissions.
+//   - sleepInfo: is a pointer to a VkLatencySleepInfoNV structure specifying the parameters of the latency sleep.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkLatencySleepNV.html
+func LatencySleepNV(device Device, swapchain SwapchainKHR, sleepInfo *LatencySleepInfoNV) (result Result) {
+	c_sleepInfo := sleepInfo.Raw()
+	r1, _, _ := CallSyscall(pfnLatencySleepNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_sleepInfo)))
 	return Result(r1)
 }
 
@@ -3584,6 +11817,33 @@ func MergePipelineCaches(device Device, dstCache PipelineCache, srcCaches []Pipe
 	return Result(r1)
 }
 
+// MergeValidationCachesEXT - Combine the data stores of validation caches (vkMergeValidationCachesEXT).
+// Parameters:
+//   - device: is the logical device that owns the validation cache objects.
+//   - dstCache: is the handle of the validation cache to merge results into.
+//   - srcCacheCount: is the length of the pSrcCaches array.
+//   - srcCaches: is a pointer to an array of validation cache handles, which will be merged into dstCache. The previous contents of dstCache are included after the merge.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkMergeValidationCachesEXT.html
+func MergeValidationCachesEXT(device Device, dstCache ValidationCacheEXT, srcCaches []ValidationCacheEXT) (result Result) {
+	c_srcCaches := SliceData(srcCaches)
+	r1, _, _ := CallSyscall(pfnMergeValidationCachesEXT, uintptr(device), uintptr(dstCache), uintptr(len(srcCaches)), uintptr(unsafe.Pointer(c_srcCaches)))
+	return Result(r1)
+}
+
+// QueueBeginDebugUtilsLabelEXT - Open a queue debug label region (vkQueueBeginDebugUtilsLabelEXT).
+// Parameters:
+//   - queue: is the queue in which to start a debug label region.
+//   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label region to open.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueBeginDebugUtilsLabelEXT.html
+func QueueBeginDebugUtilsLabelEXT(queue Queue, labelInfo *DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	CallSyscall(pfnQueueBeginDebugUtilsLabelEXT, uintptr(queue), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
 // QueueBindSparse - Bind device memory to a sparse resource object (vkQueueBindSparse).
 // Parameters:
 //   - queue: is the queue that the sparse binding operations will be submitted to.
@@ -3603,6 +11863,108 @@ func QueueBindSparse(queue Queue, bindInfo []BindSparseInfo, fence Fence) (resul
 	}
 	r1, _, _ := CallSyscall(pfnQueueBindSparse, uintptr(queue), uintptr(len(bindInfo)), uintptr(unsafe.Pointer(SliceData(c_bindInfo))), uintptr(fence))
 	return Result(r1)
+}
+
+// QueueEndDebugUtilsLabelEXT - Close a queue debug label region (vkQueueEndDebugUtilsLabelEXT).
+// Parameters:
+//   - queue: is the queue in which a debug label region should be closed.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueEndDebugUtilsLabelEXT.html
+func QueueEndDebugUtilsLabelEXT(queue Queue) {
+	CallSyscall(pfnQueueEndDebugUtilsLabelEXT, uintptr(queue))
+}
+
+// QueueInsertDebugUtilsLabelEXT - Insert a label into a queue (vkQueueInsertDebugUtilsLabelEXT).
+// Parameters:
+//   - queue: is the queue into which a debug label will be inserted.
+//   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label to insert.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueInsertDebugUtilsLabelEXT.html
+func QueueInsertDebugUtilsLabelEXT(queue Queue, labelInfo *DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	CallSyscall(pfnQueueInsertDebugUtilsLabelEXT, uintptr(queue), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
+// QueueNotifyOutOfBandLegacyNV - Stub description of vkQueueNotifyOutOfBandLegacyNV (vkQueueNotifyOutOfBandLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueNotifyOutOfBandLegacyNV.html
+func QueueNotifyOutOfBandLegacyNV(queue Queue, queueType uint32) {
+	CallSyscall(pfnQueueNotifyOutOfBandLegacyNV, uintptr(queue), uintptr(queueType))
+}
+
+// QueueNotifyOutOfBandNV - Notify out of band queue (vkQueueNotifyOutOfBandNV).
+// Parameters:
+//   - queue: is the VkQueue to be marked as out of band.
+//   - queueTypeInfo: is a pointer to a VkOutOfBandQueueTypeInfoNV structure specifying the queue type.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueNotifyOutOfBandNV.html
+func QueueNotifyOutOfBandNV(queue Queue, queueTypeInfo *OutOfBandQueueTypeInfoNV) {
+	c_queueTypeInfo := queueTypeInfo.Raw()
+	CallSyscall(pfnQueueNotifyOutOfBandNV, uintptr(queue), uintptr(unsafe.Pointer(c_queueTypeInfo)))
+}
+
+// QueuePresentKHR - Queue an image for presentation (vkQueuePresentKHR).
+// Parameters:
+//   - queue: is a queue that is capable of presentation to the target surface's platform on the same device as the image's swapchain.
+//   - presentInfo: is a pointer to a VkPresentInfoKHR structure specifying parameters of the presentation.
+//
+// Success codes: VK_SUCCESS, VK_SUBOPTIMAL_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED, VK_ERROR_PRESENT_TIMING_QUEUE_FULL_EXT
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueuePresentKHR.html
+func QueuePresentKHR(queue Queue, presentInfo *PresentInfoKHR) (result Result) {
+	c_presentInfo := presentInfo.Raw()
+	r1, _, _ := CallSyscall(pfnQueuePresentKHR, uintptr(queue), uintptr(unsafe.Pointer(c_presentInfo)))
+	return Result(r1)
+}
+
+// QueueSetPerfHintQCOM - Set a performance hint on a queue (vkQueueSetPerfHintQCOM).
+// Parameters:
+//   - queue: is the queue to set the performance hint on.
+//   - perfHintInfo: is a pointer to a VkPerfHintInfoQCOM structure, describing the performance hint to set.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_DEVICE_LOST, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSetPerfHintQCOM.html
+func QueueSetPerfHintQCOM(queue Queue, perfHintInfo *PerfHintInfoQCOM) (result Result) {
+	c_perfHintInfo := perfHintInfo.Raw()
+	r1, _, _ := CallSyscall(pfnQueueSetPerfHintQCOM, uintptr(queue), uintptr(unsafe.Pointer(c_perfHintInfo)))
+	return Result(r1)
+}
+
+// QueueSetPerformanceConfigurationINTEL - Set a performance query (vkQueueSetPerformanceConfigurationINTEL).
+// Parameters:
+//   - queue: is the queue on which the configuration will be used.
+//   - configuration: is the configuration to use.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSetPerformanceConfigurationINTEL.html
+func QueueSetPerformanceConfigurationINTEL(queue Queue, configuration PerformanceConfigurationINTEL) (result Result) {
+	r1, _, _ := CallSyscall(pfnQueueSetPerformanceConfigurationINTEL, uintptr(queue), uintptr(configuration))
+	return Result(r1)
+}
+
+// QueueSignalReleaseImageANDROID executes vkQueueSignalReleaseImageANDROID.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSignalReleaseImageANDROID.html
+func QueueSignalReleaseImageANDROID(queue Queue, waitSemaphores []Semaphore, image Image) (nativeFenceFd int32, result Result) {
+	c_waitSemaphores := SliceData(waitSemaphores)
+	r1, _, _ := CallSyscall(pfnQueueSignalReleaseImageANDROID, uintptr(queue), uintptr(len(waitSemaphores)), uintptr(unsafe.Pointer(c_waitSemaphores)), uintptr(image), uintptr(unsafe.Pointer(&nativeFenceFd)))
+	return nativeFenceFd, Result(r1)
+}
+
+// QueueSignalReleaseImageOHOS - Inform the system hardware buffer that the image is released for further use (vkQueueSignalReleaseImageOHOS).
+// Parameters:
+//   - queue: is a handle of VkQueue.
+//   - waitSemaphoreCount: is the number of semaphores to wait on.
+//   - waitSemaphores: is a pointer to an array of VkSemaphore handles upon which to wait before signaling the native fence.
+//   - nativeFenceFd: is a pointer to either a negative value or the file descriptor of a native fence. A negative value indicates that the processing workflow has been completed, and the calling party is not required to perform additional waiting before subsequent processes. Otherwise, a native fence will be created and be signaled when the image is ready for release.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSignalReleaseImageOHOS.html
+func QueueSignalReleaseImageOHOS(queue Queue, waitSemaphores []Semaphore, image Image) (nativeFenceFd int32, result Result) {
+	c_waitSemaphores := SliceData(waitSemaphores)
+	r1, _, _ := CallSyscall(pfnQueueSignalReleaseImageOHOS, uintptr(queue), uintptr(len(waitSemaphores)), uintptr(unsafe.Pointer(c_waitSemaphores)), uintptr(image), uintptr(unsafe.Pointer(&nativeFenceFd)))
+	return nativeFenceFd, Result(r1)
 }
 
 // QueueSubmit - Submits a sequence of semaphores or command buffers to a queue (vkQueueSubmit).
@@ -3647,6 +12009,12 @@ func QueueSubmit2(queue Queue, submits []SubmitInfo2, fence Fence) (result Resul
 	return Result(r1)
 }
 
+// QueueSubmit2KHR executes vkQueueSubmit2KHR.
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSubmit2KHR.html
+func QueueSubmit2KHR() {
+	CallSyscall(pfnQueueSubmit2KHR)
+}
+
 // QueueWaitIdle - Wait for a queue to become idle (vkQueueWaitIdle).
 // Parameters:
 //   - queue: is the queue on which to wait.
@@ -3656,6 +12024,135 @@ func QueueSubmit2(queue Queue, submits []SubmitInfo2, fence Fence) (result Resul
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueWaitIdle.html
 func QueueWaitIdle(queue Queue) (result Result) {
 	r1, _, _ := CallSyscall(pfnQueueWaitIdle, uintptr(queue))
+	return Result(r1)
+}
+
+// RegisterCustomBorderColorEXT - Register a custom border color (vkRegisterCustomBorderColorEXT).
+// Parameters:
+//   - device: is the logical device where the border color is registered.
+//   - borderColor: is a pointer to a VkSamplerCustomBorderColorCreateInfoEXT structure specifying the custom border color value to register.
+//   - requestIndex: is a Boolean value indicating if a specific index is requested or not.
+//   - index: is a pointer to a uint32_t index value that will be written by the command upon success.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkRegisterCustomBorderColorEXT.html
+func RegisterCustomBorderColorEXT(device Device, borderColor *SamplerCustomBorderColorCreateInfoEXT, requestIndex Bool32) (index uint32, result Result) {
+	c_borderColor := borderColor.Raw()
+	r1, _, _ := CallSyscall(pfnRegisterCustomBorderColorEXT, uintptr(device), uintptr(unsafe.Pointer(c_borderColor)), uintptr(requestIndex), uintptr(unsafe.Pointer(&index)))
+	return index, Result(r1)
+}
+
+// RegisterDeviceEventEXT - Signal a fence when a device event occurs (vkRegisterDeviceEventEXT).
+// Parameters:
+//   - device: is a logical device on which the event may occur.
+//   - deviceEventInfo: is a pointer to a VkDeviceEventInfoEXT structure describing the event of interest to the application.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - fence: is a pointer to a handle in which the resulting fence object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkRegisterDeviceEventEXT.html
+func RegisterDeviceEventEXT(device Device, deviceEventInfo *DeviceEventInfoEXT, allocator *AllocationCallbacks) (fence Fence, result Result) {
+	c_deviceEventInfo := deviceEventInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnRegisterDeviceEventEXT, uintptr(device), uintptr(unsafe.Pointer(c_deviceEventInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&fence)))
+	return fence, Result(r1)
+}
+
+// RegisterDisplayEventEXT - Signal a fence when a display event occurs (vkRegisterDisplayEventEXT).
+// Parameters:
+//   - device: is a logical device associated with display
+//   - display: is the display on which the event may occur.
+//   - displayEventInfo: is a pointer to a VkDisplayEventInfoEXT structure describing the event of interest to the application.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//   - fence: is a pointer to a handle in which the resulting fence object is returned.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkRegisterDisplayEventEXT.html
+func RegisterDisplayEventEXT(device Device, display DisplayKHR, displayEventInfo *DisplayEventInfoEXT, allocator *AllocationCallbacks) (fence Fence, result Result) {
+	c_displayEventInfo := displayEventInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnRegisterDisplayEventEXT, uintptr(device), uintptr(display), uintptr(unsafe.Pointer(c_displayEventInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&fence)))
+	return fence, Result(r1)
+}
+
+// ReleaseCapturedPipelineDataKHR - Release captured pipeline binary data (vkReleaseCapturedPipelineDataKHR).
+// Parameters:
+//   - device: is the logical device that created the pipeline object.
+//   - info: is a pointer to a VkReleaseCapturedPipelineDataInfoKHR structure which describes the pipeline to release the data from.
+//   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseCapturedPipelineDataKHR.html
+func ReleaseCapturedPipelineDataKHR(device Device, info *ReleaseCapturedPipelineDataInfoKHR, allocator *AllocationCallbacks) (result Result) {
+	c_info := info.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := CallSyscall(pfnReleaseCapturedPipelineDataKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(c_allocator)))
+	return Result(r1)
+}
+
+// ReleaseDisplayEXT - Release access to an acquired VkDisplayKHR (vkReleaseDisplayEXT).
+// Parameters:
+//   - physicalDevice: is the physical device the display is on.
+//   - display: is the display to release control of.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseDisplayEXT.html
+func ReleaseDisplayEXT(physicalDevice PhysicalDevice, display DisplayKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnReleaseDisplayEXT, uintptr(physicalDevice), uintptr(display))
+	return Result(r1)
+}
+
+// ReleaseFullScreenExclusiveModeEXT - Release full-screen exclusive mode from a swapchain (vkReleaseFullScreenExclusiveModeEXT).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to release exclusive full-screen access from.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseFullScreenExclusiveModeEXT.html
+func ReleaseFullScreenExclusiveModeEXT(device Device, swapchain SwapchainKHR) (result Result) {
+	r1, _, _ := CallSyscall(pfnReleaseFullScreenExclusiveModeEXT, uintptr(device), uintptr(swapchain))
+	return Result(r1)
+}
+
+// ReleasePerformanceConfigurationINTEL - Release a configuration to capture performance data (vkReleasePerformanceConfigurationINTEL).
+// Parameters:
+//   - device: is the device associated to the configuration object to release.
+//   - configuration: is the configuration object to release.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleasePerformanceConfigurationINTEL.html
+func ReleasePerformanceConfigurationINTEL(device Device, configuration PerformanceConfigurationINTEL) (result Result) {
+	r1, _, _ := CallSyscall(pfnReleasePerformanceConfigurationINTEL, uintptr(device), uintptr(configuration))
+	return Result(r1)
+}
+
+// ReleaseProfilingLockKHR - Releases the profiling lock (vkReleaseProfilingLockKHR).
+// Parameters:
+//   - device: is the logical device to cease profiling on.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseProfilingLockKHR.html
+func ReleaseProfilingLockKHR(device Device) {
+	CallSyscall(pfnReleaseProfilingLockKHR, uintptr(device))
+}
+
+// ReleaseSwapchainImagesKHR - Release previously acquired but unused images (vkReleaseSwapchainImagesKHR).
+// Parameters:
+//   - device: is the device associated with VkReleaseSwapchainImagesInfoKHR::pname:swapchain.
+//   - releaseInfo: is a pointer to a VkReleaseSwapchainImagesInfoKHR structure containing parameters of the release.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseSwapchainImagesKHR.html
+func ReleaseSwapchainImagesKHR(device Device, releaseInfo *ReleaseSwapchainImagesInfoKHR) (result Result) {
+	c_releaseInfo := releaseInfo.Raw()
+	r1, _, _ := CallSyscall(pfnReleaseSwapchainImagesKHR, uintptr(device), uintptr(unsafe.Pointer(c_releaseInfo)))
 	return Result(r1)
 }
 
@@ -3728,6 +12225,19 @@ func ResetFences(device Device, fences []Fence) (result Result) {
 	return Result(r1)
 }
 
+// ResetGpaSessionAMD - Reset a GPA session (vkResetGpaSessionAMD).
+// Parameters:
+//   - device: is the logical device the GPA session was created from.
+//   - gpaSession: is the handle of the GPA session to reset.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkResetGpaSessionAMD.html
+func ResetGpaSessionAMD(device Device, gpaSession GpaSessionAMD) (result Result) {
+	r1, _, _ := CallSyscall(pfnResetGpaSessionAMD, uintptr(device), uintptr(gpaSession))
+	return Result(r1)
+}
+
 // ResetQueryPool - Reset queries in a query pool (vkResetQueryPool).
 // Parameters:
 //   - device: is the logical device that owns the query pool.
@@ -3738,6 +12248,75 @@ func ResetFences(device Device, fences []Fence) (result Result) {
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkResetQueryPool.html
 func ResetQueryPool(device Device, queryPool QueryPool, firstQuery uint32, queryCount uint32) {
 	CallSyscall(pfnResetQueryPool, uintptr(device), uintptr(queryPool), uintptr(firstQuery), uintptr(queryCount))
+}
+
+// SetBufferCollectionBufferConstraintsFUCHSIA - Set buffer-based constraints for a buffer collection (vkSetBufferCollectionBufferConstraintsFUCHSIA).
+// Parameters:
+//   - device: is the logical device
+//   - collection: is the VkBufferCollectionFUCHSIA handle
+//   - bufferConstraintsInfo: is a pointer to a VkBufferConstraintsInfoFUCHSIA structure
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetBufferCollectionBufferConstraintsFUCHSIA.html
+func SetBufferCollectionBufferConstraintsFUCHSIA(device Device, collection BufferCollectionFUCHSIA, bufferConstraintsInfo *BufferConstraintsInfoFUCHSIA) (result Result) {
+	c_bufferConstraintsInfo := bufferConstraintsInfo.Raw()
+	r1, _, _ := CallSyscall(pfnSetBufferCollectionBufferConstraintsFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_bufferConstraintsInfo)))
+	return Result(r1)
+}
+
+// SetBufferCollectionImageConstraintsFUCHSIA - Set image-based constraints for a buffer collection (vkSetBufferCollectionImageConstraintsFUCHSIA).
+// Parameters:
+//   - device: is the logical device
+//   - collection: is the VkBufferCollectionFUCHSIA handle
+//   - imageConstraintsInfo: is a pointer to a VkImageConstraintsInfoFUCHSIA structure
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetBufferCollectionImageConstraintsFUCHSIA.html
+func SetBufferCollectionImageConstraintsFUCHSIA(device Device, collection BufferCollectionFUCHSIA, imageConstraintsInfo *ImageConstraintsInfoFUCHSIA) (result Result) {
+	c_imageConstraintsInfo := imageConstraintsInfo.Raw()
+	r1, _, _ := CallSyscall(pfnSetBufferCollectionImageConstraintsFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_imageConstraintsInfo)))
+	return Result(r1)
+}
+
+// SetDebugUtilsObjectNameEXT - Give an application-defined name to an object (vkSetDebugUtilsObjectNameEXT).
+// Parameters:
+//   - device: is the device that is associated with the named object passed in via objectHandle.
+//   - nameInfo: is a pointer to a VkDebugUtilsObjectNameInfoEXT structure specifying parameters of the name to set on the object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetDebugUtilsObjectNameEXT.html
+func SetDebugUtilsObjectNameEXT(device Device, nameInfo *DebugUtilsObjectNameInfoEXT) (result Result) {
+	c_nameInfo := nameInfo.Raw()
+	r1, _, _ := CallSyscall(pfnSetDebugUtilsObjectNameEXT, uintptr(device), uintptr(unsafe.Pointer(c_nameInfo)))
+	return Result(r1)
+}
+
+// SetDebugUtilsObjectTagEXT - Attach arbitrary data to an object (vkSetDebugUtilsObjectTagEXT).
+// Parameters:
+//   - device: is the device that created the object.
+//   - tagInfo: is a pointer to a VkDebugUtilsObjectTagInfoEXT structure specifying parameters of the tag to attach to the object.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetDebugUtilsObjectTagEXT.html
+func SetDebugUtilsObjectTagEXT(device Device, tagInfo *DebugUtilsObjectTagInfoEXT) (result Result) {
+	c_tagInfo := tagInfo.Raw()
+	r1, _, _ := CallSyscall(pfnSetDebugUtilsObjectTagEXT, uintptr(device), uintptr(unsafe.Pointer(c_tagInfo)))
+	return Result(r1)
+}
+
+// SetDeviceMemoryPriorityEXT - Change a memory allocation priority (vkSetDeviceMemoryPriorityEXT).
+// Parameters:
+//   - device: is the logical device that owns the memory.
+//   - memory: is the VkDeviceMemory object to which the new priority will be applied.
+//   - priority: is a floating-point value between 0 and 1, indicating the priority of the allocation relative to other memory allocations. Larger values are higher priority. The granularity of the priorities is implementation-dependent.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetDeviceMemoryPriorityEXT.html
+func SetDeviceMemoryPriorityEXT(device Device, memory DeviceMemory, priority float32) {
+	CallSyscall(pfnSetDeviceMemoryPriorityEXT, uintptr(device), uintptr(memory), uintptr(priority))
 }
 
 // SetEvent - Set an event to signaled state (vkSetEvent).
@@ -3751,6 +12330,82 @@ func ResetQueryPool(device Device, queryPool QueryPool, firstQuery uint32, query
 func SetEvent(device Device, event Event) (result Result) {
 	r1, _, _ := CallSyscall(pfnSetEvent, uintptr(device), uintptr(event))
 	return Result(r1)
+}
+
+// SetGpaDeviceClockModeAMD - Setting a device clock (vkSetGpaDeviceClockModeAMD).
+// Parameters:
+//   - device: is the logical device that sets the clocks.
+//   - info: is a pointer to a VkGpaDeviceClockModeInfoAMD structure specifying the clock mode to set or query.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetGpaDeviceClockModeAMD.html
+func SetGpaDeviceClockModeAMD(device Device) (info GpaDeviceClockModeInfoAMD, result Result) {
+	r1, _, _ := CallSyscall(pfnSetGpaDeviceClockModeAMD, uintptr(device), uintptr(unsafe.Pointer(&info)))
+	return info, Result(r1)
+}
+
+// SetHdrMetadataEXT - Set HDR metadata (vkSetHdrMetadataEXT).
+// Parameters:
+//   - device: is the logical device where the swapchain(s) were created.
+//   - swapchainCount: is the number of swapchains included in pSwapchains.
+//   - swapchains: is a pointer to an array of swapchainCount VkSwapchainKHR handles.
+//   - metadata: is a pointer to an array of swapchainCount VkHdrMetadataEXT structures.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetHdrMetadataEXT.html
+func SetHdrMetadataEXT(device Device, swapchains []SwapchainKHR, metadata *HdrMetadataEXT) {
+	c_swapchains := SliceData(swapchains)
+	c_metadata := metadata.Raw()
+	CallSyscall(pfnSetHdrMetadataEXT, uintptr(device), uintptr(len(swapchains)), uintptr(unsafe.Pointer(c_swapchains)), uintptr(unsafe.Pointer(c_metadata)))
+}
+
+// SetLatencyMarkerLegacyNV - Stub description of vkSetLatencyMarkerLegacyNV (vkSetLatencyMarkerLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencyMarkerLegacyNV.html
+func SetLatencyMarkerLegacyNV(device Device, frameID uint64, marker uint32) {
+	CallSyscall(pfnSetLatencyMarkerLegacyNV, uintptr(device), uintptr(frameID), uintptr(marker))
+}
+
+// SetLatencyMarkerNV - Pass in marker for timing info (vkSetLatencyMarkerNV).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to capture timestamps on.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencyMarkerNV.html
+func SetLatencyMarkerNV(device Device, swapchain SwapchainKHR, latencyMarkerInfo *SetLatencyMarkerInfoNV) {
+	c_latencyMarkerInfo := latencyMarkerInfo.Raw()
+	CallSyscall(pfnSetLatencyMarkerNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_latencyMarkerInfo)))
+}
+
+// SetLatencySleepModeLegacyNV - Stub description of vkSetLatencySleepModeLegacyNV (vkSetLatencySleepModeLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencySleepModeLegacyNV.html
+func SetLatencySleepModeLegacyNV(device Device, lowLatencyMode Bool32, lowLatencyBoost Bool32, minimumIntervalUs uint32) {
+	CallSyscall(pfnSetLatencySleepModeLegacyNV, uintptr(device), uintptr(lowLatencyMode), uintptr(lowLatencyBoost), uintptr(minimumIntervalUs))
+}
+
+// SetLatencySleepModeNV - Enable or Disable low latency mode on a swapchain (vkSetLatencySleepModeNV).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to enable or disable low latency mode on.
+//   - sleepModeInfo: is NULL or a pointer to a VkLatencySleepModeInfoNV structure specifying the parameters of the latency sleep mode.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencySleepModeNV.html
+func SetLatencySleepModeNV(device Device, swapchain SwapchainKHR, sleepModeInfo *LatencySleepModeInfoNV) (result Result) {
+	c_sleepModeInfo := sleepModeInfo.Raw()
+	r1, _, _ := CallSyscall(pfnSetLatencySleepModeNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_sleepModeInfo)))
+	return Result(r1)
+}
+
+// SetLocalDimmingAMD - Set Local Dimming (vkSetLocalDimmingAMD).
+// Parameters:
+//   - device: is the device associated with swapChain.
+//   - swapChain: handle to enable local dimming.
+//   - localDimmingEnable: specifies whether local dimming is enabled for the swapchain.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLocalDimmingAMD.html
+func SetLocalDimmingAMD(device Device, swapChain SwapchainKHR, localDimmingEnable Bool32) {
+	CallSyscall(pfnSetLocalDimmingAMD, uintptr(device), uintptr(swapChain), uintptr(localDimmingEnable))
 }
 
 // SetPrivateData - Associate data with a Vulkan object (vkSetPrivateData).
@@ -3769,6 +12424,26 @@ func SetPrivateData(device Device, objectType ObjectType, objectHandle uint64, p
 	return Result(r1)
 }
 
+// SetSwapchainPresentTimingQueueSizeEXT - Allocate memory for the swapchain-internal timing results queue (vkSetSwapchainPresentTimingQueueSizeEXT).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the swapchain to allocate a results queue for.
+//   - size: is the requested number of slots in the internal results queue.
+//
+// Success codes: VK_SUCCESS, VK_NOT_READY
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetSwapchainPresentTimingQueueSizeEXT.html
+func SetSwapchainPresentTimingQueueSizeEXT(device Device, swapchain SwapchainKHR, size uint32) (result Result) {
+	r1, _, _ := CallSyscall(pfnSetSwapchainPresentTimingQueueSizeEXT, uintptr(device), uintptr(swapchain), uintptr(size))
+	return Result(r1)
+}
+
+// ShutdownLatencyDeviceLegacyNV - Stub description of vkShutdownLatencyDeviceLegacyNV (vkShutdownLatencyDeviceLegacyNV).
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkShutdownLatencyDeviceLegacyNV.html
+func ShutdownLatencyDeviceLegacyNV(device Device) {
+	CallSyscall(pfnShutdownLatencyDeviceLegacyNV, uintptr(device))
+}
+
 // SignalSemaphore - Signal a timeline semaphore on the host (vkSignalSemaphore).
 // Parameters:
 //   - device: is the logical device that owns the semaphore.
@@ -3781,6 +12456,19 @@ func SignalSemaphore(device Device, signalInfo *SemaphoreSignalInfo) (result Res
 	c_signalInfo := signalInfo.Raw()
 	r1, _, _ := CallSyscall(pfnSignalSemaphore, uintptr(device), uintptr(unsafe.Pointer(c_signalInfo)))
 	return Result(r1)
+}
+
+// SubmitDebugUtilsMessageEXT - Inject a message into a debug stream (vkSubmitDebugUtilsMessageEXT).
+// Parameters:
+//   - instance: is the debug stream's VkInstance.
+//   - messageSeverity: is a VkDebugUtilsMessageSeverityFlagBitsEXT value specifying the severity of this event/message.
+//   - messageTypes: is a bitmask of VkDebugUtilsMessageTypeFlagBitsEXT specifying which type of event(s) to identify with this message.
+//   - callbackData: contains all the callback related data in the VkDebugUtilsMessengerCallbackDataEXT structure.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSubmitDebugUtilsMessageEXT.html
+func SubmitDebugUtilsMessageEXT(instance Instance, messageSeverity DebugUtilsMessageSeverityFlagBitsEXT, messageTypes DebugUtilsMessageTypeFlagsEXT, callbackData *DebugUtilsMessengerCallbackDataEXT) {
+	c_callbackData := callbackData.Raw()
+	CallSyscall(pfnSubmitDebugUtilsMessageEXT, uintptr(instance), uintptr(messageSeverity), uintptr(messageTypes), uintptr(unsafe.Pointer(c_callbackData)))
 }
 
 // TransitionImageLayout - Perform an image layout transition on the host (vkTransitionImageLayout).
@@ -3814,6 +12502,15 @@ func TrimCommandPool(device Device, commandPool CommandPool, flags CommandPoolTr
 	CallSyscall(pfnTrimCommandPool, uintptr(device), uintptr(commandPool), uintptr(flags))
 }
 
+// UninitializePerformanceApiINTEL - Uninitialize a device for performance queries (vkUninitializePerformanceApiINTEL).
+// Parameters:
+//   - device: is the logical device used for the queries.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUninitializePerformanceApiINTEL.html
+func UninitializePerformanceApiINTEL(device Device) {
+	CallSyscall(pfnUninitializePerformanceApiINTEL, uintptr(device))
+}
+
 // UnmapMemory - Unmap a previously mapped memory object (vkUnmapMemory).
 // Parameters:
 //   - device: is the logical device that owns the memory.
@@ -3836,6 +12533,16 @@ func UnmapMemory2(device Device, memoryUnmapInfo *MemoryUnmapInfo) (result Resul
 	c_memoryUnmapInfo := memoryUnmapInfo.Raw()
 	r1, _, _ := CallSyscall(pfnUnmapMemory2, uintptr(device), uintptr(unsafe.Pointer(c_memoryUnmapInfo)))
 	return Result(r1)
+}
+
+// UnregisterCustomBorderColorEXT - Unregister a custom border color (vkUnregisterCustomBorderColorEXT).
+// Parameters:
+//   - device: is the logical device where the border color is registered.
+//   - index: is the uint32_t index value to unregister.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUnregisterCustomBorderColorEXT.html
+func UnregisterCustomBorderColorEXT(device Device, index uint32) {
+	CallSyscall(pfnUnregisterCustomBorderColorEXT, uintptr(device), uintptr(index))
 }
 
 // UpdateDescriptorSetWithTemplate - Update the contents of a descriptor set object using an update template (vkUpdateDescriptorSetWithTemplate).
@@ -3875,6 +12582,57 @@ func UpdateDescriptorSets(device Device, descriptorWrites []WriteDescriptorSet, 
 	CallSyscall(pfnUpdateDescriptorSets, uintptr(device), uintptr(len(descriptorWrites)), uintptr(unsafe.Pointer(SliceData(c_descriptorWrites))), uintptr(len(descriptorCopies)), uintptr(unsafe.Pointer(SliceData(c_descriptorCopies))))
 }
 
+// UpdateIndirectExecutionSetPipelineEXT - Update the contents of an indirect execution set (vkUpdateIndirectExecutionSetPipelineEXT).
+// Parameters:
+//   - device: is the logical device that owns the indirect execution set.
+//   - indirectExecutionSet: is the indirect execution set being updated.
+//   - executionSetWriteCount: is the number of elements in the pExecutionSetWrites array.
+//   - executionSetWrites: is a pointer to an array of VkWriteIndirectExecutionSetPipelineEXT structures describing the elements to update.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateIndirectExecutionSetPipelineEXT.html
+func UpdateIndirectExecutionSetPipelineEXT(device Device, indirectExecutionSet IndirectExecutionSetEXT, executionSetWrites []WriteIndirectExecutionSetPipelineEXT) {
+	c_executionSetWrites := make([]RawWriteIndirectExecutionSetPipelineEXT, len(executionSetWrites))
+	for i := range executionSetWrites {
+		if raw := executionSetWrites[i].Raw(); raw != nil {
+			c_executionSetWrites[i] = *raw
+		}
+	}
+	CallSyscall(pfnUpdateIndirectExecutionSetPipelineEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(len(executionSetWrites)), uintptr(unsafe.Pointer(SliceData(c_executionSetWrites))))
+}
+
+// UpdateIndirectExecutionSetShaderEXT - Update the contents of an indirect execution set (vkUpdateIndirectExecutionSetShaderEXT).
+// Parameters:
+//   - device: is the logical device that owns the indirect execution set.
+//   - indirectExecutionSet: is the indirect execution set being updated.
+//   - executionSetWriteCount: is the number of elements in the pExecutionSetWrites array.
+//   - executionSetWrites: is a pointer to an array of VkWriteIndirectExecutionSetShaderEXT structures describing the elements to update.
+//
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateIndirectExecutionSetShaderEXT.html
+func UpdateIndirectExecutionSetShaderEXT(device Device, indirectExecutionSet IndirectExecutionSetEXT, executionSetWrites []WriteIndirectExecutionSetShaderEXT) {
+	c_executionSetWrites := make([]RawWriteIndirectExecutionSetShaderEXT, len(executionSetWrites))
+	for i := range executionSetWrites {
+		if raw := executionSetWrites[i].Raw(); raw != nil {
+			c_executionSetWrites[i] = *raw
+		}
+	}
+	CallSyscall(pfnUpdateIndirectExecutionSetShaderEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(len(executionSetWrites)), uintptr(unsafe.Pointer(SliceData(c_executionSetWrites))))
+}
+
+// UpdateVideoSessionParametersKHR - Update video session parameters object (vkUpdateVideoSessionParametersKHR).
+// Parameters:
+//   - device: is the logical device that updates the video session parameters.
+//   - videoSessionParameters: is the video session parameters object to update.
+//   - updateInfo: is a pointer to a VkVideoSessionParametersUpdateInfoKHR structure specifying the parameter update information.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateVideoSessionParametersKHR.html
+func UpdateVideoSessionParametersKHR(device Device, videoSessionParameters VideoSessionParametersKHR, updateInfo *VideoSessionParametersUpdateInfoKHR) (result Result) {
+	c_updateInfo := updateInfo.Raw()
+	r1, _, _ := CallSyscall(pfnUpdateVideoSessionParametersKHR, uintptr(device), uintptr(videoSessionParameters), uintptr(unsafe.Pointer(c_updateInfo)))
+	return Result(r1)
+}
+
 // WaitForFences - Wait for one or more fences to become signaled (vkWaitForFences).
 // Parameters:
 //   - device: is the logical device that owns the fences.
@@ -3892,6 +12650,36 @@ func WaitForFences(device Device, fences []Fence, waitAll Bool32, timeout uint64
 	return Result(r1)
 }
 
+// WaitForPresent2KHR - Wait for presentation (vkWaitForPresent2KHR).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the non-retired swapchain on which an image was queued for presentation.
+//   - presentWait2Info: is a pointer to a VkPresentWait2InfoKHR structure specifying the parameters of the wait.
+//
+// Success codes: VK_SUCCESS, VK_TIMEOUT, VK_SUBOPTIMAL_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWaitForPresent2KHR.html
+func WaitForPresent2KHR(device Device, swapchain SwapchainKHR, presentWait2Info *PresentWait2InfoKHR) (result Result) {
+	c_presentWait2Info := presentWait2Info.Raw()
+	r1, _, _ := CallSyscall(pfnWaitForPresent2KHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_presentWait2Info)))
+	return Result(r1)
+}
+
+// WaitForPresentKHR - Wait for presentation (vkWaitForPresentKHR).
+// Parameters:
+//   - device: is the device associated with swapchain.
+//   - swapchain: is the non-retired swapchain on which an image was queued for presentation.
+//   - presentId: is the presentation presentId to wait for.
+//   - timeout: is the timeout period in units of nanoseconds. timeout is adjusted to the closest value allowed by the implementation-dependent timeout accuracy, which may be substantially longer than one nanosecond, and may be longer than the requested period.
+//
+// Success codes: VK_SUCCESS, VK_TIMEOUT, VK_SUBOPTIMAL_KHR
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWaitForPresentKHR.html
+func WaitForPresentKHR(device Device, swapchain SwapchainKHR, presentId uint64, timeout uint64) (result Result) {
+	r1, _, _ := CallSyscall(pfnWaitForPresentKHR, uintptr(device), uintptr(swapchain), uintptr(presentId), uintptr(timeout))
+	return Result(r1)
+}
+
 // WaitSemaphores - Wait for timeline semaphores on the host (vkWaitSemaphores).
 // Parameters:
 //   - device: is the logical device that owns the semaphores.
@@ -3904,5 +12692,89 @@ func WaitForFences(device Device, fences []Fence, waitAll Bool32, timeout uint64
 func WaitSemaphores(device Device, waitInfo *SemaphoreWaitInfo, timeout uint64) (result Result) {
 	c_waitInfo := waitInfo.Raw()
 	r1, _, _ := CallSyscall(pfnWaitSemaphores, uintptr(device), uintptr(unsafe.Pointer(c_waitInfo)), uintptr(timeout))
+	return Result(r1)
+}
+
+// WriteAccelerationStructuresPropertiesKHR - Query acceleration structure meta-data on the host (vkWriteAccelerationStructuresPropertiesKHR).
+// Parameters:
+//   - device: is the device which owns the acceleration structures in pAccelerationStructures.
+//   - accelerationStructureCount: is the count of acceleration structures for which to query the property.
+//   - accelerationStructures: is a pointer to an array of existing previously built acceleration structures.
+//   - queryType: is a VkQueryType value specifying the property to be queried.
+//   - dataSize: is the size in bytes of the buffer pointed to by pData.
+//   - data: is a pointer to an application-allocated buffer where the results will be written.
+//   - stride: is the stride in bytes between results for individual queries within pData.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteAccelerationStructuresPropertiesKHR.html
+func WriteAccelerationStructuresPropertiesKHR(device Device, accelerationStructures []AccelerationStructureKHR, queryType QueryType, data []unsafe.Pointer, stride uintptr) (result Result) {
+	c_accelerationStructures := SliceData(accelerationStructures)
+	c_data := SliceData(data)
+	r1, _, _ := CallSyscall(pfnWriteAccelerationStructuresPropertiesKHR, uintptr(device), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)), uintptr(stride))
+	return Result(r1)
+}
+
+// WriteMicromapsPropertiesEXT - Query micromap meta-data on the host (vkWriteMicromapsPropertiesEXT).
+// Parameters:
+//   - device: is the device which owns the micromaps in pMicromaps.
+//   - micromapCount: is the count of micromaps for which to query the property.
+//   - micromaps: is a pointer to an array of existing previously built micromaps.
+//   - queryType: is a VkQueryType value specifying the property to be queried.
+//   - dataSize: is the size in bytes of the buffer pointed to by pData.
+//   - data: is a pointer to an application-allocated buffer where the results will be written.
+//   - stride: is the stride in bytes between results for individual queries within pData.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteMicromapsPropertiesEXT.html
+func WriteMicromapsPropertiesEXT(device Device, micromaps []MicromapEXT, queryType QueryType, data []unsafe.Pointer, stride uintptr) (result Result) {
+	c_micromaps := SliceData(micromaps)
+	c_data := SliceData(data)
+	r1, _, _ := CallSyscall(pfnWriteMicromapsPropertiesEXT, uintptr(device), uintptr(len(micromaps)), uintptr(unsafe.Pointer(c_micromaps)), uintptr(queryType), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)), uintptr(stride))
+	return Result(r1)
+}
+
+// WriteResourceDescriptorsEXT - Write resource descriptors to memory (vkWriteResourceDescriptorsEXT).
+// Parameters:
+//   - device: is the logical device that the descriptors are for.
+//   - resourceCount: is the number of elements in pResources and pDescriptors.
+//   - resources: is a pointer to an array of VkResourceDescriptorInfoEXT structures defining properties of the resource descriptors that will be written.
+//   - descriptors: is a pointer to an array of VkHostAddressRangeEXT structures defining the host address ranges that will be written to for each descriptor.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteResourceDescriptorsEXT.html
+func WriteResourceDescriptorsEXT(device Device, resources []ResourceDescriptorInfoEXT, descriptors *HostAddressRangeEXT) (result Result) {
+	c_resources := make([]RawResourceDescriptorInfoEXT, len(resources))
+	for i := range resources {
+		if raw := resources[i].Raw(); raw != nil {
+			c_resources[i] = *raw
+		}
+	}
+	c_descriptors := descriptors.Raw()
+	r1, _, _ := CallSyscall(pfnWriteResourceDescriptorsEXT, uintptr(device), uintptr(len(resources)), uintptr(unsafe.Pointer(SliceData(c_resources))), uintptr(unsafe.Pointer(c_descriptors)))
+	return Result(r1)
+}
+
+// WriteSamplerDescriptorsEXT - Write sampler descriptors to memory (vkWriteSamplerDescriptorsEXT).
+// Parameters:
+//   - device: is the logical device that the descriptors are for.
+//   - samplerCount: is the number of elements in pSamplers and pDescriptors.
+//   - samplers: is a pointer to an array of VkSamplerCreateInfo structures defining properties of the sampler descriptors that will be written.
+//   - descriptors: is a pointer to an array of VkHostAddressRangeEXT structures defining the host address ranges that will be written to for each descriptor.
+//
+// Success codes: VK_SUCCESS
+// Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
+// Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteSamplerDescriptorsEXT.html
+func WriteSamplerDescriptorsEXT(device Device, samplers []SamplerCreateInfo, descriptors *HostAddressRangeEXT) (result Result) {
+	c_samplers := make([]RawSamplerCreateInfo, len(samplers))
+	for i := range samplers {
+		if raw := samplers[i].Raw(); raw != nil {
+			c_samplers[i] = *raw
+		}
+	}
+	c_descriptors := descriptors.Raw()
+	r1, _, _ := CallSyscall(pfnWriteSamplerDescriptorsEXT, uintptr(device), uintptr(len(samplers)), uintptr(unsafe.Pointer(SliceData(c_samplers))), uintptr(unsafe.Pointer(c_descriptors)))
 	return Result(r1)
 }

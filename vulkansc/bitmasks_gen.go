@@ -1397,9 +1397,10 @@ func (f DebugUtilsMessageTypeFlagsEXT) String() string {
 }
 
 const (
-	DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT     DebugUtilsMessageTypeFlagsEXT = 0x1
-	DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT  DebugUtilsMessageTypeFlagsEXT = 0x2
-	DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT DebugUtilsMessageTypeFlagsEXT = 0x4
+	DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT                DebugUtilsMessageTypeFlagsEXT = 0x1
+	DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT             DebugUtilsMessageTypeFlagsEXT = 0x2
+	DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT            DebugUtilsMessageTypeFlagsEXT = 0x4
+	DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT DebugUtilsMessageTypeFlagsEXT = 0x8
 )
 
 // DebugUtilsMessengerCallbackDataFlagsEXT is a bitmask of VkDebugUtilsMessengerCallbackDataFlagsEXT.
@@ -6087,9 +6088,18 @@ func (f SwapchainCreateFlagsKHR) String() string {
 }
 
 const (
-	SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR SwapchainCreateFlagsKHR = 0x1 // Allow images with VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT
-	SWAPCHAIN_CREATE_PROTECTED_BIT_KHR                   SwapchainCreateFlagsKHR = 0x2 // Swapchain is protected
-	SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR              SwapchainCreateFlagsKHR = 0x4
+	SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR           SwapchainCreateFlagsKHR = 0x1 // Allow images with VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT
+	SWAPCHAIN_CREATE_PROTECTED_BIT_KHR                             SwapchainCreateFlagsKHR = 0x2 // Swapchain is protected
+	SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR                        SwapchainCreateFlagsKHR = 0x4
+	SWAPCHAIN_CREATE_PRESENT_TIMING_BIT_EXT                        SwapchainCreateFlagsKHR = 0x200
+	SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT            SwapchainCreateFlagsKHR = SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR
+	SWAPCHAIN_CREATE_RESERVED_5_BIT_EXT                            SwapchainCreateFlagsKHR = 0x20
+	SWAPCHAIN_CREATE_RESERVED_4_BIT_EXT                            SwapchainCreateFlagsKHR = 0x10
+	SWAPCHAIN_CREATE_PRESENT_ID_2_BIT_KHR                          SwapchainCreateFlagsKHR = 0x40 // Allow use of VK_KHR_present_id2 with this swapchain
+	SWAPCHAIN_CREATE_PRESENT_WAIT_2_BIT_KHR                        SwapchainCreateFlagsKHR = 0x80 // Allow use of VK_KHR_present_wait2 with this swapchain
+	SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR            SwapchainCreateFlagsKHR = 0x8
+	SWAPCHAIN_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT SwapchainCreateFlagsKHR = 0x100
+	SWAPCHAIN_CREATE_RESERVED_10_BIT_HUAWEI                        SwapchainCreateFlagsKHR = 0x400
 )
 
 // SwapchainImageUsageFlagsANDROID is a bitmask of VkSwapchainImageUsageFlagsANDROID.

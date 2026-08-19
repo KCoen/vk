@@ -187,6 +187,7 @@ type ApiBranchInfo struct {
 	PkgName         string // "vulkan", "vulkanbase", "vulkansc"
 	Title           string // "Vulkan Core API", "Vulkan Base API", "Vulkan SC API"
 	Commands        []string
+	BranchCommands  map[string]*CommandInfo
 	Handles         map[string]HandleInfo
 	Bitmasks        map[string]BitmaskInfo
 	Structs         map[string]*StructInfo
