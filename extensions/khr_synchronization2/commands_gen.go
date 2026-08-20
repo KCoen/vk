@@ -10,7 +10,17 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdPipelineBarrier2KHR uintptr
+	pfnCmdResetEvent2KHR      uintptr
+	pfnCmdSetEvent2KHR        uintptr
+	pfnCmdWaitEvents2KHR      uintptr
+	pfnCmdWriteTimestamp2KHR  uintptr
+	pfnQueueSubmit2KHR        uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdPipelineBarrier2KHR uintptr
 	pfnCmdResetEvent2KHR      uintptr
@@ -20,48 +30,81 @@ var (
 	pfnQueueSubmit2KHR        uintptr
 )
 
-// Init resolves and initializes all VK_KHR_synchronization2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdPipelineBarrier2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPipelineBarrier2KHR")
-	pfnCmdResetEvent2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdResetEvent2KHR")
-	pfnCmdSetEvent2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdSetEvent2KHR")
-	pfnCmdWaitEvents2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdWaitEvents2KHR")
-	pfnCmdWriteTimestamp2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdWriteTimestamp2KHR")
-	pfnQueueSubmit2KHR = vulkan.GetInstanceProcAddr(instance, "vkQueueSubmit2KHR")
+// Init resolves and initializes all VK_KHR_synchronization2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdPipelineBarrier2KHR: vulkan.GetInstanceProcAddr(instance, "vkCmdPipelineBarrier2KHR"),
+		pfnCmdResetEvent2KHR:      vulkan.GetInstanceProcAddr(instance, "vkCmdResetEvent2KHR"),
+		pfnCmdSetEvent2KHR:        vulkan.GetInstanceProcAddr(instance, "vkCmdSetEvent2KHR"),
+		pfnCmdWaitEvents2KHR:      vulkan.GetInstanceProcAddr(instance, "vkCmdWaitEvents2KHR"),
+		pfnCmdWriteTimestamp2KHR:  vulkan.GetInstanceProcAddr(instance, "vkCmdWriteTimestamp2KHR"),
+		pfnQueueSubmit2KHR:        vulkan.GetInstanceProcAddr(instance, "vkQueueSubmit2KHR"),
+	}
+	pfnCmdPipelineBarrier2KHR = cmds.pfnCmdPipelineBarrier2KHR
+	pfnCmdResetEvent2KHR = cmds.pfnCmdResetEvent2KHR
+	pfnCmdSetEvent2KHR = cmds.pfnCmdSetEvent2KHR
+	pfnCmdWaitEvents2KHR = cmds.pfnCmdWaitEvents2KHR
+	pfnCmdWriteTimestamp2KHR = cmds.pfnCmdWriteTimestamp2KHR
+	pfnQueueSubmit2KHR = cmds.pfnQueueSubmit2KHR
+	return cmds
 }
 
 // CmdPipelineBarrier2KHR executes vkCmdPipelineBarrier2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier2KHR.html
+func (c *Commands) CmdPipelineBarrier2KHR() {
+	vulkan.CallSyscall(c.pfnCmdPipelineBarrier2KHR)
+}
+
 func CmdPipelineBarrier2KHR() {
 	vulkan.CallSyscall(pfnCmdPipelineBarrier2KHR)
 }
 
 // CmdResetEvent2KHR executes vkCmdResetEvent2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdResetEvent2KHR.html
+func (c *Commands) CmdResetEvent2KHR() {
+	vulkan.CallSyscall(c.pfnCmdResetEvent2KHR)
+}
+
 func CmdResetEvent2KHR() {
 	vulkan.CallSyscall(pfnCmdResetEvent2KHR)
 }
 
 // CmdSetEvent2KHR executes vkCmdSetEvent2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetEvent2KHR.html
+func (c *Commands) CmdSetEvent2KHR() {
+	vulkan.CallSyscall(c.pfnCmdSetEvent2KHR)
+}
+
 func CmdSetEvent2KHR() {
 	vulkan.CallSyscall(pfnCmdSetEvent2KHR)
 }
 
 // CmdWaitEvents2KHR executes vkCmdWaitEvents2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWaitEvents2KHR.html
+func (c *Commands) CmdWaitEvents2KHR() {
+	vulkan.CallSyscall(c.pfnCmdWaitEvents2KHR)
+}
+
 func CmdWaitEvents2KHR() {
 	vulkan.CallSyscall(pfnCmdWaitEvents2KHR)
 }
 
 // CmdWriteTimestamp2KHR executes vkCmdWriteTimestamp2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2KHR.html
+func (c *Commands) CmdWriteTimestamp2KHR() {
+	vulkan.CallSyscall(c.pfnCmdWriteTimestamp2KHR)
+}
+
 func CmdWriteTimestamp2KHR() {
 	vulkan.CallSyscall(pfnCmdWriteTimestamp2KHR)
 }
 
 // QueueSubmit2KHR executes vkQueueSubmit2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSubmit2KHR.html
+func (c *Commands) QueueSubmit2KHR() {
+	vulkan.CallSyscall(c.pfnQueueSubmit2KHR)
+}
+
 func QueueSubmit2KHR() {
 	vulkan.CallSyscall(pfnQueueSubmit2KHR)
 }

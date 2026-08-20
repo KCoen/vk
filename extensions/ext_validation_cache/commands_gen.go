@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateValidationCacheEXT  uintptr
+	pfnDestroyValidationCacheEXT uintptr
+	pfnGetValidationCacheDataEXT uintptr
+	pfnMergeValidationCachesEXT  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateValidationCacheEXT  uintptr
 	pfnDestroyValidationCacheEXT uintptr
@@ -18,12 +26,19 @@ var (
 	pfnMergeValidationCachesEXT  uintptr
 )
 
-// Init resolves and initializes all VK_EXT_validation_cache extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateValidationCacheEXT = vulkan.GetDeviceProcAddr(device, "vkCreateValidationCacheEXT")
-	pfnDestroyValidationCacheEXT = vulkan.GetDeviceProcAddr(device, "vkDestroyValidationCacheEXT")
-	pfnGetValidationCacheDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetValidationCacheDataEXT")
-	pfnMergeValidationCachesEXT = vulkan.GetDeviceProcAddr(device, "vkMergeValidationCachesEXT")
+// Init resolves and initializes all VK_EXT_validation_cache extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateValidationCacheEXT:  vulkan.GetDeviceProcAddr(device, "vkCreateValidationCacheEXT"),
+		pfnDestroyValidationCacheEXT: vulkan.GetDeviceProcAddr(device, "vkDestroyValidationCacheEXT"),
+		pfnGetValidationCacheDataEXT: vulkan.GetDeviceProcAddr(device, "vkGetValidationCacheDataEXT"),
+		pfnMergeValidationCachesEXT:  vulkan.GetDeviceProcAddr(device, "vkMergeValidationCachesEXT"),
+	}
+	pfnCreateValidationCacheEXT = cmds.pfnCreateValidationCacheEXT
+	pfnDestroyValidationCacheEXT = cmds.pfnDestroyValidationCacheEXT
+	pfnGetValidationCacheDataEXT = cmds.pfnGetValidationCacheDataEXT
+	pfnMergeValidationCachesEXT = cmds.pfnMergeValidationCachesEXT
+	return cmds
 }
 
 // CreateValidationCacheEXT - Creates a new validation cache (vkCreateValidationCacheEXT).
@@ -36,6 +51,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateValidationCacheEXT.html
+func (c *Commands) CreateValidationCacheEXT(device vulkan.Device, createInfo *vulkan.ValidationCacheCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (validationCache vulkan.ValidationCacheEXT, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateValidationCacheEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&validationCache)))
+	return validationCache, vulkan.Result(r1)
+}
+
 func CreateValidationCacheEXT(device vulkan.Device, createInfo *vulkan.ValidationCacheCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (validationCache vulkan.ValidationCacheEXT, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -50,6 +72,11 @@ func CreateValidationCacheEXT(device vulkan.Device, createInfo *vulkan.Validatio
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyValidationCacheEXT.html
+func (c *Commands) DestroyValidationCacheEXT(device vulkan.Device, validationCache vulkan.ValidationCacheEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyValidationCacheEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyValidationCacheEXT(device vulkan.Device, validationCache vulkan.ValidationCacheEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyValidationCacheEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(c_allocator)))
@@ -65,6 +92,19 @@ func DestroyValidationCacheEXT(device vulkan.Device, validationCache vulkan.Vali
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetValidationCacheDataEXT.html
+func (c *Commands) GetValidationCacheDataEXT(device vulkan.Device, validationCache vulkan.ValidationCacheEXT) (data []unsafe.Pointer, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetValidationCacheDataEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetValidationCacheDataEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, vulkan.Result(r1)
+}
+
 func GetValidationCacheDataEXT(device vulkan.Device, validationCache vulkan.ValidationCacheEXT) (data []unsafe.Pointer, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetValidationCacheDataEXT, uintptr(device), uintptr(validationCache), uintptr(unsafe.Pointer(&count)), 0)
@@ -88,6 +128,12 @@ func GetValidationCacheDataEXT(device vulkan.Device, validationCache vulkan.Vali
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkMergeValidationCachesEXT.html
+func (c *Commands) MergeValidationCachesEXT(device vulkan.Device, dstCache vulkan.ValidationCacheEXT, srcCaches []vulkan.ValidationCacheEXT) (result vulkan.Result) {
+	c_srcCaches := vulkan.SliceData(srcCaches)
+	r1, _, _ := vulkan.CallSyscall(c.pfnMergeValidationCachesEXT, uintptr(device), uintptr(dstCache), uintptr(len(srcCaches)), uintptr(unsafe.Pointer(c_srcCaches)))
+	return vulkan.Result(r1)
+}
+
 func MergeValidationCachesEXT(device vulkan.Device, dstCache vulkan.ValidationCacheEXT, srcCaches []vulkan.ValidationCacheEXT) (result vulkan.Result) {
 	c_srcCaches := vulkan.SliceData(srcCaches)
 	r1, _, _ := vulkan.CallSyscall(pfnMergeValidationCachesEXT, uintptr(device), uintptr(dstCache), uintptr(len(srcCaches)), uintptr(unsafe.Pointer(c_srcCaches)))

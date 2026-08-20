@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetLineStippleKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetLineStippleKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_line_rasterization extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetLineStippleKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdSetLineStippleKHR")
+// Init resolves and initializes all VK_KHR_line_rasterization extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetLineStippleKHR: vulkan.GetInstanceProcAddr(instance, "vkCmdSetLineStippleKHR"),
+	}
+	pfnCmdSetLineStippleKHR = cmds.pfnCmdSetLineStippleKHR
+	return cmds
 }
 
 // CmdSetLineStippleKHR executes vkCmdSetLineStippleKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineStippleKHR.html
+func (c *Commands) CmdSetLineStippleKHR() {
+	vulkan.CallSyscall(c.pfnCmdSetLineStippleKHR)
+}
+
 func CmdSetLineStippleKHR() {
 	vulkan.CallSyscall(pfnCmdSetLineStippleKHR)
 }

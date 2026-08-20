@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdPushDescriptorSetWithTemplateKHR uintptr
+	pfnCreateDescriptorUpdateTemplateKHR   uintptr
+	pfnDestroyDescriptorUpdateTemplateKHR  uintptr
+	pfnUpdateDescriptorSetWithTemplateKHR  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdPushDescriptorSetWithTemplateKHR uintptr
 	pfnCreateDescriptorUpdateTemplateKHR   uintptr
@@ -18,34 +26,57 @@ var (
 	pfnUpdateDescriptorSetWithTemplateKHR  uintptr
 )
 
-// Init resolves and initializes all VK_KHR_descriptor_update_template extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdPushDescriptorSetWithTemplateKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetWithTemplateKHR")
-	pfnCreateDescriptorUpdateTemplateKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateDescriptorUpdateTemplateKHR")
-	pfnDestroyDescriptorUpdateTemplateKHR = vulkan.GetInstanceProcAddr(instance, "vkDestroyDescriptorUpdateTemplateKHR")
-	pfnUpdateDescriptorSetWithTemplateKHR = vulkan.GetInstanceProcAddr(instance, "vkUpdateDescriptorSetWithTemplateKHR")
+// Init resolves and initializes all VK_KHR_descriptor_update_template extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdPushDescriptorSetWithTemplateKHR: vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetWithTemplateKHR"),
+		pfnCreateDescriptorUpdateTemplateKHR:   vulkan.GetInstanceProcAddr(instance, "vkCreateDescriptorUpdateTemplateKHR"),
+		pfnDestroyDescriptorUpdateTemplateKHR:  vulkan.GetInstanceProcAddr(instance, "vkDestroyDescriptorUpdateTemplateKHR"),
+		pfnUpdateDescriptorSetWithTemplateKHR:  vulkan.GetInstanceProcAddr(instance, "vkUpdateDescriptorSetWithTemplateKHR"),
+	}
+	pfnCmdPushDescriptorSetWithTemplateKHR = cmds.pfnCmdPushDescriptorSetWithTemplateKHR
+	pfnCreateDescriptorUpdateTemplateKHR = cmds.pfnCreateDescriptorUpdateTemplateKHR
+	pfnDestroyDescriptorUpdateTemplateKHR = cmds.pfnDestroyDescriptorUpdateTemplateKHR
+	pfnUpdateDescriptorSetWithTemplateKHR = cmds.pfnUpdateDescriptorSetWithTemplateKHR
+	return cmds
 }
 
 // CmdPushDescriptorSetWithTemplateKHR executes vkCmdPushDescriptorSetWithTemplateKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDescriptorSetWithTemplateKHR.html
+func (c *Commands) CmdPushDescriptorSetWithTemplateKHR() {
+	vulkan.CallSyscall(c.pfnCmdPushDescriptorSetWithTemplateKHR)
+}
+
 func CmdPushDescriptorSetWithTemplateKHR() {
 	vulkan.CallSyscall(pfnCmdPushDescriptorSetWithTemplateKHR)
 }
 
 // CreateDescriptorUpdateTemplateKHR executes vkCreateDescriptorUpdateTemplateKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDescriptorUpdateTemplateKHR.html
+func (c *Commands) CreateDescriptorUpdateTemplateKHR() {
+	vulkan.CallSyscall(c.pfnCreateDescriptorUpdateTemplateKHR)
+}
+
 func CreateDescriptorUpdateTemplateKHR() {
 	vulkan.CallSyscall(pfnCreateDescriptorUpdateTemplateKHR)
 }
 
 // DestroyDescriptorUpdateTemplateKHR executes vkDestroyDescriptorUpdateTemplateKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDescriptorUpdateTemplateKHR.html
+func (c *Commands) DestroyDescriptorUpdateTemplateKHR() {
+	vulkan.CallSyscall(c.pfnDestroyDescriptorUpdateTemplateKHR)
+}
+
 func DestroyDescriptorUpdateTemplateKHR() {
 	vulkan.CallSyscall(pfnDestroyDescriptorUpdateTemplateKHR)
 }
 
 // UpdateDescriptorSetWithTemplateKHR executes vkUpdateDescriptorSetWithTemplateKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateDescriptorSetWithTemplateKHR.html
+func (c *Commands) UpdateDescriptorSetWithTemplateKHR() {
+	vulkan.CallSyscall(c.pfnUpdateDescriptorSetWithTemplateKHR)
+}
+
 func UpdateDescriptorSetWithTemplateKHR() {
 	vulkan.CallSyscall(pfnUpdateDescriptorSetWithTemplateKHR)
 }

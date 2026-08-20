@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemorySciBufNV                                 uintptr
+	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV uintptr
+	pfnGetPhysicalDeviceSciBufAttributesNV               uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemorySciBufNV                                 uintptr
 	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV uintptr
 	pfnGetPhysicalDeviceSciBufAttributesNV               uintptr
 )
 
-// Init resolves and initializes all VK_NV_external_memory_sci_buf extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemorySciBufNV = vulkan.GetDeviceProcAddr(device, "vkGetMemorySciBufNV")
-	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV")
-	pfnGetPhysicalDeviceSciBufAttributesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciBufAttributesNV")
+// Init resolves and initializes all VK_NV_external_memory_sci_buf extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemorySciBufNV: vulkan.GetDeviceProcAddr(device, "vkGetMemorySciBufNV"),
+		pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV"),
+		pfnGetPhysicalDeviceSciBufAttributesNV:               vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciBufAttributesNV"),
+	}
+	pfnGetMemorySciBufNV = cmds.pfnGetMemorySciBufNV
+	pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV = cmds.pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV
+	pfnGetPhysicalDeviceSciBufAttributesNV = cmds.pfnGetPhysicalDeviceSciBufAttributesNV
+	return cmds
 }
 
 // GetMemorySciBufNV - Get a stext:NvSciBufObj handle for a memory object (vkGetMemorySciBufNV).
@@ -33,6 +46,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemorySciBufNV.html
+func (c *Commands) GetMemorySciBufNV(device vulkan.Device, getSciBufInfo *vulkan.MemoryGetSciBufInfoNV) (handle uintptr, result vulkan.Result) {
+	c_getSciBufInfo := getSciBufInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemorySciBufNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciBufInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetMemorySciBufNV(device vulkan.Device, getSciBufInfo *vulkan.MemoryGetSciBufInfoNV) (handle uintptr, result vulkan.Result) {
 	c_getSciBufInfo := getSciBufInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemorySciBufNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciBufInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -49,6 +68,11 @@ func GetMemorySciBufNV(device vulkan.Device, getSciBufInfo *vulkan.MemoryGetSciB
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalMemorySciBufPropertiesNV.html
+func (c *Commands) GetPhysicalDeviceExternalMemorySciBufPropertiesNV(physicalDevice vulkan.PhysicalDevice, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle uintptr) (memorySciBufProperties vulkan.MemorySciBufPropertiesNV, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV, uintptr(physicalDevice), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memorySciBufProperties)))
+	return memorySciBufProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceExternalMemorySciBufPropertiesNV(physicalDevice vulkan.PhysicalDevice, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle uintptr) (memorySciBufProperties vulkan.MemorySciBufPropertiesNV, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceExternalMemorySciBufPropertiesNV, uintptr(physicalDevice), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memorySciBufProperties)))
 	return memorySciBufProperties, vulkan.Result(r1)
@@ -62,6 +86,11 @@ func GetPhysicalDeviceExternalMemorySciBufPropertiesNV(physicalDevice vulkan.Phy
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciBufAttributesNV.html
+func (c *Commands) GetPhysicalDeviceSciBufAttributesNV(physicalDevice vulkan.PhysicalDevice, attributes uintptr) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSciBufAttributesNV, uintptr(physicalDevice), uintptr(attributes))
+	return vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSciBufAttributesNV(physicalDevice vulkan.PhysicalDevice, attributes uintptr) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSciBufAttributesNV, uintptr(physicalDevice), uintptr(attributes))
 	return vulkan.Result(r1)

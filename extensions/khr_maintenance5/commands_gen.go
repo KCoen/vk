@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindIndexBuffer2KHR             uintptr
+	pfnGetDeviceImageSubresourceLayoutKHR uintptr
+	pfnGetImageSubresourceLayout2KHR      uintptr
+	pfnGetRenderingAreaGranularityKHR     uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindIndexBuffer2KHR             uintptr
 	pfnGetDeviceImageSubresourceLayoutKHR uintptr
@@ -18,34 +26,57 @@ var (
 	pfnGetRenderingAreaGranularityKHR     uintptr
 )
 
-// Init resolves and initializes all VK_KHR_maintenance5 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindIndexBuffer2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdBindIndexBuffer2KHR")
-	pfnGetDeviceImageSubresourceLayoutKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDeviceImageSubresourceLayoutKHR")
-	pfnGetImageSubresourceLayout2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetImageSubresourceLayout2KHR")
-	pfnGetRenderingAreaGranularityKHR = vulkan.GetInstanceProcAddr(instance, "vkGetRenderingAreaGranularityKHR")
+// Init resolves and initializes all VK_KHR_maintenance5 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindIndexBuffer2KHR:             vulkan.GetInstanceProcAddr(instance, "vkCmdBindIndexBuffer2KHR"),
+		pfnGetDeviceImageSubresourceLayoutKHR: vulkan.GetInstanceProcAddr(instance, "vkGetDeviceImageSubresourceLayoutKHR"),
+		pfnGetImageSubresourceLayout2KHR:      vulkan.GetInstanceProcAddr(instance, "vkGetImageSubresourceLayout2KHR"),
+		pfnGetRenderingAreaGranularityKHR:     vulkan.GetInstanceProcAddr(instance, "vkGetRenderingAreaGranularityKHR"),
+	}
+	pfnCmdBindIndexBuffer2KHR = cmds.pfnCmdBindIndexBuffer2KHR
+	pfnGetDeviceImageSubresourceLayoutKHR = cmds.pfnGetDeviceImageSubresourceLayoutKHR
+	pfnGetImageSubresourceLayout2KHR = cmds.pfnGetImageSubresourceLayout2KHR
+	pfnGetRenderingAreaGranularityKHR = cmds.pfnGetRenderingAreaGranularityKHR
+	return cmds
 }
 
 // CmdBindIndexBuffer2KHR executes vkCmdBindIndexBuffer2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindIndexBuffer2KHR.html
+func (c *Commands) CmdBindIndexBuffer2KHR() {
+	vulkan.CallSyscall(c.pfnCmdBindIndexBuffer2KHR)
+}
+
 func CmdBindIndexBuffer2KHR() {
 	vulkan.CallSyscall(pfnCmdBindIndexBuffer2KHR)
 }
 
 // GetDeviceImageSubresourceLayoutKHR executes vkGetDeviceImageSubresourceLayoutKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceImageSubresourceLayoutKHR.html
+func (c *Commands) GetDeviceImageSubresourceLayoutKHR() {
+	vulkan.CallSyscall(c.pfnGetDeviceImageSubresourceLayoutKHR)
+}
+
 func GetDeviceImageSubresourceLayoutKHR() {
 	vulkan.CallSyscall(pfnGetDeviceImageSubresourceLayoutKHR)
 }
 
 // GetImageSubresourceLayout2KHR executes vkGetImageSubresourceLayout2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageSubresourceLayout2KHR.html
+func (c *Commands) GetImageSubresourceLayout2KHR() {
+	vulkan.CallSyscall(c.pfnGetImageSubresourceLayout2KHR)
+}
+
 func GetImageSubresourceLayout2KHR() {
 	vulkan.CallSyscall(pfnGetImageSubresourceLayout2KHR)
 }
 
 // GetRenderingAreaGranularityKHR executes vkGetRenderingAreaGranularityKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRenderingAreaGranularityKHR.html
+func (c *Commands) GetRenderingAreaGranularityKHR() {
+	vulkan.CallSyscall(c.pfnGetRenderingAreaGranularityKHR)
+}
+
 func GetRenderingAreaGranularityKHR() {
 	vulkan.CallSyscall(pfnGetRenderingAreaGranularityKHR)
 }

@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPastPresentationTimingGOOGLE uintptr
+	pfnGetRefreshCycleDurationGOOGLE   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPastPresentationTimingGOOGLE uintptr
 	pfnGetRefreshCycleDurationGOOGLE   uintptr
 )
 
-// Init resolves and initializes all VK_GOOGLE_display_timing extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPastPresentationTimingGOOGLE = vulkan.GetDeviceProcAddr(device, "vkGetPastPresentationTimingGOOGLE")
-	pfnGetRefreshCycleDurationGOOGLE = vulkan.GetDeviceProcAddr(device, "vkGetRefreshCycleDurationGOOGLE")
+// Init resolves and initializes all VK_GOOGLE_display_timing extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPastPresentationTimingGOOGLE: vulkan.GetDeviceProcAddr(device, "vkGetPastPresentationTimingGOOGLE"),
+		pfnGetRefreshCycleDurationGOOGLE:   vulkan.GetDeviceProcAddr(device, "vkGetRefreshCycleDurationGOOGLE"),
+	}
+	pfnGetPastPresentationTimingGOOGLE = cmds.pfnGetPastPresentationTimingGOOGLE
+	pfnGetRefreshCycleDurationGOOGLE = cmds.pfnGetRefreshCycleDurationGOOGLE
+	return cmds
 }
 
 // GetPastPresentationTimingGOOGLE - Obtain timing of a previously-presented image (vkGetPastPresentationTimingGOOGLE).
@@ -32,6 +43,19 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPastPresentationTimingGOOGLE.html
+func (c *Commands) GetPastPresentationTimingGOOGLE(device vulkan.Device, swapchain vulkan.SwapchainKHR) (presentationTimings []vulkan.PastPresentationTimingGOOGLE, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPastPresentationTimingGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	presentationTimings = make([]vulkan.PastPresentationTimingGOOGLE, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&presentationTimings[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPastPresentationTimingGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return presentationTimings, vulkan.Result(r1)
+}
+
 func GetPastPresentationTimingGOOGLE(device vulkan.Device, swapchain vulkan.SwapchainKHR) (presentationTimings []vulkan.PastPresentationTimingGOOGLE, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPastPresentationTimingGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), 0)
@@ -54,6 +78,11 @@ func GetPastPresentationTimingGOOGLE(device vulkan.Device, swapchain vulkan.Swap
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRefreshCycleDurationGOOGLE.html
+func (c *Commands) GetRefreshCycleDurationGOOGLE(device vulkan.Device, swapchain vulkan.SwapchainKHR) (displayTimingProperties vulkan.RefreshCycleDurationGOOGLE, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetRefreshCycleDurationGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&displayTimingProperties)))
+	return displayTimingProperties, vulkan.Result(r1)
+}
+
 func GetRefreshCycleDurationGOOGLE(device vulkan.Device, swapchain vulkan.SwapchainKHR) (displayTimingProperties vulkan.RefreshCycleDurationGOOGLE, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetRefreshCycleDurationGOOGLE, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&displayTimingProperties)))
 	return displayTimingProperties, vulkan.Result(r1)

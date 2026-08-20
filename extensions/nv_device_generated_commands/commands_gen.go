@@ -10,7 +10,17 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindPipelineShaderGroupNV             uintptr
+	pfnCmdExecuteGeneratedCommandsNV            uintptr
+	pfnCmdPreprocessGeneratedCommandsNV         uintptr
+	pfnCreateIndirectCommandsLayoutNV           uintptr
+	pfnDestroyIndirectCommandsLayoutNV          uintptr
+	pfnGetGeneratedCommandsMemoryRequirementsNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindPipelineShaderGroupNV             uintptr
 	pfnCmdExecuteGeneratedCommandsNV            uintptr
@@ -20,14 +30,23 @@ var (
 	pfnGetGeneratedCommandsMemoryRequirementsNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_device_generated_commands extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindPipelineShaderGroupNV = vulkan.GetDeviceProcAddr(device, "vkCmdBindPipelineShaderGroupNV")
-	pfnCmdExecuteGeneratedCommandsNV = vulkan.GetDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsNV")
-	pfnCmdPreprocessGeneratedCommandsNV = vulkan.GetDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsNV")
-	pfnCreateIndirectCommandsLayoutNV = vulkan.GetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNV")
-	pfnDestroyIndirectCommandsLayoutNV = vulkan.GetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNV")
-	pfnGetGeneratedCommandsMemoryRequirementsNV = vulkan.GetDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsNV")
+// Init resolves and initializes all VK_NV_device_generated_commands extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindPipelineShaderGroupNV:             vulkan.GetDeviceProcAddr(device, "vkCmdBindPipelineShaderGroupNV"),
+		pfnCmdExecuteGeneratedCommandsNV:            vulkan.GetDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsNV"),
+		pfnCmdPreprocessGeneratedCommandsNV:         vulkan.GetDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsNV"),
+		pfnCreateIndirectCommandsLayoutNV:           vulkan.GetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutNV"),
+		pfnDestroyIndirectCommandsLayoutNV:          vulkan.GetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutNV"),
+		pfnGetGeneratedCommandsMemoryRequirementsNV: vulkan.GetDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsNV"),
+	}
+	pfnCmdBindPipelineShaderGroupNV = cmds.pfnCmdBindPipelineShaderGroupNV
+	pfnCmdExecuteGeneratedCommandsNV = cmds.pfnCmdExecuteGeneratedCommandsNV
+	pfnCmdPreprocessGeneratedCommandsNV = cmds.pfnCmdPreprocessGeneratedCommandsNV
+	pfnCreateIndirectCommandsLayoutNV = cmds.pfnCreateIndirectCommandsLayoutNV
+	pfnDestroyIndirectCommandsLayoutNV = cmds.pfnDestroyIndirectCommandsLayoutNV
+	pfnGetGeneratedCommandsMemoryRequirementsNV = cmds.pfnGetGeneratedCommandsMemoryRequirementsNV
+	return cmds
 }
 
 // CmdBindPipelineShaderGroupNV - Bind a pipeline object (vkCmdBindPipelineShaderGroupNV).
@@ -38,6 +57,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - groupIndex: is the shader group to be bound.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindPipelineShaderGroupNV.html
+func (c *Commands) CmdBindPipelineShaderGroupNV(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, pipeline vulkan.Pipeline, groupIndex uint32) {
+	vulkan.CallSyscall(c.pfnCmdBindPipelineShaderGroupNV, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline), uintptr(groupIndex))
+}
+
 func CmdBindPipelineShaderGroupNV(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, pipeline vulkan.Pipeline, groupIndex uint32) {
 	vulkan.CallSyscall(pfnCmdBindPipelineShaderGroupNV, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline), uintptr(groupIndex))
 }
@@ -49,6 +72,11 @@ func CmdBindPipelineShaderGroupNV(commandBuffer vulkan.CommandBuffer, pipelineBi
 //   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoNV structure containing parameters affecting the generation of commands.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdExecuteGeneratedCommandsNV.html
+func (c *Commands) CmdExecuteGeneratedCommandsNV(commandBuffer vulkan.CommandBuffer, isPreprocessed vulkan.Bool32, generatedCommandsInfo *vulkan.GeneratedCommandsInfoNV) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdExecuteGeneratedCommandsNV, uintptr(commandBuffer), uintptr(isPreprocessed), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
+}
+
 func CmdExecuteGeneratedCommandsNV(commandBuffer vulkan.CommandBuffer, isPreprocessed vulkan.Bool32, generatedCommandsInfo *vulkan.GeneratedCommandsInfoNV) {
 	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
 	vulkan.CallSyscall(pfnCmdExecuteGeneratedCommandsNV, uintptr(commandBuffer), uintptr(isPreprocessed), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
@@ -60,6 +88,11 @@ func CmdExecuteGeneratedCommandsNV(commandBuffer vulkan.CommandBuffer, isPreproc
 //   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoNV structure containing parameters affecting the preprocessing step.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPreprocessGeneratedCommandsNV.html
+func (c *Commands) CmdPreprocessGeneratedCommandsNV(commandBuffer vulkan.CommandBuffer, generatedCommandsInfo *vulkan.GeneratedCommandsInfoNV) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdPreprocessGeneratedCommandsNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
+}
+
 func CmdPreprocessGeneratedCommandsNV(commandBuffer vulkan.CommandBuffer, generatedCommandsInfo *vulkan.GeneratedCommandsInfoNV) {
 	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
 	vulkan.CallSyscall(pfnCmdPreprocessGeneratedCommandsNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
@@ -75,6 +108,13 @@ func CmdPreprocessGeneratedCommandsNV(commandBuffer vulkan.CommandBuffer, genera
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIndirectCommandsLayoutNV.html
+func (c *Commands) CreateIndirectCommandsLayoutNV(device vulkan.Device, createInfo *vulkan.IndirectCommandsLayoutCreateInfoNV, allocator *vulkan.AllocationCallbacks) (indirectCommandsLayout vulkan.IndirectCommandsLayoutNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateIndirectCommandsLayoutNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&indirectCommandsLayout)))
+	return indirectCommandsLayout, vulkan.Result(r1)
+}
+
 func CreateIndirectCommandsLayoutNV(device vulkan.Device, createInfo *vulkan.IndirectCommandsLayoutCreateInfoNV, allocator *vulkan.AllocationCallbacks) (indirectCommandsLayout vulkan.IndirectCommandsLayoutNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -89,6 +129,11 @@ func CreateIndirectCommandsLayoutNV(device vulkan.Device, createInfo *vulkan.Ind
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyIndirectCommandsLayoutNV.html
+func (c *Commands) DestroyIndirectCommandsLayoutNV(device vulkan.Device, indirectCommandsLayout vulkan.IndirectCommandsLayoutNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyIndirectCommandsLayoutNV, uintptr(device), uintptr(indirectCommandsLayout), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyIndirectCommandsLayoutNV(device vulkan.Device, indirectCommandsLayout vulkan.IndirectCommandsLayoutNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyIndirectCommandsLayoutNV, uintptr(device), uintptr(indirectCommandsLayout), uintptr(unsafe.Pointer(c_allocator)))
@@ -101,6 +146,12 @@ func DestroyIndirectCommandsLayoutNV(device vulkan.Device, indirectCommandsLayou
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the buffer object are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGeneratedCommandsMemoryRequirementsNV.html
+func (c *Commands) GetGeneratedCommandsMemoryRequirementsNV(device vulkan.Device, info *vulkan.GeneratedCommandsMemoryRequirementsInfoNV) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetGeneratedCommandsMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetGeneratedCommandsMemoryRequirementsNV(device vulkan.Device, info *vulkan.GeneratedCommandsMemoryRequirementsInfoNV) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetGeneratedCommandsMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))

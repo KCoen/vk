@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateDeferredOperationKHR            uintptr
+	pfnDeferredOperationJoinKHR              uintptr
+	pfnDestroyDeferredOperationKHR           uintptr
+	pfnGetDeferredOperationMaxConcurrencyKHR uintptr
+	pfnGetDeferredOperationResultKHR         uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateDeferredOperationKHR            uintptr
 	pfnDeferredOperationJoinKHR              uintptr
@@ -19,13 +28,21 @@ var (
 	pfnGetDeferredOperationResultKHR         uintptr
 )
 
-// Init resolves and initializes all VK_KHR_deferred_host_operations extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateDeferredOperationKHR = vulkan.GetDeviceProcAddr(device, "vkCreateDeferredOperationKHR")
-	pfnDeferredOperationJoinKHR = vulkan.GetDeviceProcAddr(device, "vkDeferredOperationJoinKHR")
-	pfnDestroyDeferredOperationKHR = vulkan.GetDeviceProcAddr(device, "vkDestroyDeferredOperationKHR")
-	pfnGetDeferredOperationMaxConcurrencyKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeferredOperationMaxConcurrencyKHR")
-	pfnGetDeferredOperationResultKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeferredOperationResultKHR")
+// Init resolves and initializes all VK_KHR_deferred_host_operations extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateDeferredOperationKHR:            vulkan.GetDeviceProcAddr(device, "vkCreateDeferredOperationKHR"),
+		pfnDeferredOperationJoinKHR:              vulkan.GetDeviceProcAddr(device, "vkDeferredOperationJoinKHR"),
+		pfnDestroyDeferredOperationKHR:           vulkan.GetDeviceProcAddr(device, "vkDestroyDeferredOperationKHR"),
+		pfnGetDeferredOperationMaxConcurrencyKHR: vulkan.GetDeviceProcAddr(device, "vkGetDeferredOperationMaxConcurrencyKHR"),
+		pfnGetDeferredOperationResultKHR:         vulkan.GetDeviceProcAddr(device, "vkGetDeferredOperationResultKHR"),
+	}
+	pfnCreateDeferredOperationKHR = cmds.pfnCreateDeferredOperationKHR
+	pfnDeferredOperationJoinKHR = cmds.pfnDeferredOperationJoinKHR
+	pfnDestroyDeferredOperationKHR = cmds.pfnDestroyDeferredOperationKHR
+	pfnGetDeferredOperationMaxConcurrencyKHR = cmds.pfnGetDeferredOperationMaxConcurrencyKHR
+	pfnGetDeferredOperationResultKHR = cmds.pfnGetDeferredOperationResultKHR
+	return cmds
 }
 
 // CreateDeferredOperationKHR - Create a deferred operation handle (vkCreateDeferredOperationKHR).
@@ -37,6 +54,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDeferredOperationKHR.html
+func (c *Commands) CreateDeferredOperationKHR(device vulkan.Device, allocator *vulkan.AllocationCallbacks) (deferredOperation vulkan.DeferredOperationKHR, result vulkan.Result) {
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDeferredOperationKHR, uintptr(device), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&deferredOperation)))
+	return deferredOperation, vulkan.Result(r1)
+}
+
 func CreateDeferredOperationKHR(device vulkan.Device, allocator *vulkan.AllocationCallbacks) (deferredOperation vulkan.DeferredOperationKHR, result vulkan.Result) {
 	c_allocator := allocator.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCreateDeferredOperationKHR, uintptr(device), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&deferredOperation)))
@@ -51,6 +74,11 @@ func CreateDeferredOperationKHR(device vulkan.Device, allocator *vulkan.Allocati
 // Success codes: VK_SUCCESS, VK_THREAD_DONE_KHR, VK_THREAD_IDLE_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDeferredOperationJoinKHR.html
+func (c *Commands) DeferredOperationJoinKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnDeferredOperationJoinKHR, uintptr(device), uintptr(operation))
+	return vulkan.Result(r1)
+}
+
 func DeferredOperationJoinKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnDeferredOperationJoinKHR, uintptr(device), uintptr(operation))
 	return vulkan.Result(r1)
@@ -63,6 +91,11 @@ func DeferredOperationJoinKHR(device vulkan.Device, operation vulkan.DeferredOpe
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDeferredOperationKHR.html
+func (c *Commands) DestroyDeferredOperationKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyDeferredOperationKHR, uintptr(device), uintptr(operation), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyDeferredOperationKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyDeferredOperationKHR, uintptr(device), uintptr(operation), uintptr(unsafe.Pointer(c_allocator)))
@@ -74,6 +107,11 @@ func DestroyDeferredOperationKHR(device vulkan.Device, operation vulkan.Deferred
 //   - operation: is the deferred operation to be queried.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeferredOperationMaxConcurrencyKHR.html
+func (c *Commands) GetDeferredOperationMaxConcurrencyKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR) (result uint32) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeferredOperationMaxConcurrencyKHR, uintptr(device), uintptr(operation))
+	return uint32(r1)
+}
+
 func GetDeferredOperationMaxConcurrencyKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR) (result uint32) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeferredOperationMaxConcurrencyKHR, uintptr(device), uintptr(operation))
 	return uint32(r1)
@@ -87,6 +125,11 @@ func GetDeferredOperationMaxConcurrencyKHR(device vulkan.Device, operation vulka
 // Success codes: VK_SUCCESS, VK_NOT_READY
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeferredOperationResultKHR.html
+func (c *Commands) GetDeferredOperationResultKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeferredOperationResultKHR, uintptr(device), uintptr(operation))
+	return vulkan.Result(r1)
+}
+
 func GetDeferredOperationResultKHR(device vulkan.Device, operation vulkan.DeferredOperationKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeferredOperationResultKHR, uintptr(device), uintptr(operation))
 	return vulkan.Result(r1)

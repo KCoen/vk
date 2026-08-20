@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryWin32HandleKHR           uintptr
+	pfnGetMemoryWin32HandlePropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryWin32HandleKHR           uintptr
 	pfnGetMemoryWin32HandlePropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_memory_win32 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryWin32HandleKHR = vulkan.GetDeviceProcAddr(device, "vkGetMemoryWin32HandleKHR")
-	pfnGetMemoryWin32HandlePropertiesKHR = vulkan.GetDeviceProcAddr(device, "vkGetMemoryWin32HandlePropertiesKHR")
+// Init resolves and initializes all VK_KHR_external_memory_win32 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryWin32HandleKHR:           vulkan.GetDeviceProcAddr(device, "vkGetMemoryWin32HandleKHR"),
+		pfnGetMemoryWin32HandlePropertiesKHR: vulkan.GetDeviceProcAddr(device, "vkGetMemoryWin32HandlePropertiesKHR"),
+	}
+	pfnGetMemoryWin32HandleKHR = cmds.pfnGetMemoryWin32HandleKHR
+	pfnGetMemoryWin32HandlePropertiesKHR = cmds.pfnGetMemoryWin32HandlePropertiesKHR
+	return cmds
 }
 
 // GetMemoryWin32HandleKHR - Get a Windows HANDLE for a memory object (vkGetMemoryWin32HandleKHR).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryWin32HandleKHR.html
+func (c *Commands) GetMemoryWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.MemoryGetWin32HandleInfoKHR) (handle uintptr, result vulkan.Result) {
+	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetMemoryWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.MemoryGetWin32HandleInfoKHR) (handle uintptr, result vulkan.Result) {
 	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -47,6 +64,11 @@ func GetMemoryWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.Me
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryWin32HandlePropertiesKHR.html
+func (c *Commands) GetMemoryWin32HandlePropertiesKHR(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle uintptr) (memoryWin32HandleProperties vulkan.MemoryWin32HandlePropertiesKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryWin32HandlePropertiesKHR, uintptr(device), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memoryWin32HandleProperties)))
+	return memoryWin32HandleProperties, vulkan.Result(r1)
+}
+
 func GetMemoryWin32HandlePropertiesKHR(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle uintptr) (memoryWin32HandleProperties vulkan.MemoryWin32HandlePropertiesKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryWin32HandlePropertiesKHR, uintptr(device), uintptr(handleType), uintptr(handle), uintptr(unsafe.Pointer(&memoryWin32HandleProperties)))
 	return memoryWin32HandleProperties, vulkan.Result(r1)

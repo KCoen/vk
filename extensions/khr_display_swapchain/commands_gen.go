@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateSharedSwapchainsKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateSharedSwapchainsKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_display_swapchain extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateSharedSwapchainsKHR = vulkan.GetDeviceProcAddr(device, "vkCreateSharedSwapchainsKHR")
+// Init resolves and initializes all VK_KHR_display_swapchain extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateSharedSwapchainsKHR: vulkan.GetDeviceProcAddr(device, "vkCreateSharedSwapchainsKHR"),
+	}
+	pfnCreateSharedSwapchainsKHR = cmds.pfnCreateSharedSwapchainsKHR
+	return cmds
 }
 
 // CreateSharedSwapchainsKHR - Create multiple swapchains that share presentable images (vkCreateSharedSwapchainsKHR).
@@ -31,6 +40,18 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INCOMPATIBLE_DISPLAY_KHR, VK_ERROR_DEVICE_LOST, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSharedSwapchainsKHR.html
+func (c *Commands) CreateSharedSwapchainsKHR(device vulkan.Device, createInfos []vulkan.SwapchainCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (swapchains vulkan.SwapchainKHR, result vulkan.Result) {
+	c_createInfos := make([]vulkan.RawSwapchainCreateInfoKHR, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateSharedSwapchainsKHR, uintptr(device), uintptr(len(createInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&swapchains)))
+	return swapchains, vulkan.Result(r1)
+}
+
 func CreateSharedSwapchainsKHR(device vulkan.Device, createInfos []vulkan.SwapchainCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (swapchains vulkan.SwapchainKHR, result vulkan.Result) {
 	c_createInfos := make([]vulkan.RawSwapchainCreateInfoKHR, len(createInfos))
 	for i := range createInfos {

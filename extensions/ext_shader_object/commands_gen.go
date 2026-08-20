@@ -10,7 +10,65 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindShadersEXT                         uintptr
+	pfnCmdBindVertexBuffers2EXT                  uintptr
+	pfnCmdSetAlphaToCoverageEnableEXT            uintptr
+	pfnCmdSetAlphaToOneEnableEXT                 uintptr
+	pfnCmdSetColorBlendAdvancedEXT               uintptr
+	pfnCmdSetColorBlendEnableEXT                 uintptr
+	pfnCmdSetColorBlendEquationEXT               uintptr
+	pfnCmdSetColorWriteMaskEXT                   uintptr
+	pfnCmdSetConservativeRasterizationModeEXT    uintptr
+	pfnCmdSetCoverageModulationModeNV            uintptr
+	pfnCmdSetCoverageModulationTableEnableNV     uintptr
+	pfnCmdSetCoverageModulationTableNV           uintptr
+	pfnCmdSetCoverageReductionModeNV             uintptr
+	pfnCmdSetCoverageToColorEnableNV             uintptr
+	pfnCmdSetCoverageToColorLocationNV           uintptr
+	pfnCmdSetCullModeEXT                         uintptr
+	pfnCmdSetDepthBiasEnableEXT                  uintptr
+	pfnCmdSetDepthBoundsTestEnableEXT            uintptr
+	pfnCmdSetDepthClampEnableEXT                 uintptr
+	pfnCmdSetDepthClampRangeEXT                  uintptr
+	pfnCmdSetDepthClipEnableEXT                  uintptr
+	pfnCmdSetDepthClipNegativeOneToOneEXT        uintptr
+	pfnCmdSetDepthCompareOpEXT                   uintptr
+	pfnCmdSetDepthTestEnableEXT                  uintptr
+	pfnCmdSetDepthWriteEnableEXT                 uintptr
+	pfnCmdSetExtraPrimitiveOverestimationSizeEXT uintptr
+	pfnCmdSetFrontFaceEXT                        uintptr
+	pfnCmdSetLineRasterizationModeEXT            uintptr
+	pfnCmdSetLineStippleEnableEXT                uintptr
+	pfnCmdSetLogicOpEXT                          uintptr
+	pfnCmdSetLogicOpEnableEXT                    uintptr
+	pfnCmdSetPatchControlPointsEXT               uintptr
+	pfnCmdSetPolygonModeEXT                      uintptr
+	pfnCmdSetPrimitiveRestartEnableEXT           uintptr
+	pfnCmdSetPrimitiveTopologyEXT                uintptr
+	pfnCmdSetProvokingVertexModeEXT              uintptr
+	pfnCmdSetRasterizationSamplesEXT             uintptr
+	pfnCmdSetRasterizationStreamEXT              uintptr
+	pfnCmdSetRasterizerDiscardEnableEXT          uintptr
+	pfnCmdSetRepresentativeFragmentTestEnableNV  uintptr
+	pfnCmdSetSampleLocationsEnableEXT            uintptr
+	pfnCmdSetSampleMaskEXT                       uintptr
+	pfnCmdSetScissorWithCountEXT                 uintptr
+	pfnCmdSetShadingRateImageEnableNV            uintptr
+	pfnCmdSetStencilOpEXT                        uintptr
+	pfnCmdSetStencilTestEnableEXT                uintptr
+	pfnCmdSetTessellationDomainOriginEXT         uintptr
+	pfnCmdSetVertexInputEXT                      uintptr
+	pfnCmdSetViewportSwizzleNV                   uintptr
+	pfnCmdSetViewportWScalingEnableNV            uintptr
+	pfnCmdSetViewportWithCountEXT                uintptr
+	pfnCreateShadersEXT                          uintptr
+	pfnDestroyShaderEXT                          uintptr
+	pfnGetShaderBinaryDataEXT                    uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindShadersEXT                         uintptr
 	pfnCmdBindVertexBuffers2EXT                  uintptr
@@ -68,62 +126,119 @@ var (
 	pfnGetShaderBinaryDataEXT                    uintptr
 )
 
-// Init resolves and initializes all VK_EXT_shader_object extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindShadersEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindShadersEXT")
-	pfnCmdBindVertexBuffers2EXT = vulkan.GetInstanceProcAddr(instance, "vkCmdBindVertexBuffers2EXT")
-	pfnCmdSetAlphaToCoverageEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetAlphaToCoverageEnableEXT")
-	pfnCmdSetAlphaToOneEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetAlphaToOneEnableEXT")
-	pfnCmdSetColorBlendAdvancedEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetColorBlendAdvancedEXT")
-	pfnCmdSetColorBlendEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetColorBlendEnableEXT")
-	pfnCmdSetColorBlendEquationEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetColorBlendEquationEXT")
-	pfnCmdSetColorWriteMaskEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetColorWriteMaskEXT")
-	pfnCmdSetConservativeRasterizationModeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetConservativeRasterizationModeEXT")
-	pfnCmdSetCoverageModulationModeNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageModulationModeNV")
-	pfnCmdSetCoverageModulationTableEnableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageModulationTableEnableNV")
-	pfnCmdSetCoverageModulationTableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageModulationTableNV")
-	pfnCmdSetCoverageReductionModeNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageReductionModeNV")
-	pfnCmdSetCoverageToColorEnableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageToColorEnableNV")
-	pfnCmdSetCoverageToColorLocationNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageToColorLocationNV")
-	pfnCmdSetCullModeEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetCullModeEXT")
-	pfnCmdSetDepthBiasEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBiasEnableEXT")
-	pfnCmdSetDepthBoundsTestEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBoundsTestEnableEXT")
-	pfnCmdSetDepthClampEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClampEnableEXT")
-	pfnCmdSetDepthClampRangeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClampRangeEXT")
-	pfnCmdSetDepthClipEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClipEnableEXT")
-	pfnCmdSetDepthClipNegativeOneToOneEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClipNegativeOneToOneEXT")
-	pfnCmdSetDepthCompareOpEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthCompareOpEXT")
-	pfnCmdSetDepthTestEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthTestEnableEXT")
-	pfnCmdSetDepthWriteEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthWriteEnableEXT")
-	pfnCmdSetExtraPrimitiveOverestimationSizeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetExtraPrimitiveOverestimationSizeEXT")
-	pfnCmdSetFrontFaceEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetFrontFaceEXT")
-	pfnCmdSetLineRasterizationModeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetLineRasterizationModeEXT")
-	pfnCmdSetLineStippleEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetLineStippleEnableEXT")
-	pfnCmdSetLogicOpEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetLogicOpEXT")
-	pfnCmdSetLogicOpEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetLogicOpEnableEXT")
-	pfnCmdSetPatchControlPointsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetPatchControlPointsEXT")
-	pfnCmdSetPolygonModeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetPolygonModeEXT")
-	pfnCmdSetPrimitiveRestartEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveRestartEnableEXT")
-	pfnCmdSetPrimitiveTopologyEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveTopologyEXT")
-	pfnCmdSetProvokingVertexModeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetProvokingVertexModeEXT")
-	pfnCmdSetRasterizationSamplesEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetRasterizationSamplesEXT")
-	pfnCmdSetRasterizationStreamEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetRasterizationStreamEXT")
-	pfnCmdSetRasterizerDiscardEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetRasterizerDiscardEnableEXT")
-	pfnCmdSetRepresentativeFragmentTestEnableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetRepresentativeFragmentTestEnableNV")
-	pfnCmdSetSampleLocationsEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetSampleLocationsEnableEXT")
-	pfnCmdSetSampleMaskEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetSampleMaskEXT")
-	pfnCmdSetScissorWithCountEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetScissorWithCountEXT")
-	pfnCmdSetShadingRateImageEnableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetShadingRateImageEnableNV")
-	pfnCmdSetStencilOpEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilOpEXT")
-	pfnCmdSetStencilTestEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilTestEnableEXT")
-	pfnCmdSetTessellationDomainOriginEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetTessellationDomainOriginEXT")
-	pfnCmdSetVertexInputEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetVertexInputEXT")
-	pfnCmdSetViewportSwizzleNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportSwizzleNV")
-	pfnCmdSetViewportWScalingEnableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportWScalingEnableNV")
-	pfnCmdSetViewportWithCountEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetViewportWithCountEXT")
-	pfnCreateShadersEXT = vulkan.GetDeviceProcAddr(device, "vkCreateShadersEXT")
-	pfnDestroyShaderEXT = vulkan.GetDeviceProcAddr(device, "vkDestroyShaderEXT")
-	pfnGetShaderBinaryDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetShaderBinaryDataEXT")
+// Init resolves and initializes all VK_EXT_shader_object extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindShadersEXT:                         vulkan.GetDeviceProcAddr(device, "vkCmdBindShadersEXT"),
+		pfnCmdBindVertexBuffers2EXT:                  vulkan.GetInstanceProcAddr(instance, "vkCmdBindVertexBuffers2EXT"),
+		pfnCmdSetAlphaToCoverageEnableEXT:            vulkan.GetDeviceProcAddr(device, "vkCmdSetAlphaToCoverageEnableEXT"),
+		pfnCmdSetAlphaToOneEnableEXT:                 vulkan.GetDeviceProcAddr(device, "vkCmdSetAlphaToOneEnableEXT"),
+		pfnCmdSetColorBlendAdvancedEXT:               vulkan.GetDeviceProcAddr(device, "vkCmdSetColorBlendAdvancedEXT"),
+		pfnCmdSetColorBlendEnableEXT:                 vulkan.GetDeviceProcAddr(device, "vkCmdSetColorBlendEnableEXT"),
+		pfnCmdSetColorBlendEquationEXT:               vulkan.GetDeviceProcAddr(device, "vkCmdSetColorBlendEquationEXT"),
+		pfnCmdSetColorWriteMaskEXT:                   vulkan.GetDeviceProcAddr(device, "vkCmdSetColorWriteMaskEXT"),
+		pfnCmdSetConservativeRasterizationModeEXT:    vulkan.GetDeviceProcAddr(device, "vkCmdSetConservativeRasterizationModeEXT"),
+		pfnCmdSetCoverageModulationModeNV:            vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageModulationModeNV"),
+		pfnCmdSetCoverageModulationTableEnableNV:     vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageModulationTableEnableNV"),
+		pfnCmdSetCoverageModulationTableNV:           vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageModulationTableNV"),
+		pfnCmdSetCoverageReductionModeNV:             vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageReductionModeNV"),
+		pfnCmdSetCoverageToColorEnableNV:             vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageToColorEnableNV"),
+		pfnCmdSetCoverageToColorLocationNV:           vulkan.GetDeviceProcAddr(device, "vkCmdSetCoverageToColorLocationNV"),
+		pfnCmdSetCullModeEXT:                         vulkan.GetInstanceProcAddr(instance, "vkCmdSetCullModeEXT"),
+		pfnCmdSetDepthBiasEnableEXT:                  vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBiasEnableEXT"),
+		pfnCmdSetDepthBoundsTestEnableEXT:            vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBoundsTestEnableEXT"),
+		pfnCmdSetDepthClampEnableEXT:                 vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClampEnableEXT"),
+		pfnCmdSetDepthClampRangeEXT:                  vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClampRangeEXT"),
+		pfnCmdSetDepthClipEnableEXT:                  vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClipEnableEXT"),
+		pfnCmdSetDepthClipNegativeOneToOneEXT:        vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClipNegativeOneToOneEXT"),
+		pfnCmdSetDepthCompareOpEXT:                   vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthCompareOpEXT"),
+		pfnCmdSetDepthTestEnableEXT:                  vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthTestEnableEXT"),
+		pfnCmdSetDepthWriteEnableEXT:                 vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthWriteEnableEXT"),
+		pfnCmdSetExtraPrimitiveOverestimationSizeEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetExtraPrimitiveOverestimationSizeEXT"),
+		pfnCmdSetFrontFaceEXT:                        vulkan.GetInstanceProcAddr(instance, "vkCmdSetFrontFaceEXT"),
+		pfnCmdSetLineRasterizationModeEXT:            vulkan.GetDeviceProcAddr(device, "vkCmdSetLineRasterizationModeEXT"),
+		pfnCmdSetLineStippleEnableEXT:                vulkan.GetDeviceProcAddr(device, "vkCmdSetLineStippleEnableEXT"),
+		pfnCmdSetLogicOpEXT:                          vulkan.GetDeviceProcAddr(device, "vkCmdSetLogicOpEXT"),
+		pfnCmdSetLogicOpEnableEXT:                    vulkan.GetDeviceProcAddr(device, "vkCmdSetLogicOpEnableEXT"),
+		pfnCmdSetPatchControlPointsEXT:               vulkan.GetDeviceProcAddr(device, "vkCmdSetPatchControlPointsEXT"),
+		pfnCmdSetPolygonModeEXT:                      vulkan.GetDeviceProcAddr(device, "vkCmdSetPolygonModeEXT"),
+		pfnCmdSetPrimitiveRestartEnableEXT:           vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveRestartEnableEXT"),
+		pfnCmdSetPrimitiveTopologyEXT:                vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveTopologyEXT"),
+		pfnCmdSetProvokingVertexModeEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdSetProvokingVertexModeEXT"),
+		pfnCmdSetRasterizationSamplesEXT:             vulkan.GetDeviceProcAddr(device, "vkCmdSetRasterizationSamplesEXT"),
+		pfnCmdSetRasterizationStreamEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdSetRasterizationStreamEXT"),
+		pfnCmdSetRasterizerDiscardEnableEXT:          vulkan.GetInstanceProcAddr(instance, "vkCmdSetRasterizerDiscardEnableEXT"),
+		pfnCmdSetRepresentativeFragmentTestEnableNV:  vulkan.GetDeviceProcAddr(device, "vkCmdSetRepresentativeFragmentTestEnableNV"),
+		pfnCmdSetSampleLocationsEnableEXT:            vulkan.GetDeviceProcAddr(device, "vkCmdSetSampleLocationsEnableEXT"),
+		pfnCmdSetSampleMaskEXT:                       vulkan.GetDeviceProcAddr(device, "vkCmdSetSampleMaskEXT"),
+		pfnCmdSetScissorWithCountEXT:                 vulkan.GetInstanceProcAddr(instance, "vkCmdSetScissorWithCountEXT"),
+		pfnCmdSetShadingRateImageEnableNV:            vulkan.GetDeviceProcAddr(device, "vkCmdSetShadingRateImageEnableNV"),
+		pfnCmdSetStencilOpEXT:                        vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilOpEXT"),
+		pfnCmdSetStencilTestEnableEXT:                vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilTestEnableEXT"),
+		pfnCmdSetTessellationDomainOriginEXT:         vulkan.GetDeviceProcAddr(device, "vkCmdSetTessellationDomainOriginEXT"),
+		pfnCmdSetVertexInputEXT:                      vulkan.GetDeviceProcAddr(device, "vkCmdSetVertexInputEXT"),
+		pfnCmdSetViewportSwizzleNV:                   vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportSwizzleNV"),
+		pfnCmdSetViewportWScalingEnableNV:            vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportWScalingEnableNV"),
+		pfnCmdSetViewportWithCountEXT:                vulkan.GetInstanceProcAddr(instance, "vkCmdSetViewportWithCountEXT"),
+		pfnCreateShadersEXT:                          vulkan.GetDeviceProcAddr(device, "vkCreateShadersEXT"),
+		pfnDestroyShaderEXT:                          vulkan.GetDeviceProcAddr(device, "vkDestroyShaderEXT"),
+		pfnGetShaderBinaryDataEXT:                    vulkan.GetDeviceProcAddr(device, "vkGetShaderBinaryDataEXT"),
+	}
+	pfnCmdBindShadersEXT = cmds.pfnCmdBindShadersEXT
+	pfnCmdBindVertexBuffers2EXT = cmds.pfnCmdBindVertexBuffers2EXT
+	pfnCmdSetAlphaToCoverageEnableEXT = cmds.pfnCmdSetAlphaToCoverageEnableEXT
+	pfnCmdSetAlphaToOneEnableEXT = cmds.pfnCmdSetAlphaToOneEnableEXT
+	pfnCmdSetColorBlendAdvancedEXT = cmds.pfnCmdSetColorBlendAdvancedEXT
+	pfnCmdSetColorBlendEnableEXT = cmds.pfnCmdSetColorBlendEnableEXT
+	pfnCmdSetColorBlendEquationEXT = cmds.pfnCmdSetColorBlendEquationEXT
+	pfnCmdSetColorWriteMaskEXT = cmds.pfnCmdSetColorWriteMaskEXT
+	pfnCmdSetConservativeRasterizationModeEXT = cmds.pfnCmdSetConservativeRasterizationModeEXT
+	pfnCmdSetCoverageModulationModeNV = cmds.pfnCmdSetCoverageModulationModeNV
+	pfnCmdSetCoverageModulationTableEnableNV = cmds.pfnCmdSetCoverageModulationTableEnableNV
+	pfnCmdSetCoverageModulationTableNV = cmds.pfnCmdSetCoverageModulationTableNV
+	pfnCmdSetCoverageReductionModeNV = cmds.pfnCmdSetCoverageReductionModeNV
+	pfnCmdSetCoverageToColorEnableNV = cmds.pfnCmdSetCoverageToColorEnableNV
+	pfnCmdSetCoverageToColorLocationNV = cmds.pfnCmdSetCoverageToColorLocationNV
+	pfnCmdSetCullModeEXT = cmds.pfnCmdSetCullModeEXT
+	pfnCmdSetDepthBiasEnableEXT = cmds.pfnCmdSetDepthBiasEnableEXT
+	pfnCmdSetDepthBoundsTestEnableEXT = cmds.pfnCmdSetDepthBoundsTestEnableEXT
+	pfnCmdSetDepthClampEnableEXT = cmds.pfnCmdSetDepthClampEnableEXT
+	pfnCmdSetDepthClampRangeEXT = cmds.pfnCmdSetDepthClampRangeEXT
+	pfnCmdSetDepthClipEnableEXT = cmds.pfnCmdSetDepthClipEnableEXT
+	pfnCmdSetDepthClipNegativeOneToOneEXT = cmds.pfnCmdSetDepthClipNegativeOneToOneEXT
+	pfnCmdSetDepthCompareOpEXT = cmds.pfnCmdSetDepthCompareOpEXT
+	pfnCmdSetDepthTestEnableEXT = cmds.pfnCmdSetDepthTestEnableEXT
+	pfnCmdSetDepthWriteEnableEXT = cmds.pfnCmdSetDepthWriteEnableEXT
+	pfnCmdSetExtraPrimitiveOverestimationSizeEXT = cmds.pfnCmdSetExtraPrimitiveOverestimationSizeEXT
+	pfnCmdSetFrontFaceEXT = cmds.pfnCmdSetFrontFaceEXT
+	pfnCmdSetLineRasterizationModeEXT = cmds.pfnCmdSetLineRasterizationModeEXT
+	pfnCmdSetLineStippleEnableEXT = cmds.pfnCmdSetLineStippleEnableEXT
+	pfnCmdSetLogicOpEXT = cmds.pfnCmdSetLogicOpEXT
+	pfnCmdSetLogicOpEnableEXT = cmds.pfnCmdSetLogicOpEnableEXT
+	pfnCmdSetPatchControlPointsEXT = cmds.pfnCmdSetPatchControlPointsEXT
+	pfnCmdSetPolygonModeEXT = cmds.pfnCmdSetPolygonModeEXT
+	pfnCmdSetPrimitiveRestartEnableEXT = cmds.pfnCmdSetPrimitiveRestartEnableEXT
+	pfnCmdSetPrimitiveTopologyEXT = cmds.pfnCmdSetPrimitiveTopologyEXT
+	pfnCmdSetProvokingVertexModeEXT = cmds.pfnCmdSetProvokingVertexModeEXT
+	pfnCmdSetRasterizationSamplesEXT = cmds.pfnCmdSetRasterizationSamplesEXT
+	pfnCmdSetRasterizationStreamEXT = cmds.pfnCmdSetRasterizationStreamEXT
+	pfnCmdSetRasterizerDiscardEnableEXT = cmds.pfnCmdSetRasterizerDiscardEnableEXT
+	pfnCmdSetRepresentativeFragmentTestEnableNV = cmds.pfnCmdSetRepresentativeFragmentTestEnableNV
+	pfnCmdSetSampleLocationsEnableEXT = cmds.pfnCmdSetSampleLocationsEnableEXT
+	pfnCmdSetSampleMaskEXT = cmds.pfnCmdSetSampleMaskEXT
+	pfnCmdSetScissorWithCountEXT = cmds.pfnCmdSetScissorWithCountEXT
+	pfnCmdSetShadingRateImageEnableNV = cmds.pfnCmdSetShadingRateImageEnableNV
+	pfnCmdSetStencilOpEXT = cmds.pfnCmdSetStencilOpEXT
+	pfnCmdSetStencilTestEnableEXT = cmds.pfnCmdSetStencilTestEnableEXT
+	pfnCmdSetTessellationDomainOriginEXT = cmds.pfnCmdSetTessellationDomainOriginEXT
+	pfnCmdSetVertexInputEXT = cmds.pfnCmdSetVertexInputEXT
+	pfnCmdSetViewportSwizzleNV = cmds.pfnCmdSetViewportSwizzleNV
+	pfnCmdSetViewportWScalingEnableNV = cmds.pfnCmdSetViewportWScalingEnableNV
+	pfnCmdSetViewportWithCountEXT = cmds.pfnCmdSetViewportWithCountEXT
+	pfnCreateShadersEXT = cmds.pfnCreateShadersEXT
+	pfnDestroyShaderEXT = cmds.pfnDestroyShaderEXT
+	pfnGetShaderBinaryDataEXT = cmds.pfnGetShaderBinaryDataEXT
+	return cmds
 }
 
 // CmdBindShadersEXT - Bind shader objects to a command buffer (vkCmdBindShadersEXT).
@@ -134,6 +249,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - shaders: is a pointer to an array of VkShaderEXT handles and/or VK_NULL_HANDLE values describing the shader binding operations to be performed on each stage in pStages.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindShadersEXT.html
+func (c *Commands) CmdBindShadersEXT(commandBuffer vulkan.CommandBuffer, stages []vulkan.ShaderStageFlagBits, shaders *vulkan.ShaderEXT) {
+	c_stages := vulkan.SliceData(stages)
+	vulkan.CallSyscall(c.pfnCmdBindShadersEXT, uintptr(commandBuffer), uintptr(len(stages)), uintptr(unsafe.Pointer(c_stages)), uintptr(unsafe.Pointer(shaders)))
+}
+
 func CmdBindShadersEXT(commandBuffer vulkan.CommandBuffer, stages []vulkan.ShaderStageFlagBits, shaders *vulkan.ShaderEXT) {
 	c_stages := vulkan.SliceData(stages)
 	vulkan.CallSyscall(pfnCmdBindShadersEXT, uintptr(commandBuffer), uintptr(len(stages)), uintptr(unsafe.Pointer(c_stages)), uintptr(unsafe.Pointer(shaders)))
@@ -141,6 +261,10 @@ func CmdBindShadersEXT(commandBuffer vulkan.CommandBuffer, stages []vulkan.Shade
 
 // CmdBindVertexBuffers2EXT executes vkCmdBindVertexBuffers2EXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2EXT.html
+func (c *Commands) CmdBindVertexBuffers2EXT() {
+	vulkan.CallSyscall(c.pfnCmdBindVertexBuffers2EXT)
+}
+
 func CmdBindVertexBuffers2EXT() {
 	vulkan.CallSyscall(pfnCmdBindVertexBuffers2EXT)
 }
@@ -151,6 +275,10 @@ func CmdBindVertexBuffers2EXT() {
 //   - alphaToCoverageEnable: specifies the alphaToCoverageEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetAlphaToCoverageEnableEXT.html
+func (c *Commands) CmdSetAlphaToCoverageEnableEXT(commandBuffer vulkan.CommandBuffer, alphaToCoverageEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetAlphaToCoverageEnableEXT, uintptr(commandBuffer), uintptr(alphaToCoverageEnable))
+}
+
 func CmdSetAlphaToCoverageEnableEXT(commandBuffer vulkan.CommandBuffer, alphaToCoverageEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetAlphaToCoverageEnableEXT, uintptr(commandBuffer), uintptr(alphaToCoverageEnable))
 }
@@ -161,6 +289,10 @@ func CmdSetAlphaToCoverageEnableEXT(commandBuffer vulkan.CommandBuffer, alphaToC
 //   - alphaToOneEnable: specifies the alphaToOneEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetAlphaToOneEnableEXT.html
+func (c *Commands) CmdSetAlphaToOneEnableEXT(commandBuffer vulkan.CommandBuffer, alphaToOneEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetAlphaToOneEnableEXT, uintptr(commandBuffer), uintptr(alphaToOneEnable))
+}
+
 func CmdSetAlphaToOneEnableEXT(commandBuffer vulkan.CommandBuffer, alphaToOneEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetAlphaToOneEnableEXT, uintptr(commandBuffer), uintptr(alphaToOneEnable))
 }
@@ -173,6 +305,16 @@ func CmdSetAlphaToOneEnableEXT(commandBuffer vulkan.CommandBuffer, alphaToOneEna
 //   - colorBlendAdvanced: an array of VkColorBlendAdvancedEXT structs that specify the advanced color blend parameters for the corresponding attachments.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendAdvancedEXT.html
+func (c *Commands) CmdSetColorBlendAdvancedEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorBlendAdvanced []vulkan.ColorBlendAdvancedEXT) {
+	c_colorBlendAdvanced := make([]vulkan.RawColorBlendAdvancedEXT, len(colorBlendAdvanced))
+	for i := range colorBlendAdvanced {
+		if raw := colorBlendAdvanced[i].Raw(); raw != nil {
+			c_colorBlendAdvanced[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetColorBlendAdvancedEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendAdvanced)), uintptr(unsafe.Pointer(vulkan.SliceData(c_colorBlendAdvanced))))
+}
+
 func CmdSetColorBlendAdvancedEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorBlendAdvanced []vulkan.ColorBlendAdvancedEXT) {
 	c_colorBlendAdvanced := make([]vulkan.RawColorBlendAdvancedEXT, len(colorBlendAdvanced))
 	for i := range colorBlendAdvanced {
@@ -191,6 +333,11 @@ func CmdSetColorBlendAdvancedEXT(commandBuffer vulkan.CommandBuffer, firstAttach
 //   - colorBlendEnables: an array of booleans to indicate whether color blending is enabled for the corresponding attachment.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEnableEXT.html
+func (c *Commands) CmdSetColorBlendEnableEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorBlendEnables []vulkan.Bool32) {
+	c_colorBlendEnables := vulkan.SliceData(colorBlendEnables)
+	vulkan.CallSyscall(c.pfnCmdSetColorBlendEnableEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendEnables)), uintptr(unsafe.Pointer(c_colorBlendEnables)))
+}
+
 func CmdSetColorBlendEnableEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorBlendEnables []vulkan.Bool32) {
 	c_colorBlendEnables := vulkan.SliceData(colorBlendEnables)
 	vulkan.CallSyscall(pfnCmdSetColorBlendEnableEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendEnables)), uintptr(unsafe.Pointer(c_colorBlendEnables)))
@@ -204,6 +351,16 @@ func CmdSetColorBlendEnableEXT(commandBuffer vulkan.CommandBuffer, firstAttachme
 //   - colorBlendEquations: an array of VkColorBlendEquationEXT structs that specify the color blend factors and operations for the corresponding attachments.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEquationEXT.html
+func (c *Commands) CmdSetColorBlendEquationEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorBlendEquations []vulkan.ColorBlendEquationEXT) {
+	c_colorBlendEquations := make([]vulkan.RawColorBlendEquationEXT, len(colorBlendEquations))
+	for i := range colorBlendEquations {
+		if raw := colorBlendEquations[i].Raw(); raw != nil {
+			c_colorBlendEquations[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetColorBlendEquationEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorBlendEquations)), uintptr(unsafe.Pointer(vulkan.SliceData(c_colorBlendEquations))))
+}
+
 func CmdSetColorBlendEquationEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorBlendEquations []vulkan.ColorBlendEquationEXT) {
 	c_colorBlendEquations := make([]vulkan.RawColorBlendEquationEXT, len(colorBlendEquations))
 	for i := range colorBlendEquations {
@@ -222,6 +379,11 @@ func CmdSetColorBlendEquationEXT(commandBuffer vulkan.CommandBuffer, firstAttach
 //   - colorWriteMasks: an array of VkColorComponentFlags values that specify the color write masks of the corresponding attachments.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteMaskEXT.html
+func (c *Commands) CmdSetColorWriteMaskEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorWriteMasks []vulkan.ColorComponentFlags) {
+	c_colorWriteMasks := vulkan.SliceData(colorWriteMasks)
+	vulkan.CallSyscall(c.pfnCmdSetColorWriteMaskEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorWriteMasks)), uintptr(unsafe.Pointer(c_colorWriteMasks)))
+}
+
 func CmdSetColorWriteMaskEXT(commandBuffer vulkan.CommandBuffer, firstAttachment uint32, colorWriteMasks []vulkan.ColorComponentFlags) {
 	c_colorWriteMasks := vulkan.SliceData(colorWriteMasks)
 	vulkan.CallSyscall(pfnCmdSetColorWriteMaskEXT, uintptr(commandBuffer), uintptr(firstAttachment), uintptr(len(colorWriteMasks)), uintptr(unsafe.Pointer(c_colorWriteMasks)))
@@ -233,6 +395,10 @@ func CmdSetColorWriteMaskEXT(commandBuffer vulkan.CommandBuffer, firstAttachment
 //   - conservativeRasterizationMode: specifies the conservativeRasterizationMode state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetConservativeRasterizationModeEXT.html
+func (c *Commands) CmdSetConservativeRasterizationModeEXT(commandBuffer vulkan.CommandBuffer, conservativeRasterizationMode vulkan.ConservativeRasterizationModeEXT) {
+	vulkan.CallSyscall(c.pfnCmdSetConservativeRasterizationModeEXT, uintptr(commandBuffer), uintptr(conservativeRasterizationMode))
+}
+
 func CmdSetConservativeRasterizationModeEXT(commandBuffer vulkan.CommandBuffer, conservativeRasterizationMode vulkan.ConservativeRasterizationModeEXT) {
 	vulkan.CallSyscall(pfnCmdSetConservativeRasterizationModeEXT, uintptr(commandBuffer), uintptr(conservativeRasterizationMode))
 }
@@ -243,6 +409,10 @@ func CmdSetConservativeRasterizationModeEXT(commandBuffer vulkan.CommandBuffer, 
 //   - coverageModulationMode: specifies the coverageModulationMode state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationModeNV.html
+func (c *Commands) CmdSetCoverageModulationModeNV(commandBuffer vulkan.CommandBuffer, coverageModulationMode vulkan.CoverageModulationModeNV) {
+	vulkan.CallSyscall(c.pfnCmdSetCoverageModulationModeNV, uintptr(commandBuffer), uintptr(coverageModulationMode))
+}
+
 func CmdSetCoverageModulationModeNV(commandBuffer vulkan.CommandBuffer, coverageModulationMode vulkan.CoverageModulationModeNV) {
 	vulkan.CallSyscall(pfnCmdSetCoverageModulationModeNV, uintptr(commandBuffer), uintptr(coverageModulationMode))
 }
@@ -253,6 +423,10 @@ func CmdSetCoverageModulationModeNV(commandBuffer vulkan.CommandBuffer, coverage
 //   - coverageModulationTableEnable: specifies the coverageModulationTableEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationTableEnableNV.html
+func (c *Commands) CmdSetCoverageModulationTableEnableNV(commandBuffer vulkan.CommandBuffer, coverageModulationTableEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetCoverageModulationTableEnableNV, uintptr(commandBuffer), uintptr(coverageModulationTableEnable))
+}
+
 func CmdSetCoverageModulationTableEnableNV(commandBuffer vulkan.CommandBuffer, coverageModulationTableEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetCoverageModulationTableEnableNV, uintptr(commandBuffer), uintptr(coverageModulationTableEnable))
 }
@@ -264,6 +438,11 @@ func CmdSetCoverageModulationTableEnableNV(commandBuffer vulkan.CommandBuffer, c
 //   - coverageModulationTable: specifies the table of modulation factors containing a value for each number of covered samples.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageModulationTableNV.html
+func (c *Commands) CmdSetCoverageModulationTableNV(commandBuffer vulkan.CommandBuffer, coverageModulationTable []float32) {
+	c_coverageModulationTable := vulkan.SliceData(coverageModulationTable)
+	vulkan.CallSyscall(c.pfnCmdSetCoverageModulationTableNV, uintptr(commandBuffer), uintptr(len(coverageModulationTable)), uintptr(unsafe.Pointer(c_coverageModulationTable)))
+}
+
 func CmdSetCoverageModulationTableNV(commandBuffer vulkan.CommandBuffer, coverageModulationTable []float32) {
 	c_coverageModulationTable := vulkan.SliceData(coverageModulationTable)
 	vulkan.CallSyscall(pfnCmdSetCoverageModulationTableNV, uintptr(commandBuffer), uintptr(len(coverageModulationTable)), uintptr(unsafe.Pointer(c_coverageModulationTable)))
@@ -275,6 +454,10 @@ func CmdSetCoverageModulationTableNV(commandBuffer vulkan.CommandBuffer, coverag
 //   - coverageReductionMode: specifies the coverageReductionMode state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageReductionModeNV.html
+func (c *Commands) CmdSetCoverageReductionModeNV(commandBuffer vulkan.CommandBuffer, coverageReductionMode vulkan.CoverageReductionModeNV) {
+	vulkan.CallSyscall(c.pfnCmdSetCoverageReductionModeNV, uintptr(commandBuffer), uintptr(coverageReductionMode))
+}
+
 func CmdSetCoverageReductionModeNV(commandBuffer vulkan.CommandBuffer, coverageReductionMode vulkan.CoverageReductionModeNV) {
 	vulkan.CallSyscall(pfnCmdSetCoverageReductionModeNV, uintptr(commandBuffer), uintptr(coverageReductionMode))
 }
@@ -285,6 +468,10 @@ func CmdSetCoverageReductionModeNV(commandBuffer vulkan.CommandBuffer, coverageR
 //   - coverageToColorEnable: specifies the coverageToColorEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageToColorEnableNV.html
+func (c *Commands) CmdSetCoverageToColorEnableNV(commandBuffer vulkan.CommandBuffer, coverageToColorEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetCoverageToColorEnableNV, uintptr(commandBuffer), uintptr(coverageToColorEnable))
+}
+
 func CmdSetCoverageToColorEnableNV(commandBuffer vulkan.CommandBuffer, coverageToColorEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetCoverageToColorEnableNV, uintptr(commandBuffer), uintptr(coverageToColorEnable))
 }
@@ -295,24 +482,40 @@ func CmdSetCoverageToColorEnableNV(commandBuffer vulkan.CommandBuffer, coverageT
 //   - coverageToColorLocation: specifies the coverageToColorLocation state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoverageToColorLocationNV.html
+func (c *Commands) CmdSetCoverageToColorLocationNV(commandBuffer vulkan.CommandBuffer, coverageToColorLocation uint32) {
+	vulkan.CallSyscall(c.pfnCmdSetCoverageToColorLocationNV, uintptr(commandBuffer), uintptr(coverageToColorLocation))
+}
+
 func CmdSetCoverageToColorLocationNV(commandBuffer vulkan.CommandBuffer, coverageToColorLocation uint32) {
 	vulkan.CallSyscall(pfnCmdSetCoverageToColorLocationNV, uintptr(commandBuffer), uintptr(coverageToColorLocation))
 }
 
 // CmdSetCullModeEXT executes vkCmdSetCullModeEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullModeEXT.html
+func (c *Commands) CmdSetCullModeEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetCullModeEXT)
+}
+
 func CmdSetCullModeEXT() {
 	vulkan.CallSyscall(pfnCmdSetCullModeEXT)
 }
 
 // CmdSetDepthBiasEnableEXT executes vkCmdSetDepthBiasEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBiasEnableEXT.html
+func (c *Commands) CmdSetDepthBiasEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthBiasEnableEXT)
+}
+
 func CmdSetDepthBiasEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthBiasEnableEXT)
 }
 
 // CmdSetDepthBoundsTestEnableEXT executes vkCmdSetDepthBoundsTestEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBoundsTestEnableEXT.html
+func (c *Commands) CmdSetDepthBoundsTestEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthBoundsTestEnableEXT)
+}
+
 func CmdSetDepthBoundsTestEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthBoundsTestEnableEXT)
 }
@@ -323,6 +526,10 @@ func CmdSetDepthBoundsTestEnableEXT() {
 //   - depthClampEnable: specifies whether depth clamping is enabled.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClampEnableEXT.html
+func (c *Commands) CmdSetDepthClampEnableEXT(commandBuffer vulkan.CommandBuffer, depthClampEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetDepthClampEnableEXT, uintptr(commandBuffer), uintptr(depthClampEnable))
+}
+
 func CmdSetDepthClampEnableEXT(commandBuffer vulkan.CommandBuffer, depthClampEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetDepthClampEnableEXT, uintptr(commandBuffer), uintptr(depthClampEnable))
 }
@@ -334,6 +541,11 @@ func CmdSetDepthClampEnableEXT(commandBuffer vulkan.CommandBuffer, depthClampEna
 //   - depthClampRange: sets the depth clamp range for all viewports if depthClampMode is VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClampRangeEXT.html
+func (c *Commands) CmdSetDepthClampRangeEXT(commandBuffer vulkan.CommandBuffer, depthClampMode vulkan.DepthClampModeEXT, depthClampRange *vulkan.DepthClampRangeEXT) {
+	c_depthClampRange := depthClampRange.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetDepthClampRangeEXT, uintptr(commandBuffer), uintptr(depthClampMode), uintptr(unsafe.Pointer(c_depthClampRange)))
+}
+
 func CmdSetDepthClampRangeEXT(commandBuffer vulkan.CommandBuffer, depthClampMode vulkan.DepthClampModeEXT, depthClampRange *vulkan.DepthClampRangeEXT) {
 	c_depthClampRange := depthClampRange.Raw()
 	vulkan.CallSyscall(pfnCmdSetDepthClampRangeEXT, uintptr(commandBuffer), uintptr(depthClampMode), uintptr(unsafe.Pointer(c_depthClampRange)))
@@ -345,6 +557,10 @@ func CmdSetDepthClampRangeEXT(commandBuffer vulkan.CommandBuffer, depthClampMode
 //   - depthClipEnable: specifies whether depth clipping is enabled.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClipEnableEXT.html
+func (c *Commands) CmdSetDepthClipEnableEXT(commandBuffer vulkan.CommandBuffer, depthClipEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetDepthClipEnableEXT, uintptr(commandBuffer), uintptr(depthClipEnable))
+}
+
 func CmdSetDepthClipEnableEXT(commandBuffer vulkan.CommandBuffer, depthClipEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetDepthClipEnableEXT, uintptr(commandBuffer), uintptr(depthClipEnable))
 }
@@ -355,24 +571,40 @@ func CmdSetDepthClipEnableEXT(commandBuffer vulkan.CommandBuffer, depthClipEnabl
 //   - negativeOneToOne: specifies the negativeOneToOne state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClipNegativeOneToOneEXT.html
+func (c *Commands) CmdSetDepthClipNegativeOneToOneEXT(commandBuffer vulkan.CommandBuffer, negativeOneToOne vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetDepthClipNegativeOneToOneEXT, uintptr(commandBuffer), uintptr(negativeOneToOne))
+}
+
 func CmdSetDepthClipNegativeOneToOneEXT(commandBuffer vulkan.CommandBuffer, negativeOneToOne vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetDepthClipNegativeOneToOneEXT, uintptr(commandBuffer), uintptr(negativeOneToOne))
 }
 
 // CmdSetDepthCompareOpEXT executes vkCmdSetDepthCompareOpEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOpEXT.html
+func (c *Commands) CmdSetDepthCompareOpEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthCompareOpEXT)
+}
+
 func CmdSetDepthCompareOpEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthCompareOpEXT)
 }
 
 // CmdSetDepthTestEnableEXT executes vkCmdSetDepthTestEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthTestEnableEXT.html
+func (c *Commands) CmdSetDepthTestEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthTestEnableEXT)
+}
+
 func CmdSetDepthTestEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthTestEnableEXT)
 }
 
 // CmdSetDepthWriteEnableEXT executes vkCmdSetDepthWriteEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnableEXT.html
+func (c *Commands) CmdSetDepthWriteEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthWriteEnableEXT)
+}
+
 func CmdSetDepthWriteEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthWriteEnableEXT)
 }
@@ -383,12 +615,20 @@ func CmdSetDepthWriteEnableEXT() {
 //   - extraPrimitiveOverestimationSize: specifies the extraPrimitiveOverestimationSize.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetExtraPrimitiveOverestimationSizeEXT.html
+func (c *Commands) CmdSetExtraPrimitiveOverestimationSizeEXT(commandBuffer vulkan.CommandBuffer, extraPrimitiveOverestimationSize float32) {
+	vulkan.CallSyscall(c.pfnCmdSetExtraPrimitiveOverestimationSizeEXT, uintptr(commandBuffer), uintptr(extraPrimitiveOverestimationSize))
+}
+
 func CmdSetExtraPrimitiveOverestimationSizeEXT(commandBuffer vulkan.CommandBuffer, extraPrimitiveOverestimationSize float32) {
 	vulkan.CallSyscall(pfnCmdSetExtraPrimitiveOverestimationSizeEXT, uintptr(commandBuffer), uintptr(extraPrimitiveOverestimationSize))
 }
 
 // CmdSetFrontFaceEXT executes vkCmdSetFrontFaceEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFaceEXT.html
+func (c *Commands) CmdSetFrontFaceEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetFrontFaceEXT)
+}
+
 func CmdSetFrontFaceEXT() {
 	vulkan.CallSyscall(pfnCmdSetFrontFaceEXT)
 }
@@ -399,6 +639,10 @@ func CmdSetFrontFaceEXT() {
 //   - lineRasterizationMode: specifies the lineRasterizationMode state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineRasterizationModeEXT.html
+func (c *Commands) CmdSetLineRasterizationModeEXT(commandBuffer vulkan.CommandBuffer, lineRasterizationMode vulkan.LineRasterizationModeEXT) {
+	vulkan.CallSyscall(c.pfnCmdSetLineRasterizationModeEXT, uintptr(commandBuffer), uintptr(lineRasterizationMode))
+}
+
 func CmdSetLineRasterizationModeEXT(commandBuffer vulkan.CommandBuffer, lineRasterizationMode vulkan.LineRasterizationModeEXT) {
 	vulkan.CallSyscall(pfnCmdSetLineRasterizationModeEXT, uintptr(commandBuffer), uintptr(lineRasterizationMode))
 }
@@ -409,6 +653,10 @@ func CmdSetLineRasterizationModeEXT(commandBuffer vulkan.CommandBuffer, lineRast
 //   - stippledLineEnable: specifies the stippledLineEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLineStippleEnableEXT.html
+func (c *Commands) CmdSetLineStippleEnableEXT(commandBuffer vulkan.CommandBuffer, stippledLineEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetLineStippleEnableEXT, uintptr(commandBuffer), uintptr(stippledLineEnable))
+}
+
 func CmdSetLineStippleEnableEXT(commandBuffer vulkan.CommandBuffer, stippledLineEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetLineStippleEnableEXT, uintptr(commandBuffer), uintptr(stippledLineEnable))
 }
@@ -419,6 +667,10 @@ func CmdSetLineStippleEnableEXT(commandBuffer vulkan.CommandBuffer, stippledLine
 //   - logicOp: specifies the logical operation to apply for blend state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLogicOpEXT.html
+func (c *Commands) CmdSetLogicOpEXT(commandBuffer vulkan.CommandBuffer, logicOp vulkan.LogicOp) {
+	vulkan.CallSyscall(c.pfnCmdSetLogicOpEXT, uintptr(commandBuffer), uintptr(logicOp))
+}
+
 func CmdSetLogicOpEXT(commandBuffer vulkan.CommandBuffer, logicOp vulkan.LogicOp) {
 	vulkan.CallSyscall(pfnCmdSetLogicOpEXT, uintptr(commandBuffer), uintptr(logicOp))
 }
@@ -429,6 +681,10 @@ func CmdSetLogicOpEXT(commandBuffer vulkan.CommandBuffer, logicOp vulkan.LogicOp
 //   - logicOpEnable: specifies whether logical operations are enabled.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLogicOpEnableEXT.html
+func (c *Commands) CmdSetLogicOpEnableEXT(commandBuffer vulkan.CommandBuffer, logicOpEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetLogicOpEnableEXT, uintptr(commandBuffer), uintptr(logicOpEnable))
+}
+
 func CmdSetLogicOpEnableEXT(commandBuffer vulkan.CommandBuffer, logicOpEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetLogicOpEnableEXT, uintptr(commandBuffer), uintptr(logicOpEnable))
 }
@@ -439,6 +695,10 @@ func CmdSetLogicOpEnableEXT(commandBuffer vulkan.CommandBuffer, logicOpEnable vu
 //   - patchControlPoints: specifies the number of control points per patch.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPatchControlPointsEXT.html
+func (c *Commands) CmdSetPatchControlPointsEXT(commandBuffer vulkan.CommandBuffer, patchControlPoints uint32) {
+	vulkan.CallSyscall(c.pfnCmdSetPatchControlPointsEXT, uintptr(commandBuffer), uintptr(patchControlPoints))
+}
+
 func CmdSetPatchControlPointsEXT(commandBuffer vulkan.CommandBuffer, patchControlPoints uint32) {
 	vulkan.CallSyscall(pfnCmdSetPatchControlPointsEXT, uintptr(commandBuffer), uintptr(patchControlPoints))
 }
@@ -449,18 +709,30 @@ func CmdSetPatchControlPointsEXT(commandBuffer vulkan.CommandBuffer, patchContro
 //   - polygonMode: specifies polygon mode.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPolygonModeEXT.html
+func (c *Commands) CmdSetPolygonModeEXT(commandBuffer vulkan.CommandBuffer, polygonMode vulkan.PolygonMode) {
+	vulkan.CallSyscall(c.pfnCmdSetPolygonModeEXT, uintptr(commandBuffer), uintptr(polygonMode))
+}
+
 func CmdSetPolygonModeEXT(commandBuffer vulkan.CommandBuffer, polygonMode vulkan.PolygonMode) {
 	vulkan.CallSyscall(pfnCmdSetPolygonModeEXT, uintptr(commandBuffer), uintptr(polygonMode))
 }
 
 // CmdSetPrimitiveRestartEnableEXT executes vkCmdSetPrimitiveRestartEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartEnableEXT.html
+func (c *Commands) CmdSetPrimitiveRestartEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetPrimitiveRestartEnableEXT)
+}
+
 func CmdSetPrimitiveRestartEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetPrimitiveRestartEnableEXT)
 }
 
 // CmdSetPrimitiveTopologyEXT executes vkCmdSetPrimitiveTopologyEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopologyEXT.html
+func (c *Commands) CmdSetPrimitiveTopologyEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetPrimitiveTopologyEXT)
+}
+
 func CmdSetPrimitiveTopologyEXT() {
 	vulkan.CallSyscall(pfnCmdSetPrimitiveTopologyEXT)
 }
@@ -471,6 +743,10 @@ func CmdSetPrimitiveTopologyEXT() {
 //   - provokingVertexMode: specifies the provokingVertexMode state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetProvokingVertexModeEXT.html
+func (c *Commands) CmdSetProvokingVertexModeEXT(commandBuffer vulkan.CommandBuffer, provokingVertexMode vulkan.ProvokingVertexModeEXT) {
+	vulkan.CallSyscall(c.pfnCmdSetProvokingVertexModeEXT, uintptr(commandBuffer), uintptr(provokingVertexMode))
+}
+
 func CmdSetProvokingVertexModeEXT(commandBuffer vulkan.CommandBuffer, provokingVertexMode vulkan.ProvokingVertexModeEXT) {
 	vulkan.CallSyscall(pfnCmdSetProvokingVertexModeEXT, uintptr(commandBuffer), uintptr(provokingVertexMode))
 }
@@ -481,6 +757,10 @@ func CmdSetProvokingVertexModeEXT(commandBuffer vulkan.CommandBuffer, provokingV
 //   - rasterizationSamples: specifies rasterizationSamples.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationSamplesEXT.html
+func (c *Commands) CmdSetRasterizationSamplesEXT(commandBuffer vulkan.CommandBuffer, rasterizationSamples vulkan.SampleCountFlagBits) {
+	vulkan.CallSyscall(c.pfnCmdSetRasterizationSamplesEXT, uintptr(commandBuffer), uintptr(rasterizationSamples))
+}
+
 func CmdSetRasterizationSamplesEXT(commandBuffer vulkan.CommandBuffer, rasterizationSamples vulkan.SampleCountFlagBits) {
 	vulkan.CallSyscall(pfnCmdSetRasterizationSamplesEXT, uintptr(commandBuffer), uintptr(rasterizationSamples))
 }
@@ -491,12 +771,20 @@ func CmdSetRasterizationSamplesEXT(commandBuffer vulkan.CommandBuffer, rasteriza
 //   - rasterizationStream: specifies the rasterizationStream state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationStreamEXT.html
+func (c *Commands) CmdSetRasterizationStreamEXT(commandBuffer vulkan.CommandBuffer, rasterizationStream uint32) {
+	vulkan.CallSyscall(c.pfnCmdSetRasterizationStreamEXT, uintptr(commandBuffer), uintptr(rasterizationStream))
+}
+
 func CmdSetRasterizationStreamEXT(commandBuffer vulkan.CommandBuffer, rasterizationStream uint32) {
 	vulkan.CallSyscall(pfnCmdSetRasterizationStreamEXT, uintptr(commandBuffer), uintptr(rasterizationStream))
 }
 
 // CmdSetRasterizerDiscardEnableEXT executes vkCmdSetRasterizerDiscardEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizerDiscardEnableEXT.html
+func (c *Commands) CmdSetRasterizerDiscardEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetRasterizerDiscardEnableEXT)
+}
+
 func CmdSetRasterizerDiscardEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetRasterizerDiscardEnableEXT)
 }
@@ -507,6 +795,10 @@ func CmdSetRasterizerDiscardEnableEXT() {
 //   - representativeFragmentTestEnable: specifies the representativeFragmentTestEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRepresentativeFragmentTestEnableNV.html
+func (c *Commands) CmdSetRepresentativeFragmentTestEnableNV(commandBuffer vulkan.CommandBuffer, representativeFragmentTestEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetRepresentativeFragmentTestEnableNV, uintptr(commandBuffer), uintptr(representativeFragmentTestEnable))
+}
+
 func CmdSetRepresentativeFragmentTestEnableNV(commandBuffer vulkan.CommandBuffer, representativeFragmentTestEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetRepresentativeFragmentTestEnableNV, uintptr(commandBuffer), uintptr(representativeFragmentTestEnable))
 }
@@ -517,6 +809,10 @@ func CmdSetRepresentativeFragmentTestEnableNV(commandBuffer vulkan.CommandBuffer
 //   - sampleLocationsEnable: specifies the sampleLocationsEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleLocationsEnableEXT.html
+func (c *Commands) CmdSetSampleLocationsEnableEXT(commandBuffer vulkan.CommandBuffer, sampleLocationsEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetSampleLocationsEnableEXT, uintptr(commandBuffer), uintptr(sampleLocationsEnable))
+}
+
 func CmdSetSampleLocationsEnableEXT(commandBuffer vulkan.CommandBuffer, sampleLocationsEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetSampleLocationsEnableEXT, uintptr(commandBuffer), uintptr(sampleLocationsEnable))
 }
@@ -528,12 +824,20 @@ func CmdSetSampleLocationsEnableEXT(commandBuffer vulkan.CommandBuffer, sampleLo
 //   - sampleMask: is a pointer to an array of basetype:VkSampleMask values, where the array size is based on the samples parameter. If the maintenance10 feature is enabled, and this parameter is set to NULL, it is treated as if the mask has all bits set to 1.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleMaskEXT.html
+func (c *Commands) CmdSetSampleMaskEXT(commandBuffer vulkan.CommandBuffer, samples vulkan.SampleCountFlagBits, sampleMask *vulkan.SampleMask) {
+	vulkan.CallSyscall(c.pfnCmdSetSampleMaskEXT, uintptr(commandBuffer), uintptr(samples), uintptr(unsafe.Pointer(sampleMask)))
+}
+
 func CmdSetSampleMaskEXT(commandBuffer vulkan.CommandBuffer, samples vulkan.SampleCountFlagBits, sampleMask *vulkan.SampleMask) {
 	vulkan.CallSyscall(pfnCmdSetSampleMaskEXT, uintptr(commandBuffer), uintptr(samples), uintptr(unsafe.Pointer(sampleMask)))
 }
 
 // CmdSetScissorWithCountEXT executes vkCmdSetScissorWithCountEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCountEXT.html
+func (c *Commands) CmdSetScissorWithCountEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetScissorWithCountEXT)
+}
+
 func CmdSetScissorWithCountEXT() {
 	vulkan.CallSyscall(pfnCmdSetScissorWithCountEXT)
 }
@@ -544,18 +848,30 @@ func CmdSetScissorWithCountEXT() {
 //   - shadingRateImageEnable: specifies the shadingRateImageEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetShadingRateImageEnableNV.html
+func (c *Commands) CmdSetShadingRateImageEnableNV(commandBuffer vulkan.CommandBuffer, shadingRateImageEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetShadingRateImageEnableNV, uintptr(commandBuffer), uintptr(shadingRateImageEnable))
+}
+
 func CmdSetShadingRateImageEnableNV(commandBuffer vulkan.CommandBuffer, shadingRateImageEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetShadingRateImageEnableNV, uintptr(commandBuffer), uintptr(shadingRateImageEnable))
 }
 
 // CmdSetStencilOpEXT executes vkCmdSetStencilOpEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilOpEXT.html
+func (c *Commands) CmdSetStencilOpEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetStencilOpEXT)
+}
+
 func CmdSetStencilOpEXT() {
 	vulkan.CallSyscall(pfnCmdSetStencilOpEXT)
 }
 
 // CmdSetStencilTestEnableEXT executes vkCmdSetStencilTestEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilTestEnableEXT.html
+func (c *Commands) CmdSetStencilTestEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetStencilTestEnableEXT)
+}
+
 func CmdSetStencilTestEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetStencilTestEnableEXT)
 }
@@ -566,6 +882,10 @@ func CmdSetStencilTestEnableEXT() {
 //   - domainOrigin: specifies the origin of the tessellation domain space.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetTessellationDomainOriginEXT.html
+func (c *Commands) CmdSetTessellationDomainOriginEXT(commandBuffer vulkan.CommandBuffer, domainOrigin vulkan.TessellationDomainOrigin) {
+	vulkan.CallSyscall(c.pfnCmdSetTessellationDomainOriginEXT, uintptr(commandBuffer), uintptr(domainOrigin))
+}
+
 func CmdSetTessellationDomainOriginEXT(commandBuffer vulkan.CommandBuffer, domainOrigin vulkan.TessellationDomainOrigin) {
 	vulkan.CallSyscall(pfnCmdSetTessellationDomainOriginEXT, uintptr(commandBuffer), uintptr(domainOrigin))
 }
@@ -579,6 +899,22 @@ func CmdSetTessellationDomainOriginEXT(commandBuffer vulkan.CommandBuffer, domai
 //   - vertexAttributeDescriptions: is a pointer to an array of VkVertexInputAttributeDescription2EXT structures.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetVertexInputEXT.html
+func (c *Commands) CmdSetVertexInputEXT(commandBuffer vulkan.CommandBuffer, vertexBindingDescriptions []vulkan.VertexInputBindingDescription2EXT, vertexAttributeDescriptions []vulkan.VertexInputAttributeDescription2EXT) {
+	c_vertexBindingDescriptions := make([]vulkan.RawVertexInputBindingDescription2EXT, len(vertexBindingDescriptions))
+	for i := range vertexBindingDescriptions {
+		if raw := vertexBindingDescriptions[i].Raw(); raw != nil {
+			c_vertexBindingDescriptions[i] = *raw
+		}
+	}
+	c_vertexAttributeDescriptions := make([]vulkan.RawVertexInputAttributeDescription2EXT, len(vertexAttributeDescriptions))
+	for i := range vertexAttributeDescriptions {
+		if raw := vertexAttributeDescriptions[i].Raw(); raw != nil {
+			c_vertexAttributeDescriptions[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetVertexInputEXT, uintptr(commandBuffer), uintptr(len(vertexBindingDescriptions)), uintptr(unsafe.Pointer(vulkan.SliceData(c_vertexBindingDescriptions))), uintptr(len(vertexAttributeDescriptions)), uintptr(unsafe.Pointer(vulkan.SliceData(c_vertexAttributeDescriptions))))
+}
+
 func CmdSetVertexInputEXT(commandBuffer vulkan.CommandBuffer, vertexBindingDescriptions []vulkan.VertexInputBindingDescription2EXT, vertexAttributeDescriptions []vulkan.VertexInputAttributeDescription2EXT) {
 	c_vertexBindingDescriptions := make([]vulkan.RawVertexInputBindingDescription2EXT, len(vertexBindingDescriptions))
 	for i := range vertexBindingDescriptions {
@@ -603,6 +939,16 @@ func CmdSetVertexInputEXT(commandBuffer vulkan.CommandBuffer, vertexBindingDescr
 //   - viewportSwizzles: is a pointer to an array of VkViewportSwizzleNV structures specifying viewport swizzles.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportSwizzleNV.html
+func (c *Commands) CmdSetViewportSwizzleNV(commandBuffer vulkan.CommandBuffer, firstViewport uint32, viewportSwizzles []vulkan.ViewportSwizzleNV) {
+	c_viewportSwizzles := make([]vulkan.RawViewportSwizzleNV, len(viewportSwizzles))
+	for i := range viewportSwizzles {
+		if raw := viewportSwizzles[i].Raw(); raw != nil {
+			c_viewportSwizzles[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetViewportSwizzleNV, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(viewportSwizzles)), uintptr(unsafe.Pointer(vulkan.SliceData(c_viewportSwizzles))))
+}
+
 func CmdSetViewportSwizzleNV(commandBuffer vulkan.CommandBuffer, firstViewport uint32, viewportSwizzles []vulkan.ViewportSwizzleNV) {
 	c_viewportSwizzles := make([]vulkan.RawViewportSwizzleNV, len(viewportSwizzles))
 	for i := range viewportSwizzles {
@@ -619,12 +965,20 @@ func CmdSetViewportSwizzleNV(commandBuffer vulkan.CommandBuffer, firstViewport u
 //   - viewportWScalingEnable: specifies the viewportWScalingEnable state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWScalingEnableNV.html
+func (c *Commands) CmdSetViewportWScalingEnableNV(commandBuffer vulkan.CommandBuffer, viewportWScalingEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetViewportWScalingEnableNV, uintptr(commandBuffer), uintptr(viewportWScalingEnable))
+}
+
 func CmdSetViewportWScalingEnableNV(commandBuffer vulkan.CommandBuffer, viewportWScalingEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetViewportWScalingEnableNV, uintptr(commandBuffer), uintptr(viewportWScalingEnable))
 }
 
 // CmdSetViewportWithCountEXT executes vkCmdSetViewportWithCountEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWithCountEXT.html
+func (c *Commands) CmdSetViewportWithCountEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetViewportWithCountEXT)
+}
+
 func CmdSetViewportWithCountEXT() {
 	vulkan.CallSyscall(pfnCmdSetViewportWithCountEXT)
 }
@@ -640,6 +994,18 @@ func CmdSetViewportWithCountEXT() {
 // Success codes: VK_SUCCESS, VK_INCOMPATIBLE_SHADER_BINARY_EXT
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateShadersEXT.html
+func (c *Commands) CreateShadersEXT(device vulkan.Device, createInfos []vulkan.ShaderCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (shaders vulkan.ShaderEXT, result vulkan.Result) {
+	c_createInfos := make([]vulkan.RawShaderCreateInfoEXT, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateShadersEXT, uintptr(device), uintptr(len(createInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&shaders)))
+	return shaders, vulkan.Result(r1)
+}
+
 func CreateShadersEXT(device vulkan.Device, createInfos []vulkan.ShaderCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (shaders vulkan.ShaderEXT, result vulkan.Result) {
 	c_createInfos := make([]vulkan.RawShaderCreateInfoEXT, len(createInfos))
 	for i := range createInfos {
@@ -659,6 +1025,11 @@ func CreateShadersEXT(device vulkan.Device, createInfos []vulkan.ShaderCreateInf
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderEXT.html
+func (c *Commands) DestroyShaderEXT(device vulkan.Device, shader vulkan.ShaderEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyShaderEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyShaderEXT(device vulkan.Device, shader vulkan.ShaderEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyShaderEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(c_allocator)))
@@ -674,6 +1045,19 @@ func DestroyShaderEXT(device vulkan.Device, shader vulkan.ShaderEXT, allocator *
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderBinaryDataEXT.html
+func (c *Commands) GetShaderBinaryDataEXT(device vulkan.Device, shader vulkan.ShaderEXT) (data []unsafe.Pointer, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetShaderBinaryDataEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetShaderBinaryDataEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, vulkan.Result(r1)
+}
+
 func GetShaderBinaryDataEXT(device vulkan.Device, shader vulkan.ShaderEXT) (data []unsafe.Pointer, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetShaderBinaryDataEXT, uintptr(device), uintptr(shader), uintptr(unsafe.Pointer(&count)), 0)

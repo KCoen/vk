@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDeviceFaultInfoEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDeviceFaultInfoEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_device_fault extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDeviceFaultInfoEXT = vulkan.GetDeviceProcAddr(device, "vkGetDeviceFaultInfoEXT")
+// Init resolves and initializes all VK_EXT_device_fault extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDeviceFaultInfoEXT: vulkan.GetDeviceProcAddr(device, "vkGetDeviceFaultInfoEXT"),
+	}
+	pfnGetDeviceFaultInfoEXT = cmds.pfnGetDeviceFaultInfoEXT
+	return cmds
 }
 
 // GetDeviceFaultInfoEXT - Reports fault information for the specified device (vkGetDeviceFaultInfoEXT).
@@ -29,6 +38,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultInfoEXT.html
+func (c *Commands) GetDeviceFaultInfoEXT(device vulkan.Device, faultCounts *vulkan.DeviceFaultCountsEXT) (faultInfo vulkan.DeviceFaultInfoEXT, result vulkan.Result) {
+	c_faultCounts := faultCounts.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceFaultInfoEXT, uintptr(device), uintptr(unsafe.Pointer(c_faultCounts)), uintptr(unsafe.Pointer(&faultInfo)))
+	return faultInfo, vulkan.Result(r1)
+}
+
 func GetDeviceFaultInfoEXT(device vulkan.Device, faultCounts *vulkan.DeviceFaultCountsEXT) (faultInfo vulkan.DeviceFaultInfoEXT, result vulkan.Result) {
 	c_faultCounts := faultCounts.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceFaultInfoEXT, uintptr(device), uintptr(unsafe.Pointer(c_faultCounts)), uintptr(unsafe.Pointer(&faultInfo)))

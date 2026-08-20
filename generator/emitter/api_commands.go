@@ -79,8 +79,23 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 	cmdNames := append([]string(nil), branch.Commands...)
 	sortStrings(cmdNames)
 
-	// 1. Emit PFN function pointer variables
-	sb.WriteString("// Procedure addresses resolved by Init\n")
+	// 1. Emit Commands struct
+	sb.WriteString("// Commands holds resolved procedure addresses for an instance and/or device.\n")
+	sb.WriteString("type Commands struct {\n")
+	for _, name := range cmdNames {
+		cmd := branch.BranchCommands[name]
+		if cmd == nil {
+			cmd = idx.Commands[name]
+		}
+		if cmd == nil {
+			continue
+		}
+		sb.WriteString(fmt.Sprintf("\tpfn%s uintptr\n", cmd.GoName))
+	}
+	sb.WriteString("}\n\n")
+
+	// 2. Emit global package-level PFN function pointer variables (for default dispatch)
+	sb.WriteString("// Default procedure addresses resolved by InitCommands\n")
 	sb.WriteString("var (\n")
 	for _, name := range cmdNames {
 		cmd := branch.BranchCommands[name]
@@ -94,9 +109,10 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 	}
 	sb.WriteString(")\n\n")
 
-	// 2. Emit InitCommands(instance Instance, device Device) function
-	sb.WriteString(FormatDocComment(fmt.Sprintf("InitCommands resolves and initializes all %s procedure addresses.", branch.Title)))
-	sb.WriteString("func InitCommands(instance Instance, device Device) {\n")
+	// 3. Emit InitCommands(instance Instance, device Device) *Commands function
+	sb.WriteString(FormatDocComment(fmt.Sprintf("InitCommands resolves and initializes all %s procedure addresses, setting default globals and returning a Commands instance for multi-device support.", branch.Title)))
+	sb.WriteString("func InitCommands(instance Instance, device Device) *Commands {\n")
+	sb.WriteString("\tcmds := &Commands{\n")
 	for _, name := range cmdNames {
 		cmd := branch.BranchCommands[name]
 		if cmd == nil {
@@ -106,14 +122,26 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 			continue
 		}
 		if cmd.IsDeviceCmd {
-			sb.WriteString(fmt.Sprintf("\tpfn%s = GetDeviceProcAddr(device, \"%s\")\n", cmd.GoName, cmd.Name))
+			sb.WriteString(fmt.Sprintf("\t\tpfn%s: GetDeviceProcAddr(device, \"%s\"),\n", cmd.GoName, cmd.Name))
 		} else {
-			sb.WriteString(fmt.Sprintf("\tpfn%s = GetInstanceProcAddr(instance, \"%s\")\n", cmd.GoName, cmd.Name))
+			sb.WriteString(fmt.Sprintf("\t\tpfn%s: GetInstanceProcAddr(instance, \"%s\"),\n", cmd.GoName, cmd.Name))
 		}
 	}
+	sb.WriteString("\t}\n")
+	for _, name := range cmdNames {
+		cmd := branch.BranchCommands[name]
+		if cmd == nil {
+			cmd = idx.Commands[name]
+		}
+		if cmd == nil {
+			continue
+		}
+		sb.WriteString(fmt.Sprintf("\tpfn%s = cmds.pfn%s\n", cmd.GoName, cmd.GoName))
+	}
+	sb.WriteString("\treturn cmds\n")
 	sb.WriteString("}\n\n")
 
-	// 3. Emit wrapper functions for each command
+	// 4. Emit methods and wrapper functions for each command
 	for _, name := range cmdNames {
 		cmd := branch.BranchCommands[name]
 		if cmd == nil {
@@ -141,11 +169,14 @@ func EmitBranchCommands(branch *indexer.ApiBranchInfo, idx *indexer.Index) (stri
 		sb.WriteString(doc)
 
 		if cmd.IsOutputQuery && cmd.OutputCountParam != nil && cmd.OutputQueryParam != nil {
-			emit2CallQueryCommandBranch(&sb, cmd, idx)
+			emit2CallQueryCommandBranch(&sb, cmd, idx, true)
+			emit2CallQueryCommandBranch(&sb, cmd, idx, false)
 		} else if outP := findSingleOutputParam(cmd); outP != nil {
-			emitSingleOutputCommandBranch(&sb, cmd, outP, idx)
+			emitSingleOutputCommandBranch(&sb, cmd, outP, idx, true)
+			emitSingleOutputCommandBranch(&sb, cmd, outP, idx, false)
 		} else {
-			emitStandardCommandBranch(&sb, cmd, idx)
+			emitStandardCommandBranch(&sb, cmd, idx, true)
+			emitStandardCommandBranch(&sb, cmd, idx, false)
 		}
 	}
 
@@ -173,9 +204,7 @@ func EmitExtensionCommands(ext *indexer.ExtensionInfo, idx *indexer.Index) (stri
 	cmdNames := append([]string(nil), ext.Commands...)
 	sortStrings(cmdNames)
 
-	// 1. Emit PFN function pointer variables
-	sb.WriteString("// Procedure addresses resolved by Init\n")
-	sb.WriteString("var (\n")
+	var validCmdNames []string
 	for _, name := range cmdNames {
 		cmd := idx.Commands[name]
 		if cmd == nil {
@@ -191,78 +220,75 @@ func EmitExtensionCommands(ext *indexer.ExtensionInfo, idx *indexer.Index) (stri
 		if cmd.ReturnGoType != "Result" && cmd.ReturnGoType != "void" && cmd.ReturnGoType != "" && !isValidBranchType(cmd.ReturnGoType, vulkanBranch, idx) {
 			validCmd = false
 		}
-		if !validCmd {
-			continue
+		if validCmd {
+			validCmdNames = append(validCmdNames, name)
 		}
+	}
+
+	if len(validCmdNames) == 0 {
+		return "", nil
+	}
+
+	// 1. Emit Commands struct
+	sb.WriteString("// Commands holds resolved procedure addresses for an instance and/or device.\n")
+	sb.WriteString("type Commands struct {\n")
+	for _, name := range validCmdNames {
+		cmd := idx.Commands[name]
+		sb.WriteString(fmt.Sprintf("\tpfn%s uintptr\n", cmd.GoName))
+	}
+	sb.WriteString("}\n\n")
+
+	// 2. Emit global package-level PFN function pointer variables
+	sb.WriteString("// Default procedure addresses resolved by Init\n")
+	sb.WriteString("var (\n")
+	for _, name := range validCmdNames {
+		cmd := idx.Commands[name]
 		sb.WriteString(fmt.Sprintf("\tpfn%s uintptr\n", cmd.GoName))
 	}
 	sb.WriteString(")\n\n")
 
-	// 2. Emit Init(instance vulkan.Instance, device vulkan.Device) function
-	sb.WriteString(FormatDocComment(fmt.Sprintf("Init resolves and initializes all %s extension procedure addresses.", ext.Name)))
-	sb.WriteString("func Init(instance vulkan.Instance, device vulkan.Device) {\n")
-	for _, name := range cmdNames {
+	// 3. Emit Init(instance vulkan.Instance, device vulkan.Device) *Commands function
+	sb.WriteString(FormatDocComment(fmt.Sprintf("Init resolves and initializes all %s extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.", ext.Name)))
+	sb.WriteString("func Init(instance vulkan.Instance, device vulkan.Device) *Commands {\n")
+	sb.WriteString("\tcmds := &Commands{\n")
+	for _, name := range validCmdNames {
 		cmd := idx.Commands[name]
-		if cmd == nil {
-			continue
-		}
-		validCmd := true
-		for _, p := range cmd.Params {
-			if !isValidBranchType(p.GoHighType, vulkanBranch, idx) || !isValidBranchType(p.GoRawType, vulkanBranch, idx) {
-				validCmd = false
-				break
-			}
-		}
-		if cmd.ReturnGoType != "Result" && cmd.ReturnGoType != "void" && cmd.ReturnGoType != "" && !isValidBranchType(cmd.ReturnGoType, vulkanBranch, idx) {
-			validCmd = false
-		}
-		if !validCmd {
-			continue
-		}
 		if cmd.IsDeviceCmd {
-			sb.WriteString(fmt.Sprintf("\tpfn%s = vulkan.GetDeviceProcAddr(device, \"%s\")\n", cmd.GoName, cmd.Name))
+			sb.WriteString(fmt.Sprintf("\t\tpfn%s: vulkan.GetDeviceProcAddr(device, \"%s\"),\n", cmd.GoName, cmd.Name))
 		} else {
-			sb.WriteString(fmt.Sprintf("\tpfn%s = vulkan.GetInstanceProcAddr(instance, \"%s\")\n", cmd.GoName, cmd.Name))
+			sb.WriteString(fmt.Sprintf("\t\tpfn%s: vulkan.GetInstanceProcAddr(instance, \"%s\"),\n", cmd.GoName, cmd.Name))
 		}
 	}
+	sb.WriteString("\t}\n")
+	for _, name := range validCmdNames {
+		cmd := idx.Commands[name]
+		sb.WriteString(fmt.Sprintf("\tpfn%s = cmds.pfn%s\n", cmd.GoName, cmd.GoName))
+	}
+	sb.WriteString("\treturn cmds\n")
 	sb.WriteString("}\n\n")
 
-	// 3. Emit wrapper functions
-	for _, name := range cmdNames {
+	// 4. Emit methods and wrapper functions
+	for _, name := range validCmdNames {
 		cmd := idx.Commands[name]
-		if cmd == nil {
-			continue
-		}
-		validCmd := true
-		for _, p := range cmd.Params {
-			if !isValidBranchType(p.GoHighType, vulkanBranch, idx) || !isValidBranchType(p.GoRawType, vulkanBranch, idx) {
-				validCmd = false
-				break
-			}
-		}
-		if cmd.ReturnGoType != "Result" && cmd.ReturnGoType != "void" && cmd.ReturnGoType != "" && !isValidBranchType(cmd.ReturnGoType, vulkanBranch, idx) {
-			validCmd = false
-		}
-		if !validCmd {
-			continue
-		}
-
 		doc := FormatCommandDocComment(cmd)
 		sb.WriteString(doc)
 
 		if cmd.IsOutputQuery && cmd.OutputCountParam != nil && cmd.OutputQueryParam != nil {
-			emit2CallQueryCommandExt(&sb, cmd, idx)
+			emit2CallQueryCommandExt(&sb, cmd, idx, true)
+			emit2CallQueryCommandExt(&sb, cmd, idx, false)
 		} else if outP := findSingleOutputParam(cmd); outP != nil {
-			emitSingleOutputCommandExt(&sb, cmd, outP, idx)
+			emitSingleOutputCommandExt(&sb, cmd, outP, idx, true)
+			emitSingleOutputCommandExt(&sb, cmd, outP, idx, false)
 		} else {
-			emitStandardCommandExt(&sb, cmd, idx)
+			emitStandardCommandExt(&sb, cmd, idx, true)
+			emitStandardCommandExt(&sb, cmd, idx, false)
 		}
 	}
 
 	return sb.String(), nil
 }
 
-func emit2CallQueryCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index) {
+func emit2CallQueryCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index, isMethod bool) {
 	elemType := strings.TrimPrefix(c.OutputQueryParam.GoRawType, "*")
 	highElemType := elemType
 
@@ -279,7 +305,14 @@ func emit2CallQueryCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, id
 		outName = "items"
 	}
 
-	sb.WriteString(fmt.Sprintf("func %s(%s) (%s []%s, result Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highElemType))
+	fnPtr := fmt.Sprintf("pfn%s", c.GoName)
+	if isMethod {
+		sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s) (%s []%s, result Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highElemType))
+		fnPtr = fmt.Sprintf("c.pfn%s", c.GoName)
+	} else {
+		sb.WriteString(fmt.Sprintf("func %s(%s) (%s []%s, result Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highElemType))
+	}
+
 	emitParamConversionsBranch(sb, c.Params, idx, c.OutputCountParam.Name, c.OutputQueryParam.Name)
 
 	sb.WriteString("\tvar count uint32\n")
@@ -294,7 +327,7 @@ func emit2CallQueryCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, id
 			call1Args = append(call1Args, formatCallArgBranch(p, idx))
 		}
 	}
-	sb.WriteString(fmt.Sprintf("\tr1, _, _ := CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(call1Args, ", ")))
+	sb.WriteString(fmt.Sprintf("\tr1, _, _ := CallSyscall(%s, %s)\n", fnPtr, strings.Join(call1Args, ", ")))
 	sb.WriteString("\tif Result(r1) != SUCCESS || count == 0 {\n\t\treturn nil, Result(r1)\n\t}\n\n")
 
 	sb.WriteString(fmt.Sprintf("\t%s = make([]%s, count)\n", outName, highElemType))
@@ -309,12 +342,12 @@ func emit2CallQueryCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, id
 			call2Args = append(call2Args, formatCallArgBranch(p, idx))
 		}
 	}
-	sb.WriteString(fmt.Sprintf("\tr1, _, _ = CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(call2Args, ", ")))
+	sb.WriteString(fmt.Sprintf("\tr1, _, _ = CallSyscall(%s, %s)\n", fnPtr, strings.Join(call2Args, ", ")))
 	sb.WriteString(fmt.Sprintf("\treturn %s, Result(r1)\n", outName))
 	sb.WriteString("}\n\n")
 }
 
-func emit2CallQueryCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index) {
+func emit2CallQueryCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index, isMethod bool) {
 	elemType := strings.TrimPrefix(c.OutputQueryParam.GoRawType, "*")
 	highElemType := qualifyType(elemType)
 
@@ -331,7 +364,14 @@ func emit2CallQueryCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *
 		outName = "items"
 	}
 
-	sb.WriteString(fmt.Sprintf("func %s(%s) (%s []%s, result vulkan.Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highElemType))
+	fnPtr := fmt.Sprintf("pfn%s", c.GoName)
+	if isMethod {
+		sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s) (%s []%s, result vulkan.Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highElemType))
+		fnPtr = fmt.Sprintf("c.pfn%s", c.GoName)
+	} else {
+		sb.WriteString(fmt.Sprintf("func %s(%s) (%s []%s, result vulkan.Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highElemType))
+	}
+
 	emitParamConversionsExt(sb, c.Params, idx, c.OutputCountParam.Name, c.OutputQueryParam.Name)
 
 	sb.WriteString("\tvar count uint32\n")
@@ -346,7 +386,7 @@ func emit2CallQueryCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *
 			call1Args = append(call1Args, formatCallArgExt(p, idx))
 		}
 	}
-	sb.WriteString(fmt.Sprintf("\tr1, _, _ := vulkan.CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(call1Args, ", ")))
+	sb.WriteString(fmt.Sprintf("\tr1, _, _ := vulkan.CallSyscall(%s, %s)\n", fnPtr, strings.Join(call1Args, ", ")))
 	sb.WriteString("\tif vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {\n\t\treturn nil, vulkan.Result(r1)\n\t}\n\n")
 
 	sb.WriteString(fmt.Sprintf("\t%s = make([]%s, count)\n", outName, highElemType))
@@ -361,12 +401,12 @@ func emit2CallQueryCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *
 			call2Args = append(call2Args, formatCallArgExt(p, idx))
 		}
 	}
-	sb.WriteString(fmt.Sprintf("\tr1, _, _ = vulkan.CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(call2Args, ", ")))
+	sb.WriteString(fmt.Sprintf("\tr1, _, _ = vulkan.CallSyscall(%s, %s)\n", fnPtr, strings.Join(call2Args, ", ")))
 	sb.WriteString(fmt.Sprintf("\treturn %s, vulkan.Result(r1)\n", outName))
 	sb.WriteString("}\n\n")
 }
 
-func emitSingleOutputCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, outP *indexer.CommandParam, idx *indexer.Index) {
+func emitSingleOutputCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, outP *indexer.CommandParam, idx *indexer.Index, isMethod bool) {
 	outElemType := strings.TrimPrefix(outP.GoRawType, "*")
 	if outElemType == "void" || outElemType == "*void" || outElemType == "unsafe.Pointer" || outElemType == "*unsafe.Pointer" {
 		outElemType = "unsafe.Pointer"
@@ -388,10 +428,20 @@ func emitSingleOutputCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, 
 
 	isResult := (c.ReturnGoType == "Result")
 
-	if isResult {
-		sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s, result Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+	fnPtr := fmt.Sprintf("pfn%s", c.GoName)
+	if isMethod {
+		if isResult {
+			sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s) (%s %s, result Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		} else {
+			sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s) (%s %s) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		}
+		fnPtr = fmt.Sprintf("c.pfn%s", c.GoName)
 	} else {
-		sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		if isResult {
+			sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s, result Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		} else {
+			sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		}
 	}
 
 	emitParamConversionsBranch(sb, c.Params, idx, outP.Name)
@@ -408,16 +458,16 @@ func emitSingleOutputCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, 
 	}
 
 	if isResult {
-		sb.WriteString(fmt.Sprintf("\tr1, _, _ := CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tr1, _, _ := CallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 		sb.WriteString(fmt.Sprintf("\treturn %s, Result(r1)\n", outName))
 	} else {
-		sb.WriteString(fmt.Sprintf("\tCallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tCallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 		sb.WriteString(fmt.Sprintf("\treturn %s\n", outName))
 	}
 	sb.WriteString("}\n\n")
 }
 
-func emitSingleOutputCommandExt(sb *strings.Builder, c *indexer.CommandInfo, outP *indexer.CommandParam, idx *indexer.Index) {
+func emitSingleOutputCommandExt(sb *strings.Builder, c *indexer.CommandInfo, outP *indexer.CommandParam, idx *indexer.Index, isMethod bool) {
 	outElemType := strings.TrimPrefix(outP.GoRawType, "*")
 	if outElemType == "void" || outElemType == "*void" || outElemType == "unsafe.Pointer" || outElemType == "*unsafe.Pointer" {
 		outElemType = "unsafe.Pointer"
@@ -439,10 +489,20 @@ func emitSingleOutputCommandExt(sb *strings.Builder, c *indexer.CommandInfo, out
 
 	isResult := (c.ReturnGoType == "Result")
 
-	if isResult {
-		sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s, result vulkan.Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+	fnPtr := fmt.Sprintf("pfn%s", c.GoName)
+	if isMethod {
+		if isResult {
+			sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s) (%s %s, result vulkan.Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		} else {
+			sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s) (%s %s) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		}
+		fnPtr = fmt.Sprintf("c.pfn%s", c.GoName)
 	} else {
-		sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		if isResult {
+			sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s, result vulkan.Result) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		} else {
+			sb.WriteString(fmt.Sprintf("func %s(%s) (%s %s) {\n", c.GoName, strings.Join(inParams, ", "), outName, highOutType))
+		}
 	}
 
 	emitParamConversionsExt(sb, c.Params, idx, outP.Name)
@@ -459,16 +519,16 @@ func emitSingleOutputCommandExt(sb *strings.Builder, c *indexer.CommandInfo, out
 	}
 
 	if isResult {
-		sb.WriteString(fmt.Sprintf("\tr1, _, _ := vulkan.CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tr1, _, _ := vulkan.CallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 		sb.WriteString(fmt.Sprintf("\treturn %s, vulkan.Result(r1)\n", outName))
 	} else {
-		sb.WriteString(fmt.Sprintf("\tvulkan.CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tvulkan.CallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 		sb.WriteString(fmt.Sprintf("\treturn %s\n", outName))
 	}
 	sb.WriteString("}\n\n")
 }
 
-func emitStandardCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index) {
+func emitStandardCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index, isMethod bool) {
 	var inParams []string
 	for _, p := range c.Params {
 		if p.IsCountParam && p.PairedSliceParam != "" {
@@ -491,7 +551,13 @@ func emitStandardCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, idx 
 		retSignature = fmt.Sprintf(" (result %s)", returnType)
 	}
 
-	sb.WriteString(fmt.Sprintf("func %s(%s)%s {\n", c.GoName, strings.Join(inParams, ", "), retSignature))
+	fnPtr := fmt.Sprintf("pfn%s", c.GoName)
+	if isMethod {
+		sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s)%s {\n", c.GoName, strings.Join(inParams, ", "), retSignature))
+		fnPtr = fmt.Sprintf("c.pfn%s", c.GoName)
+	} else {
+		sb.WriteString(fmt.Sprintf("func %s(%s)%s {\n", c.GoName, strings.Join(inParams, ", "), retSignature))
+	}
 
 	emitParamConversionsBranch(sb, c.Params, idx)
 
@@ -505,19 +571,19 @@ func emitStandardCommandBranch(sb *strings.Builder, c *indexer.CommandInfo, idx 
 	}
 
 	if returnType != "" {
-		sb.WriteString(fmt.Sprintf("\tr1, _, _ := CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tr1, _, _ := CallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 		if returnType == "uintptr" {
 			sb.WriteString("\treturn r1\n")
 		} else {
 			sb.WriteString(fmt.Sprintf("\treturn %s(r1)\n", returnType))
 		}
 	} else {
-		sb.WriteString(fmt.Sprintf("\tCallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tCallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 	}
 	sb.WriteString("}\n\n")
 }
 
-func emitStandardCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index) {
+func emitStandardCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *indexer.Index, isMethod bool) {
 	var inParams []string
 	for _, p := range c.Params {
 		if p.IsCountParam && p.PairedSliceParam != "" {
@@ -540,7 +606,13 @@ func emitStandardCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *in
 		retSignature = fmt.Sprintf(" (result %s)", returnType)
 	}
 
-	sb.WriteString(fmt.Sprintf("func %s(%s)%s {\n", c.GoName, strings.Join(inParams, ", "), retSignature))
+	fnPtr := fmt.Sprintf("pfn%s", c.GoName)
+	if isMethod {
+		sb.WriteString(fmt.Sprintf("func (c *Commands) %s(%s)%s {\n", c.GoName, strings.Join(inParams, ", "), retSignature))
+		fnPtr = fmt.Sprintf("c.pfn%s", c.GoName)
+	} else {
+		sb.WriteString(fmt.Sprintf("func %s(%s)%s {\n", c.GoName, strings.Join(inParams, ", "), retSignature))
+	}
 
 	emitParamConversionsExt(sb, c.Params, idx)
 
@@ -554,14 +626,14 @@ func emitStandardCommandExt(sb *strings.Builder, c *indexer.CommandInfo, idx *in
 	}
 
 	if returnType != "" {
-		sb.WriteString(fmt.Sprintf("\tr1, _, _ := vulkan.CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tr1, _, _ := vulkan.CallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 		if returnType == "uintptr" {
 			sb.WriteString("\treturn r1\n")
 		} else {
 			sb.WriteString(fmt.Sprintf("\treturn %s(r1)\n", returnType))
 		}
 	} else {
-		sb.WriteString(fmt.Sprintf("\tvulkan.CallSyscall(pfn%s, %s)\n", c.GoName, strings.Join(callArgs, ", ")))
+		sb.WriteString(fmt.Sprintf("\tvulkan.CallSyscall(%s, %s)\n", fnPtr, strings.Join(callArgs, ", ")))
 	}
 	sb.WriteString("}\n\n")
 }

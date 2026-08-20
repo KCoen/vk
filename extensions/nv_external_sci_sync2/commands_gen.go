@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateSemaphoreSciSyncPoolNV         uintptr
+	pfnDestroySemaphoreSciSyncPoolNV        uintptr
+	pfnGetFenceSciSyncFenceNV               uintptr
+	pfnGetFenceSciSyncObjNV                 uintptr
+	pfnGetPhysicalDeviceSciSyncAttributesNV uintptr
+	pfnImportFenceSciSyncFenceNV            uintptr
+	pfnImportFenceSciSyncObjNV              uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateSemaphoreSciSyncPoolNV         uintptr
 	pfnDestroySemaphoreSciSyncPoolNV        uintptr
@@ -21,15 +32,25 @@ var (
 	pfnImportFenceSciSyncObjNV              uintptr
 )
 
-// Init resolves and initializes all VK_NV_external_sci_sync2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateSemaphoreSciSyncPoolNV = vulkan.GetDeviceProcAddr(device, "vkCreateSemaphoreSciSyncPoolNV")
-	pfnDestroySemaphoreSciSyncPoolNV = vulkan.GetDeviceProcAddr(device, "vkDestroySemaphoreSciSyncPoolNV")
-	pfnGetFenceSciSyncFenceNV = vulkan.GetDeviceProcAddr(device, "vkGetFenceSciSyncFenceNV")
-	pfnGetFenceSciSyncObjNV = vulkan.GetDeviceProcAddr(device, "vkGetFenceSciSyncObjNV")
-	pfnGetPhysicalDeviceSciSyncAttributesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciSyncAttributesNV")
-	pfnImportFenceSciSyncFenceNV = vulkan.GetDeviceProcAddr(device, "vkImportFenceSciSyncFenceNV")
-	pfnImportFenceSciSyncObjNV = vulkan.GetDeviceProcAddr(device, "vkImportFenceSciSyncObjNV")
+// Init resolves and initializes all VK_NV_external_sci_sync2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateSemaphoreSciSyncPoolNV:         vulkan.GetDeviceProcAddr(device, "vkCreateSemaphoreSciSyncPoolNV"),
+		pfnDestroySemaphoreSciSyncPoolNV:        vulkan.GetDeviceProcAddr(device, "vkDestroySemaphoreSciSyncPoolNV"),
+		pfnGetFenceSciSyncFenceNV:               vulkan.GetDeviceProcAddr(device, "vkGetFenceSciSyncFenceNV"),
+		pfnGetFenceSciSyncObjNV:                 vulkan.GetDeviceProcAddr(device, "vkGetFenceSciSyncObjNV"),
+		pfnGetPhysicalDeviceSciSyncAttributesNV: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSciSyncAttributesNV"),
+		pfnImportFenceSciSyncFenceNV:            vulkan.GetDeviceProcAddr(device, "vkImportFenceSciSyncFenceNV"),
+		pfnImportFenceSciSyncObjNV:              vulkan.GetDeviceProcAddr(device, "vkImportFenceSciSyncObjNV"),
+	}
+	pfnCreateSemaphoreSciSyncPoolNV = cmds.pfnCreateSemaphoreSciSyncPoolNV
+	pfnDestroySemaphoreSciSyncPoolNV = cmds.pfnDestroySemaphoreSciSyncPoolNV
+	pfnGetFenceSciSyncFenceNV = cmds.pfnGetFenceSciSyncFenceNV
+	pfnGetFenceSciSyncObjNV = cmds.pfnGetFenceSciSyncObjNV
+	pfnGetPhysicalDeviceSciSyncAttributesNV = cmds.pfnGetPhysicalDeviceSciSyncAttributesNV
+	pfnImportFenceSciSyncFenceNV = cmds.pfnImportFenceSciSyncFenceNV
+	pfnImportFenceSciSyncObjNV = cmds.pfnImportFenceSciSyncObjNV
+	return cmds
 }
 
 // CreateSemaphoreSciSyncPoolNV - Create a VkSemaphoreSciSyncPoolNV object (vkCreateSemaphoreSciSyncPoolNV).
@@ -42,6 +63,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSemaphoreSciSyncPoolNV.html
+func (c *Commands) CreateSemaphoreSciSyncPoolNV(device vulkan.Device, createInfo *vulkan.SemaphoreSciSyncPoolCreateInfoNV, allocator *vulkan.AllocationCallbacks) (semaphorePool vulkan.SemaphoreSciSyncPoolNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateSemaphoreSciSyncPoolNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&semaphorePool)))
+	return semaphorePool, vulkan.Result(r1)
+}
+
 func CreateSemaphoreSciSyncPoolNV(device vulkan.Device, createInfo *vulkan.SemaphoreSciSyncPoolCreateInfoNV, allocator *vulkan.AllocationCallbacks) (semaphorePool vulkan.SemaphoreSciSyncPoolNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -56,6 +84,11 @@ func CreateSemaphoreSciSyncPoolNV(device vulkan.Device, createInfo *vulkan.Semap
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySemaphoreSciSyncPoolNV.html
+func (c *Commands) DestroySemaphoreSciSyncPoolNV(device vulkan.Device, semaphorePool vulkan.SemaphoreSciSyncPoolNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroySemaphoreSciSyncPoolNV, uintptr(device), uintptr(semaphorePool), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroySemaphoreSciSyncPoolNV(device vulkan.Device, semaphorePool vulkan.SemaphoreSciSyncPoolNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroySemaphoreSciSyncPoolNV, uintptr(device), uintptr(semaphorePool), uintptr(unsafe.Pointer(c_allocator)))
@@ -70,6 +103,12 @@ func DestroySemaphoreSciSyncPoolNV(device vulkan.Device, semaphorePool vulkan.Se
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncFenceNV.html
+func (c *Commands) GetFenceSciSyncFenceNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
+	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetFenceSciSyncFenceNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
 	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -85,6 +124,12 @@ func GetFenceSciSyncFenceNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.F
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceSciSyncObjNV.html
+func (c *Commands) GetFenceSciSyncObjNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
+	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetFenceSciSyncObjNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.FenceGetSciSyncInfoNV) (handle unsafe.Pointer, result vulkan.Result) {
 	c_getSciSyncHandleInfo := getSciSyncHandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_getSciSyncHandleInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -100,6 +145,12 @@ func GetFenceSciSyncObjNV(device vulkan.Device, getSciSyncHandleInfo *vulkan.Fen
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSciSyncAttributesNV.html
+func (c *Commands) GetPhysicalDeviceSciSyncAttributesNV(physicalDevice vulkan.PhysicalDevice, sciSyncAttributesInfo *vulkan.SciSyncAttributesInfoNV, attributes uintptr) (result vulkan.Result) {
+	c_sciSyncAttributesInfo := sciSyncAttributesInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSciSyncAttributesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_sciSyncAttributesInfo)), uintptr(attributes))
+	return vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSciSyncAttributesNV(physicalDevice vulkan.PhysicalDevice, sciSyncAttributesInfo *vulkan.SciSyncAttributesInfoNV, attributes uintptr) (result vulkan.Result) {
 	c_sciSyncAttributesInfo := sciSyncAttributesInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSciSyncAttributesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_sciSyncAttributesInfo)), uintptr(attributes))
@@ -114,6 +165,12 @@ func GetPhysicalDeviceSciSyncAttributesNV(physicalDevice vulkan.PhysicalDevice, 
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncFenceNV.html
+func (c *Commands) ImportFenceSciSyncFenceNV(device vulkan.Device, importFenceSciSyncInfo *vulkan.ImportFenceSciSyncInfoNV) (result vulkan.Result) {
+	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportFenceSciSyncFenceNV(device vulkan.Device, importFenceSciSyncInfo *vulkan.ImportFenceSciSyncInfoNV) (result vulkan.Result) {
 	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportFenceSciSyncFenceNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
@@ -128,6 +185,12 @@ func ImportFenceSciSyncFenceNV(device vulkan.Device, importFenceSciSyncInfo *vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_NOT_PERMITTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceSciSyncObjNV.html
+func (c *Commands) ImportFenceSciSyncObjNV(device vulkan.Device, importFenceSciSyncInfo *vulkan.ImportFenceSciSyncInfoNV) (result vulkan.Result) {
+	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportFenceSciSyncObjNV(device vulkan.Device, importFenceSciSyncInfo *vulkan.ImportFenceSciSyncInfoNV) (result vulkan.Result) {
 	c_importFenceSciSyncInfo := importFenceSciSyncInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportFenceSciSyncObjNV, uintptr(device), uintptr(unsafe.Pointer(c_importFenceSciSyncInfo)))

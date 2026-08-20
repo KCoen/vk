@@ -10,7 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBindVideoSessionMemoryKHR                 uintptr
+	pfnCmdBeginVideoCodingKHR                    uintptr
+	pfnCmdControlVideoCodingKHR                  uintptr
+	pfnCmdEndVideoCodingKHR                      uintptr
+	pfnCreateVideoSessionKHR                     uintptr
+	pfnCreateVideoSessionParametersKHR           uintptr
+	pfnDestroyVideoSessionKHR                    uintptr
+	pfnDestroyVideoSessionParametersKHR          uintptr
+	pfnGetPhysicalDeviceVideoCapabilitiesKHR     uintptr
+	pfnGetPhysicalDeviceVideoFormatPropertiesKHR uintptr
+	pfnGetVideoSessionMemoryRequirementsKHR      uintptr
+	pfnUpdateVideoSessionParametersKHR           uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBindVideoSessionMemoryKHR                 uintptr
 	pfnCmdBeginVideoCodingKHR                    uintptr
@@ -26,20 +42,35 @@ var (
 	pfnUpdateVideoSessionParametersKHR           uintptr
 )
 
-// Init resolves and initializes all VK_KHR_video_queue extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBindVideoSessionMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkBindVideoSessionMemoryKHR")
-	pfnCmdBeginVideoCodingKHR = vulkan.GetDeviceProcAddr(device, "vkCmdBeginVideoCodingKHR")
-	pfnCmdControlVideoCodingKHR = vulkan.GetDeviceProcAddr(device, "vkCmdControlVideoCodingKHR")
-	pfnCmdEndVideoCodingKHR = vulkan.GetDeviceProcAddr(device, "vkCmdEndVideoCodingKHR")
-	pfnCreateVideoSessionKHR = vulkan.GetDeviceProcAddr(device, "vkCreateVideoSessionKHR")
-	pfnCreateVideoSessionParametersKHR = vulkan.GetDeviceProcAddr(device, "vkCreateVideoSessionParametersKHR")
-	pfnDestroyVideoSessionKHR = vulkan.GetDeviceProcAddr(device, "vkDestroyVideoSessionKHR")
-	pfnDestroyVideoSessionParametersKHR = vulkan.GetDeviceProcAddr(device, "vkDestroyVideoSessionParametersKHR")
-	pfnGetPhysicalDeviceVideoCapabilitiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoCapabilitiesKHR")
-	pfnGetPhysicalDeviceVideoFormatPropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoFormatPropertiesKHR")
-	pfnGetVideoSessionMemoryRequirementsKHR = vulkan.GetDeviceProcAddr(device, "vkGetVideoSessionMemoryRequirementsKHR")
-	pfnUpdateVideoSessionParametersKHR = vulkan.GetDeviceProcAddr(device, "vkUpdateVideoSessionParametersKHR")
+// Init resolves and initializes all VK_KHR_video_queue extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBindVideoSessionMemoryKHR:                 vulkan.GetDeviceProcAddr(device, "vkBindVideoSessionMemoryKHR"),
+		pfnCmdBeginVideoCodingKHR:                    vulkan.GetDeviceProcAddr(device, "vkCmdBeginVideoCodingKHR"),
+		pfnCmdControlVideoCodingKHR:                  vulkan.GetDeviceProcAddr(device, "vkCmdControlVideoCodingKHR"),
+		pfnCmdEndVideoCodingKHR:                      vulkan.GetDeviceProcAddr(device, "vkCmdEndVideoCodingKHR"),
+		pfnCreateVideoSessionKHR:                     vulkan.GetDeviceProcAddr(device, "vkCreateVideoSessionKHR"),
+		pfnCreateVideoSessionParametersKHR:           vulkan.GetDeviceProcAddr(device, "vkCreateVideoSessionParametersKHR"),
+		pfnDestroyVideoSessionKHR:                    vulkan.GetDeviceProcAddr(device, "vkDestroyVideoSessionKHR"),
+		pfnDestroyVideoSessionParametersKHR:          vulkan.GetDeviceProcAddr(device, "vkDestroyVideoSessionParametersKHR"),
+		pfnGetPhysicalDeviceVideoCapabilitiesKHR:     vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoCapabilitiesKHR"),
+		pfnGetPhysicalDeviceVideoFormatPropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoFormatPropertiesKHR"),
+		pfnGetVideoSessionMemoryRequirementsKHR:      vulkan.GetDeviceProcAddr(device, "vkGetVideoSessionMemoryRequirementsKHR"),
+		pfnUpdateVideoSessionParametersKHR:           vulkan.GetDeviceProcAddr(device, "vkUpdateVideoSessionParametersKHR"),
+	}
+	pfnBindVideoSessionMemoryKHR = cmds.pfnBindVideoSessionMemoryKHR
+	pfnCmdBeginVideoCodingKHR = cmds.pfnCmdBeginVideoCodingKHR
+	pfnCmdControlVideoCodingKHR = cmds.pfnCmdControlVideoCodingKHR
+	pfnCmdEndVideoCodingKHR = cmds.pfnCmdEndVideoCodingKHR
+	pfnCreateVideoSessionKHR = cmds.pfnCreateVideoSessionKHR
+	pfnCreateVideoSessionParametersKHR = cmds.pfnCreateVideoSessionParametersKHR
+	pfnDestroyVideoSessionKHR = cmds.pfnDestroyVideoSessionKHR
+	pfnDestroyVideoSessionParametersKHR = cmds.pfnDestroyVideoSessionParametersKHR
+	pfnGetPhysicalDeviceVideoCapabilitiesKHR = cmds.pfnGetPhysicalDeviceVideoCapabilitiesKHR
+	pfnGetPhysicalDeviceVideoFormatPropertiesKHR = cmds.pfnGetPhysicalDeviceVideoFormatPropertiesKHR
+	pfnGetVideoSessionMemoryRequirementsKHR = cmds.pfnGetVideoSessionMemoryRequirementsKHR
+	pfnUpdateVideoSessionParametersKHR = cmds.pfnUpdateVideoSessionParametersKHR
+	return cmds
 }
 
 // BindVideoSessionMemoryKHR - Bind Video Memory (vkBindVideoSessionMemoryKHR).
@@ -52,6 +83,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindVideoSessionMemoryKHR.html
+func (c *Commands) BindVideoSessionMemoryKHR(device vulkan.Device, videoSession vulkan.VideoSessionKHR, bindSessionMemoryInfos []vulkan.BindVideoSessionMemoryInfoKHR) (result vulkan.Result) {
+	c_bindSessionMemoryInfos := make([]vulkan.RawBindVideoSessionMemoryInfoKHR, len(bindSessionMemoryInfos))
+	for i := range bindSessionMemoryInfos {
+		if raw := bindSessionMemoryInfos[i].Raw(); raw != nil {
+			c_bindSessionMemoryInfos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnBindVideoSessionMemoryKHR, uintptr(device), uintptr(videoSession), uintptr(len(bindSessionMemoryInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindSessionMemoryInfos))))
+	return vulkan.Result(r1)
+}
+
 func BindVideoSessionMemoryKHR(device vulkan.Device, videoSession vulkan.VideoSessionKHR, bindSessionMemoryInfos []vulkan.BindVideoSessionMemoryInfoKHR) (result vulkan.Result) {
 	c_bindSessionMemoryInfos := make([]vulkan.RawBindVideoSessionMemoryInfoKHR, len(bindSessionMemoryInfos))
 	for i := range bindSessionMemoryInfos {
@@ -69,6 +111,11 @@ func BindVideoSessionMemoryKHR(device vulkan.Device, videoSession vulkan.VideoSe
 //   - beginInfo: is a pointer to a VkVideoBeginCodingInfoKHR structure specifying the parameters of the video coding scope, including the video session and video session parameters object to use.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginVideoCodingKHR.html
+func (c *Commands) CmdBeginVideoCodingKHR(commandBuffer vulkan.CommandBuffer, beginInfo *vulkan.VideoBeginCodingInfoKHR) {
+	c_beginInfo := beginInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBeginVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginInfo)))
+}
+
 func CmdBeginVideoCodingKHR(commandBuffer vulkan.CommandBuffer, beginInfo *vulkan.VideoBeginCodingInfoKHR) {
 	c_beginInfo := beginInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBeginVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginInfo)))
@@ -80,6 +127,11 @@ func CmdBeginVideoCodingKHR(commandBuffer vulkan.CommandBuffer, beginInfo *vulka
 //   - codingControlInfo: is a pointer to a VkVideoCodingControlInfoKHR structure specifying the control parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdControlVideoCodingKHR.html
+func (c *Commands) CmdControlVideoCodingKHR(commandBuffer vulkan.CommandBuffer, codingControlInfo *vulkan.VideoCodingControlInfoKHR) {
+	c_codingControlInfo := codingControlInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdControlVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_codingControlInfo)))
+}
+
 func CmdControlVideoCodingKHR(commandBuffer vulkan.CommandBuffer, codingControlInfo *vulkan.VideoCodingControlInfoKHR) {
 	c_codingControlInfo := codingControlInfo.Raw()
 	vulkan.CallSyscall(pfnCmdControlVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_codingControlInfo)))
@@ -91,6 +143,11 @@ func CmdControlVideoCodingKHR(commandBuffer vulkan.CommandBuffer, codingControlI
 //   - endCodingInfo: is a pointer to a VkVideoEndCodingInfoKHR structure specifying the parameters for ending the video coding scope.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndVideoCodingKHR.html
+func (c *Commands) CmdEndVideoCodingKHR(commandBuffer vulkan.CommandBuffer, endCodingInfo *vulkan.VideoEndCodingInfoKHR) {
+	c_endCodingInfo := endCodingInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdEndVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_endCodingInfo)))
+}
+
 func CmdEndVideoCodingKHR(commandBuffer vulkan.CommandBuffer, endCodingInfo *vulkan.VideoEndCodingInfoKHR) {
 	c_endCodingInfo := endCodingInfo.Raw()
 	vulkan.CallSyscall(pfnCmdEndVideoCodingKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_endCodingInfo)))
@@ -106,6 +163,13 @@ func CmdEndVideoCodingKHR(commandBuffer vulkan.CommandBuffer, endCodingInfo *vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR, VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionKHR.html
+func (c *Commands) CreateVideoSessionKHR(device vulkan.Device, createInfo *vulkan.VideoSessionCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (videoSession vulkan.VideoSessionKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateVideoSessionKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&videoSession)))
+	return videoSession, vulkan.Result(r1)
+}
+
 func CreateVideoSessionKHR(device vulkan.Device, createInfo *vulkan.VideoSessionCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (videoSession vulkan.VideoSessionKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -123,6 +187,13 @@ func CreateVideoSessionKHR(device vulkan.Device, createInfo *vulkan.VideoSession
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateVideoSessionParametersKHR.html
+func (c *Commands) CreateVideoSessionParametersKHR(device vulkan.Device, createInfo *vulkan.VideoSessionParametersCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (videoSessionParameters vulkan.VideoSessionParametersKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateVideoSessionParametersKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&videoSessionParameters)))
+	return videoSessionParameters, vulkan.Result(r1)
+}
+
 func CreateVideoSessionParametersKHR(device vulkan.Device, createInfo *vulkan.VideoSessionParametersCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (videoSessionParameters vulkan.VideoSessionParametersKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -137,6 +208,11 @@ func CreateVideoSessionParametersKHR(device vulkan.Device, createInfo *vulkan.Vi
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionKHR.html
+func (c *Commands) DestroyVideoSessionKHR(device vulkan.Device, videoSession vulkan.VideoSessionKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyVideoSessionKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyVideoSessionKHR(device vulkan.Device, videoSession vulkan.VideoSessionKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyVideoSessionKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(c_allocator)))
@@ -149,6 +225,11 @@ func DestroyVideoSessionKHR(device vulkan.Device, videoSession vulkan.VideoSessi
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyVideoSessionParametersKHR.html
+func (c *Commands) DestroyVideoSessionParametersKHR(device vulkan.Device, videoSessionParameters vulkan.VideoSessionParametersKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyVideoSessionParametersKHR, uintptr(device), uintptr(videoSessionParameters), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyVideoSessionParametersKHR(device vulkan.Device, videoSessionParameters vulkan.VideoSessionParametersKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyVideoSessionParametersKHR, uintptr(device), uintptr(videoSessionParameters), uintptr(unsafe.Pointer(c_allocator)))
@@ -163,6 +244,12 @@ func DestroyVideoSessionParametersKHR(device vulkan.Device, videoSessionParamete
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoCapabilitiesKHR.html
+func (c *Commands) GetPhysicalDeviceVideoCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, videoProfile *vulkan.VideoProfileInfoKHR) (capabilities vulkan.VideoCapabilitiesKHR, result vulkan.Result) {
+	c_videoProfile := videoProfile.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceVideoCapabilitiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoProfile)), uintptr(unsafe.Pointer(&capabilities)))
+	return capabilities, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceVideoCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, videoProfile *vulkan.VideoProfileInfoKHR) (capabilities vulkan.VideoCapabilitiesKHR, result vulkan.Result) {
 	c_videoProfile := videoProfile.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceVideoCapabilitiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoProfile)), uintptr(unsafe.Pointer(&capabilities)))
@@ -179,6 +266,20 @@ func GetPhysicalDeviceVideoCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice,
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoFormatPropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceVideoFormatPropertiesKHR(physicalDevice vulkan.PhysicalDevice, videoFormatInfo *vulkan.PhysicalDeviceVideoFormatInfoKHR) (videoFormatProperties []vulkan.VideoFormatPropertiesKHR, result vulkan.Result) {
+	c_videoFormatInfo := videoFormatInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceVideoFormatPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoFormatInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	videoFormatProperties = make([]vulkan.VideoFormatPropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&videoFormatProperties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceVideoFormatPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_videoFormatInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return videoFormatProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceVideoFormatPropertiesKHR(physicalDevice vulkan.PhysicalDevice, videoFormatInfo *vulkan.PhysicalDeviceVideoFormatInfoKHR) (videoFormatProperties []vulkan.VideoFormatPropertiesKHR, result vulkan.Result) {
 	c_videoFormatInfo := videoFormatInfo.Raw()
 	var count uint32
@@ -203,6 +304,19 @@ func GetPhysicalDeviceVideoFormatPropertiesKHR(physicalDevice vulkan.PhysicalDev
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetVideoSessionMemoryRequirementsKHR.html
+func (c *Commands) GetVideoSessionMemoryRequirementsKHR(device vulkan.Device, videoSession vulkan.VideoSessionKHR) (memoryRequirements []vulkan.VideoSessionMemoryRequirementsKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetVideoSessionMemoryRequirementsKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	memoryRequirements = make([]vulkan.VideoSessionMemoryRequirementsKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&memoryRequirements[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetVideoSessionMemoryRequirementsKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return memoryRequirements, vulkan.Result(r1)
+}
+
 func GetVideoSessionMemoryRequirementsKHR(device vulkan.Device, videoSession vulkan.VideoSessionKHR) (memoryRequirements []vulkan.VideoSessionMemoryRequirementsKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetVideoSessionMemoryRequirementsKHR, uintptr(device), uintptr(videoSession), uintptr(unsafe.Pointer(&count)), 0)
@@ -225,6 +339,12 @@ func GetVideoSessionMemoryRequirementsKHR(device vulkan.Device, videoSession vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateVideoSessionParametersKHR.html
+func (c *Commands) UpdateVideoSessionParametersKHR(device vulkan.Device, videoSessionParameters vulkan.VideoSessionParametersKHR, updateInfo *vulkan.VideoSessionParametersUpdateInfoKHR) (result vulkan.Result) {
+	c_updateInfo := updateInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnUpdateVideoSessionParametersKHR, uintptr(device), uintptr(videoSessionParameters), uintptr(unsafe.Pointer(c_updateInfo)))
+	return vulkan.Result(r1)
+}
+
 func UpdateVideoSessionParametersKHR(device vulkan.Device, videoSessionParameters vulkan.VideoSessionParametersKHR, updateInfo *vulkan.VideoSessionParametersUpdateInfoKHR) (result vulkan.Result) {
 	c_updateInfo := updateInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnUpdateVideoSessionParametersKHR, uintptr(device), uintptr(videoSessionParameters), uintptr(unsafe.Pointer(c_updateInfo)))

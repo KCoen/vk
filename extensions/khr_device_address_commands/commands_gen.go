@@ -10,7 +10,33 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginConditionalRendering2EXT    uintptr
+	pfnCmdBeginTransformFeedback2EXT       uintptr
+	pfnCmdBindIndexBuffer3KHR              uintptr
+	pfnCmdBindTransformFeedbackBuffers2EXT uintptr
+	pfnCmdBindVertexBuffers3KHR            uintptr
+	pfnCmdCopyImageToMemoryKHR             uintptr
+	pfnCmdCopyMemoryKHR                    uintptr
+	pfnCmdCopyMemoryToImageKHR             uintptr
+	pfnCmdCopyQueryPoolResultsToMemoryKHR  uintptr
+	pfnCmdDispatchIndirect2KHR             uintptr
+	pfnCmdDrawIndexedIndirect2KHR          uintptr
+	pfnCmdDrawIndexedIndirectCount2KHR     uintptr
+	pfnCmdDrawIndirect2KHR                 uintptr
+	pfnCmdDrawIndirectByteCount2EXT        uintptr
+	pfnCmdDrawIndirectCount2KHR            uintptr
+	pfnCmdDrawMeshTasksIndirect2EXT        uintptr
+	pfnCmdDrawMeshTasksIndirectCount2EXT   uintptr
+	pfnCmdEndTransformFeedback2EXT         uintptr
+	pfnCmdFillMemoryKHR                    uintptr
+	pfnCmdUpdateMemoryKHR                  uintptr
+	pfnCmdWriteMarkerToMemoryAMD           uintptr
+	pfnCreateAccelerationStructure2KHR     uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginConditionalRendering2EXT    uintptr
 	pfnCmdBeginTransformFeedback2EXT       uintptr
@@ -36,30 +62,55 @@ var (
 	pfnCreateAccelerationStructure2KHR     uintptr
 )
 
-// Init resolves and initializes all VK_KHR_device_address_commands extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginConditionalRendering2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginConditionalRendering2EXT")
-	pfnCmdBeginTransformFeedback2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginTransformFeedback2EXT")
-	pfnCmdBindIndexBuffer3KHR = vulkan.GetDeviceProcAddr(device, "vkCmdBindIndexBuffer3KHR")
-	pfnCmdBindTransformFeedbackBuffers2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindTransformFeedbackBuffers2EXT")
-	pfnCmdBindVertexBuffers3KHR = vulkan.GetDeviceProcAddr(device, "vkCmdBindVertexBuffers3KHR")
-	pfnCmdCopyImageToMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyImageToMemoryKHR")
-	pfnCmdCopyMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryKHR")
-	pfnCmdCopyMemoryToImageKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageKHR")
-	pfnCmdCopyQueryPoolResultsToMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyQueryPoolResultsToMemoryKHR")
-	pfnCmdDispatchIndirect2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdDispatchIndirect2KHR")
-	pfnCmdDrawIndexedIndirect2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirect2KHR")
-	pfnCmdDrawIndexedIndirectCount2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCount2KHR")
-	pfnCmdDrawIndirect2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirect2KHR")
-	pfnCmdDrawIndirectByteCount2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirectByteCount2EXT")
-	pfnCmdDrawIndirectCount2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirectCount2KHR")
-	pfnCmdDrawMeshTasksIndirect2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirect2EXT")
-	pfnCmdDrawMeshTasksIndirectCount2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCount2EXT")
-	pfnCmdEndTransformFeedback2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdEndTransformFeedback2EXT")
-	pfnCmdFillMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCmdFillMemoryKHR")
-	pfnCmdUpdateMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCmdUpdateMemoryKHR")
-	pfnCmdWriteMarkerToMemoryAMD = vulkan.GetDeviceProcAddr(device, "vkCmdWriteMarkerToMemoryAMD")
-	pfnCreateAccelerationStructure2KHR = vulkan.GetDeviceProcAddr(device, "vkCreateAccelerationStructure2KHR")
+// Init resolves and initializes all VK_KHR_device_address_commands extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginConditionalRendering2EXT:    vulkan.GetDeviceProcAddr(device, "vkCmdBeginConditionalRendering2EXT"),
+		pfnCmdBeginTransformFeedback2EXT:       vulkan.GetDeviceProcAddr(device, "vkCmdBeginTransformFeedback2EXT"),
+		pfnCmdBindIndexBuffer3KHR:              vulkan.GetDeviceProcAddr(device, "vkCmdBindIndexBuffer3KHR"),
+		pfnCmdBindTransformFeedbackBuffers2EXT: vulkan.GetDeviceProcAddr(device, "vkCmdBindTransformFeedbackBuffers2EXT"),
+		pfnCmdBindVertexBuffers3KHR:            vulkan.GetDeviceProcAddr(device, "vkCmdBindVertexBuffers3KHR"),
+		pfnCmdCopyImageToMemoryKHR:             vulkan.GetDeviceProcAddr(device, "vkCmdCopyImageToMemoryKHR"),
+		pfnCmdCopyMemoryKHR:                    vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryKHR"),
+		pfnCmdCopyMemoryToImageKHR:             vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageKHR"),
+		pfnCmdCopyQueryPoolResultsToMemoryKHR:  vulkan.GetDeviceProcAddr(device, "vkCmdCopyQueryPoolResultsToMemoryKHR"),
+		pfnCmdDispatchIndirect2KHR:             vulkan.GetDeviceProcAddr(device, "vkCmdDispatchIndirect2KHR"),
+		pfnCmdDrawIndexedIndirect2KHR:          vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirect2KHR"),
+		pfnCmdDrawIndexedIndirectCount2KHR:     vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCount2KHR"),
+		pfnCmdDrawIndirect2KHR:                 vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirect2KHR"),
+		pfnCmdDrawIndirectByteCount2EXT:        vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirectByteCount2EXT"),
+		pfnCmdDrawIndirectCount2KHR:            vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirectCount2KHR"),
+		pfnCmdDrawMeshTasksIndirect2EXT:        vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirect2EXT"),
+		pfnCmdDrawMeshTasksIndirectCount2EXT:   vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCount2EXT"),
+		pfnCmdEndTransformFeedback2EXT:         vulkan.GetDeviceProcAddr(device, "vkCmdEndTransformFeedback2EXT"),
+		pfnCmdFillMemoryKHR:                    vulkan.GetDeviceProcAddr(device, "vkCmdFillMemoryKHR"),
+		pfnCmdUpdateMemoryKHR:                  vulkan.GetDeviceProcAddr(device, "vkCmdUpdateMemoryKHR"),
+		pfnCmdWriteMarkerToMemoryAMD:           vulkan.GetDeviceProcAddr(device, "vkCmdWriteMarkerToMemoryAMD"),
+		pfnCreateAccelerationStructure2KHR:     vulkan.GetDeviceProcAddr(device, "vkCreateAccelerationStructure2KHR"),
+	}
+	pfnCmdBeginConditionalRendering2EXT = cmds.pfnCmdBeginConditionalRendering2EXT
+	pfnCmdBeginTransformFeedback2EXT = cmds.pfnCmdBeginTransformFeedback2EXT
+	pfnCmdBindIndexBuffer3KHR = cmds.pfnCmdBindIndexBuffer3KHR
+	pfnCmdBindTransformFeedbackBuffers2EXT = cmds.pfnCmdBindTransformFeedbackBuffers2EXT
+	pfnCmdBindVertexBuffers3KHR = cmds.pfnCmdBindVertexBuffers3KHR
+	pfnCmdCopyImageToMemoryKHR = cmds.pfnCmdCopyImageToMemoryKHR
+	pfnCmdCopyMemoryKHR = cmds.pfnCmdCopyMemoryKHR
+	pfnCmdCopyMemoryToImageKHR = cmds.pfnCmdCopyMemoryToImageKHR
+	pfnCmdCopyQueryPoolResultsToMemoryKHR = cmds.pfnCmdCopyQueryPoolResultsToMemoryKHR
+	pfnCmdDispatchIndirect2KHR = cmds.pfnCmdDispatchIndirect2KHR
+	pfnCmdDrawIndexedIndirect2KHR = cmds.pfnCmdDrawIndexedIndirect2KHR
+	pfnCmdDrawIndexedIndirectCount2KHR = cmds.pfnCmdDrawIndexedIndirectCount2KHR
+	pfnCmdDrawIndirect2KHR = cmds.pfnCmdDrawIndirect2KHR
+	pfnCmdDrawIndirectByteCount2EXT = cmds.pfnCmdDrawIndirectByteCount2EXT
+	pfnCmdDrawIndirectCount2KHR = cmds.pfnCmdDrawIndirectCount2KHR
+	pfnCmdDrawMeshTasksIndirect2EXT = cmds.pfnCmdDrawMeshTasksIndirect2EXT
+	pfnCmdDrawMeshTasksIndirectCount2EXT = cmds.pfnCmdDrawMeshTasksIndirectCount2EXT
+	pfnCmdEndTransformFeedback2EXT = cmds.pfnCmdEndTransformFeedback2EXT
+	pfnCmdFillMemoryKHR = cmds.pfnCmdFillMemoryKHR
+	pfnCmdUpdateMemoryKHR = cmds.pfnCmdUpdateMemoryKHR
+	pfnCmdWriteMarkerToMemoryAMD = cmds.pfnCmdWriteMarkerToMemoryAMD
+	pfnCreateAccelerationStructure2KHR = cmds.pfnCreateAccelerationStructure2KHR
+	return cmds
 }
 
 // CmdBeginConditionalRendering2EXT - Define the beginning of a conditional rendering block (vkCmdBeginConditionalRendering2EXT).
@@ -68,6 +119,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - conditionalRenderingBegin: is a pointer to a VkConditionalRenderingBeginInfo2EXT structure specifying parameters of conditional rendering.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginConditionalRendering2EXT.html
+func (c *Commands) CmdBeginConditionalRendering2EXT(commandBuffer vulkan.CommandBuffer, conditionalRenderingBegin *vulkan.ConditionalRenderingBeginInfo2EXT) {
+	c_conditionalRenderingBegin := conditionalRenderingBegin.Raw()
+	vulkan.CallSyscall(c.pfnCmdBeginConditionalRendering2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_conditionalRenderingBegin)))
+}
+
 func CmdBeginConditionalRendering2EXT(commandBuffer vulkan.CommandBuffer, conditionalRenderingBegin *vulkan.ConditionalRenderingBeginInfo2EXT) {
 	c_conditionalRenderingBegin := conditionalRenderingBegin.Raw()
 	vulkan.CallSyscall(pfnCmdBeginConditionalRendering2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_conditionalRenderingBegin)))
@@ -81,6 +137,16 @@ func CmdBeginConditionalRendering2EXT(commandBuffer vulkan.CommandBuffer, condit
 //   - counterInfos: is NULL or a pointer to an array of VkBindTransformFeedbackBuffer2InfoEXT structures defining memory ranges containing counters used to resume transform feedback from a previous location.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginTransformFeedback2EXT.html
+func (c *Commands) CmdBeginTransformFeedback2EXT(commandBuffer vulkan.CommandBuffer, firstCounterRange uint32, counterInfos []vulkan.BindTransformFeedbackBuffer2InfoEXT) {
+	c_counterInfos := make([]vulkan.RawBindTransformFeedbackBuffer2InfoEXT, len(counterInfos))
+	for i := range counterInfos {
+		if raw := counterInfos[i].Raw(); raw != nil {
+			c_counterInfos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBeginTransformFeedback2EXT, uintptr(commandBuffer), uintptr(firstCounterRange), uintptr(len(counterInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_counterInfos))))
+}
+
 func CmdBeginTransformFeedback2EXT(commandBuffer vulkan.CommandBuffer, firstCounterRange uint32, counterInfos []vulkan.BindTransformFeedbackBuffer2InfoEXT) {
 	c_counterInfos := make([]vulkan.RawBindTransformFeedbackBuffer2InfoEXT, len(counterInfos))
 	for i := range counterInfos {
@@ -97,6 +163,11 @@ func CmdBeginTransformFeedback2EXT(commandBuffer vulkan.CommandBuffer, firstCoun
 //   - info: is a pointer to a VkBindIndexBuffer3InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindIndexBuffer3KHR.html
+func (c *Commands) CmdBindIndexBuffer3KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.BindIndexBuffer3InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdBindIndexBuffer3KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdBindIndexBuffer3KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.BindIndexBuffer3InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdBindIndexBuffer3KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -110,6 +181,16 @@ func CmdBindIndexBuffer3KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.Bin
 //   - bindingInfos: is a pointer to an array of VkBindTransformFeedbackBuffer2InfoEXT structures specifying the ranges of memory to be used to capture transform feedback data.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindTransformFeedbackBuffers2EXT.html
+func (c *Commands) CmdBindTransformFeedbackBuffers2EXT(commandBuffer vulkan.CommandBuffer, firstBinding uint32, bindingInfos []vulkan.BindTransformFeedbackBuffer2InfoEXT) {
+	c_bindingInfos := make([]vulkan.RawBindTransformFeedbackBuffer2InfoEXT, len(bindingInfos))
+	for i := range bindingInfos {
+		if raw := bindingInfos[i].Raw(); raw != nil {
+			c_bindingInfos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBindTransformFeedbackBuffers2EXT, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(bindingInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindingInfos))))
+}
+
 func CmdBindTransformFeedbackBuffers2EXT(commandBuffer vulkan.CommandBuffer, firstBinding uint32, bindingInfos []vulkan.BindTransformFeedbackBuffer2InfoEXT) {
 	c_bindingInfos := make([]vulkan.RawBindTransformFeedbackBuffer2InfoEXT, len(bindingInfos))
 	for i := range bindingInfos {
@@ -127,6 +208,16 @@ func CmdBindTransformFeedbackBuffers2EXT(commandBuffer vulkan.CommandBuffer, fir
 //   - bindingCount: is the number of vertex input bindings whose state is updated by the command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers3KHR.html
+func (c *Commands) CmdBindVertexBuffers3KHR(commandBuffer vulkan.CommandBuffer, firstBinding uint32, bindingInfos []vulkan.BindVertexBuffer3InfoKHR) {
+	c_bindingInfos := make([]vulkan.RawBindVertexBuffer3InfoKHR, len(bindingInfos))
+	for i := range bindingInfos {
+		if raw := bindingInfos[i].Raw(); raw != nil {
+			c_bindingInfos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBindVertexBuffers3KHR, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(bindingInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindingInfos))))
+}
+
 func CmdBindVertexBuffers3KHR(commandBuffer vulkan.CommandBuffer, firstBinding uint32, bindingInfos []vulkan.BindVertexBuffer3InfoKHR) {
 	c_bindingInfos := make([]vulkan.RawBindVertexBuffer3InfoKHR, len(bindingInfos))
 	for i := range bindingInfos {
@@ -143,6 +234,11 @@ func CmdBindVertexBuffers3KHR(commandBuffer vulkan.CommandBuffer, firstBinding u
 //   - copyMemoryInfo: a pointer to a VkCopyDeviceMemoryImageInfoKHR structure describing the copies to perform.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToMemoryKHR.html
+func (c *Commands) CmdCopyImageToMemoryKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan.CopyDeviceMemoryImageInfoKHR) {
+	c_copyMemoryInfo := copyMemoryInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyImageToMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
+}
+
 func CmdCopyImageToMemoryKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan.CopyDeviceMemoryImageInfoKHR) {
 	c_copyMemoryInfo := copyMemoryInfo.Raw()
 	vulkan.CallSyscall(pfnCmdCopyImageToMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
@@ -154,6 +250,11 @@ func CmdCopyImageToMemoryKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo 
 //   - copyMemoryInfo: a pointer to a VkCopyDeviceMemoryInfoKHR structure describing the copies to perform.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryKHR.html
+func (c *Commands) CmdCopyMemoryKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan.CopyDeviceMemoryInfoKHR) {
+	c_copyMemoryInfo := copyMemoryInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
+}
+
 func CmdCopyMemoryKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan.CopyDeviceMemoryInfoKHR) {
 	c_copyMemoryInfo := copyMemoryInfo.Raw()
 	vulkan.CallSyscall(pfnCmdCopyMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
@@ -165,6 +266,11 @@ func CmdCopyMemoryKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan
 //   - copyMemoryInfo: a pointer to a VkCopyDeviceMemoryImageInfoKHR structure describing the copies to perform.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToImageKHR.html
+func (c *Commands) CmdCopyMemoryToImageKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan.CopyDeviceMemoryImageInfoKHR) {
+	c_copyMemoryInfo := copyMemoryInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyMemoryToImageKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
+}
+
 func CmdCopyMemoryToImageKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo *vulkan.CopyDeviceMemoryImageInfoKHR) {
 	c_copyMemoryInfo := copyMemoryInfo.Raw()
 	vulkan.CallSyscall(pfnCmdCopyMemoryToImageKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyMemoryInfo)))
@@ -181,6 +287,11 @@ func CmdCopyMemoryToImageKHR(commandBuffer vulkan.CommandBuffer, copyMemoryInfo 
 //   - queryResultFlags: is a bitmask of VkQueryResultFlagBits specifying how and when results are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyQueryPoolResultsToMemoryKHR.html
+func (c *Commands) CmdCopyQueryPoolResultsToMemoryKHR(commandBuffer vulkan.CommandBuffer, queryPool vulkan.QueryPool, firstQuery uint32, queryCount uint32, dstRange *vulkan.StridedDeviceAddressRangeKHR, dstFlags vulkan.AddressCommandFlagsKHR, queryResultFlags vulkan.QueryResultFlags) {
+	c_dstRange := dstRange.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyQueryPoolResultsToMemoryKHR, uintptr(commandBuffer), uintptr(queryPool), uintptr(firstQuery), uintptr(queryCount), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(queryResultFlags))
+}
+
 func CmdCopyQueryPoolResultsToMemoryKHR(commandBuffer vulkan.CommandBuffer, queryPool vulkan.QueryPool, firstQuery uint32, queryCount uint32, dstRange *vulkan.StridedDeviceAddressRangeKHR, dstFlags vulkan.AddressCommandFlagsKHR, queryResultFlags vulkan.QueryResultFlags) {
 	c_dstRange := dstRange.Raw()
 	vulkan.CallSyscall(pfnCmdCopyQueryPoolResultsToMemoryKHR, uintptr(commandBuffer), uintptr(queryPool), uintptr(firstQuery), uintptr(queryCount), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(queryResultFlags))
@@ -192,6 +303,11 @@ func CmdCopyQueryPoolResultsToMemoryKHR(commandBuffer vulkan.CommandBuffer, quer
 //   - info: is a pointer to a VkDispatchIndirect2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect2KHR.html
+func (c *Commands) CmdDispatchIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DispatchIndirect2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDispatchIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDispatchIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DispatchIndirect2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDispatchIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -203,6 +319,11 @@ func CmdDispatchIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.Di
 //   - info: is a pointer to a VkDrawIndirect2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirect2KHR.html
+func (c *Commands) CmdDrawIndexedIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirect2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawIndexedIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDrawIndexedIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirect2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDrawIndexedIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -214,6 +335,11 @@ func CmdDrawIndexedIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan
 //   - info: is a pointer to a VkDrawIndirectCount2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirectCount2KHR.html
+func (c *Commands) CmdDrawIndexedIndirectCount2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirectCount2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawIndexedIndirectCount2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDrawIndexedIndirectCount2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirectCount2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDrawIndexedIndirectCount2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -225,6 +351,11 @@ func CmdDrawIndexedIndirectCount2KHR(commandBuffer vulkan.CommandBuffer, info *v
 //   - info: is a pointer to a VkDrawIndirect2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirect2KHR.html
+func (c *Commands) CmdDrawIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirect2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDrawIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirect2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDrawIndirect2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -240,6 +371,11 @@ func CmdDrawIndirect2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIn
 //   - vertexStride: is the stride in bytes between each element of the vertex data that is used to calculate the vertex count from the counter value. This value is typically the same value that was used in the graphics pipeline state when the transform feedback was captured as the XfbStride.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectByteCount2EXT.html
+func (c *Commands) CmdDrawIndirectByteCount2EXT(commandBuffer vulkan.CommandBuffer, instanceCount uint32, firstInstance uint32, counterInfo *vulkan.BindTransformFeedbackBuffer2InfoEXT, counterOffset uint32, vertexStride uint32) {
+	c_counterInfo := counterInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawIndirectByteCount2EXT, uintptr(commandBuffer), uintptr(instanceCount), uintptr(firstInstance), uintptr(unsafe.Pointer(c_counterInfo)), uintptr(counterOffset), uintptr(vertexStride))
+}
+
 func CmdDrawIndirectByteCount2EXT(commandBuffer vulkan.CommandBuffer, instanceCount uint32, firstInstance uint32, counterInfo *vulkan.BindTransformFeedbackBuffer2InfoEXT, counterOffset uint32, vertexStride uint32) {
 	c_counterInfo := counterInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDrawIndirectByteCount2EXT, uintptr(commandBuffer), uintptr(instanceCount), uintptr(firstInstance), uintptr(unsafe.Pointer(c_counterInfo)), uintptr(counterOffset), uintptr(vertexStride))
@@ -251,6 +387,11 @@ func CmdDrawIndirectByteCount2EXT(commandBuffer vulkan.CommandBuffer, instanceCo
 //   - info: is a pointer to a VkDrawIndirectCount2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectCount2KHR.html
+func (c *Commands) CmdDrawIndirectCount2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirectCount2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawIndirectCount2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDrawIndirectCount2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirectCount2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDrawIndirectCount2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -262,6 +403,11 @@ func CmdDrawIndirectCount2KHR(commandBuffer vulkan.CommandBuffer, info *vulkan.D
 //   - info: is a pointer to a VkDrawIndirect2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirect2EXT.html
+func (c *Commands) CmdDrawMeshTasksIndirect2EXT(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirect2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksIndirect2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDrawMeshTasksIndirect2EXT(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirect2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksIndirect2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -273,6 +419,11 @@ func CmdDrawMeshTasksIndirect2EXT(commandBuffer vulkan.CommandBuffer, info *vulk
 //   - info: is a pointer to a VkDrawIndirectCount2InfoKHR structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCount2EXT.html
+func (c *Commands) CmdDrawMeshTasksIndirectCount2EXT(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirectCount2InfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksIndirectCount2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDrawMeshTasksIndirectCount2EXT(commandBuffer vulkan.CommandBuffer, info *vulkan.DrawIndirectCount2InfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksIndirectCount2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -285,6 +436,16 @@ func CmdDrawMeshTasksIndirectCount2EXT(commandBuffer vulkan.CommandBuffer, info 
 //   - counterInfos: is NULL or a pointer to an array of VkBindTransformFeedbackBuffer2InfoEXT structures defining memory ranges used to write counters used to later resume transform feedback.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndTransformFeedback2EXT.html
+func (c *Commands) CmdEndTransformFeedback2EXT(commandBuffer vulkan.CommandBuffer, firstCounterRange uint32, counterInfos []vulkan.BindTransformFeedbackBuffer2InfoEXT) {
+	c_counterInfos := make([]vulkan.RawBindTransformFeedbackBuffer2InfoEXT, len(counterInfos))
+	for i := range counterInfos {
+		if raw := counterInfos[i].Raw(); raw != nil {
+			c_counterInfos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdEndTransformFeedback2EXT, uintptr(commandBuffer), uintptr(firstCounterRange), uintptr(len(counterInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_counterInfos))))
+}
+
 func CmdEndTransformFeedback2EXT(commandBuffer vulkan.CommandBuffer, firstCounterRange uint32, counterInfos []vulkan.BindTransformFeedbackBuffer2InfoEXT) {
 	c_counterInfos := make([]vulkan.RawBindTransformFeedbackBuffer2InfoEXT, len(counterInfos))
 	for i := range counterInfos {
@@ -303,6 +464,11 @@ func CmdEndTransformFeedback2EXT(commandBuffer vulkan.CommandBuffer, firstCounte
 //   - data: is the 4-byte word written repeatedly to the destination range to fill size bytes of data.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdFillMemoryKHR.html
+func (c *Commands) CmdFillMemoryKHR(commandBuffer vulkan.CommandBuffer, dstRange *vulkan.DeviceAddressRangeKHR, dstFlags vulkan.AddressCommandFlagsKHR, data uint32) {
+	c_dstRange := dstRange.Raw()
+	vulkan.CallSyscall(c.pfnCmdFillMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(data))
+}
+
 func CmdFillMemoryKHR(commandBuffer vulkan.CommandBuffer, dstRange *vulkan.DeviceAddressRangeKHR, dstFlags vulkan.AddressCommandFlagsKHR, data uint32) {
 	c_dstRange := dstRange.Raw()
 	vulkan.CallSyscall(pfnCmdFillMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(data))
@@ -317,6 +483,12 @@ func CmdFillMemoryKHR(commandBuffer vulkan.CommandBuffer, dstRange *vulkan.Devic
 //   - data: is a pointer to the source data for the buffer update, and must be at least dataSize bytes in size.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdUpdateMemoryKHR.html
+func (c *Commands) CmdUpdateMemoryKHR(commandBuffer vulkan.CommandBuffer, dstRange *vulkan.DeviceAddressRangeKHR, dstFlags vulkan.AddressCommandFlagsKHR, data []unsafe.Pointer) {
+	c_dstRange := dstRange.Raw()
+	c_data := vulkan.SliceData(data)
+	vulkan.CallSyscall(c.pfnCmdUpdateMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dstRange)), uintptr(dstFlags), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+}
+
 func CmdUpdateMemoryKHR(commandBuffer vulkan.CommandBuffer, dstRange *vulkan.DeviceAddressRangeKHR, dstFlags vulkan.AddressCommandFlagsKHR, data []unsafe.Pointer) {
 	c_dstRange := dstRange.Raw()
 	c_data := vulkan.SliceData(data)
@@ -329,6 +501,11 @@ func CmdUpdateMemoryKHR(commandBuffer vulkan.CommandBuffer, dstRange *vulkan.Dev
 //   - info: specifies a pointer to an VkMemoryMarkerInfoAMD structure defining parameters of this command.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteMarkerToMemoryAMD.html
+func (c *Commands) CmdWriteMarkerToMemoryAMD(commandBuffer vulkan.CommandBuffer, info *vulkan.MemoryMarkerInfoAMD) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdWriteMarkerToMemoryAMD, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdWriteMarkerToMemoryAMD(commandBuffer vulkan.CommandBuffer, info *vulkan.MemoryMarkerInfoAMD) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdWriteMarkerToMemoryAMD, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -344,6 +521,13 @@ func CmdWriteMarkerToMemoryAMD(commandBuffer vulkan.CommandBuffer, info *vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR, VK_ERROR_VALIDATION_FAILED, VK_ERROR_UNKNOWN
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructure2KHR.html
+func (c *Commands) CreateAccelerationStructure2KHR(device vulkan.Device, createInfo *vulkan.AccelerationStructureCreateInfo2KHR, allocator *vulkan.AllocationCallbacks) (accelerationStructure vulkan.AccelerationStructureKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateAccelerationStructure2KHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&accelerationStructure)))
+	return accelerationStructure, vulkan.Result(r1)
+}
+
 func CreateAccelerationStructure2KHR(device vulkan.Device, createInfo *vulkan.AccelerationStructureCreateInfo2KHR, allocator *vulkan.AllocationCallbacks) (accelerationStructure vulkan.AccelerationStructureKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()

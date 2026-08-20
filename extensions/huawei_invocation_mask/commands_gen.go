@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindInvocationMaskHUAWEI uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindInvocationMaskHUAWEI uintptr
 )
 
-// Init resolves and initializes all VK_HUAWEI_invocation_mask extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindInvocationMaskHUAWEI = vulkan.GetDeviceProcAddr(device, "vkCmdBindInvocationMaskHUAWEI")
+// Init resolves and initializes all VK_HUAWEI_invocation_mask extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindInvocationMaskHUAWEI: vulkan.GetDeviceProcAddr(device, "vkCmdBindInvocationMaskHUAWEI"),
+	}
+	pfnCmdBindInvocationMaskHUAWEI = cmds.pfnCmdBindInvocationMaskHUAWEI
+	return cmds
 }
 
 // CmdBindInvocationMaskHUAWEI - Bind an invocation mask image on a command buffer (vkCmdBindInvocationMaskHUAWEI).
@@ -27,6 +36,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - imageLayout: is the layout that the image subresources accessible from imageView will be in when the invocation mask image is accessed
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindInvocationMaskHUAWEI.html
+func (c *Commands) CmdBindInvocationMaskHUAWEI(commandBuffer vulkan.CommandBuffer, imageView vulkan.ImageView, imageLayout vulkan.ImageLayout) {
+	vulkan.CallSyscall(c.pfnCmdBindInvocationMaskHUAWEI, uintptr(commandBuffer), uintptr(imageView), uintptr(imageLayout))
+}
+
 func CmdBindInvocationMaskHUAWEI(commandBuffer vulkan.CommandBuffer, imageView vulkan.ImageView, imageLayout vulkan.ImageLayout) {
 	vulkan.CallSyscall(pfnCmdBindInvocationMaskHUAWEI, uintptr(commandBuffer), uintptr(imageView), uintptr(imageLayout))
 }

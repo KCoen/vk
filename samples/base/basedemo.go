@@ -8,12 +8,12 @@ import (
 	"unsafe"
 
 	"github.com/AllenDang/cimgui-go/imgui"
-	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/KCoen/vk/extensions/khr_surface"
 	"github.com/KCoen/vk/extensions/khr_swapchain"
 	"github.com/KCoen/vk/samples/utility"
 	"github.com/KCoen/vk/samples/utility/cimgui_vulkan"
 	"github.com/KCoen/vk/vulkan"
+	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 type Vec3 = utility.Vec3
@@ -144,7 +144,7 @@ func (s *BaseDemo) Init() {
 	// 2. Initialize Vulkan Context with required extensions
 	cfg := utility.ContextConfig{
 		AppName:            "MultiDrawIndirectGoSample",
-		RequireMDI:         true,
+		ApiVersion:         vulkan.API_VERSION_1_3,
 		EnableValidation:   true,
 		InstanceExtensions: glfwExts,
 		DeviceExtensions:   []string{"VK_KHR_swapchain"},

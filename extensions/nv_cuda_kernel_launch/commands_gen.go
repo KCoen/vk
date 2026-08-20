@@ -10,7 +10,17 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdCudaLaunchKernelNV uintptr
+	pfnCreateCudaFunctionNV  uintptr
+	pfnCreateCudaModuleNV    uintptr
+	pfnDestroyCudaFunctionNV uintptr
+	pfnDestroyCudaModuleNV   uintptr
+	pfnGetCudaModuleCacheNV  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdCudaLaunchKernelNV uintptr
 	pfnCreateCudaFunctionNV  uintptr
@@ -20,14 +30,23 @@ var (
 	pfnGetCudaModuleCacheNV  uintptr
 )
 
-// Init resolves and initializes all VK_NV_cuda_kernel_launch extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdCudaLaunchKernelNV = vulkan.GetDeviceProcAddr(device, "vkCmdCudaLaunchKernelNV")
-	pfnCreateCudaFunctionNV = vulkan.GetDeviceProcAddr(device, "vkCreateCudaFunctionNV")
-	pfnCreateCudaModuleNV = vulkan.GetDeviceProcAddr(device, "vkCreateCudaModuleNV")
-	pfnDestroyCudaFunctionNV = vulkan.GetDeviceProcAddr(device, "vkDestroyCudaFunctionNV")
-	pfnDestroyCudaModuleNV = vulkan.GetDeviceProcAddr(device, "vkDestroyCudaModuleNV")
-	pfnGetCudaModuleCacheNV = vulkan.GetDeviceProcAddr(device, "vkGetCudaModuleCacheNV")
+// Init resolves and initializes all VK_NV_cuda_kernel_launch extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdCudaLaunchKernelNV: vulkan.GetDeviceProcAddr(device, "vkCmdCudaLaunchKernelNV"),
+		pfnCreateCudaFunctionNV:  vulkan.GetDeviceProcAddr(device, "vkCreateCudaFunctionNV"),
+		pfnCreateCudaModuleNV:    vulkan.GetDeviceProcAddr(device, "vkCreateCudaModuleNV"),
+		pfnDestroyCudaFunctionNV: vulkan.GetDeviceProcAddr(device, "vkDestroyCudaFunctionNV"),
+		pfnDestroyCudaModuleNV:   vulkan.GetDeviceProcAddr(device, "vkDestroyCudaModuleNV"),
+		pfnGetCudaModuleCacheNV:  vulkan.GetDeviceProcAddr(device, "vkGetCudaModuleCacheNV"),
+	}
+	pfnCmdCudaLaunchKernelNV = cmds.pfnCmdCudaLaunchKernelNV
+	pfnCreateCudaFunctionNV = cmds.pfnCreateCudaFunctionNV
+	pfnCreateCudaModuleNV = cmds.pfnCreateCudaModuleNV
+	pfnDestroyCudaFunctionNV = cmds.pfnDestroyCudaFunctionNV
+	pfnDestroyCudaModuleNV = cmds.pfnDestroyCudaModuleNV
+	pfnGetCudaModuleCacheNV = cmds.pfnGetCudaModuleCacheNV
+	return cmds
 }
 
 // CmdCudaLaunchKernelNV - Dispatch compute work items (vkCmdCudaLaunchKernelNV).
@@ -36,6 +55,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - launchInfo: is a pointer to a VkCudaLaunchInfoNV structure in which the grid (similar to workgroup) dimension, function handle and related arguments are defined.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCudaLaunchKernelNV.html
+func (c *Commands) CmdCudaLaunchKernelNV(commandBuffer vulkan.CommandBuffer, launchInfo *vulkan.CudaLaunchInfoNV) {
+	c_launchInfo := launchInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdCudaLaunchKernelNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_launchInfo)))
+}
+
 func CmdCudaLaunchKernelNV(commandBuffer vulkan.CommandBuffer, launchInfo *vulkan.CudaLaunchInfoNV) {
 	c_launchInfo := launchInfo.Raw()
 	vulkan.CallSyscall(pfnCmdCudaLaunchKernelNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_launchInfo)))
@@ -51,6 +75,13 @@ func CmdCudaLaunchKernelNV(commandBuffer vulkan.CommandBuffer, launchInfo *vulka
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCudaFunctionNV.html
+func (c *Commands) CreateCudaFunctionNV(device vulkan.Device, createInfo *vulkan.CudaFunctionCreateInfoNV, allocator *vulkan.AllocationCallbacks) (function vulkan.CudaFunctionNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateCudaFunctionNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&function)))
+	return function, vulkan.Result(r1)
+}
+
 func CreateCudaFunctionNV(device vulkan.Device, createInfo *vulkan.CudaFunctionCreateInfoNV, allocator *vulkan.AllocationCallbacks) (function vulkan.CudaFunctionNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -68,6 +99,13 @@ func CreateCudaFunctionNV(device vulkan.Device, createInfo *vulkan.CudaFunctionC
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCudaModuleNV.html
+func (c *Commands) CreateCudaModuleNV(device vulkan.Device, createInfo *vulkan.CudaModuleCreateInfoNV, allocator *vulkan.AllocationCallbacks) (module vulkan.CudaModuleNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateCudaModuleNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&module)))
+	return module, vulkan.Result(r1)
+}
+
 func CreateCudaModuleNV(device vulkan.Device, createInfo *vulkan.CudaModuleCreateInfoNV, allocator *vulkan.AllocationCallbacks) (module vulkan.CudaModuleNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -82,6 +120,11 @@ func CreateCudaModuleNV(device vulkan.Device, createInfo *vulkan.CudaModuleCreat
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCudaFunctionNV.html
+func (c *Commands) DestroyCudaFunctionNV(device vulkan.Device, function vulkan.CudaFunctionNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyCudaFunctionNV, uintptr(device), uintptr(function), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyCudaFunctionNV(device vulkan.Device, function vulkan.CudaFunctionNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyCudaFunctionNV, uintptr(device), uintptr(function), uintptr(unsafe.Pointer(c_allocator)))
@@ -94,6 +137,11 @@ func DestroyCudaFunctionNV(device vulkan.Device, function vulkan.CudaFunctionNV,
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCudaModuleNV.html
+func (c *Commands) DestroyCudaModuleNV(device vulkan.Device, module vulkan.CudaModuleNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyCudaModuleNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyCudaModuleNV(device vulkan.Device, module vulkan.CudaModuleNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyCudaModuleNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(c_allocator)))
@@ -109,6 +157,19 @@ func DestroyCudaModuleNV(device vulkan.Device, module vulkan.CudaModuleNV, alloc
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetCudaModuleCacheNV.html
+func (c *Commands) GetCudaModuleCacheNV(device vulkan.Device, module vulkan.CudaModuleNV) (cacheData []unsafe.Pointer, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetCudaModuleCacheNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	cacheData = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&cacheData[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetCudaModuleCacheNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return cacheData, vulkan.Result(r1)
+}
+
 func GetCudaModuleCacheNV(device vulkan.Device, module vulkan.CudaModuleNV) (cacheData []unsafe.Pointer, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetCudaModuleCacheNV, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(&count)), 0)

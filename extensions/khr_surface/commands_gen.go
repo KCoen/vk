@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnDestroySurfaceKHR                       uintptr
+	pfnGetPhysicalDeviceSurfaceCapabilitiesKHR uintptr
+	pfnGetPhysicalDeviceSurfaceFormatsKHR      uintptr
+	pfnGetPhysicalDeviceSurfacePresentModesKHR uintptr
+	pfnGetPhysicalDeviceSurfaceSupportKHR      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnDestroySurfaceKHR                       uintptr
 	pfnGetPhysicalDeviceSurfaceCapabilitiesKHR uintptr
@@ -19,13 +28,21 @@ var (
 	pfnGetPhysicalDeviceSurfaceSupportKHR      uintptr
 )
 
-// Init resolves and initializes all VK_KHR_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnDestroySurfaceKHR = vulkan.GetInstanceProcAddr(instance, "vkDestroySurfaceKHR")
-	pfnGetPhysicalDeviceSurfaceCapabilitiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR")
-	pfnGetPhysicalDeviceSurfaceFormatsKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR")
-	pfnGetPhysicalDeviceSurfacePresentModesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModesKHR")
-	pfnGetPhysicalDeviceSurfaceSupportKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR")
+// Init resolves and initializes all VK_KHR_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnDestroySurfaceKHR:                       vulkan.GetInstanceProcAddr(instance, "vkDestroySurfaceKHR"),
+		pfnGetPhysicalDeviceSurfaceCapabilitiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"),
+		pfnGetPhysicalDeviceSurfaceFormatsKHR:      vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR"),
+		pfnGetPhysicalDeviceSurfacePresentModesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModesKHR"),
+		pfnGetPhysicalDeviceSurfaceSupportKHR:      vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR"),
+	}
+	pfnDestroySurfaceKHR = cmds.pfnDestroySurfaceKHR
+	pfnGetPhysicalDeviceSurfaceCapabilitiesKHR = cmds.pfnGetPhysicalDeviceSurfaceCapabilitiesKHR
+	pfnGetPhysicalDeviceSurfaceFormatsKHR = cmds.pfnGetPhysicalDeviceSurfaceFormatsKHR
+	pfnGetPhysicalDeviceSurfacePresentModesKHR = cmds.pfnGetPhysicalDeviceSurfacePresentModesKHR
+	pfnGetPhysicalDeviceSurfaceSupportKHR = cmds.pfnGetPhysicalDeviceSurfaceSupportKHR
+	return cmds
 }
 
 // DestroySurfaceKHR - Destroy a VkSurfaceKHR object (vkDestroySurfaceKHR).
@@ -35,6 +52,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - allocator: is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySurfaceKHR.html
+func (c *Commands) DestroySurfaceKHR(instance vulkan.Instance, surface vulkan.SurfaceKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroySurfaceKHR, uintptr(instance), uintptr(surface), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroySurfaceKHR(instance vulkan.Instance, surface vulkan.SurfaceKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroySurfaceKHR, uintptr(instance), uintptr(surface), uintptr(unsafe.Pointer(c_allocator)))
@@ -49,6 +71,11 @@ func DestroySurfaceKHR(instance vulkan.Instance, surface vulkan.SurfaceKHR, allo
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceCapabilitiesKHR.html
+func (c *Commands) GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (surfaceCapabilities vulkan.SurfaceCapabilitiesKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfaceCapabilitiesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&surfaceCapabilities)))
+	return surfaceCapabilities, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (surfaceCapabilities vulkan.SurfaceCapabilitiesKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSurfaceCapabilitiesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&surfaceCapabilities)))
 	return surfaceCapabilities, vulkan.Result(r1)
@@ -64,6 +91,19 @@ func GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice vulkan.PhysicalDevic
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html
+func (c *Commands) GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (surfaceFormats []vulkan.SurfaceFormatKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfaceFormatsKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	surfaceFormats = make([]vulkan.SurfaceFormatKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&surfaceFormats[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfaceFormatsKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return surfaceFormats, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (surfaceFormats []vulkan.SurfaceFormatKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSurfaceFormatsKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
@@ -87,6 +127,19 @@ func GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice vulkan.PhysicalDevice, su
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfacePresentModesKHR.html
+func (c *Commands) GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (presentModes []vulkan.PresentModeKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfacePresentModesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	presentModes = make([]vulkan.PresentModeKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&presentModes[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfacePresentModesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return presentModes, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (presentModes []vulkan.PresentModeKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSurfacePresentModesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
@@ -110,6 +163,11 @@ func GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice vulkan.PhysicalDevic
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceSupportKHR.html
+func (c *Commands) GetPhysicalDeviceSurfaceSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, surface vulkan.SurfaceKHR) (supported vulkan.Bool32, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfaceSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(surface), uintptr(unsafe.Pointer(&supported)))
+	return supported, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSurfaceSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, surface vulkan.SurfaceKHR) (supported vulkan.Bool32, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSurfaceSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(surface), uintptr(unsafe.Pointer(&supported)))
 	return supported, vulkan.Result(r1)

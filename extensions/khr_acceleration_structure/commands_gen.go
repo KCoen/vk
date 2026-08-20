@@ -10,7 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBuildAccelerationStructuresKHR                 uintptr
+	pfnCmdBuildAccelerationStructuresIndirectKHR      uintptr
+	pfnCmdBuildAccelerationStructuresKHR              uintptr
+	pfnCmdCopyAccelerationStructureKHR                uintptr
+	pfnCmdCopyAccelerationStructureToMemoryKHR        uintptr
+	pfnCmdCopyMemoryToAccelerationStructureKHR        uintptr
+	pfnCmdWriteAccelerationStructuresPropertiesKHR    uintptr
+	pfnCopyAccelerationStructureKHR                   uintptr
+	pfnCopyAccelerationStructureToMemoryKHR           uintptr
+	pfnCopyMemoryToAccelerationStructureKHR           uintptr
+	pfnCreateAccelerationStructureKHR                 uintptr
+	pfnDestroyAccelerationStructureKHR                uintptr
+	pfnGetAccelerationStructureBuildSizesKHR          uintptr
+	pfnGetAccelerationStructureDeviceAddressKHR       uintptr
+	pfnGetDeviceAccelerationStructureCompatibilityKHR uintptr
+	pfnWriteAccelerationStructuresPropertiesKHR       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBuildAccelerationStructuresKHR                 uintptr
 	pfnCmdBuildAccelerationStructuresIndirectKHR      uintptr
@@ -30,24 +50,43 @@ var (
 	pfnWriteAccelerationStructuresPropertiesKHR       uintptr
 )
 
-// Init resolves and initializes all VK_KHR_acceleration_structure extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBuildAccelerationStructuresKHR = vulkan.GetDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR")
-	pfnCmdBuildAccelerationStructuresIndirectKHR = vulkan.GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresIndirectKHR")
-	pfnCmdBuildAccelerationStructuresKHR = vulkan.GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR")
-	pfnCmdCopyAccelerationStructureKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR")
-	pfnCmdCopyAccelerationStructureToMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR")
-	pfnCmdCopyMemoryToAccelerationStructureKHR = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR")
-	pfnCmdWriteAccelerationStructuresPropertiesKHR = vulkan.GetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR")
-	pfnCopyAccelerationStructureKHR = vulkan.GetDeviceProcAddr(device, "vkCopyAccelerationStructureKHR")
-	pfnCopyAccelerationStructureToMemoryKHR = vulkan.GetDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR")
-	pfnCopyMemoryToAccelerationStructureKHR = vulkan.GetDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR")
-	pfnCreateAccelerationStructureKHR = vulkan.GetDeviceProcAddr(device, "vkCreateAccelerationStructureKHR")
-	pfnDestroyAccelerationStructureKHR = vulkan.GetDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR")
-	pfnGetAccelerationStructureBuildSizesKHR = vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR")
-	pfnGetAccelerationStructureDeviceAddressKHR = vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR")
-	pfnGetDeviceAccelerationStructureCompatibilityKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR")
-	pfnWriteAccelerationStructuresPropertiesKHR = vulkan.GetDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR")
+// Init resolves and initializes all VK_KHR_acceleration_structure extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBuildAccelerationStructuresKHR:                 vulkan.GetDeviceProcAddr(device, "vkBuildAccelerationStructuresKHR"),
+		pfnCmdBuildAccelerationStructuresIndirectKHR:      vulkan.GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresIndirectKHR"),
+		pfnCmdBuildAccelerationStructuresKHR:              vulkan.GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructuresKHR"),
+		pfnCmdCopyAccelerationStructureKHR:                vulkan.GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureKHR"),
+		pfnCmdCopyAccelerationStructureToMemoryKHR:        vulkan.GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureToMemoryKHR"),
+		pfnCmdCopyMemoryToAccelerationStructureKHR:        vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToAccelerationStructureKHR"),
+		pfnCmdWriteAccelerationStructuresPropertiesKHR:    vulkan.GetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesKHR"),
+		pfnCopyAccelerationStructureKHR:                   vulkan.GetDeviceProcAddr(device, "vkCopyAccelerationStructureKHR"),
+		pfnCopyAccelerationStructureToMemoryKHR:           vulkan.GetDeviceProcAddr(device, "vkCopyAccelerationStructureToMemoryKHR"),
+		pfnCopyMemoryToAccelerationStructureKHR:           vulkan.GetDeviceProcAddr(device, "vkCopyMemoryToAccelerationStructureKHR"),
+		pfnCreateAccelerationStructureKHR:                 vulkan.GetDeviceProcAddr(device, "vkCreateAccelerationStructureKHR"),
+		pfnDestroyAccelerationStructureKHR:                vulkan.GetDeviceProcAddr(device, "vkDestroyAccelerationStructureKHR"),
+		pfnGetAccelerationStructureBuildSizesKHR:          vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureBuildSizesKHR"),
+		pfnGetAccelerationStructureDeviceAddressKHR:       vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureDeviceAddressKHR"),
+		pfnGetDeviceAccelerationStructureCompatibilityKHR: vulkan.GetDeviceProcAddr(device, "vkGetDeviceAccelerationStructureCompatibilityKHR"),
+		pfnWriteAccelerationStructuresPropertiesKHR:       vulkan.GetDeviceProcAddr(device, "vkWriteAccelerationStructuresPropertiesKHR"),
+	}
+	pfnBuildAccelerationStructuresKHR = cmds.pfnBuildAccelerationStructuresKHR
+	pfnCmdBuildAccelerationStructuresIndirectKHR = cmds.pfnCmdBuildAccelerationStructuresIndirectKHR
+	pfnCmdBuildAccelerationStructuresKHR = cmds.pfnCmdBuildAccelerationStructuresKHR
+	pfnCmdCopyAccelerationStructureKHR = cmds.pfnCmdCopyAccelerationStructureKHR
+	pfnCmdCopyAccelerationStructureToMemoryKHR = cmds.pfnCmdCopyAccelerationStructureToMemoryKHR
+	pfnCmdCopyMemoryToAccelerationStructureKHR = cmds.pfnCmdCopyMemoryToAccelerationStructureKHR
+	pfnCmdWriteAccelerationStructuresPropertiesKHR = cmds.pfnCmdWriteAccelerationStructuresPropertiesKHR
+	pfnCopyAccelerationStructureKHR = cmds.pfnCopyAccelerationStructureKHR
+	pfnCopyAccelerationStructureToMemoryKHR = cmds.pfnCopyAccelerationStructureToMemoryKHR
+	pfnCopyMemoryToAccelerationStructureKHR = cmds.pfnCopyMemoryToAccelerationStructureKHR
+	pfnCreateAccelerationStructureKHR = cmds.pfnCreateAccelerationStructureKHR
+	pfnDestroyAccelerationStructureKHR = cmds.pfnDestroyAccelerationStructureKHR
+	pfnGetAccelerationStructureBuildSizesKHR = cmds.pfnGetAccelerationStructureBuildSizesKHR
+	pfnGetAccelerationStructureDeviceAddressKHR = cmds.pfnGetAccelerationStructureDeviceAddressKHR
+	pfnGetDeviceAccelerationStructureCompatibilityKHR = cmds.pfnGetDeviceAccelerationStructureCompatibilityKHR
+	pfnWriteAccelerationStructuresPropertiesKHR = cmds.pfnWriteAccelerationStructuresPropertiesKHR
+	return cmds
 }
 
 // BuildAccelerationStructuresKHR - Build an acceleration structure on the host (vkBuildAccelerationStructuresKHR).
@@ -61,6 +100,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBuildAccelerationStructuresKHR.html
+func (c *Commands) BuildAccelerationStructuresKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, infos []vulkan.AccelerationStructureBuildGeometryInfoKHR, buildRangeInfos **vulkan.AccelerationStructureBuildRangeInfoKHR) (result vulkan.Result) {
+	c_infos := make([]vulkan.RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnBuildAccelerationStructuresKHR, uintptr(device), uintptr(deferredOperation), uintptr(len(infos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_infos))), uintptr(unsafe.Pointer(buildRangeInfos)))
+	return vulkan.Result(r1)
+}
+
 func BuildAccelerationStructuresKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, infos []vulkan.AccelerationStructureBuildGeometryInfoKHR, buildRangeInfos **vulkan.AccelerationStructureBuildRangeInfoKHR) (result vulkan.Result) {
 	c_infos := make([]vulkan.RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
 	for i := range infos {
@@ -82,6 +132,16 @@ func BuildAccelerationStructuresKHR(device vulkan.Device, deferredOperation vulk
 //   - maxPrimitiveCounts: is a pointer to an array of infoCount pointers to arrays of pInfos[i].geometryCount values indicating the maximum number of primitives that will be built by this command for each geometry.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructuresIndirectKHR.html
+func (c *Commands) CmdBuildAccelerationStructuresIndirectKHR(commandBuffer vulkan.CommandBuffer, infos []vulkan.AccelerationStructureBuildGeometryInfoKHR, indirectDeviceAddresses *vulkan.DeviceAddress, indirectStrides *uint32, maxPrimitiveCounts **uint32) {
+	c_infos := make([]vulkan.RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBuildAccelerationStructuresIndirectKHR, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_infos))), uintptr(unsafe.Pointer(indirectDeviceAddresses)), uintptr(unsafe.Pointer(indirectStrides)), uintptr(unsafe.Pointer(maxPrimitiveCounts)))
+}
+
 func CmdBuildAccelerationStructuresIndirectKHR(commandBuffer vulkan.CommandBuffer, infos []vulkan.AccelerationStructureBuildGeometryInfoKHR, indirectDeviceAddresses *vulkan.DeviceAddress, indirectStrides *uint32, maxPrimitiveCounts **uint32) {
 	c_infos := make([]vulkan.RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
 	for i := range infos {
@@ -100,6 +160,16 @@ func CmdBuildAccelerationStructuresIndirectKHR(commandBuffer vulkan.CommandBuffe
 //   - buildRangeInfos: is a pointer to an array of infoCount pointers to arrays of VkAccelerationStructureBuildRangeInfoKHR structures. Each ppBuildRangeInfos[i] is a pointer to an array of pInfos[i].geometryCount VkAccelerationStructureBuildRangeInfoKHR structures defining dynamic offsets to the addresses where geometry data is stored, as defined by pInfos[i].
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructuresKHR.html
+func (c *Commands) CmdBuildAccelerationStructuresKHR(commandBuffer vulkan.CommandBuffer, infos []vulkan.AccelerationStructureBuildGeometryInfoKHR, buildRangeInfos **vulkan.AccelerationStructureBuildRangeInfoKHR) {
+	c_infos := make([]vulkan.RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBuildAccelerationStructuresKHR, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_infos))), uintptr(unsafe.Pointer(buildRangeInfos)))
+}
+
 func CmdBuildAccelerationStructuresKHR(commandBuffer vulkan.CommandBuffer, infos []vulkan.AccelerationStructureBuildGeometryInfoKHR, buildRangeInfos **vulkan.AccelerationStructureBuildRangeInfoKHR) {
 	c_infos := make([]vulkan.RawAccelerationStructureBuildGeometryInfoKHR, len(infos))
 	for i := range infos {
@@ -116,6 +186,11 @@ func CmdBuildAccelerationStructuresKHR(commandBuffer vulkan.CommandBuffer, infos
 //   - info: is a pointer to a VkCopyAccelerationStructureInfoKHR structure defining the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyAccelerationStructureKHR.html
+func (c *Commands) CmdCopyAccelerationStructureKHR(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyAccelerationStructureInfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyAccelerationStructureKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdCopyAccelerationStructureKHR(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyAccelerationStructureInfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdCopyAccelerationStructureKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -127,6 +202,11 @@ func CmdCopyAccelerationStructureKHR(commandBuffer vulkan.CommandBuffer, info *v
 //   - info: is a pointer to a VkCopyAccelerationStructureToMemoryInfoKHR structure defining the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyAccelerationStructureToMemoryKHR.html
+func (c *Commands) CmdCopyAccelerationStructureToMemoryKHR(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyAccelerationStructureToMemoryInfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyAccelerationStructureToMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdCopyAccelerationStructureToMemoryKHR(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyAccelerationStructureToMemoryInfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdCopyAccelerationStructureToMemoryKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -138,6 +218,11 @@ func CmdCopyAccelerationStructureToMemoryKHR(commandBuffer vulkan.CommandBuffer,
 //   - info: is a pointer to a VkCopyMemoryToAccelerationStructureInfoKHR structure defining the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToAccelerationStructureKHR.html
+func (c *Commands) CmdCopyMemoryToAccelerationStructureKHR(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMemoryToAccelerationStructureInfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyMemoryToAccelerationStructureKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdCopyMemoryToAccelerationStructureKHR(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMemoryToAccelerationStructureInfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdCopyMemoryToAccelerationStructureKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -153,6 +238,11 @@ func CmdCopyMemoryToAccelerationStructureKHR(commandBuffer vulkan.CommandBuffer,
 //   - firstQuery: is the first query index within the query pool that will contain the accelerationStructureCount number of results.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteAccelerationStructuresPropertiesKHR.html
+func (c *Commands) CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer vulkan.CommandBuffer, accelerationStructures []vulkan.AccelerationStructureKHR, queryType vulkan.QueryType, queryPool vulkan.QueryPool, firstQuery uint32) {
+	c_accelerationStructures := vulkan.SliceData(accelerationStructures)
+	vulkan.CallSyscall(c.pfnCmdWriteAccelerationStructuresPropertiesKHR, uintptr(commandBuffer), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
+}
+
 func CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer vulkan.CommandBuffer, accelerationStructures []vulkan.AccelerationStructureKHR, queryType vulkan.QueryType, queryPool vulkan.QueryPool, firstQuery uint32) {
 	c_accelerationStructures := vulkan.SliceData(accelerationStructures)
 	vulkan.CallSyscall(pfnCmdWriteAccelerationStructuresPropertiesKHR, uintptr(commandBuffer), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
@@ -167,6 +257,12 @@ func CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer vulkan.CommandBuf
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyAccelerationStructureKHR.html
+func (c *Commands) CopyAccelerationStructureKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyAccelerationStructureInfoKHR) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCopyAccelerationStructureKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func CopyAccelerationStructureKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyAccelerationStructureInfoKHR) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCopyAccelerationStructureKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
@@ -182,6 +278,12 @@ func CopyAccelerationStructureKHR(device vulkan.Device, deferredOperation vulkan
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyAccelerationStructureToMemoryKHR.html
+func (c *Commands) CopyAccelerationStructureToMemoryKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyAccelerationStructureToMemoryInfoKHR) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCopyAccelerationStructureToMemoryKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func CopyAccelerationStructureToMemoryKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyAccelerationStructureToMemoryInfoKHR) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCopyAccelerationStructureToMemoryKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
@@ -197,6 +299,12 @@ func CopyAccelerationStructureToMemoryKHR(device vulkan.Device, deferredOperatio
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMemoryToAccelerationStructureKHR.html
+func (c *Commands) CopyMemoryToAccelerationStructureKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMemoryToAccelerationStructureInfoKHR) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCopyMemoryToAccelerationStructureKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func CopyMemoryToAccelerationStructureKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMemoryToAccelerationStructureInfoKHR) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCopyMemoryToAccelerationStructureKHR, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
@@ -213,6 +321,13 @@ func CopyMemoryToAccelerationStructureKHR(device vulkan.Device, deferredOperatio
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureKHR.html
+func (c *Commands) CreateAccelerationStructureKHR(device vulkan.Device, createInfo *vulkan.AccelerationStructureCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (accelerationStructure vulkan.AccelerationStructureKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateAccelerationStructureKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&accelerationStructure)))
+	return accelerationStructure, vulkan.Result(r1)
+}
+
 func CreateAccelerationStructureKHR(device vulkan.Device, createInfo *vulkan.AccelerationStructureCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (accelerationStructure vulkan.AccelerationStructureKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -227,6 +342,11 @@ func CreateAccelerationStructureKHR(device vulkan.Device, createInfo *vulkan.Acc
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyAccelerationStructureKHR.html
+func (c *Commands) DestroyAccelerationStructureKHR(device vulkan.Device, accelerationStructure vulkan.AccelerationStructureKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyAccelerationStructureKHR, uintptr(device), uintptr(accelerationStructure), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyAccelerationStructureKHR(device vulkan.Device, accelerationStructure vulkan.AccelerationStructureKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyAccelerationStructureKHR, uintptr(device), uintptr(accelerationStructure), uintptr(unsafe.Pointer(c_allocator)))
@@ -241,6 +361,12 @@ func DestroyAccelerationStructureKHR(device vulkan.Device, accelerationStructure
 //   - sizeInfo: is a pointer to a VkAccelerationStructureBuildSizesInfoKHR structure which returns the size required for an acceleration structure and the sizes required for the scratch buffers, given the build parameters. The size requirements for a scratch buffer may be zero.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureBuildSizesKHR.html
+func (c *Commands) GetAccelerationStructureBuildSizesKHR(device vulkan.Device, buildType vulkan.AccelerationStructureBuildTypeKHR, buildInfo *vulkan.AccelerationStructureBuildGeometryInfoKHR, maxPrimitiveCounts *uint32) (sizeInfo vulkan.AccelerationStructureBuildSizesInfoKHR) {
+	c_buildInfo := buildInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetAccelerationStructureBuildSizesKHR, uintptr(device), uintptr(buildType), uintptr(unsafe.Pointer(c_buildInfo)), uintptr(unsafe.Pointer(maxPrimitiveCounts)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
 func GetAccelerationStructureBuildSizesKHR(device vulkan.Device, buildType vulkan.AccelerationStructureBuildTypeKHR, buildInfo *vulkan.AccelerationStructureBuildGeometryInfoKHR, maxPrimitiveCounts *uint32) (sizeInfo vulkan.AccelerationStructureBuildSizesInfoKHR) {
 	c_buildInfo := buildInfo.Raw()
 	vulkan.CallSyscall(pfnGetAccelerationStructureBuildSizesKHR, uintptr(device), uintptr(buildType), uintptr(unsafe.Pointer(c_buildInfo)), uintptr(unsafe.Pointer(maxPrimitiveCounts)), uintptr(unsafe.Pointer(&sizeInfo)))
@@ -253,6 +379,12 @@ func GetAccelerationStructureBuildSizesKHR(device vulkan.Device, buildType vulka
 //   - info: is a pointer to a VkAccelerationStructureDeviceAddressInfoKHR structure specifying the acceleration structure to retrieve an address for.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureDeviceAddressKHR.html
+func (c *Commands) GetAccelerationStructureDeviceAddressKHR(device vulkan.Device, info *vulkan.AccelerationStructureDeviceAddressInfoKHR) (result vulkan.DeviceAddress) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetAccelerationStructureDeviceAddressKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.DeviceAddress(r1)
+}
+
 func GetAccelerationStructureDeviceAddressKHR(device vulkan.Device, info *vulkan.AccelerationStructureDeviceAddressInfoKHR) (result vulkan.DeviceAddress) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetAccelerationStructureDeviceAddressKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)))
@@ -266,6 +398,12 @@ func GetAccelerationStructureDeviceAddressKHR(device vulkan.Device, info *vulkan
 //   - compatibility: is a pointer to a VkAccelerationStructureCompatibilityKHR value in which compatibility information is returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceAccelerationStructureCompatibilityKHR.html
+func (c *Commands) GetDeviceAccelerationStructureCompatibilityKHR(device vulkan.Device, versionInfo *vulkan.AccelerationStructureVersionInfoKHR) (compatibility vulkan.AccelerationStructureCompatibilityKHR) {
+	c_versionInfo := versionInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetDeviceAccelerationStructureCompatibilityKHR, uintptr(device), uintptr(unsafe.Pointer(c_versionInfo)), uintptr(unsafe.Pointer(&compatibility)))
+	return compatibility
+}
+
 func GetDeviceAccelerationStructureCompatibilityKHR(device vulkan.Device, versionInfo *vulkan.AccelerationStructureVersionInfoKHR) (compatibility vulkan.AccelerationStructureCompatibilityKHR) {
 	c_versionInfo := versionInfo.Raw()
 	vulkan.CallSyscall(pfnGetDeviceAccelerationStructureCompatibilityKHR, uintptr(device), uintptr(unsafe.Pointer(c_versionInfo)), uintptr(unsafe.Pointer(&compatibility)))
@@ -285,6 +423,13 @@ func GetDeviceAccelerationStructureCompatibilityKHR(device vulkan.Device, versio
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteAccelerationStructuresPropertiesKHR.html
+func (c *Commands) WriteAccelerationStructuresPropertiesKHR(device vulkan.Device, accelerationStructures []vulkan.AccelerationStructureKHR, queryType vulkan.QueryType, data []unsafe.Pointer, stride uintptr) (result vulkan.Result) {
+	c_accelerationStructures := vulkan.SliceData(accelerationStructures)
+	c_data := vulkan.SliceData(data)
+	r1, _, _ := vulkan.CallSyscall(c.pfnWriteAccelerationStructuresPropertiesKHR, uintptr(device), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)), uintptr(stride))
+	return vulkan.Result(r1)
+}
+
 func WriteAccelerationStructuresPropertiesKHR(device vulkan.Device, accelerationStructures []vulkan.AccelerationStructureKHR, queryType vulkan.QueryType, data []unsafe.Pointer, stride uintptr) (result vulkan.Result) {
 	c_accelerationStructures := vulkan.SliceData(accelerationStructures)
 	c_data := vulkan.SliceData(data)

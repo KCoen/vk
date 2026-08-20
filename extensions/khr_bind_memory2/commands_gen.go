@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBindBufferMemory2KHR uintptr
+	pfnBindImageMemory2KHR  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBindBufferMemory2KHR uintptr
 	pfnBindImageMemory2KHR  uintptr
 )
 
-// Init resolves and initializes all VK_KHR_bind_memory2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBindBufferMemory2KHR = vulkan.GetInstanceProcAddr(instance, "vkBindBufferMemory2KHR")
-	pfnBindImageMemory2KHR = vulkan.GetInstanceProcAddr(instance, "vkBindImageMemory2KHR")
+// Init resolves and initializes all VK_KHR_bind_memory2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBindBufferMemory2KHR: vulkan.GetInstanceProcAddr(instance, "vkBindBufferMemory2KHR"),
+		pfnBindImageMemory2KHR:  vulkan.GetInstanceProcAddr(instance, "vkBindImageMemory2KHR"),
+	}
+	pfnBindBufferMemory2KHR = cmds.pfnBindBufferMemory2KHR
+	pfnBindImageMemory2KHR = cmds.pfnBindImageMemory2KHR
+	return cmds
 }
 
 // BindBufferMemory2KHR executes vkBindBufferMemory2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindBufferMemory2KHR.html
+func (c *Commands) BindBufferMemory2KHR() {
+	vulkan.CallSyscall(c.pfnBindBufferMemory2KHR)
+}
+
 func BindBufferMemory2KHR() {
 	vulkan.CallSyscall(pfnBindBufferMemory2KHR)
 }
 
 // BindImageMemory2KHR executes vkBindImageMemory2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindImageMemory2KHR.html
+func (c *Commands) BindImageMemory2KHR() {
+	vulkan.CallSyscall(c.pfnBindImageMemory2KHR)
+}
+
 func BindImageMemory2KHR() {
 	vulkan.CallSyscall(pfnBindImageMemory2KHR)
 }

@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquireProfilingLockKHR                                       uintptr
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR uintptr
+	pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR         uintptr
+	pfnReleaseProfilingLockKHR                                       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquireProfilingLockKHR                                       uintptr
 	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR uintptr
@@ -18,12 +26,19 @@ var (
 	pfnReleaseProfilingLockKHR                                       uintptr
 )
 
-// Init resolves and initializes all VK_KHR_performance_query extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquireProfilingLockKHR = vulkan.GetDeviceProcAddr(device, "vkAcquireProfilingLockKHR")
-	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR = vulkan.GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR")
-	pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR")
-	pfnReleaseProfilingLockKHR = vulkan.GetDeviceProcAddr(device, "vkReleaseProfilingLockKHR")
+// Init resolves and initializes all VK_KHR_performance_query extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquireProfilingLockKHR:                                       vulkan.GetDeviceProcAddr(device, "vkAcquireProfilingLockKHR"),
+		pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR: vulkan.GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR"),
+		pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR:         vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR"),
+		pfnReleaseProfilingLockKHR:                                       vulkan.GetDeviceProcAddr(device, "vkReleaseProfilingLockKHR"),
+	}
+	pfnAcquireProfilingLockKHR = cmds.pfnAcquireProfilingLockKHR
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR = cmds.pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR
+	pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR = cmds.pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR
+	pfnReleaseProfilingLockKHR = cmds.pfnReleaseProfilingLockKHR
+	return cmds
 }
 
 // AcquireProfilingLockKHR - Acquires the profiling lock (vkAcquireProfilingLockKHR).
@@ -34,6 +49,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_TIMEOUT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireProfilingLockKHR.html
+func (c *Commands) AcquireProfilingLockKHR(device vulkan.Device, info *vulkan.AcquireProfilingLockInfoKHR) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireProfilingLockKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func AcquireProfilingLockKHR(device vulkan.Device, info *vulkan.AcquireProfilingLockInfoKHR) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireProfilingLockKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)))
@@ -51,6 +72,20 @@ func AcquireProfilingLockKHR(device vulkan.Device, info *vulkan.AcquireProfiling
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR.html
+func (c *Commands) EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, counterDescriptions *vulkan.PerformanceCounterDescriptionKHR) (counters []vulkan.PerformanceCounterKHR, result vulkan.Result) {
+	c_counterDescriptions := counterDescriptions.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	counters = make([]vulkan.PerformanceCounterKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&counters[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	return counters, vulkan.Result(r1)
+}
+
 func EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, counterDescriptions *vulkan.PerformanceCounterDescriptionKHR) (counters []vulkan.PerformanceCounterKHR, result vulkan.Result) {
 	c_counterDescriptions := counterDescriptions.Raw()
 	var count uint32
@@ -72,6 +107,12 @@ func EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevic
 //   - numPasses: is a pointer to an integer related to the number of passes required to query the performance query pool, as described below.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR.html
+func (c *Commands) GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice vulkan.PhysicalDevice, performanceQueryCreateInfo *vulkan.QueryPoolPerformanceCreateInfoKHR) (numPasses uint32) {
+	c_performanceQueryCreateInfo := performanceQueryCreateInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_performanceQueryCreateInfo)), uintptr(unsafe.Pointer(&numPasses)))
+	return numPasses
+}
+
 func GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice vulkan.PhysicalDevice, performanceQueryCreateInfo *vulkan.QueryPoolPerformanceCreateInfoKHR) (numPasses uint32) {
 	c_performanceQueryCreateInfo := performanceQueryCreateInfo.Raw()
 	vulkan.CallSyscall(pfnGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_performanceQueryCreateInfo)), uintptr(unsafe.Pointer(&numPasses)))
@@ -83,6 +124,10 @@ func GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice vulkan
 //   - device: is the logical device to cease profiling on.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseProfilingLockKHR.html
+func (c *Commands) ReleaseProfilingLockKHR(device vulkan.Device) {
+	vulkan.CallSyscall(c.pfnReleaseProfilingLockKHR, uintptr(device))
+}
+
 func ReleaseProfilingLockKHR(device vulkan.Device) {
 	vulkan.CallSyscall(pfnReleaseProfilingLockKHR, uintptr(device))
 }

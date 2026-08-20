@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateDebugReportCallbackEXT  uintptr
+	pfnDebugReportMessageEXT         uintptr
+	pfnDestroyDebugReportCallbackEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateDebugReportCallbackEXT  uintptr
 	pfnDebugReportMessageEXT         uintptr
 	pfnDestroyDebugReportCallbackEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_debug_report extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateDebugReportCallbackEXT = vulkan.GetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT")
-	pfnDebugReportMessageEXT = vulkan.GetInstanceProcAddr(instance, "vkDebugReportMessageEXT")
-	pfnDestroyDebugReportCallbackEXT = vulkan.GetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT")
+// Init resolves and initializes all VK_EXT_debug_report extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateDebugReportCallbackEXT:  vulkan.GetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"),
+		pfnDebugReportMessageEXT:         vulkan.GetInstanceProcAddr(instance, "vkDebugReportMessageEXT"),
+		pfnDestroyDebugReportCallbackEXT: vulkan.GetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"),
+	}
+	pfnCreateDebugReportCallbackEXT = cmds.pfnCreateDebugReportCallbackEXT
+	pfnDebugReportMessageEXT = cmds.pfnDebugReportMessageEXT
+	pfnDestroyDebugReportCallbackEXT = cmds.pfnDestroyDebugReportCallbackEXT
+	return cmds
 }
 
 // CreateDebugReportCallbackEXT - Create a debug report callback object (vkCreateDebugReportCallbackEXT).
@@ -34,6 +47,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDebugReportCallbackEXT.html
+func (c *Commands) CreateDebugReportCallbackEXT(instance vulkan.Instance, createInfo *vulkan.DebugReportCallbackCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (callback vulkan.DebugReportCallbackEXT, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDebugReportCallbackEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&callback)))
+	return callback, vulkan.Result(r1)
+}
+
 func CreateDebugReportCallbackEXT(instance vulkan.Instance, createInfo *vulkan.DebugReportCallbackCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (callback vulkan.DebugReportCallbackEXT, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -53,6 +73,12 @@ func CreateDebugReportCallbackEXT(instance vulkan.Instance, createInfo *vulkan.D
 //   - message: is a null-terminated UTF-8 string detailing the trigger conditions.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDebugReportMessageEXT.html
+func (c *Commands) DebugReportMessageEXT(instance vulkan.Instance, flags vulkan.DebugReportFlagsEXT, objectType vulkan.DebugReportObjectTypeEXT, object uint64, location uintptr, messageCode int32, layerPrefix string, message string) {
+	c_layerPrefix := vulkan.StringToNullTerminated(layerPrefix)
+	c_message := vulkan.StringToNullTerminated(message)
+	vulkan.CallSyscall(c.pfnDebugReportMessageEXT, uintptr(instance), uintptr(flags), uintptr(objectType), uintptr(object), uintptr(location), uintptr(messageCode), uintptr(unsafe.Pointer(c_layerPrefix)), uintptr(unsafe.Pointer(c_message)))
+}
+
 func DebugReportMessageEXT(instance vulkan.Instance, flags vulkan.DebugReportFlagsEXT, objectType vulkan.DebugReportObjectTypeEXT, object uint64, location uintptr, messageCode int32, layerPrefix string, message string) {
 	c_layerPrefix := vulkan.StringToNullTerminated(layerPrefix)
 	c_message := vulkan.StringToNullTerminated(message)
@@ -66,6 +92,11 @@ func DebugReportMessageEXT(instance vulkan.Instance, flags vulkan.DebugReportFla
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDebugReportCallbackEXT.html
+func (c *Commands) DestroyDebugReportCallbackEXT(instance vulkan.Instance, callback vulkan.DebugReportCallbackEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyDebugReportCallbackEXT, uintptr(instance), uintptr(callback), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyDebugReportCallbackEXT(instance vulkan.Instance, callback vulkan.DebugReportCallbackEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyDebugReportCallbackEXT, uintptr(instance), uintptr(callback), uintptr(unsafe.Pointer(c_allocator)))

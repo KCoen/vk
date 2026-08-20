@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetFenceWin32HandleKHR    uintptr
+	pfnImportFenceWin32HandleKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetFenceWin32HandleKHR    uintptr
 	pfnImportFenceWin32HandleKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_fence_win32 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetFenceWin32HandleKHR = vulkan.GetDeviceProcAddr(device, "vkGetFenceWin32HandleKHR")
-	pfnImportFenceWin32HandleKHR = vulkan.GetDeviceProcAddr(device, "vkImportFenceWin32HandleKHR")
+// Init resolves and initializes all VK_KHR_external_fence_win32 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetFenceWin32HandleKHR:    vulkan.GetDeviceProcAddr(device, "vkGetFenceWin32HandleKHR"),
+		pfnImportFenceWin32HandleKHR: vulkan.GetDeviceProcAddr(device, "vkImportFenceWin32HandleKHR"),
+	}
+	pfnGetFenceWin32HandleKHR = cmds.pfnGetFenceWin32HandleKHR
+	pfnImportFenceWin32HandleKHR = cmds.pfnImportFenceWin32HandleKHR
+	return cmds
 }
 
 // GetFenceWin32HandleKHR - Get a Windows HANDLE for a fence (vkGetFenceWin32HandleKHR).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceWin32HandleKHR.html
+func (c *Commands) GetFenceWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.FenceGetWin32HandleInfoKHR) (handle uintptr, result vulkan.Result) {
+	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetFenceWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetFenceWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.FenceGetWin32HandleInfoKHR) (handle uintptr, result vulkan.Result) {
 	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetFenceWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -45,6 +62,12 @@ func GetFenceWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.Fen
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceWin32HandleKHR.html
+func (c *Commands) ImportFenceWin32HandleKHR(device vulkan.Device, importFenceWin32HandleInfo *vulkan.ImportFenceWin32HandleInfoKHR) (result vulkan.Result) {
+	c_importFenceWin32HandleInfo := importFenceWin32HandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportFenceWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_importFenceWin32HandleInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportFenceWin32HandleKHR(device vulkan.Device, importFenceWin32HandleInfo *vulkan.ImportFenceWin32HandleInfoKHR) (result vulkan.Result) {
 	c_importFenceWin32HandleInfo := importFenceWin32HandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportFenceWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_importFenceWin32HandleInfo)))

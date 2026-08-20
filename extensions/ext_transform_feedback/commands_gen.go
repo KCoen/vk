@@ -10,7 +10,17 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginQueryIndexedEXT            uintptr
+	pfnCmdBeginTransformFeedbackEXT       uintptr
+	pfnCmdBindTransformFeedbackBuffersEXT uintptr
+	pfnCmdDrawIndirectByteCountEXT        uintptr
+	pfnCmdEndQueryIndexedEXT              uintptr
+	pfnCmdEndTransformFeedbackEXT         uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginQueryIndexedEXT            uintptr
 	pfnCmdBeginTransformFeedbackEXT       uintptr
@@ -20,14 +30,23 @@ var (
 	pfnCmdEndTransformFeedbackEXT         uintptr
 )
 
-// Init resolves and initializes all VK_EXT_transform_feedback extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginQueryIndexedEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginQueryIndexedEXT")
-	pfnCmdBeginTransformFeedbackEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginTransformFeedbackEXT")
-	pfnCmdBindTransformFeedbackBuffersEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindTransformFeedbackBuffersEXT")
-	pfnCmdDrawIndirectByteCountEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirectByteCountEXT")
-	pfnCmdEndQueryIndexedEXT = vulkan.GetDeviceProcAddr(device, "vkCmdEndQueryIndexedEXT")
-	pfnCmdEndTransformFeedbackEXT = vulkan.GetDeviceProcAddr(device, "vkCmdEndTransformFeedbackEXT")
+// Init resolves and initializes all VK_EXT_transform_feedback extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginQueryIndexedEXT:            vulkan.GetDeviceProcAddr(device, "vkCmdBeginQueryIndexedEXT"),
+		pfnCmdBeginTransformFeedbackEXT:       vulkan.GetDeviceProcAddr(device, "vkCmdBeginTransformFeedbackEXT"),
+		pfnCmdBindTransformFeedbackBuffersEXT: vulkan.GetDeviceProcAddr(device, "vkCmdBindTransformFeedbackBuffersEXT"),
+		pfnCmdDrawIndirectByteCountEXT:        vulkan.GetDeviceProcAddr(device, "vkCmdDrawIndirectByteCountEXT"),
+		pfnCmdEndQueryIndexedEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdEndQueryIndexedEXT"),
+		pfnCmdEndTransformFeedbackEXT:         vulkan.GetDeviceProcAddr(device, "vkCmdEndTransformFeedbackEXT"),
+	}
+	pfnCmdBeginQueryIndexedEXT = cmds.pfnCmdBeginQueryIndexedEXT
+	pfnCmdBeginTransformFeedbackEXT = cmds.pfnCmdBeginTransformFeedbackEXT
+	pfnCmdBindTransformFeedbackBuffersEXT = cmds.pfnCmdBindTransformFeedbackBuffersEXT
+	pfnCmdDrawIndirectByteCountEXT = cmds.pfnCmdDrawIndirectByteCountEXT
+	pfnCmdEndQueryIndexedEXT = cmds.pfnCmdEndQueryIndexedEXT
+	pfnCmdEndTransformFeedbackEXT = cmds.pfnCmdEndTransformFeedbackEXT
+	return cmds
 }
 
 // CmdBeginQueryIndexedEXT - Begin an indexed query (vkCmdBeginQueryIndexedEXT).
@@ -39,6 +58,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - index: is the query type specific index. When the query type is VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT or VK_QUERY_TYPE_PRIMITIVES_GENERATED_EXT, the index represents the vertex stream.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQueryIndexedEXT.html
+func (c *Commands) CmdBeginQueryIndexedEXT(commandBuffer vulkan.CommandBuffer, queryPool vulkan.QueryPool, query uint32, flags vulkan.QueryControlFlags, index uint32) {
+	vulkan.CallSyscall(c.pfnCmdBeginQueryIndexedEXT, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(flags), uintptr(index))
+}
+
 func CmdBeginQueryIndexedEXT(commandBuffer vulkan.CommandBuffer, queryPool vulkan.QueryPool, query uint32, flags vulkan.QueryControlFlags, index uint32) {
 	vulkan.CallSyscall(pfnCmdBeginQueryIndexedEXT, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(flags), uintptr(index))
 }
@@ -52,6 +75,11 @@ func CmdBeginQueryIndexedEXT(commandBuffer vulkan.CommandBuffer, queryPool vulka
 //   - counterBufferOffsets: is NULL or a pointer to an array of basetype:VkDeviceSize values specifying offsets within each of the pCounterBuffers where the counter values were previously written. The location in each counter buffer at these offsets must be large enough to contain 4 bytes of data. This data is the number of bytes captured by the previous transform feedback to this buffer. If pCounterBufferOffsets is NULL, then it is assumed the offsets are zero.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginTransformFeedbackEXT.html
+func (c *Commands) CmdBeginTransformFeedbackEXT(commandBuffer vulkan.CommandBuffer, firstCounterBuffer uint32, counterBuffers []vulkan.Buffer, counterBufferOffsets *vulkan.DeviceSize) {
+	c_counterBuffers := vulkan.SliceData(counterBuffers)
+	vulkan.CallSyscall(c.pfnCmdBeginTransformFeedbackEXT, uintptr(commandBuffer), uintptr(firstCounterBuffer), uintptr(len(counterBuffers)), uintptr(unsafe.Pointer(c_counterBuffers)), uintptr(unsafe.Pointer(counterBufferOffsets)))
+}
+
 func CmdBeginTransformFeedbackEXT(commandBuffer vulkan.CommandBuffer, firstCounterBuffer uint32, counterBuffers []vulkan.Buffer, counterBufferOffsets *vulkan.DeviceSize) {
 	c_counterBuffers := vulkan.SliceData(counterBuffers)
 	vulkan.CallSyscall(pfnCmdBeginTransformFeedbackEXT, uintptr(commandBuffer), uintptr(firstCounterBuffer), uintptr(len(counterBuffers)), uintptr(unsafe.Pointer(c_counterBuffers)), uintptr(unsafe.Pointer(counterBufferOffsets)))
@@ -67,6 +95,11 @@ func CmdBeginTransformFeedbackEXT(commandBuffer vulkan.CommandBuffer, firstCount
 //   - sizes: is NULL or a pointer to an array of basetype:VkDeviceSize buffer sizes, specifying the maximum number of bytes to capture to the corresponding transform feedback buffer. If pSizes is NULL, it is equivalent to setting a pSizes array where every element is VK_WHOLE_SIZE.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindTransformFeedbackBuffersEXT.html
+func (c *Commands) CmdBindTransformFeedbackBuffersEXT(commandBuffer vulkan.CommandBuffer, firstBinding uint32, buffers []vulkan.Buffer, offsets *vulkan.DeviceSize, sizes *vulkan.DeviceSize) {
+	c_buffers := vulkan.SliceData(buffers)
+	vulkan.CallSyscall(c.pfnCmdBindTransformFeedbackBuffersEXT, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(buffers)), uintptr(unsafe.Pointer(c_buffers)), uintptr(unsafe.Pointer(offsets)), uintptr(unsafe.Pointer(sizes)))
+}
+
 func CmdBindTransformFeedbackBuffersEXT(commandBuffer vulkan.CommandBuffer, firstBinding uint32, buffers []vulkan.Buffer, offsets *vulkan.DeviceSize, sizes *vulkan.DeviceSize) {
 	c_buffers := vulkan.SliceData(buffers)
 	vulkan.CallSyscall(pfnCmdBindTransformFeedbackBuffersEXT, uintptr(commandBuffer), uintptr(firstBinding), uintptr(len(buffers)), uintptr(unsafe.Pointer(c_buffers)), uintptr(unsafe.Pointer(offsets)), uintptr(unsafe.Pointer(sizes)))
@@ -74,6 +107,10 @@ func CmdBindTransformFeedbackBuffersEXT(commandBuffer vulkan.CommandBuffer, firs
 
 // CmdDrawIndirectByteCountEXT - Draw primitives where the vertex count is derived from the counter byte value in the counter buffer (vkCmdDrawIndirectByteCountEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectByteCountEXT.html
+func (c *Commands) CmdDrawIndirectByteCountEXT(commandBuffer vulkan.CommandBuffer, instanceCount uint32, firstInstance uint32, counterBuffer vulkan.Buffer, counterBufferOffset vulkan.DeviceSize, counterOffset uint32, vertexStride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawIndirectByteCountEXT, uintptr(commandBuffer), uintptr(instanceCount), uintptr(firstInstance), uintptr(counterBuffer), uintptr(counterBufferOffset), uintptr(counterOffset), uintptr(vertexStride))
+}
+
 func CmdDrawIndirectByteCountEXT(commandBuffer vulkan.CommandBuffer, instanceCount uint32, firstInstance uint32, counterBuffer vulkan.Buffer, counterBufferOffset vulkan.DeviceSize, counterOffset uint32, vertexStride uint32) {
 	vulkan.CallSyscall(pfnCmdDrawIndirectByteCountEXT, uintptr(commandBuffer), uintptr(instanceCount), uintptr(firstInstance), uintptr(counterBuffer), uintptr(counterBufferOffset), uintptr(counterOffset), uintptr(vertexStride))
 }
@@ -86,6 +123,10 @@ func CmdDrawIndirectByteCountEXT(commandBuffer vulkan.CommandBuffer, instanceCou
 //   - index: is the query type specific index.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndQueryIndexedEXT.html
+func (c *Commands) CmdEndQueryIndexedEXT(commandBuffer vulkan.CommandBuffer, queryPool vulkan.QueryPool, query uint32, index uint32) {
+	vulkan.CallSyscall(c.pfnCmdEndQueryIndexedEXT, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(index))
+}
+
 func CmdEndQueryIndexedEXT(commandBuffer vulkan.CommandBuffer, queryPool vulkan.QueryPool, query uint32, index uint32) {
 	vulkan.CallSyscall(pfnCmdEndQueryIndexedEXT, uintptr(commandBuffer), uintptr(queryPool), uintptr(query), uintptr(index))
 }
@@ -99,6 +140,11 @@ func CmdEndQueryIndexedEXT(commandBuffer vulkan.CommandBuffer, queryPool vulkan.
 //   - counterBufferOffsets: is NULL or a pointer to an array of basetype:VkDeviceSize values specifying offsets within each of the pCounterBuffers where the counter values can be written. The location in each counter buffer at these offsets must be large enough to contain 4 bytes of data. The data stored at this location is the byte offset from the start of the transform feedback buffer binding where the next vertex data would be written. If pCounterBufferOffsets is NULL, then it is assumed the offsets are zero.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndTransformFeedbackEXT.html
+func (c *Commands) CmdEndTransformFeedbackEXT(commandBuffer vulkan.CommandBuffer, firstCounterBuffer uint32, counterBuffers []vulkan.Buffer, counterBufferOffsets *vulkan.DeviceSize) {
+	c_counterBuffers := vulkan.SliceData(counterBuffers)
+	vulkan.CallSyscall(c.pfnCmdEndTransformFeedbackEXT, uintptr(commandBuffer), uintptr(firstCounterBuffer), uintptr(len(counterBuffers)), uintptr(unsafe.Pointer(c_counterBuffers)), uintptr(unsafe.Pointer(counterBufferOffsets)))
+}
+
 func CmdEndTransformFeedbackEXT(commandBuffer vulkan.CommandBuffer, firstCounterBuffer uint32, counterBuffers []vulkan.Buffer, counterBufferOffsets *vulkan.DeviceSize) {
 	c_counterBuffers := vulkan.SliceData(counterBuffers)
 	vulkan.CallSyscall(pfnCmdEndTransformFeedbackEXT, uintptr(commandBuffer), uintptr(firstCounterBuffer), uintptr(len(counterBuffers)), uintptr(unsafe.Pointer(c_counterBuffers)), uintptr(unsafe.Pointer(counterBufferOffsets)))

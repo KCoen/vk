@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreatePipelineBinariesKHR      uintptr
+	pfnDestroyPipelineBinaryKHR       uintptr
+	pfnGetPipelineBinaryDataKHR       uintptr
+	pfnGetPipelineKeyKHR              uintptr
+	pfnReleaseCapturedPipelineDataKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreatePipelineBinariesKHR      uintptr
 	pfnDestroyPipelineBinaryKHR       uintptr
@@ -19,13 +28,21 @@ var (
 	pfnReleaseCapturedPipelineDataKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_pipeline_binary extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreatePipelineBinariesKHR = vulkan.GetDeviceProcAddr(device, "vkCreatePipelineBinariesKHR")
-	pfnDestroyPipelineBinaryKHR = vulkan.GetDeviceProcAddr(device, "vkDestroyPipelineBinaryKHR")
-	pfnGetPipelineBinaryDataKHR = vulkan.GetDeviceProcAddr(device, "vkGetPipelineBinaryDataKHR")
-	pfnGetPipelineKeyKHR = vulkan.GetDeviceProcAddr(device, "vkGetPipelineKeyKHR")
-	pfnReleaseCapturedPipelineDataKHR = vulkan.GetDeviceProcAddr(device, "vkReleaseCapturedPipelineDataKHR")
+// Init resolves and initializes all VK_KHR_pipeline_binary extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreatePipelineBinariesKHR:      vulkan.GetDeviceProcAddr(device, "vkCreatePipelineBinariesKHR"),
+		pfnDestroyPipelineBinaryKHR:       vulkan.GetDeviceProcAddr(device, "vkDestroyPipelineBinaryKHR"),
+		pfnGetPipelineBinaryDataKHR:       vulkan.GetDeviceProcAddr(device, "vkGetPipelineBinaryDataKHR"),
+		pfnGetPipelineKeyKHR:              vulkan.GetDeviceProcAddr(device, "vkGetPipelineKeyKHR"),
+		pfnReleaseCapturedPipelineDataKHR: vulkan.GetDeviceProcAddr(device, "vkReleaseCapturedPipelineDataKHR"),
+	}
+	pfnCreatePipelineBinariesKHR = cmds.pfnCreatePipelineBinariesKHR
+	pfnDestroyPipelineBinaryKHR = cmds.pfnDestroyPipelineBinaryKHR
+	pfnGetPipelineBinaryDataKHR = cmds.pfnGetPipelineBinaryDataKHR
+	pfnGetPipelineKeyKHR = cmds.pfnGetPipelineKeyKHR
+	pfnReleaseCapturedPipelineDataKHR = cmds.pfnReleaseCapturedPipelineDataKHR
+	return cmds
 }
 
 // CreatePipelineBinariesKHR - Create pipeline binaries from a pipeline or previously retrieved data (vkCreatePipelineBinariesKHR).
@@ -38,6 +55,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE, VK_PIPELINE_BINARY_MISSING_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreatePipelineBinariesKHR.html
+func (c *Commands) CreatePipelineBinariesKHR(device vulkan.Device, createInfo *vulkan.PipelineBinaryCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (binaries vulkan.PipelineBinaryHandlesInfoKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreatePipelineBinariesKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&binaries)))
+	return binaries, vulkan.Result(r1)
+}
+
 func CreatePipelineBinariesKHR(device vulkan.Device, createInfo *vulkan.PipelineBinaryCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (binaries vulkan.PipelineBinaryHandlesInfoKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -52,6 +76,11 @@ func CreatePipelineBinariesKHR(device vulkan.Device, createInfo *vulkan.Pipeline
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyPipelineBinaryKHR.html
+func (c *Commands) DestroyPipelineBinaryKHR(device vulkan.Device, pipelineBinary vulkan.PipelineBinaryKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyPipelineBinaryKHR, uintptr(device), uintptr(pipelineBinary), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyPipelineBinaryKHR(device vulkan.Device, pipelineBinary vulkan.PipelineBinaryKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyPipelineBinaryKHR, uintptr(device), uintptr(pipelineBinary), uintptr(unsafe.Pointer(c_allocator)))
@@ -68,6 +97,21 @@ func DestroyPipelineBinaryKHR(device vulkan.Device, pipelineBinary vulkan.Pipeli
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NOT_ENOUGH_SPACE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineBinaryDataKHR.html
+func (c *Commands) GetPipelineBinaryDataKHR(device vulkan.Device, info *vulkan.PipelineBinaryDataInfoKHR, pipelineBinaryKey *vulkan.PipelineBinaryKeyKHR) (pipelineBinaryData []unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	c_pipelineBinaryKey := pipelineBinaryKey.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelineBinaryDataKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(c_pipelineBinaryKey)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	pipelineBinaryData = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&pipelineBinaryData[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPipelineBinaryDataKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(c_pipelineBinaryKey)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return pipelineBinaryData, vulkan.Result(r1)
+}
+
 func GetPipelineBinaryDataKHR(device vulkan.Device, info *vulkan.PipelineBinaryDataInfoKHR, pipelineBinaryKey *vulkan.PipelineBinaryKeyKHR) (pipelineBinaryData []unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	c_pipelineBinaryKey := pipelineBinaryKey.Raw()
@@ -92,6 +136,12 @@ func GetPipelineBinaryDataKHR(device vulkan.Device, info *vulkan.PipelineBinaryD
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineKeyKHR.html
+func (c *Commands) GetPipelineKeyKHR(device vulkan.Device, pipelineCreateInfo *vulkan.PipelineCreateInfoKHR) (pipelineKey vulkan.PipelineBinaryKeyKHR, result vulkan.Result) {
+	c_pipelineCreateInfo := pipelineCreateInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelineKeyKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineCreateInfo)), uintptr(unsafe.Pointer(&pipelineKey)))
+	return pipelineKey, vulkan.Result(r1)
+}
+
 func GetPipelineKeyKHR(device vulkan.Device, pipelineCreateInfo *vulkan.PipelineCreateInfoKHR) (pipelineKey vulkan.PipelineBinaryKeyKHR, result vulkan.Result) {
 	c_pipelineCreateInfo := pipelineCreateInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPipelineKeyKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineCreateInfo)), uintptr(unsafe.Pointer(&pipelineKey)))
@@ -107,6 +157,13 @@ func GetPipelineKeyKHR(device vulkan.Device, pipelineCreateInfo *vulkan.Pipeline
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseCapturedPipelineDataKHR.html
+func (c *Commands) ReleaseCapturedPipelineDataKHR(device vulkan.Device, info *vulkan.ReleaseCapturedPipelineDataInfoKHR, allocator *vulkan.AllocationCallbacks) (result vulkan.Result) {
+	c_info := info.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnReleaseCapturedPipelineDataKHR, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(c_allocator)))
+	return vulkan.Result(r1)
+}
+
 func ReleaseCapturedPipelineDataKHR(device vulkan.Device, info *vulkan.ReleaseCapturedPipelineDataInfoKHR, allocator *vulkan.AllocationCallbacks) (result vulkan.Result) {
 	c_info := info.Raw()
 	c_allocator := allocator.Raw()

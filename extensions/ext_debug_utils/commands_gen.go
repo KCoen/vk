@@ -10,7 +10,22 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginDebugUtilsLabelEXT    uintptr
+	pfnCmdEndDebugUtilsLabelEXT      uintptr
+	pfnCmdInsertDebugUtilsLabelEXT   uintptr
+	pfnCreateDebugUtilsMessengerEXT  uintptr
+	pfnDestroyDebugUtilsMessengerEXT uintptr
+	pfnQueueBeginDebugUtilsLabelEXT  uintptr
+	pfnQueueEndDebugUtilsLabelEXT    uintptr
+	pfnQueueInsertDebugUtilsLabelEXT uintptr
+	pfnSetDebugUtilsObjectNameEXT    uintptr
+	pfnSetDebugUtilsObjectTagEXT     uintptr
+	pfnSubmitDebugUtilsMessageEXT    uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginDebugUtilsLabelEXT    uintptr
 	pfnCmdEndDebugUtilsLabelEXT      uintptr
@@ -25,19 +40,33 @@ var (
 	pfnSubmitDebugUtilsMessageEXT    uintptr
 )
 
-// Init resolves and initializes all VK_EXT_debug_utils extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginDebugUtilsLabelEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginDebugUtilsLabelEXT")
-	pfnCmdEndDebugUtilsLabelEXT = vulkan.GetDeviceProcAddr(device, "vkCmdEndDebugUtilsLabelEXT")
-	pfnCmdInsertDebugUtilsLabelEXT = vulkan.GetDeviceProcAddr(device, "vkCmdInsertDebugUtilsLabelEXT")
-	pfnCreateDebugUtilsMessengerEXT = vulkan.GetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
-	pfnDestroyDebugUtilsMessengerEXT = vulkan.GetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")
-	pfnQueueBeginDebugUtilsLabelEXT = vulkan.GetDeviceProcAddr(device, "vkQueueBeginDebugUtilsLabelEXT")
-	pfnQueueEndDebugUtilsLabelEXT = vulkan.GetDeviceProcAddr(device, "vkQueueEndDebugUtilsLabelEXT")
-	pfnQueueInsertDebugUtilsLabelEXT = vulkan.GetDeviceProcAddr(device, "vkQueueInsertDebugUtilsLabelEXT")
-	pfnSetDebugUtilsObjectNameEXT = vulkan.GetDeviceProcAddr(device, "vkSetDebugUtilsObjectNameEXT")
-	pfnSetDebugUtilsObjectTagEXT = vulkan.GetDeviceProcAddr(device, "vkSetDebugUtilsObjectTagEXT")
-	pfnSubmitDebugUtilsMessageEXT = vulkan.GetInstanceProcAddr(instance, "vkSubmitDebugUtilsMessageEXT")
+// Init resolves and initializes all VK_EXT_debug_utils extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginDebugUtilsLabelEXT:    vulkan.GetDeviceProcAddr(device, "vkCmdBeginDebugUtilsLabelEXT"),
+		pfnCmdEndDebugUtilsLabelEXT:      vulkan.GetDeviceProcAddr(device, "vkCmdEndDebugUtilsLabelEXT"),
+		pfnCmdInsertDebugUtilsLabelEXT:   vulkan.GetDeviceProcAddr(device, "vkCmdInsertDebugUtilsLabelEXT"),
+		pfnCreateDebugUtilsMessengerEXT:  vulkan.GetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"),
+		pfnDestroyDebugUtilsMessengerEXT: vulkan.GetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"),
+		pfnQueueBeginDebugUtilsLabelEXT:  vulkan.GetDeviceProcAddr(device, "vkQueueBeginDebugUtilsLabelEXT"),
+		pfnQueueEndDebugUtilsLabelEXT:    vulkan.GetDeviceProcAddr(device, "vkQueueEndDebugUtilsLabelEXT"),
+		pfnQueueInsertDebugUtilsLabelEXT: vulkan.GetDeviceProcAddr(device, "vkQueueInsertDebugUtilsLabelEXT"),
+		pfnSetDebugUtilsObjectNameEXT:    vulkan.GetDeviceProcAddr(device, "vkSetDebugUtilsObjectNameEXT"),
+		pfnSetDebugUtilsObjectTagEXT:     vulkan.GetDeviceProcAddr(device, "vkSetDebugUtilsObjectTagEXT"),
+		pfnSubmitDebugUtilsMessageEXT:    vulkan.GetInstanceProcAddr(instance, "vkSubmitDebugUtilsMessageEXT"),
+	}
+	pfnCmdBeginDebugUtilsLabelEXT = cmds.pfnCmdBeginDebugUtilsLabelEXT
+	pfnCmdEndDebugUtilsLabelEXT = cmds.pfnCmdEndDebugUtilsLabelEXT
+	pfnCmdInsertDebugUtilsLabelEXT = cmds.pfnCmdInsertDebugUtilsLabelEXT
+	pfnCreateDebugUtilsMessengerEXT = cmds.pfnCreateDebugUtilsMessengerEXT
+	pfnDestroyDebugUtilsMessengerEXT = cmds.pfnDestroyDebugUtilsMessengerEXT
+	pfnQueueBeginDebugUtilsLabelEXT = cmds.pfnQueueBeginDebugUtilsLabelEXT
+	pfnQueueEndDebugUtilsLabelEXT = cmds.pfnQueueEndDebugUtilsLabelEXT
+	pfnQueueInsertDebugUtilsLabelEXT = cmds.pfnQueueInsertDebugUtilsLabelEXT
+	pfnSetDebugUtilsObjectNameEXT = cmds.pfnSetDebugUtilsObjectNameEXT
+	pfnSetDebugUtilsObjectTagEXT = cmds.pfnSetDebugUtilsObjectTagEXT
+	pfnSubmitDebugUtilsMessageEXT = cmds.pfnSubmitDebugUtilsMessageEXT
+	return cmds
 }
 
 // CmdBeginDebugUtilsLabelEXT - Open a command buffer debug label region (vkCmdBeginDebugUtilsLabelEXT).
@@ -46,6 +75,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label region to open.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginDebugUtilsLabelEXT.html
+func (c *Commands) CmdBeginDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer, labelInfo *vulkan.DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBeginDebugUtilsLabelEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
 func CmdBeginDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer, labelInfo *vulkan.DebugUtilsLabelEXT) {
 	c_labelInfo := labelInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBeginDebugUtilsLabelEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_labelInfo)))
@@ -56,6 +90,10 @@ func CmdBeginDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer, labelInfo *v
 //   - commandBuffer: is the command buffer into which the command is recorded.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndDebugUtilsLabelEXT.html
+func (c *Commands) CmdEndDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer) {
+	vulkan.CallSyscall(c.pfnCmdEndDebugUtilsLabelEXT, uintptr(commandBuffer))
+}
+
 func CmdEndDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer) {
 	vulkan.CallSyscall(pfnCmdEndDebugUtilsLabelEXT, uintptr(commandBuffer))
 }
@@ -66,6 +104,11 @@ func CmdEndDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer) {
 //   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label to insert.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdInsertDebugUtilsLabelEXT.html
+func (c *Commands) CmdInsertDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer, labelInfo *vulkan.DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdInsertDebugUtilsLabelEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
 func CmdInsertDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer, labelInfo *vulkan.DebugUtilsLabelEXT) {
 	c_labelInfo := labelInfo.Raw()
 	vulkan.CallSyscall(pfnCmdInsertDebugUtilsLabelEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_labelInfo)))
@@ -81,6 +124,13 @@ func CmdInsertDebugUtilsLabelEXT(commandBuffer vulkan.CommandBuffer, labelInfo *
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDebugUtilsMessengerEXT.html
+func (c *Commands) CreateDebugUtilsMessengerEXT(instance vulkan.Instance, createInfo *vulkan.DebugUtilsMessengerCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (messenger vulkan.DebugUtilsMessengerEXT, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDebugUtilsMessengerEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&messenger)))
+	return messenger, vulkan.Result(r1)
+}
+
 func CreateDebugUtilsMessengerEXT(instance vulkan.Instance, createInfo *vulkan.DebugUtilsMessengerCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (messenger vulkan.DebugUtilsMessengerEXT, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -95,6 +145,11 @@ func CreateDebugUtilsMessengerEXT(instance vulkan.Instance, createInfo *vulkan.D
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDebugUtilsMessengerEXT.html
+func (c *Commands) DestroyDebugUtilsMessengerEXT(instance vulkan.Instance, messenger vulkan.DebugUtilsMessengerEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyDebugUtilsMessengerEXT, uintptr(instance), uintptr(messenger), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyDebugUtilsMessengerEXT(instance vulkan.Instance, messenger vulkan.DebugUtilsMessengerEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyDebugUtilsMessengerEXT, uintptr(instance), uintptr(messenger), uintptr(unsafe.Pointer(c_allocator)))
@@ -106,6 +161,11 @@ func DestroyDebugUtilsMessengerEXT(instance vulkan.Instance, messenger vulkan.De
 //   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label region to open.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueBeginDebugUtilsLabelEXT.html
+func (c *Commands) QueueBeginDebugUtilsLabelEXT(queue vulkan.Queue, labelInfo *vulkan.DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	vulkan.CallSyscall(c.pfnQueueBeginDebugUtilsLabelEXT, uintptr(queue), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
 func QueueBeginDebugUtilsLabelEXT(queue vulkan.Queue, labelInfo *vulkan.DebugUtilsLabelEXT) {
 	c_labelInfo := labelInfo.Raw()
 	vulkan.CallSyscall(pfnQueueBeginDebugUtilsLabelEXT, uintptr(queue), uintptr(unsafe.Pointer(c_labelInfo)))
@@ -116,6 +176,10 @@ func QueueBeginDebugUtilsLabelEXT(queue vulkan.Queue, labelInfo *vulkan.DebugUti
 //   - queue: is the queue in which a debug label region should be closed.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueEndDebugUtilsLabelEXT.html
+func (c *Commands) QueueEndDebugUtilsLabelEXT(queue vulkan.Queue) {
+	vulkan.CallSyscall(c.pfnQueueEndDebugUtilsLabelEXT, uintptr(queue))
+}
+
 func QueueEndDebugUtilsLabelEXT(queue vulkan.Queue) {
 	vulkan.CallSyscall(pfnQueueEndDebugUtilsLabelEXT, uintptr(queue))
 }
@@ -126,6 +190,11 @@ func QueueEndDebugUtilsLabelEXT(queue vulkan.Queue) {
 //   - labelInfo: is a pointer to a VkDebugUtilsLabelEXT structure specifying parameters of the label to insert.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueInsertDebugUtilsLabelEXT.html
+func (c *Commands) QueueInsertDebugUtilsLabelEXT(queue vulkan.Queue, labelInfo *vulkan.DebugUtilsLabelEXT) {
+	c_labelInfo := labelInfo.Raw()
+	vulkan.CallSyscall(c.pfnQueueInsertDebugUtilsLabelEXT, uintptr(queue), uintptr(unsafe.Pointer(c_labelInfo)))
+}
+
 func QueueInsertDebugUtilsLabelEXT(queue vulkan.Queue, labelInfo *vulkan.DebugUtilsLabelEXT) {
 	c_labelInfo := labelInfo.Raw()
 	vulkan.CallSyscall(pfnQueueInsertDebugUtilsLabelEXT, uintptr(queue), uintptr(unsafe.Pointer(c_labelInfo)))
@@ -139,6 +208,12 @@ func QueueInsertDebugUtilsLabelEXT(queue vulkan.Queue, labelInfo *vulkan.DebugUt
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetDebugUtilsObjectNameEXT.html
+func (c *Commands) SetDebugUtilsObjectNameEXT(device vulkan.Device, nameInfo *vulkan.DebugUtilsObjectNameInfoEXT) (result vulkan.Result) {
+	c_nameInfo := nameInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetDebugUtilsObjectNameEXT, uintptr(device), uintptr(unsafe.Pointer(c_nameInfo)))
+	return vulkan.Result(r1)
+}
+
 func SetDebugUtilsObjectNameEXT(device vulkan.Device, nameInfo *vulkan.DebugUtilsObjectNameInfoEXT) (result vulkan.Result) {
 	c_nameInfo := nameInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnSetDebugUtilsObjectNameEXT, uintptr(device), uintptr(unsafe.Pointer(c_nameInfo)))
@@ -153,6 +228,12 @@ func SetDebugUtilsObjectNameEXT(device vulkan.Device, nameInfo *vulkan.DebugUtil
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetDebugUtilsObjectTagEXT.html
+func (c *Commands) SetDebugUtilsObjectTagEXT(device vulkan.Device, tagInfo *vulkan.DebugUtilsObjectTagInfoEXT) (result vulkan.Result) {
+	c_tagInfo := tagInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetDebugUtilsObjectTagEXT, uintptr(device), uintptr(unsafe.Pointer(c_tagInfo)))
+	return vulkan.Result(r1)
+}
+
 func SetDebugUtilsObjectTagEXT(device vulkan.Device, tagInfo *vulkan.DebugUtilsObjectTagInfoEXT) (result vulkan.Result) {
 	c_tagInfo := tagInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnSetDebugUtilsObjectTagEXT, uintptr(device), uintptr(unsafe.Pointer(c_tagInfo)))
@@ -167,6 +248,11 @@ func SetDebugUtilsObjectTagEXT(device vulkan.Device, tagInfo *vulkan.DebugUtilsO
 //   - callbackData: contains all the callback related data in the VkDebugUtilsMessengerCallbackDataEXT structure.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSubmitDebugUtilsMessageEXT.html
+func (c *Commands) SubmitDebugUtilsMessageEXT(instance vulkan.Instance, messageSeverity vulkan.DebugUtilsMessageSeverityFlagBitsEXT, messageTypes vulkan.DebugUtilsMessageTypeFlagsEXT, callbackData *vulkan.DebugUtilsMessengerCallbackDataEXT) {
+	c_callbackData := callbackData.Raw()
+	vulkan.CallSyscall(c.pfnSubmitDebugUtilsMessageEXT, uintptr(instance), uintptr(messageSeverity), uintptr(messageTypes), uintptr(unsafe.Pointer(c_callbackData)))
+}
+
 func SubmitDebugUtilsMessageEXT(instance vulkan.Instance, messageSeverity vulkan.DebugUtilsMessageSeverityFlagBitsEXT, messageTypes vulkan.DebugUtilsMessageTypeFlagsEXT, callbackData *vulkan.DebugUtilsMessengerCallbackDataEXT) {
 	c_callbackData := callbackData.Raw()
 	vulkan.CallSyscall(pfnSubmitDebugUtilsMessageEXT, uintptr(instance), uintptr(messageSeverity), uintptr(messageTypes), uintptr(unsafe.Pointer(c_callbackData)))

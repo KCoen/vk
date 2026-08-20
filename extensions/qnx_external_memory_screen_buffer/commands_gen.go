@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetScreenBufferPropertiesQNX uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetScreenBufferPropertiesQNX uintptr
 )
 
-// Init resolves and initializes all VK_QNX_external_memory_screen_buffer extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetScreenBufferPropertiesQNX = vulkan.GetDeviceProcAddr(device, "vkGetScreenBufferPropertiesQNX")
+// Init resolves and initializes all VK_QNX_external_memory_screen_buffer extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetScreenBufferPropertiesQNX: vulkan.GetDeviceProcAddr(device, "vkGetScreenBufferPropertiesQNX"),
+	}
+	pfnGetScreenBufferPropertiesQNX = cmds.pfnGetScreenBufferPropertiesQNX
+	return cmds
 }
 
 // GetScreenBufferPropertiesQNX - Get Properties of External Memory QNX Screen Buffers (vkGetScreenBufferPropertiesQNX).
@@ -29,6 +38,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetScreenBufferPropertiesQNX.html
+func (c *Commands) GetScreenBufferPropertiesQNX(device vulkan.Device, buffer uintptr) (properties vulkan.ScreenBufferPropertiesQNX, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetScreenBufferPropertiesQNX, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetScreenBufferPropertiesQNX(device vulkan.Device, buffer uintptr) (properties vulkan.ScreenBufferPropertiesQNX, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetScreenBufferPropertiesQNX, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
 	return properties, vulkan.Result(r1)

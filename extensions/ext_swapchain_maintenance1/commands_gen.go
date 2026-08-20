@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnReleaseSwapchainImagesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnReleaseSwapchainImagesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_swapchain_maintenance1 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnReleaseSwapchainImagesEXT = vulkan.GetInstanceProcAddr(instance, "vkReleaseSwapchainImagesEXT")
+// Init resolves and initializes all VK_EXT_swapchain_maintenance1 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnReleaseSwapchainImagesEXT: vulkan.GetInstanceProcAddr(instance, "vkReleaseSwapchainImagesEXT"),
+	}
+	pfnReleaseSwapchainImagesEXT = cmds.pfnReleaseSwapchainImagesEXT
+	return cmds
 }
 
 // ReleaseSwapchainImagesEXT executes vkReleaseSwapchainImagesEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseSwapchainImagesEXT.html
+func (c *Commands) ReleaseSwapchainImagesEXT() {
+	vulkan.CallSyscall(c.pfnReleaseSwapchainImagesEXT)
+}
+
 func ReleaseSwapchainImagesEXT() {
 	vulkan.CallSyscall(pfnReleaseSwapchainImagesEXT)
 }

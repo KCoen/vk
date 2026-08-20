@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDecompressMemoryEXT              uintptr
+	pfnCmdDecompressMemoryIndirectCountEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDecompressMemoryEXT              uintptr
 	pfnCmdDecompressMemoryIndirectCountEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_memory_decompression extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDecompressMemoryEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryEXT")
-	pfnCmdDecompressMemoryIndirectCountEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryIndirectCountEXT")
+// Init resolves and initializes all VK_EXT_memory_decompression extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDecompressMemoryEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryEXT"),
+		pfnCmdDecompressMemoryIndirectCountEXT: vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryIndirectCountEXT"),
+	}
+	pfnCmdDecompressMemoryEXT = cmds.pfnCmdDecompressMemoryEXT
+	pfnCmdDecompressMemoryIndirectCountEXT = cmds.pfnCmdDecompressMemoryIndirectCountEXT
+	return cmds
 }
 
 // CmdDecompressMemoryEXT - Decompress data between memory regions (vkCmdDecompressMemoryEXT).
@@ -28,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - decompressMemoryInfoEXT: is a pointer to a VkDecompressMemoryInfoEXT structure describing the decompression parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryEXT.html
+func (c *Commands) CmdDecompressMemoryEXT(commandBuffer vulkan.CommandBuffer, decompressMemoryInfoEXT *vulkan.DecompressMemoryInfoEXT) {
+	c_decompressMemoryInfoEXT := decompressMemoryInfoEXT.Raw()
+	vulkan.CallSyscall(c.pfnCmdDecompressMemoryEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_decompressMemoryInfoEXT)))
+}
+
 func CmdDecompressMemoryEXT(commandBuffer vulkan.CommandBuffer, decompressMemoryInfoEXT *vulkan.DecompressMemoryInfoEXT) {
 	c_decompressMemoryInfoEXT := decompressMemoryInfoEXT.Raw()
 	vulkan.CallSyscall(pfnCmdDecompressMemoryEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_decompressMemoryInfoEXT)))
@@ -43,6 +59,10 @@ func CmdDecompressMemoryEXT(commandBuffer vulkan.CommandBuffer, decompressMemory
 //   - stride: is the byte stride between successive sets of decompression parameters located starting from indirectCommandsAddress.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryIndirectCountEXT.html
+func (c *Commands) CmdDecompressMemoryIndirectCountEXT(commandBuffer vulkan.CommandBuffer, decompressionMethod vulkan.MemoryDecompressionMethodFlagsEXT, indirectCommandsAddress vulkan.DeviceAddress, indirectCommandsCountAddress vulkan.DeviceAddress, maxDecompressionCount uint32, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDecompressMemoryIndirectCountEXT, uintptr(commandBuffer), uintptr(decompressionMethod), uintptr(indirectCommandsAddress), uintptr(indirectCommandsCountAddress), uintptr(maxDecompressionCount), uintptr(stride))
+}
+
 func CmdDecompressMemoryIndirectCountEXT(commandBuffer vulkan.CommandBuffer, decompressionMethod vulkan.MemoryDecompressionMethodFlagsEXT, indirectCommandsAddress vulkan.DeviceAddress, indirectCommandsCountAddress vulkan.DeviceAddress, maxDecompressionCount uint32, stride uint32) {
 	vulkan.CallSyscall(pfnCmdDecompressMemoryIndirectCountEXT, uintptr(commandBuffer), uintptr(decompressionMethod), uintptr(indirectCommandsAddress), uintptr(indirectCommandsCountAddress), uintptr(maxDecompressionCount), uintptr(stride))
 }

@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryNativeBufferOHOS     uintptr
+	pfnGetNativeBufferPropertiesOHOS uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryNativeBufferOHOS     uintptr
 	pfnGetNativeBufferPropertiesOHOS uintptr
 )
 
-// Init resolves and initializes all VK_OHOS_external_memory extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryNativeBufferOHOS = vulkan.GetDeviceProcAddr(device, "vkGetMemoryNativeBufferOHOS")
-	pfnGetNativeBufferPropertiesOHOS = vulkan.GetDeviceProcAddr(device, "vkGetNativeBufferPropertiesOHOS")
+// Init resolves and initializes all VK_OHOS_external_memory extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryNativeBufferOHOS:     vulkan.GetDeviceProcAddr(device, "vkGetMemoryNativeBufferOHOS"),
+		pfnGetNativeBufferPropertiesOHOS: vulkan.GetDeviceProcAddr(device, "vkGetNativeBufferPropertiesOHOS"),
+	}
+	pfnGetMemoryNativeBufferOHOS = cmds.pfnGetMemoryNativeBufferOHOS
+	pfnGetNativeBufferPropertiesOHOS = cmds.pfnGetNativeBufferPropertiesOHOS
+	return cmds
 }
 
 // GetMemoryNativeBufferOHOS - Obtain an OH_NativeBuffer object (vkGetMemoryNativeBufferOHOS).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryNativeBufferOHOS.html
+func (c *Commands) GetMemoryNativeBufferOHOS(device vulkan.Device, info *vulkan.MemoryGetNativeBufferInfoOHOS) (buffer uintptr, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryNativeBufferOHOS, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&buffer)))
+	return buffer, vulkan.Result(r1)
+}
+
 func GetMemoryNativeBufferOHOS(device vulkan.Device, info *vulkan.MemoryGetNativeBufferInfoOHOS) (buffer uintptr, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryNativeBufferOHOS, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&buffer)))
@@ -46,6 +63,11 @@ func GetMemoryNativeBufferOHOS(device vulkan.Device, info *vulkan.MemoryGetNativ
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetNativeBufferPropertiesOHOS.html
+func (c *Commands) GetNativeBufferPropertiesOHOS(device vulkan.Device, buffer uintptr) (properties vulkan.NativeBufferPropertiesOHOS, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetNativeBufferPropertiesOHOS, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetNativeBufferPropertiesOHOS(device vulkan.Device, buffer uintptr) (properties vulkan.NativeBufferPropertiesOHOS, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetNativeBufferPropertiesOHOS, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
 	return properties, vulkan.Result(r1)

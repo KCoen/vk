@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryWin32HandleNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryWin32HandleNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_external_memory_win32 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryWin32HandleNV = vulkan.GetDeviceProcAddr(device, "vkGetMemoryWin32HandleNV")
+// Init resolves and initializes all VK_NV_external_memory_win32 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryWin32HandleNV: vulkan.GetDeviceProcAddr(device, "vkGetMemoryWin32HandleNV"),
+	}
+	pfnGetMemoryWin32HandleNV = cmds.pfnGetMemoryWin32HandleNV
+	return cmds
 }
 
 // GetMemoryWin32HandleNV - Retrieve Win32 handle to a device memory object (vkGetMemoryWin32HandleNV).
@@ -30,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryWin32HandleNV.html
+func (c *Commands) GetMemoryWin32HandleNV(device vulkan.Device, memory vulkan.DeviceMemory, handleType vulkan.ExternalMemoryHandleTypeFlagsNV) (handle uintptr, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryWin32HandleNV, uintptr(device), uintptr(memory), uintptr(handleType), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetMemoryWin32HandleNV(device vulkan.Device, memory vulkan.DeviceMemory, handleType vulkan.ExternalMemoryHandleTypeFlagsNV) (handle uintptr, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryWin32HandleNV, uintptr(device), uintptr(memory), uintptr(handleType), uintptr(unsafe.Pointer(&handle)))
 	return handle, vulkan.Result(r1)

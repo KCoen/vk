@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM uintptr
 )
 
-// Init resolves and initializes all VK_ARM_performance_counters_by_region extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM = vulkan.GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM")
+// Init resolves and initializes all VK_ARM_performance_counters_by_region extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM: vulkan.GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM"),
+	}
+	pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM = cmds.pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM
+	return cmds
 }
 
 // EnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM - Reports properties of the by region performance counters available on a queue family of a device (vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM).
@@ -31,6 +40,20 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM.html
+func (c *Commands) EnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, counterDescriptions *vulkan.PerformanceCounterDescriptionARM) (counters []vulkan.PerformanceCounterARM, result vulkan.Result) {
+	c_counterDescriptions := counterDescriptions.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	counters = make([]vulkan.PerformanceCounterARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&counters[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnEnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr, uintptr(unsafe.Pointer(c_counterDescriptions)))
+	return counters, vulkan.Result(r1)
+}
+
 func EnumeratePhysicalDeviceQueueFamilyPerformanceCountersByRegionARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, counterDescriptions *vulkan.PerformanceCounterDescriptionARM) (counters []vulkan.PerformanceCounterARM, result vulkan.Result) {
 	c_counterDescriptions := counterDescriptions.Raw()
 	var count uint32

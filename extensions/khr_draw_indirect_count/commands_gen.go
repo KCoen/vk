@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDrawIndexedIndirectCountKHR uintptr
+	pfnCmdDrawIndirectCountKHR        uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDrawIndexedIndirectCountKHR uintptr
 	pfnCmdDrawIndirectCountKHR        uintptr
 )
 
-// Init resolves and initializes all VK_KHR_draw_indirect_count extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDrawIndexedIndirectCountKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirectCountKHR")
-	pfnCmdDrawIndirectCountKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndirectCountKHR")
+// Init resolves and initializes all VK_KHR_draw_indirect_count extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDrawIndexedIndirectCountKHR: vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirectCountKHR"),
+		pfnCmdDrawIndirectCountKHR:        vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndirectCountKHR"),
+	}
+	pfnCmdDrawIndexedIndirectCountKHR = cmds.pfnCmdDrawIndexedIndirectCountKHR
+	pfnCmdDrawIndirectCountKHR = cmds.pfnCmdDrawIndirectCountKHR
+	return cmds
 }
 
 // CmdDrawIndexedIndirectCountKHR executes vkCmdDrawIndexedIndirectCountKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirectCountKHR.html
+func (c *Commands) CmdDrawIndexedIndirectCountKHR() {
+	vulkan.CallSyscall(c.pfnCmdDrawIndexedIndirectCountKHR)
+}
+
 func CmdDrawIndexedIndirectCountKHR() {
 	vulkan.CallSyscall(pfnCmdDrawIndexedIndirectCountKHR)
 }
 
 // CmdDrawIndirectCountKHR executes vkCmdDrawIndirectCountKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectCountKHR.html
+func (c *Commands) CmdDrawIndirectCountKHR() {
+	vulkan.CallSyscall(c.pfnCmdDrawIndirectCountKHR)
+}
+
 func CmdDrawIndirectCountKHR() {
 	vulkan.CallSyscall(pfnCmdDrawIndirectCountKHR)
 }

@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateDisplayModeKHR                       uintptr
+	pfnCreateDisplayPlaneSurfaceKHR               uintptr
+	pfnGetDisplayModePropertiesKHR                uintptr
+	pfnGetDisplayPlaneCapabilitiesKHR             uintptr
+	pfnGetDisplayPlaneSupportedDisplaysKHR        uintptr
+	pfnGetPhysicalDeviceDisplayPlanePropertiesKHR uintptr
+	pfnGetPhysicalDeviceDisplayPropertiesKHR      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateDisplayModeKHR                       uintptr
 	pfnCreateDisplayPlaneSurfaceKHR               uintptr
@@ -21,15 +32,25 @@ var (
 	pfnGetPhysicalDeviceDisplayPropertiesKHR      uintptr
 )
 
-// Init resolves and initializes all VK_KHR_display extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateDisplayModeKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateDisplayModeKHR")
-	pfnCreateDisplayPlaneSurfaceKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateDisplayPlaneSurfaceKHR")
-	pfnGetDisplayModePropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDisplayModePropertiesKHR")
-	pfnGetDisplayPlaneCapabilitiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilitiesKHR")
-	pfnGetDisplayPlaneSupportedDisplaysKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDisplayPlaneSupportedDisplaysKHR")
-	pfnGetPhysicalDeviceDisplayPlanePropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR")
-	pfnGetPhysicalDeviceDisplayPropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPropertiesKHR")
+// Init resolves and initializes all VK_KHR_display extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateDisplayModeKHR:                       vulkan.GetInstanceProcAddr(instance, "vkCreateDisplayModeKHR"),
+		pfnCreateDisplayPlaneSurfaceKHR:               vulkan.GetInstanceProcAddr(instance, "vkCreateDisplayPlaneSurfaceKHR"),
+		pfnGetDisplayModePropertiesKHR:                vulkan.GetInstanceProcAddr(instance, "vkGetDisplayModePropertiesKHR"),
+		pfnGetDisplayPlaneCapabilitiesKHR:             vulkan.GetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilitiesKHR"),
+		pfnGetDisplayPlaneSupportedDisplaysKHR:        vulkan.GetInstanceProcAddr(instance, "vkGetDisplayPlaneSupportedDisplaysKHR"),
+		pfnGetPhysicalDeviceDisplayPlanePropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR"),
+		pfnGetPhysicalDeviceDisplayPropertiesKHR:      vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPropertiesKHR"),
+	}
+	pfnCreateDisplayModeKHR = cmds.pfnCreateDisplayModeKHR
+	pfnCreateDisplayPlaneSurfaceKHR = cmds.pfnCreateDisplayPlaneSurfaceKHR
+	pfnGetDisplayModePropertiesKHR = cmds.pfnGetDisplayModePropertiesKHR
+	pfnGetDisplayPlaneCapabilitiesKHR = cmds.pfnGetDisplayPlaneCapabilitiesKHR
+	pfnGetDisplayPlaneSupportedDisplaysKHR = cmds.pfnGetDisplayPlaneSupportedDisplaysKHR
+	pfnGetPhysicalDeviceDisplayPlanePropertiesKHR = cmds.pfnGetPhysicalDeviceDisplayPlanePropertiesKHR
+	pfnGetPhysicalDeviceDisplayPropertiesKHR = cmds.pfnGetPhysicalDeviceDisplayPropertiesKHR
+	return cmds
 }
 
 // CreateDisplayModeKHR - Create a display mode (vkCreateDisplayModeKHR).
@@ -43,6 +64,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDisplayModeKHR.html
+func (c *Commands) CreateDisplayModeKHR(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR, createInfo *vulkan.DisplayModeCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (mode vulkan.DisplayModeKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDisplayModeKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&mode)))
+	return mode, vulkan.Result(r1)
+}
+
 func CreateDisplayModeKHR(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR, createInfo *vulkan.DisplayModeCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (mode vulkan.DisplayModeKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -60,6 +88,13 @@ func CreateDisplayModeKHR(physicalDevice vulkan.PhysicalDevice, display vulkan.D
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDisplayPlaneSurfaceKHR.html
+func (c *Commands) CreateDisplayPlaneSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.DisplaySurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDisplayPlaneSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateDisplayPlaneSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.DisplaySurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -77,6 +112,19 @@ func CreateDisplayPlaneSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.D
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayModePropertiesKHR.html
+func (c *Commands) GetDisplayModePropertiesKHR(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (properties []vulkan.DisplayModePropertiesKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDisplayModePropertiesKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DisplayModePropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetDisplayModePropertiesKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetDisplayModePropertiesKHR(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (properties []vulkan.DisplayModePropertiesKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetDisplayModePropertiesKHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), 0)
@@ -100,6 +148,11 @@ func GetDisplayModePropertiesKHR(physicalDevice vulkan.PhysicalDevice, display v
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayPlaneCapabilitiesKHR.html
+func (c *Commands) GetDisplayPlaneCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, mode vulkan.DisplayModeKHR, planeIndex uint32) (capabilities vulkan.DisplayPlaneCapabilitiesKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDisplayPlaneCapabilitiesKHR, uintptr(physicalDevice), uintptr(mode), uintptr(planeIndex), uintptr(unsafe.Pointer(&capabilities)))
+	return capabilities, vulkan.Result(r1)
+}
+
 func GetDisplayPlaneCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, mode vulkan.DisplayModeKHR, planeIndex uint32) (capabilities vulkan.DisplayPlaneCapabilitiesKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDisplayPlaneCapabilitiesKHR, uintptr(physicalDevice), uintptr(mode), uintptr(planeIndex), uintptr(unsafe.Pointer(&capabilities)))
 	return capabilities, vulkan.Result(r1)
@@ -115,6 +168,19 @@ func GetDisplayPlaneCapabilitiesKHR(physicalDevice vulkan.PhysicalDevice, mode v
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayPlaneSupportedDisplaysKHR.html
+func (c *Commands) GetDisplayPlaneSupportedDisplaysKHR(physicalDevice vulkan.PhysicalDevice, planeIndex uint32) (displays []vulkan.DisplayKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDisplayPlaneSupportedDisplaysKHR, uintptr(physicalDevice), uintptr(planeIndex), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	displays = make([]vulkan.DisplayKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&displays[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetDisplayPlaneSupportedDisplaysKHR, uintptr(physicalDevice), uintptr(planeIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return displays, vulkan.Result(r1)
+}
+
 func GetDisplayPlaneSupportedDisplaysKHR(physicalDevice vulkan.PhysicalDevice, planeIndex uint32) (displays []vulkan.DisplayKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetDisplayPlaneSupportedDisplaysKHR, uintptr(physicalDevice), uintptr(planeIndex), uintptr(unsafe.Pointer(&count)), 0)
@@ -137,6 +203,19 @@ func GetDisplayPlaneSupportedDisplaysKHR(physicalDevice vulkan.PhysicalDevice, p
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayPlanePropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayPlanePropertiesKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayPlanePropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DisplayPlanePropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayPlanePropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayPlanePropertiesKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceDisplayPlanePropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
@@ -159,6 +238,19 @@ func GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice vulkan.PhysicalDe
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayPropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayPropertiesKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DisplayPropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayPropertiesKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceDisplayPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

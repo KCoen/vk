@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceExternalBufferPropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceExternalBufferPropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_memory_capabilities extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceExternalBufferPropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalBufferPropertiesKHR")
+// Init resolves and initializes all VK_KHR_external_memory_capabilities extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceExternalBufferPropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalBufferPropertiesKHR"),
+	}
+	pfnGetPhysicalDeviceExternalBufferPropertiesKHR = cmds.pfnGetPhysicalDeviceExternalBufferPropertiesKHR
+	return cmds
 }
 
 // GetPhysicalDeviceExternalBufferPropertiesKHR executes vkGetPhysicalDeviceExternalBufferPropertiesKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalBufferPropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceExternalBufferPropertiesKHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceExternalBufferPropertiesKHR)
+}
+
 func GetPhysicalDeviceExternalBufferPropertiesKHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceExternalBufferPropertiesKHR)
 }

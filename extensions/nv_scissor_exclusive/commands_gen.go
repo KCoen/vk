@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetExclusiveScissorEnableNV uintptr
+	pfnCmdSetExclusiveScissorNV       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetExclusiveScissorEnableNV uintptr
 	pfnCmdSetExclusiveScissorNV       uintptr
 )
 
-// Init resolves and initializes all VK_NV_scissor_exclusive extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetExclusiveScissorEnableNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetExclusiveScissorEnableNV")
-	pfnCmdSetExclusiveScissorNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetExclusiveScissorNV")
+// Init resolves and initializes all VK_NV_scissor_exclusive extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetExclusiveScissorEnableNV: vulkan.GetDeviceProcAddr(device, "vkCmdSetExclusiveScissorEnableNV"),
+		pfnCmdSetExclusiveScissorNV:       vulkan.GetDeviceProcAddr(device, "vkCmdSetExclusiveScissorNV"),
+	}
+	pfnCmdSetExclusiveScissorEnableNV = cmds.pfnCmdSetExclusiveScissorEnableNV
+	pfnCmdSetExclusiveScissorNV = cmds.pfnCmdSetExclusiveScissorNV
+	return cmds
 }
 
 // CmdSetExclusiveScissorEnableNV - Dynamically enable each exclusive scissor for a command buffer (vkCmdSetExclusiveScissorEnableNV).
@@ -30,6 +41,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - exclusiveScissorEnables: is a pointer to an array of basetype:VkBool32 values defining whether the exclusive scissor is enabled.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetExclusiveScissorEnableNV.html
+func (c *Commands) CmdSetExclusiveScissorEnableNV(commandBuffer vulkan.CommandBuffer, firstExclusiveScissor uint32, exclusiveScissorEnables []vulkan.Bool32) {
+	c_exclusiveScissorEnables := vulkan.SliceData(exclusiveScissorEnables)
+	vulkan.CallSyscall(c.pfnCmdSetExclusiveScissorEnableNV, uintptr(commandBuffer), uintptr(firstExclusiveScissor), uintptr(len(exclusiveScissorEnables)), uintptr(unsafe.Pointer(c_exclusiveScissorEnables)))
+}
+
 func CmdSetExclusiveScissorEnableNV(commandBuffer vulkan.CommandBuffer, firstExclusiveScissor uint32, exclusiveScissorEnables []vulkan.Bool32) {
 	c_exclusiveScissorEnables := vulkan.SliceData(exclusiveScissorEnables)
 	vulkan.CallSyscall(pfnCmdSetExclusiveScissorEnableNV, uintptr(commandBuffer), uintptr(firstExclusiveScissor), uintptr(len(exclusiveScissorEnables)), uintptr(unsafe.Pointer(c_exclusiveScissorEnables)))
@@ -43,6 +59,16 @@ func CmdSetExclusiveScissorEnableNV(commandBuffer vulkan.CommandBuffer, firstExc
 //   - exclusiveScissors: is a pointer to an array of VkRect2D structures defining exclusive scissor rectangles.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetExclusiveScissorNV.html
+func (c *Commands) CmdSetExclusiveScissorNV(commandBuffer vulkan.CommandBuffer, firstExclusiveScissor uint32, exclusiveScissors []vulkan.Rect2D) {
+	c_exclusiveScissors := make([]vulkan.RawRect2D, len(exclusiveScissors))
+	for i := range exclusiveScissors {
+		if raw := exclusiveScissors[i].Raw(); raw != nil {
+			c_exclusiveScissors[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetExclusiveScissorNV, uintptr(commandBuffer), uintptr(firstExclusiveScissor), uintptr(len(exclusiveScissors)), uintptr(unsafe.Pointer(vulkan.SliceData(c_exclusiveScissors))))
+}
+
 func CmdSetExclusiveScissorNV(commandBuffer vulkan.CommandBuffer, firstExclusiveScissor uint32, exclusiveScissors []vulkan.Rect2D) {
 	c_exclusiveScissors := make([]vulkan.RawRect2D, len(exclusiveScissors))
 	for i := range exclusiveScissors {

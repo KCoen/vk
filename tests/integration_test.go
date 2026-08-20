@@ -22,7 +22,16 @@ func TestApiBranchesAndExtensions(t *testing.T) {
 	_ = vulkan.Init
 	_ = vulkanbase.Init
 	_ = vulkansc.Init
-	_ = khr_swapchain.Init
+
+	cmds := vulkan.InitCommands(0, 0)
+	if cmds == nil {
+		t.Fatal("expected non-nil *vulkan.Commands from InitCommands")
+	}
+
+	extCmds := khr_swapchain.Init(0, 0)
+	if extCmds == nil {
+		t.Fatal("expected non-nil *khr_swapchain.Commands from extension Init")
+	}
 
 	// Create test struct
 	info := vulkan.NewInstanceCreateInfo()

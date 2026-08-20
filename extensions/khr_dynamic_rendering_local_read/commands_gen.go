@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetRenderingAttachmentLocationsKHR    uintptr
+	pfnCmdSetRenderingInputAttachmentIndicesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetRenderingAttachmentLocationsKHR    uintptr
 	pfnCmdSetRenderingInputAttachmentIndicesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_dynamic_rendering_local_read extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetRenderingAttachmentLocationsKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdSetRenderingAttachmentLocationsKHR")
-	pfnCmdSetRenderingInputAttachmentIndicesKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdSetRenderingInputAttachmentIndicesKHR")
+// Init resolves and initializes all VK_KHR_dynamic_rendering_local_read extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetRenderingAttachmentLocationsKHR:    vulkan.GetInstanceProcAddr(instance, "vkCmdSetRenderingAttachmentLocationsKHR"),
+		pfnCmdSetRenderingInputAttachmentIndicesKHR: vulkan.GetInstanceProcAddr(instance, "vkCmdSetRenderingInputAttachmentIndicesKHR"),
+	}
+	pfnCmdSetRenderingAttachmentLocationsKHR = cmds.pfnCmdSetRenderingAttachmentLocationsKHR
+	pfnCmdSetRenderingInputAttachmentIndicesKHR = cmds.pfnCmdSetRenderingInputAttachmentIndicesKHR
+	return cmds
 }
 
 // CmdSetRenderingAttachmentLocationsKHR executes vkCmdSetRenderingAttachmentLocationsKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRenderingAttachmentLocationsKHR.html
+func (c *Commands) CmdSetRenderingAttachmentLocationsKHR() {
+	vulkan.CallSyscall(c.pfnCmdSetRenderingAttachmentLocationsKHR)
+}
+
 func CmdSetRenderingAttachmentLocationsKHR() {
 	vulkan.CallSyscall(pfnCmdSetRenderingAttachmentLocationsKHR)
 }
 
 // CmdSetRenderingInputAttachmentIndicesKHR executes vkCmdSetRenderingInputAttachmentIndicesKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRenderingInputAttachmentIndicesKHR.html
+func (c *Commands) CmdSetRenderingInputAttachmentIndicesKHR() {
+	vulkan.CallSyscall(c.pfnCmdSetRenderingInputAttachmentIndicesKHR)
+}
+
 func CmdSetRenderingInputAttachmentIndicesKHR() {
 	vulkan.CallSyscall(pfnCmdSetRenderingInputAttachmentIndicesKHR)
 }

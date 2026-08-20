@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateUbmSurfaceSEC                        uintptr
+	pfnGetPhysicalDeviceUbmPresentationSupportSEC uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateUbmSurfaceSEC                        uintptr
 	pfnGetPhysicalDeviceUbmPresentationSupportSEC uintptr
 )
 
-// Init resolves and initializes all VK_SEC_ubm_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateUbmSurfaceSEC = vulkan.GetInstanceProcAddr(instance, "vkCreateUbmSurfaceSEC")
-	pfnGetPhysicalDeviceUbmPresentationSupportSEC = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceUbmPresentationSupportSEC")
+// Init resolves and initializes all VK_SEC_ubm_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateUbmSurfaceSEC:                        vulkan.GetInstanceProcAddr(instance, "vkCreateUbmSurfaceSEC"),
+		pfnGetPhysicalDeviceUbmPresentationSupportSEC: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceUbmPresentationSupportSEC"),
+	}
+	pfnCreateUbmSurfaceSEC = cmds.pfnCreateUbmSurfaceSEC
+	pfnGetPhysicalDeviceUbmPresentationSupportSEC = cmds.pfnGetPhysicalDeviceUbmPresentationSupportSEC
+	return cmds
 }
 
 // CreateUbmSurfaceSEC - Create a VkSurfaceKHR object for a UBM surface (vkCreateUbmSurfaceSEC).
@@ -32,6 +43,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateUbmSurfaceSEC.html
+func (c *Commands) CreateUbmSurfaceSEC(instance vulkan.Instance, createInfo *vulkan.UbmSurfaceCreateInfoSEC, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateUbmSurfaceSEC, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateUbmSurfaceSEC(instance vulkan.Instance, createInfo *vulkan.UbmSurfaceCreateInfoSEC, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -46,6 +64,11 @@ func CreateUbmSurfaceSEC(instance vulkan.Instance, createInfo *vulkan.UbmSurface
 //   - device: is a pointer to the ubm_device associated with a UBM compositor.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceUbmPresentationSupportSEC.html
+func (c *Commands) GetPhysicalDeviceUbmPresentationSupportSEC(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (device uintptr) {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceUbmPresentationSupportSEC, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&device)))
+	return device
+}
+
 func GetPhysicalDeviceUbmPresentationSupportSEC(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (device uintptr) {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceUbmPresentationSupportSEC, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&device)))
 	return device

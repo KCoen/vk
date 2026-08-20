@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquireFullScreenExclusiveModeEXT        uintptr
+	pfnGetDeviceGroupSurfacePresentModes2EXT    uintptr
+	pfnGetPhysicalDeviceSurfacePresentModes2EXT uintptr
+	pfnReleaseFullScreenExclusiveModeEXT        uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquireFullScreenExclusiveModeEXT        uintptr
 	pfnGetDeviceGroupSurfacePresentModes2EXT    uintptr
@@ -18,12 +26,19 @@ var (
 	pfnReleaseFullScreenExclusiveModeEXT        uintptr
 )
 
-// Init resolves and initializes all VK_EXT_full_screen_exclusive extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquireFullScreenExclusiveModeEXT = vulkan.GetDeviceProcAddr(device, "vkAcquireFullScreenExclusiveModeEXT")
-	pfnGetDeviceGroupSurfacePresentModes2EXT = vulkan.GetDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModes2EXT")
-	pfnGetPhysicalDeviceSurfacePresentModes2EXT = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT")
-	pfnReleaseFullScreenExclusiveModeEXT = vulkan.GetDeviceProcAddr(device, "vkReleaseFullScreenExclusiveModeEXT")
+// Init resolves and initializes all VK_EXT_full_screen_exclusive extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquireFullScreenExclusiveModeEXT:        vulkan.GetDeviceProcAddr(device, "vkAcquireFullScreenExclusiveModeEXT"),
+		pfnGetDeviceGroupSurfacePresentModes2EXT:    vulkan.GetDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModes2EXT"),
+		pfnGetPhysicalDeviceSurfacePresentModes2EXT: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT"),
+		pfnReleaseFullScreenExclusiveModeEXT:        vulkan.GetDeviceProcAddr(device, "vkReleaseFullScreenExclusiveModeEXT"),
+	}
+	pfnAcquireFullScreenExclusiveModeEXT = cmds.pfnAcquireFullScreenExclusiveModeEXT
+	pfnGetDeviceGroupSurfacePresentModes2EXT = cmds.pfnGetDeviceGroupSurfacePresentModes2EXT
+	pfnGetPhysicalDeviceSurfacePresentModes2EXT = cmds.pfnGetPhysicalDeviceSurfacePresentModes2EXT
+	pfnReleaseFullScreenExclusiveModeEXT = cmds.pfnReleaseFullScreenExclusiveModeEXT
+	return cmds
 }
 
 // AcquireFullScreenExclusiveModeEXT - Acquire full-screen exclusive mode for a swapchain (vkAcquireFullScreenExclusiveModeEXT).
@@ -34,6 +49,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireFullScreenExclusiveModeEXT.html
+func (c *Commands) AcquireFullScreenExclusiveModeEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireFullScreenExclusiveModeEXT, uintptr(device), uintptr(swapchain))
+	return vulkan.Result(r1)
+}
+
 func AcquireFullScreenExclusiveModeEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireFullScreenExclusiveModeEXT, uintptr(device), uintptr(swapchain))
 	return vulkan.Result(r1)
@@ -48,6 +68,12 @@ func AcquireFullScreenExclusiveModeEXT(device vulkan.Device, swapchain vulkan.Sw
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupSurfacePresentModes2EXT.html
+func (c *Commands) GetDeviceGroupSurfacePresentModes2EXT(device vulkan.Device, surfaceInfo *vulkan.PhysicalDeviceSurfaceInfo2KHR) (modes vulkan.DeviceGroupPresentModeFlagsKHR, result vulkan.Result) {
+	c_surfaceInfo := surfaceInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceGroupSurfacePresentModes2EXT, uintptr(device), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&modes)))
+	return modes, vulkan.Result(r1)
+}
+
 func GetDeviceGroupSurfacePresentModes2EXT(device vulkan.Device, surfaceInfo *vulkan.PhysicalDeviceSurfaceInfo2KHR) (modes vulkan.DeviceGroupPresentModeFlagsKHR, result vulkan.Result) {
 	c_surfaceInfo := surfaceInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceGroupSurfacePresentModes2EXT, uintptr(device), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&modes)))
@@ -64,6 +90,20 @@ func GetDeviceGroupSurfacePresentModes2EXT(device vulkan.Device, surfaceInfo *vu
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfacePresentModes2EXT.html
+func (c *Commands) GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice vulkan.PhysicalDevice, surfaceInfo *vulkan.PhysicalDeviceSurfaceInfo2KHR) (presentModes []vulkan.PresentModeKHR, result vulkan.Result) {
+	c_surfaceInfo := surfaceInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfacePresentModes2EXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	presentModes = make([]vulkan.PresentModeKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&presentModes[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceSurfacePresentModes2EXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_surfaceInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return presentModes, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice vulkan.PhysicalDevice, surfaceInfo *vulkan.PhysicalDeviceSurfaceInfo2KHR) (presentModes []vulkan.PresentModeKHR, result vulkan.Result) {
 	c_surfaceInfo := surfaceInfo.Raw()
 	var count uint32
@@ -86,6 +126,11 @@ func GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice vulkan.PhysicalDevi
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseFullScreenExclusiveModeEXT.html
+func (c *Commands) ReleaseFullScreenExclusiveModeEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnReleaseFullScreenExclusiveModeEXT, uintptr(device), uintptr(swapchain))
+	return vulkan.Result(r1)
+}
+
 func ReleaseFullScreenExclusiveModeEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnReleaseFullScreenExclusiveModeEXT, uintptr(device), uintptr(swapchain))
 	return vulkan.Result(r1)

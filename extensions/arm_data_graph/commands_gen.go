@@ -10,7 +10,22 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBindDataGraphPipelineSessionMemoryARM                              uintptr
+	pfnCmdDispatchDataGraphARM                                            uintptr
+	pfnCreateDataGraphPipelineSessionARM                                  uintptr
+	pfnCreateDataGraphPipelinesARM                                        uintptr
+	pfnDestroyDataGraphPipelineSessionARM                                 uintptr
+	pfnGetDataGraphPipelineAvailablePropertiesARM                         uintptr
+	pfnGetDataGraphPipelinePropertiesARM                                  uintptr
+	pfnGetDataGraphPipelineSessionBindPointRequirementsARM                uintptr
+	pfnGetDataGraphPipelineSessionMemoryRequirementsARM                   uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM                 uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBindDataGraphPipelineSessionMemoryARM                              uintptr
 	pfnCmdDispatchDataGraphARM                                            uintptr
@@ -25,19 +40,33 @@ var (
 	pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM                 uintptr
 )
 
-// Init resolves and initializes all VK_ARM_data_graph extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBindDataGraphPipelineSessionMemoryARM = vulkan.GetDeviceProcAddr(device, "vkBindDataGraphPipelineSessionMemoryARM")
-	pfnCmdDispatchDataGraphARM = vulkan.GetDeviceProcAddr(device, "vkCmdDispatchDataGraphARM")
-	pfnCreateDataGraphPipelineSessionARM = vulkan.GetDeviceProcAddr(device, "vkCreateDataGraphPipelineSessionARM")
-	pfnCreateDataGraphPipelinesARM = vulkan.GetDeviceProcAddr(device, "vkCreateDataGraphPipelinesARM")
-	pfnDestroyDataGraphPipelineSessionARM = vulkan.GetDeviceProcAddr(device, "vkDestroyDataGraphPipelineSessionARM")
-	pfnGetDataGraphPipelineAvailablePropertiesARM = vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelineAvailablePropertiesARM")
-	pfnGetDataGraphPipelinePropertiesARM = vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelinePropertiesARM")
-	pfnGetDataGraphPipelineSessionBindPointRequirementsARM = vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelineSessionBindPointRequirementsARM")
-	pfnGetDataGraphPipelineSessionMemoryRequirementsARM = vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelineSessionMemoryRequirementsARM")
-	pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM")
-	pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM")
+// Init resolves and initializes all VK_ARM_data_graph extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBindDataGraphPipelineSessionMemoryARM:                              vulkan.GetDeviceProcAddr(device, "vkBindDataGraphPipelineSessionMemoryARM"),
+		pfnCmdDispatchDataGraphARM:                                            vulkan.GetDeviceProcAddr(device, "vkCmdDispatchDataGraphARM"),
+		pfnCreateDataGraphPipelineSessionARM:                                  vulkan.GetDeviceProcAddr(device, "vkCreateDataGraphPipelineSessionARM"),
+		pfnCreateDataGraphPipelinesARM:                                        vulkan.GetDeviceProcAddr(device, "vkCreateDataGraphPipelinesARM"),
+		pfnDestroyDataGraphPipelineSessionARM:                                 vulkan.GetDeviceProcAddr(device, "vkDestroyDataGraphPipelineSessionARM"),
+		pfnGetDataGraphPipelineAvailablePropertiesARM:                         vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelineAvailablePropertiesARM"),
+		pfnGetDataGraphPipelinePropertiesARM:                                  vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelinePropertiesARM"),
+		pfnGetDataGraphPipelineSessionBindPointRequirementsARM:                vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelineSessionBindPointRequirementsARM"),
+		pfnGetDataGraphPipelineSessionMemoryRequirementsARM:                   vulkan.GetDeviceProcAddr(device, "vkGetDataGraphPipelineSessionMemoryRequirementsARM"),
+		pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM"),
+		pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM:                 vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM"),
+	}
+	pfnBindDataGraphPipelineSessionMemoryARM = cmds.pfnBindDataGraphPipelineSessionMemoryARM
+	pfnCmdDispatchDataGraphARM = cmds.pfnCmdDispatchDataGraphARM
+	pfnCreateDataGraphPipelineSessionARM = cmds.pfnCreateDataGraphPipelineSessionARM
+	pfnCreateDataGraphPipelinesARM = cmds.pfnCreateDataGraphPipelinesARM
+	pfnDestroyDataGraphPipelineSessionARM = cmds.pfnDestroyDataGraphPipelineSessionARM
+	pfnGetDataGraphPipelineAvailablePropertiesARM = cmds.pfnGetDataGraphPipelineAvailablePropertiesARM
+	pfnGetDataGraphPipelinePropertiesARM = cmds.pfnGetDataGraphPipelinePropertiesARM
+	pfnGetDataGraphPipelineSessionBindPointRequirementsARM = cmds.pfnGetDataGraphPipelineSessionBindPointRequirementsARM
+	pfnGetDataGraphPipelineSessionMemoryRequirementsARM = cmds.pfnGetDataGraphPipelineSessionMemoryRequirementsARM
+	pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM = cmds.pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM
+	pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM = cmds.pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM
+	return cmds
 }
 
 // BindDataGraphPipelineSessionMemoryARM - Bind device memory to a data graph pipeline session object (vkBindDataGraphPipelineSessionMemoryARM).
@@ -49,6 +78,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindDataGraphPipelineSessionMemoryARM.html
+func (c *Commands) BindDataGraphPipelineSessionMemoryARM(device vulkan.Device, bindInfos []vulkan.BindDataGraphPipelineSessionMemoryInfoARM) (result vulkan.Result) {
+	c_bindInfos := make([]vulkan.RawBindDataGraphPipelineSessionMemoryInfoARM, len(bindInfos))
+	for i := range bindInfos {
+		if raw := bindInfos[i].Raw(); raw != nil {
+			c_bindInfos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnBindDataGraphPipelineSessionMemoryARM, uintptr(device), uintptr(len(bindInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindInfos))))
+	return vulkan.Result(r1)
+}
+
 func BindDataGraphPipelineSessionMemoryARM(device vulkan.Device, bindInfos []vulkan.BindDataGraphPipelineSessionMemoryInfoARM) (result vulkan.Result) {
 	c_bindInfos := make([]vulkan.RawBindDataGraphPipelineSessionMemoryInfoARM, len(bindInfos))
 	for i := range bindInfos {
@@ -67,6 +107,11 @@ func BindDataGraphPipelineSessionMemoryARM(device vulkan.Device, bindInfos []vul
 //   - info: is NULL or a pointer to a VkDataGraphPipelineDispatchInfoARM structure.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchDataGraphARM.html
+func (c *Commands) CmdDispatchDataGraphARM(commandBuffer vulkan.CommandBuffer, session vulkan.DataGraphPipelineSessionARM, info *vulkan.DataGraphPipelineDispatchInfoARM) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdDispatchDataGraphARM, uintptr(commandBuffer), uintptr(session), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdDispatchDataGraphARM(commandBuffer vulkan.CommandBuffer, session vulkan.DataGraphPipelineSessionARM, info *vulkan.DataGraphPipelineDispatchInfoARM) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdDispatchDataGraphARM, uintptr(commandBuffer), uintptr(session), uintptr(unsafe.Pointer(c_info)))
@@ -82,6 +127,13 @@ func CmdDispatchDataGraphARM(commandBuffer vulkan.CommandBuffer, session vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDataGraphPipelineSessionARM.html
+func (c *Commands) CreateDataGraphPipelineSessionARM(device vulkan.Device, createInfo *vulkan.DataGraphPipelineSessionCreateInfoARM, allocator *vulkan.AllocationCallbacks) (session vulkan.DataGraphPipelineSessionARM, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDataGraphPipelineSessionARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&session)))
+	return session, vulkan.Result(r1)
+}
+
 func CreateDataGraphPipelineSessionARM(device vulkan.Device, createInfo *vulkan.DataGraphPipelineSessionCreateInfoARM, allocator *vulkan.AllocationCallbacks) (session vulkan.DataGraphPipelineSessionARM, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -102,6 +154,18 @@ func CreateDataGraphPipelineSessionARM(device vulkan.Device, createInfo *vulkan.
 // Success codes: VK_SUCCESS, VK_PIPELINE_COMPILE_REQUIRED_EXT
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDataGraphPipelinesARM.html
+func (c *Commands) CreateDataGraphPipelinesARM(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, pipelineCache vulkan.PipelineCache, createInfos []vulkan.DataGraphPipelineCreateInfoARM, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
+	c_createInfos := make([]vulkan.RawDataGraphPipelineCreateInfoARM, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDataGraphPipelinesARM, uintptr(device), uintptr(deferredOperation), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, vulkan.Result(r1)
+}
+
 func CreateDataGraphPipelinesARM(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, pipelineCache vulkan.PipelineCache, createInfos []vulkan.DataGraphPipelineCreateInfoARM, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
 	c_createInfos := make([]vulkan.RawDataGraphPipelineCreateInfoARM, len(createInfos))
 	for i := range createInfos {
@@ -121,6 +185,11 @@ func CreateDataGraphPipelinesARM(device vulkan.Device, deferredOperation vulkan.
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDataGraphPipelineSessionARM.html
+func (c *Commands) DestroyDataGraphPipelineSessionARM(device vulkan.Device, session vulkan.DataGraphPipelineSessionARM, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyDataGraphPipelineSessionARM, uintptr(device), uintptr(session), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyDataGraphPipelineSessionARM(device vulkan.Device, session vulkan.DataGraphPipelineSessionARM, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyDataGraphPipelineSessionARM, uintptr(device), uintptr(session), uintptr(unsafe.Pointer(c_allocator)))
@@ -136,6 +205,20 @@ func DestroyDataGraphPipelineSessionARM(device vulkan.Device, session vulkan.Dat
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelineAvailablePropertiesARM.html
+func (c *Commands) GetDataGraphPipelineAvailablePropertiesARM(device vulkan.Device, pipelineInfo *vulkan.DataGraphPipelineInfoARM) (properties []vulkan.DataGraphPipelinePropertyARM, result vulkan.Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDataGraphPipelineAvailablePropertiesARM, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DataGraphPipelinePropertyARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetDataGraphPipelineAvailablePropertiesARM, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetDataGraphPipelineAvailablePropertiesARM(device vulkan.Device, pipelineInfo *vulkan.DataGraphPipelineInfoARM) (properties []vulkan.DataGraphPipelinePropertyARM, result vulkan.Result) {
 	c_pipelineInfo := pipelineInfo.Raw()
 	var count uint32
@@ -160,6 +243,18 @@ func GetDataGraphPipelineAvailablePropertiesARM(device vulkan.Device, pipelineIn
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelinePropertiesARM.html
+func (c *Commands) GetDataGraphPipelinePropertiesARM(device vulkan.Device, pipelineInfo *vulkan.DataGraphPipelineInfoARM, properties []vulkan.DataGraphPipelinePropertyQueryResultARM) (result vulkan.Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	c_properties := make([]vulkan.RawDataGraphPipelinePropertyQueryResultARM, len(properties))
+	for i := range properties {
+		if raw := properties[i].Raw(); raw != nil {
+			c_properties[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDataGraphPipelinePropertiesARM, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(len(properties)), uintptr(unsafe.Pointer(vulkan.SliceData(c_properties))))
+	return vulkan.Result(r1)
+}
+
 func GetDataGraphPipelinePropertiesARM(device vulkan.Device, pipelineInfo *vulkan.DataGraphPipelineInfoARM, properties []vulkan.DataGraphPipelinePropertyQueryResultARM) (result vulkan.Result) {
 	c_pipelineInfo := pipelineInfo.Raw()
 	c_properties := make([]vulkan.RawDataGraphPipelinePropertyQueryResultARM, len(properties))
@@ -182,6 +277,20 @@ func GetDataGraphPipelinePropertiesARM(device vulkan.Device, pipelineInfo *vulka
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelineSessionBindPointRequirementsARM.html
+func (c *Commands) GetDataGraphPipelineSessionBindPointRequirementsARM(device vulkan.Device, info *vulkan.DataGraphPipelineSessionBindPointRequirementsInfoARM) (bindPointRequirements []vulkan.DataGraphPipelineSessionBindPointRequirementARM, result vulkan.Result) {
+	c_info := info.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDataGraphPipelineSessionBindPointRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	bindPointRequirements = make([]vulkan.DataGraphPipelineSessionBindPointRequirementARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&bindPointRequirements[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetDataGraphPipelineSessionBindPointRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return bindPointRequirements, vulkan.Result(r1)
+}
+
 func GetDataGraphPipelineSessionBindPointRequirementsARM(device vulkan.Device, info *vulkan.DataGraphPipelineSessionBindPointRequirementsInfoARM) (bindPointRequirements []vulkan.DataGraphPipelineSessionBindPointRequirementARM, result vulkan.Result) {
 	c_info := info.Raw()
 	var count uint32
@@ -203,6 +312,12 @@ func GetDataGraphPipelineSessionBindPointRequirementsARM(device vulkan.Device, i
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the data graph pipeline session object are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDataGraphPipelineSessionMemoryRequirementsARM.html
+func (c *Commands) GetDataGraphPipelineSessionMemoryRequirementsARM(device vulkan.Device, info *vulkan.DataGraphPipelineSessionMemoryRequirementsInfoARM) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetDataGraphPipelineSessionMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetDataGraphPipelineSessionMemoryRequirementsARM(device vulkan.Device, info *vulkan.DataGraphPipelineSessionMemoryRequirementsInfoARM) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetDataGraphPipelineSessionMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
@@ -216,6 +331,12 @@ func GetDataGraphPipelineSessionMemoryRequirementsARM(device vulkan.Device, info
 //   - queueFamilyDataGraphProcessingEngineProperties: is a pointer to a VkQueueFamilyDataGraphProcessingEnginePropertiesARM structure in which the queries properties are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM.html
+func (c *Commands) GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM(physicalDevice vulkan.PhysicalDevice, queueFamilyDataGraphProcessingEngineInfo *vulkan.PhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoARM) (queueFamilyDataGraphProcessingEngineProperties vulkan.QueueFamilyDataGraphProcessingEnginePropertiesARM) {
+	c_queueFamilyDataGraphProcessingEngineInfo := queueFamilyDataGraphProcessingEngineInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProcessingEngineInfo)), uintptr(unsafe.Pointer(&queueFamilyDataGraphProcessingEngineProperties)))
+	return queueFamilyDataGraphProcessingEngineProperties
+}
+
 func GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM(physicalDevice vulkan.PhysicalDevice, queueFamilyDataGraphProcessingEngineInfo *vulkan.PhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoARM) (queueFamilyDataGraphProcessingEngineProperties vulkan.QueueFamilyDataGraphProcessingEnginePropertiesARM) {
 	c_queueFamilyDataGraphProcessingEngineInfo := queueFamilyDataGraphProcessingEngineInfo.Raw()
 	vulkan.CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProcessingEngineInfo)), uintptr(unsafe.Pointer(&queueFamilyDataGraphProcessingEngineProperties)))
@@ -232,6 +353,19 @@ func GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM(physical
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM.html
+func (c *Commands) GetPhysicalDeviceQueueFamilyDataGraphPropertiesARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (queueFamilyDataGraphProperties []vulkan.QueueFamilyDataGraphPropertiesARM, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	queueFamilyDataGraphProperties = make([]vulkan.QueueFamilyDataGraphPropertiesARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&queueFamilyDataGraphProperties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return queueFamilyDataGraphProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceQueueFamilyDataGraphPropertiesARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (queueFamilyDataGraphProperties []vulkan.QueueFamilyDataGraphPropertiesARM, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&count)), 0)

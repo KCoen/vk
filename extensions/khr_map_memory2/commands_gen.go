@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnMapMemory2KHR   uintptr
+	pfnUnmapMemory2KHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnMapMemory2KHR   uintptr
 	pfnUnmapMemory2KHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_map_memory2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnMapMemory2KHR = vulkan.GetInstanceProcAddr(instance, "vkMapMemory2KHR")
-	pfnUnmapMemory2KHR = vulkan.GetInstanceProcAddr(instance, "vkUnmapMemory2KHR")
+// Init resolves and initializes all VK_KHR_map_memory2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnMapMemory2KHR:   vulkan.GetInstanceProcAddr(instance, "vkMapMemory2KHR"),
+		pfnUnmapMemory2KHR: vulkan.GetInstanceProcAddr(instance, "vkUnmapMemory2KHR"),
+	}
+	pfnMapMemory2KHR = cmds.pfnMapMemory2KHR
+	pfnUnmapMemory2KHR = cmds.pfnUnmapMemory2KHR
+	return cmds
 }
 
 // MapMemory2KHR executes vkMapMemory2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkMapMemory2KHR.html
+func (c *Commands) MapMemory2KHR() {
+	vulkan.CallSyscall(c.pfnMapMemory2KHR)
+}
+
 func MapMemory2KHR() {
 	vulkan.CallSyscall(pfnMapMemory2KHR)
 }
 
 // UnmapMemory2KHR executes vkUnmapMemory2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUnmapMemory2KHR.html
+func (c *Commands) UnmapMemory2KHR() {
+	vulkan.CallSyscall(c.pfnUnmapMemory2KHR)
+}
+
 func UnmapMemory2KHR() {
 	vulkan.CallSyscall(pfnUnmapMemory2KHR)
 }

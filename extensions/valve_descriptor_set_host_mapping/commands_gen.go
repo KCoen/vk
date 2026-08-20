@@ -10,20 +10,36 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDescriptorSetHostMappingVALVE           uintptr
+	pfnGetDescriptorSetLayoutHostMappingInfoVALVE uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDescriptorSetHostMappingVALVE           uintptr
 	pfnGetDescriptorSetLayoutHostMappingInfoVALVE uintptr
 )
 
-// Init resolves and initializes all VK_VALVE_descriptor_set_host_mapping extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDescriptorSetHostMappingVALVE = vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetHostMappingVALVE")
-	pfnGetDescriptorSetLayoutHostMappingInfoVALVE = vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutHostMappingInfoVALVE")
+// Init resolves and initializes all VK_VALVE_descriptor_set_host_mapping extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDescriptorSetHostMappingVALVE:           vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetHostMappingVALVE"),
+		pfnGetDescriptorSetLayoutHostMappingInfoVALVE: vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutHostMappingInfoVALVE"),
+	}
+	pfnGetDescriptorSetHostMappingVALVE = cmds.pfnGetDescriptorSetHostMappingVALVE
+	pfnGetDescriptorSetLayoutHostMappingInfoVALVE = cmds.pfnGetDescriptorSetLayoutHostMappingInfoVALVE
+	return cmds
 }
 
 // GetDescriptorSetHostMappingVALVE - Stub description of vkGetDescriptorSetHostMappingVALVE (vkGetDescriptorSetHostMappingVALVE).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetHostMappingVALVE.html
+func (c *Commands) GetDescriptorSetHostMappingVALVE(device vulkan.Device, descriptorSet vulkan.DescriptorSet) (data unsafe.Pointer) {
+	vulkan.CallSyscall(c.pfnGetDescriptorSetHostMappingVALVE, uintptr(device), uintptr(descriptorSet), uintptr(unsafe.Pointer(&data)))
+	return data
+}
+
 func GetDescriptorSetHostMappingVALVE(device vulkan.Device, descriptorSet vulkan.DescriptorSet) (data unsafe.Pointer) {
 	vulkan.CallSyscall(pfnGetDescriptorSetHostMappingVALVE, uintptr(device), uintptr(descriptorSet), uintptr(unsafe.Pointer(&data)))
 	return data
@@ -31,6 +47,12 @@ func GetDescriptorSetHostMappingVALVE(device vulkan.Device, descriptorSet vulkan
 
 // GetDescriptorSetLayoutHostMappingInfoVALVE - Stub description of vkGetDescriptorSetLayoutHostMappingInfoVALVE (vkGetDescriptorSetLayoutHostMappingInfoVALVE).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutHostMappingInfoVALVE.html
+func (c *Commands) GetDescriptorSetLayoutHostMappingInfoVALVE(device vulkan.Device, bindingReference *vulkan.DescriptorSetBindingReferenceVALVE) (hostMapping vulkan.DescriptorSetLayoutHostMappingInfoVALVE) {
+	c_bindingReference := bindingReference.Raw()
+	vulkan.CallSyscall(c.pfnGetDescriptorSetLayoutHostMappingInfoVALVE, uintptr(device), uintptr(unsafe.Pointer(c_bindingReference)), uintptr(unsafe.Pointer(&hostMapping)))
+	return hostMapping
+}
+
 func GetDescriptorSetLayoutHostMappingInfoVALVE(device vulkan.Device, bindingReference *vulkan.DescriptorSetBindingReferenceVALVE) (hostMapping vulkan.DescriptorSetLayoutHostMappingInfoVALVE) {
 	c_bindingReference := bindingReference.Raw()
 	vulkan.CallSyscall(pfnGetDescriptorSetLayoutHostMappingInfoVALVE, uintptr(device), uintptr(unsafe.Pointer(c_bindingReference)), uintptr(unsafe.Pointer(&hostMapping)))

@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnClearShaderInstrumentationMetricsARM                   uintptr
+	pfnCmdBeginShaderInstrumentationARM                       uintptr
+	pfnCmdEndShaderInstrumentationARM                         uintptr
+	pfnCreateShaderInstrumentationARM                         uintptr
+	pfnDestroyShaderInstrumentationARM                        uintptr
+	pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM uintptr
+	pfnGetShaderInstrumentationValuesARM                      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnClearShaderInstrumentationMetricsARM                   uintptr
 	pfnCmdBeginShaderInstrumentationARM                       uintptr
@@ -21,15 +32,25 @@ var (
 	pfnGetShaderInstrumentationValuesARM                      uintptr
 )
 
-// Init resolves and initializes all VK_ARM_shader_instrumentation extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnClearShaderInstrumentationMetricsARM = vulkan.GetDeviceProcAddr(device, "vkClearShaderInstrumentationMetricsARM")
-	pfnCmdBeginShaderInstrumentationARM = vulkan.GetDeviceProcAddr(device, "vkCmdBeginShaderInstrumentationARM")
-	pfnCmdEndShaderInstrumentationARM = vulkan.GetDeviceProcAddr(device, "vkCmdEndShaderInstrumentationARM")
-	pfnCreateShaderInstrumentationARM = vulkan.GetDeviceProcAddr(device, "vkCreateShaderInstrumentationARM")
-	pfnDestroyShaderInstrumentationARM = vulkan.GetDeviceProcAddr(device, "vkDestroyShaderInstrumentationARM")
-	pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM = vulkan.GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceShaderInstrumentationMetricsARM")
-	pfnGetShaderInstrumentationValuesARM = vulkan.GetDeviceProcAddr(device, "vkGetShaderInstrumentationValuesARM")
+// Init resolves and initializes all VK_ARM_shader_instrumentation extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnClearShaderInstrumentationMetricsARM:                   vulkan.GetDeviceProcAddr(device, "vkClearShaderInstrumentationMetricsARM"),
+		pfnCmdBeginShaderInstrumentationARM:                       vulkan.GetDeviceProcAddr(device, "vkCmdBeginShaderInstrumentationARM"),
+		pfnCmdEndShaderInstrumentationARM:                         vulkan.GetDeviceProcAddr(device, "vkCmdEndShaderInstrumentationARM"),
+		pfnCreateShaderInstrumentationARM:                         vulkan.GetDeviceProcAddr(device, "vkCreateShaderInstrumentationARM"),
+		pfnDestroyShaderInstrumentationARM:                        vulkan.GetDeviceProcAddr(device, "vkDestroyShaderInstrumentationARM"),
+		pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM: vulkan.GetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceShaderInstrumentationMetricsARM"),
+		pfnGetShaderInstrumentationValuesARM:                      vulkan.GetDeviceProcAddr(device, "vkGetShaderInstrumentationValuesARM"),
+	}
+	pfnClearShaderInstrumentationMetricsARM = cmds.pfnClearShaderInstrumentationMetricsARM
+	pfnCmdBeginShaderInstrumentationARM = cmds.pfnCmdBeginShaderInstrumentationARM
+	pfnCmdEndShaderInstrumentationARM = cmds.pfnCmdEndShaderInstrumentationARM
+	pfnCreateShaderInstrumentationARM = cmds.pfnCreateShaderInstrumentationARM
+	pfnDestroyShaderInstrumentationARM = cmds.pfnDestroyShaderInstrumentationARM
+	pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM = cmds.pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM
+	pfnGetShaderInstrumentationValuesARM = cmds.pfnGetShaderInstrumentationValuesARM
+	return cmds
 }
 
 // ClearShaderInstrumentationMetricsARM - Clear shader instrumentation metrics to zero (vkClearShaderInstrumentationMetricsARM).
@@ -38,6 +59,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - instrumentation: is the shader instrumentation object to clear.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkClearShaderInstrumentationMetricsARM.html
+func (c *Commands) ClearShaderInstrumentationMetricsARM(device vulkan.Device, instrumentation vulkan.ShaderInstrumentationARM) {
+	vulkan.CallSyscall(c.pfnClearShaderInstrumentationMetricsARM, uintptr(device), uintptr(instrumentation))
+}
+
 func ClearShaderInstrumentationMetricsARM(device vulkan.Device, instrumentation vulkan.ShaderInstrumentationARM) {
 	vulkan.CallSyscall(pfnClearShaderInstrumentationMetricsARM, uintptr(device), uintptr(instrumentation))
 }
@@ -48,6 +73,10 @@ func ClearShaderInstrumentationMetricsARM(device vulkan.Device, instrumentation 
 //   - instrumentation: is the handle of the shader instrumentation object that will capture the metrics.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginShaderInstrumentationARM.html
+func (c *Commands) CmdBeginShaderInstrumentationARM(commandBuffer vulkan.CommandBuffer, instrumentation vulkan.ShaderInstrumentationARM) {
+	vulkan.CallSyscall(c.pfnCmdBeginShaderInstrumentationARM, uintptr(commandBuffer), uintptr(instrumentation))
+}
+
 func CmdBeginShaderInstrumentationARM(commandBuffer vulkan.CommandBuffer, instrumentation vulkan.ShaderInstrumentationARM) {
 	vulkan.CallSyscall(pfnCmdBeginShaderInstrumentationARM, uintptr(commandBuffer), uintptr(instrumentation))
 }
@@ -57,6 +86,10 @@ func CmdBeginShaderInstrumentationARM(commandBuffer vulkan.CommandBuffer, instru
 //   - commandBuffer: is the command buffer into which this command will be recorded.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndShaderInstrumentationARM.html
+func (c *Commands) CmdEndShaderInstrumentationARM(commandBuffer vulkan.CommandBuffer) {
+	vulkan.CallSyscall(c.pfnCmdEndShaderInstrumentationARM, uintptr(commandBuffer))
+}
+
 func CmdEndShaderInstrumentationARM(commandBuffer vulkan.CommandBuffer) {
 	vulkan.CallSyscall(pfnCmdEndShaderInstrumentationARM, uintptr(commandBuffer))
 }
@@ -71,6 +104,13 @@ func CmdEndShaderInstrumentationARM(commandBuffer vulkan.CommandBuffer) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateShaderInstrumentationARM.html
+func (c *Commands) CreateShaderInstrumentationARM(device vulkan.Device, createInfo *vulkan.ShaderInstrumentationCreateInfoARM, allocator *vulkan.AllocationCallbacks) (instrumentation vulkan.ShaderInstrumentationARM, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateShaderInstrumentationARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&instrumentation)))
+	return instrumentation, vulkan.Result(r1)
+}
+
 func CreateShaderInstrumentationARM(device vulkan.Device, createInfo *vulkan.ShaderInstrumentationCreateInfoARM, allocator *vulkan.AllocationCallbacks) (instrumentation vulkan.ShaderInstrumentationARM, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -85,6 +125,11 @@ func CreateShaderInstrumentationARM(device vulkan.Device, createInfo *vulkan.Sha
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderInstrumentationARM.html
+func (c *Commands) DestroyShaderInstrumentationARM(device vulkan.Device, instrumentation vulkan.ShaderInstrumentationARM, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyShaderInstrumentationARM, uintptr(device), uintptr(instrumentation), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyShaderInstrumentationARM(device vulkan.Device, instrumentation vulkan.ShaderInstrumentationARM, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyShaderInstrumentationARM, uintptr(device), uintptr(instrumentation), uintptr(unsafe.Pointer(c_allocator)))
@@ -99,6 +144,19 @@ func DestroyShaderInstrumentationARM(device vulkan.Device, instrumentation vulka
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDeviceShaderInstrumentationMetricsARM.html
+func (c *Commands) EnumeratePhysicalDeviceShaderInstrumentationMetricsARM(physicalDevice vulkan.PhysicalDevice) (descriptions []vulkan.ShaderInstrumentationMetricDescriptionARM, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	descriptions = make([]vulkan.ShaderInstrumentationMetricDescriptionARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&descriptions[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return descriptions, vulkan.Result(r1)
+}
+
 func EnumeratePhysicalDeviceShaderInstrumentationMetricsARM(physicalDevice vulkan.PhysicalDevice) (descriptions []vulkan.ShaderInstrumentationMetricDescriptionARM, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnEnumeratePhysicalDeviceShaderInstrumentationMetricsARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
@@ -123,6 +181,11 @@ func EnumeratePhysicalDeviceShaderInstrumentationMetricsARM(physicalDevice vulka
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderInstrumentationValuesARM.html
+func (c *Commands) GetShaderInstrumentationValuesARM(device vulkan.Device, instrumentation vulkan.ShaderInstrumentationARM, metricBlockCount *uint32, flags vulkan.ShaderInstrumentationValuesFlagsARM) (metricValues unsafe.Pointer, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetShaderInstrumentationValuesARM, uintptr(device), uintptr(instrumentation), uintptr(unsafe.Pointer(metricBlockCount)), uintptr(unsafe.Pointer(&metricValues)), uintptr(flags))
+	return metricValues, vulkan.Result(r1)
+}
+
 func GetShaderInstrumentationValuesARM(device vulkan.Device, instrumentation vulkan.ShaderInstrumentationARM, metricBlockCount *uint32, flags vulkan.ShaderInstrumentationValuesFlagsARM) (metricValues unsafe.Pointer, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetShaderInstrumentationValuesARM, uintptr(device), uintptr(instrumentation), uintptr(unsafe.Pointer(metricBlockCount)), uintptr(unsafe.Pointer(&metricValues)), uintptr(flags))
 	return metricValues, vulkan.Result(r1)

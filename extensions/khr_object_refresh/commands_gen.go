@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdRefreshObjectsKHR                       uintptr
+	pfnGetPhysicalDeviceRefreshableObjectTypesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdRefreshObjectsKHR                       uintptr
 	pfnGetPhysicalDeviceRefreshableObjectTypesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_object_refresh extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdRefreshObjectsKHR = vulkan.GetDeviceProcAddr(device, "vkCmdRefreshObjectsKHR")
-	pfnGetPhysicalDeviceRefreshableObjectTypesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceRefreshableObjectTypesKHR")
+// Init resolves and initializes all VK_KHR_object_refresh extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdRefreshObjectsKHR:                       vulkan.GetDeviceProcAddr(device, "vkCmdRefreshObjectsKHR"),
+		pfnGetPhysicalDeviceRefreshableObjectTypesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceRefreshableObjectTypesKHR"),
+	}
+	pfnCmdRefreshObjectsKHR = cmds.pfnCmdRefreshObjectsKHR
+	pfnGetPhysicalDeviceRefreshableObjectTypesKHR = cmds.pfnGetPhysicalDeviceRefreshableObjectTypesKHR
+	return cmds
 }
 
 // CmdRefreshObjectsKHR - Execute a pipelined refresh of a list of objects (vkCmdRefreshObjectsKHR).
@@ -28,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - refreshObjects: is a pointer to a VkRefreshObjectListKHR structure specifying the list of objects to refresh.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdRefreshObjectsKHR.html
+func (c *Commands) CmdRefreshObjectsKHR(commandBuffer vulkan.CommandBuffer, refreshObjects *vulkan.RefreshObjectListKHR) {
+	c_refreshObjects := refreshObjects.Raw()
+	vulkan.CallSyscall(c.pfnCmdRefreshObjectsKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_refreshObjects)))
+}
+
 func CmdRefreshObjectsKHR(commandBuffer vulkan.CommandBuffer, refreshObjects *vulkan.RefreshObjectListKHR) {
 	c_refreshObjects := refreshObjects.Raw()
 	vulkan.CallSyscall(pfnCmdRefreshObjectsKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_refreshObjects)))
@@ -42,6 +58,19 @@ func CmdRefreshObjectsKHR(commandBuffer vulkan.CommandBuffer, refreshObjects *vu
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceRefreshableObjectTypesKHR.html
+func (c *Commands) GetPhysicalDeviceRefreshableObjectTypesKHR(physicalDevice vulkan.PhysicalDevice) (refreshableObjectTypes []vulkan.ObjectType, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceRefreshableObjectTypesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	refreshableObjectTypes = make([]vulkan.ObjectType, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&refreshableObjectTypes[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceRefreshableObjectTypesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return refreshableObjectTypes, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceRefreshableObjectTypesKHR(physicalDevice vulkan.PhysicalDevice) (refreshableObjectTypes []vulkan.ObjectType, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceRefreshableObjectTypesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

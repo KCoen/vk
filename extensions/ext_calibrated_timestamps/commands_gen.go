@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetCalibratedTimestampsEXT                   uintptr
+	pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetCalibratedTimestampsEXT                   uintptr
 	pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_calibrated_timestamps extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetCalibratedTimestampsEXT = vulkan.GetInstanceProcAddr(instance, "vkGetCalibratedTimestampsEXT")
-	pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT")
+// Init resolves and initializes all VK_EXT_calibrated_timestamps extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetCalibratedTimestampsEXT:                   vulkan.GetInstanceProcAddr(instance, "vkGetCalibratedTimestampsEXT"),
+		pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT"),
+	}
+	pfnGetCalibratedTimestampsEXT = cmds.pfnGetCalibratedTimestampsEXT
+	pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT = cmds.pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT
+	return cmds
 }
 
 // GetCalibratedTimestampsEXT executes vkGetCalibratedTimestampsEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetCalibratedTimestampsEXT.html
+func (c *Commands) GetCalibratedTimestampsEXT() {
+	vulkan.CallSyscall(c.pfnGetCalibratedTimestampsEXT)
+}
+
 func GetCalibratedTimestampsEXT() {
 	vulkan.CallSyscall(pfnGetCalibratedTimestampsEXT)
 }
 
 // GetPhysicalDeviceCalibrateableTimeDomainsEXT executes vkGetPhysicalDeviceCalibrateableTimeDomainsEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCalibrateableTimeDomainsEXT.html
+func (c *Commands) GetPhysicalDeviceCalibrateableTimeDomainsEXT() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT)
+}
+
 func GetPhysicalDeviceCalibrateableTimeDomainsEXT() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceCalibrateableTimeDomainsEXT)
 }

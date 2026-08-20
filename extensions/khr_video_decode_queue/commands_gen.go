@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDecodeVideoKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDecodeVideoKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_video_decode_queue extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDecodeVideoKHR = vulkan.GetDeviceProcAddr(device, "vkCmdDecodeVideoKHR")
+// Init resolves and initializes all VK_KHR_video_decode_queue extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDecodeVideoKHR: vulkan.GetDeviceProcAddr(device, "vkCmdDecodeVideoKHR"),
+	}
+	pfnCmdDecodeVideoKHR = cmds.pfnCmdDecodeVideoKHR
+	return cmds
 }
 
 // CmdDecodeVideoKHR - Launch a video decode operation (vkCmdDecodeVideoKHR).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - decodeInfo: is a pointer to a VkVideoDecodeInfoKHR structure specifying the parameters of the video decode operations.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecodeVideoKHR.html
+func (c *Commands) CmdDecodeVideoKHR(commandBuffer vulkan.CommandBuffer, decodeInfo *vulkan.VideoDecodeInfoKHR) {
+	c_decodeInfo := decodeInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDecodeVideoKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_decodeInfo)))
+}
+
 func CmdDecodeVideoKHR(commandBuffer vulkan.CommandBuffer, decodeInfo *vulkan.VideoDecodeInfoKHR) {
 	c_decodeInfo := decodeInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDecodeVideoKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_decodeInfo)))

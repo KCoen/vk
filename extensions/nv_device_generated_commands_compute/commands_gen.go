@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdUpdatePipelineIndirectBufferNV       uintptr
+	pfnGetPipelineIndirectDeviceAddressNV      uintptr
+	pfnGetPipelineIndirectMemoryRequirementsNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdUpdatePipelineIndirectBufferNV       uintptr
 	pfnGetPipelineIndirectDeviceAddressNV      uintptr
 	pfnGetPipelineIndirectMemoryRequirementsNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_device_generated_commands_compute extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdUpdatePipelineIndirectBufferNV = vulkan.GetDeviceProcAddr(device, "vkCmdUpdatePipelineIndirectBufferNV")
-	pfnGetPipelineIndirectDeviceAddressNV = vulkan.GetDeviceProcAddr(device, "vkGetPipelineIndirectDeviceAddressNV")
-	pfnGetPipelineIndirectMemoryRequirementsNV = vulkan.GetDeviceProcAddr(device, "vkGetPipelineIndirectMemoryRequirementsNV")
+// Init resolves and initializes all VK_NV_device_generated_commands_compute extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdUpdatePipelineIndirectBufferNV:       vulkan.GetDeviceProcAddr(device, "vkCmdUpdatePipelineIndirectBufferNV"),
+		pfnGetPipelineIndirectDeviceAddressNV:      vulkan.GetDeviceProcAddr(device, "vkGetPipelineIndirectDeviceAddressNV"),
+		pfnGetPipelineIndirectMemoryRequirementsNV: vulkan.GetDeviceProcAddr(device, "vkGetPipelineIndirectMemoryRequirementsNV"),
+	}
+	pfnCmdUpdatePipelineIndirectBufferNV = cmds.pfnCmdUpdatePipelineIndirectBufferNV
+	pfnGetPipelineIndirectDeviceAddressNV = cmds.pfnGetPipelineIndirectDeviceAddressNV
+	pfnGetPipelineIndirectMemoryRequirementsNV = cmds.pfnGetPipelineIndirectMemoryRequirementsNV
+	return cmds
 }
 
 // CmdUpdatePipelineIndirectBufferNV - Update the indirect compute pipeline\ (vkCmdUpdatePipelineIndirectBufferNV).
@@ -31,6 +44,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - pipeline: is the pipeline whose metadata will be saved.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdUpdatePipelineIndirectBufferNV.html
+func (c *Commands) CmdUpdatePipelineIndirectBufferNV(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, pipeline vulkan.Pipeline) {
+	vulkan.CallSyscall(c.pfnCmdUpdatePipelineIndirectBufferNV, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline))
+}
+
 func CmdUpdatePipelineIndirectBufferNV(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, pipeline vulkan.Pipeline) {
 	vulkan.CallSyscall(pfnCmdUpdatePipelineIndirectBufferNV, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(pipeline))
 }
@@ -41,6 +58,12 @@ func CmdUpdatePipelineIndirectBufferNV(commandBuffer vulkan.CommandBuffer, pipel
 //   - info: is a pointer to a VkPipelineIndirectDeviceAddressInfoNV structure specifying the pipeline to retrieve the address for.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineIndirectDeviceAddressNV.html
+func (c *Commands) GetPipelineIndirectDeviceAddressNV(device vulkan.Device, info *vulkan.PipelineIndirectDeviceAddressInfoNV) (result vulkan.DeviceAddress) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelineIndirectDeviceAddressNV, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.DeviceAddress(r1)
+}
+
 func GetPipelineIndirectDeviceAddressNV(device vulkan.Device, info *vulkan.PipelineIndirectDeviceAddressInfoNV) (result vulkan.DeviceAddress) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPipelineIndirectDeviceAddressNV, uintptr(device), uintptr(unsafe.Pointer(c_info)))
@@ -54,6 +77,12 @@ func GetPipelineIndirectDeviceAddressNV(device vulkan.Device, info *vulkan.Pipel
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the requested pipeline's memory requirements are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineIndirectMemoryRequirementsNV.html
+func (c *Commands) GetPipelineIndirectMemoryRequirementsNV(device vulkan.Device, createInfo *vulkan.ComputePipelineCreateInfo) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_createInfo := createInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetPipelineIndirectMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetPipelineIndirectMemoryRequirementsNV(device vulkan.Device, createInfo *vulkan.ComputePipelineCreateInfo) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_createInfo := createInfo.Raw()
 	vulkan.CallSyscall(pfnGetPipelineIndirectMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(&memoryRequirements)))

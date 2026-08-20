@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryRemoteAddressNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryRemoteAddressNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_external_memory_rdma extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryRemoteAddressNV = vulkan.GetDeviceProcAddr(device, "vkGetMemoryRemoteAddressNV")
+// Init resolves and initializes all VK_NV_external_memory_rdma extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryRemoteAddressNV: vulkan.GetDeviceProcAddr(device, "vkGetMemoryRemoteAddressNV"),
+	}
+	pfnGetMemoryRemoteAddressNV = cmds.pfnGetMemoryRemoteAddressNV
+	return cmds
 }
 
 // GetMemoryRemoteAddressNV - Get an address for a memory object accessible by remote devices (vkGetMemoryRemoteAddressNV).
@@ -29,6 +38,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryRemoteAddressNV.html
+func (c *Commands) GetMemoryRemoteAddressNV(device vulkan.Device, memoryGetRemoteAddressInfo *vulkan.MemoryGetRemoteAddressInfoNV) (address vulkan.RemoteAddressNV, result vulkan.Result) {
+	c_memoryGetRemoteAddressInfo := memoryGetRemoteAddressInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryRemoteAddressNV, uintptr(device), uintptr(unsafe.Pointer(c_memoryGetRemoteAddressInfo)), uintptr(unsafe.Pointer(&address)))
+	return address, vulkan.Result(r1)
+}
+
 func GetMemoryRemoteAddressNV(device vulkan.Device, memoryGetRemoteAddressInfo *vulkan.MemoryGetRemoteAddressInfoNV) (address vulkan.RemoteAddressNV, result vulkan.Result) {
 	c_memoryGetRemoteAddressInfo := memoryGetRemoteAddressInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryRemoteAddressNV, uintptr(device), uintptr(unsafe.Pointer(c_memoryGetRemoteAddressInfo)), uintptr(unsafe.Pointer(&address)))

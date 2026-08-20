@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginRenderingKHR uintptr
+	pfnCmdEndRenderingKHR   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginRenderingKHR uintptr
 	pfnCmdEndRenderingKHR   uintptr
 )
 
-// Init resolves and initializes all VK_KHR_dynamic_rendering extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginRenderingKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdBeginRenderingKHR")
-	pfnCmdEndRenderingKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdEndRenderingKHR")
+// Init resolves and initializes all VK_KHR_dynamic_rendering extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginRenderingKHR: vulkan.GetInstanceProcAddr(instance, "vkCmdBeginRenderingKHR"),
+		pfnCmdEndRenderingKHR:   vulkan.GetInstanceProcAddr(instance, "vkCmdEndRenderingKHR"),
+	}
+	pfnCmdBeginRenderingKHR = cmds.pfnCmdBeginRenderingKHR
+	pfnCmdEndRenderingKHR = cmds.pfnCmdEndRenderingKHR
+	return cmds
 }
 
 // CmdBeginRenderingKHR executes vkCmdBeginRenderingKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRenderingKHR.html
+func (c *Commands) CmdBeginRenderingKHR() {
+	vulkan.CallSyscall(c.pfnCmdBeginRenderingKHR)
+}
+
 func CmdBeginRenderingKHR() {
 	vulkan.CallSyscall(pfnCmdBeginRenderingKHR)
 }
 
 // CmdEndRenderingKHR executes vkCmdEndRenderingKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndRenderingKHR.html
+func (c *Commands) CmdEndRenderingKHR() {
+	vulkan.CallSyscall(c.pfnCmdEndRenderingKHR)
+}
+
 func CmdEndRenderingKHR() {
 	vulkan.CallSyscall(pfnCmdEndRenderingKHR)
 }

@@ -10,34 +10,59 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDeviceBufferMemoryRequirementsKHR      uintptr
+	pfnGetDeviceImageMemoryRequirementsKHR       uintptr
+	pfnGetDeviceImageSparseMemoryRequirementsKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDeviceBufferMemoryRequirementsKHR      uintptr
 	pfnGetDeviceImageMemoryRequirementsKHR       uintptr
 	pfnGetDeviceImageSparseMemoryRequirementsKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_maintenance4 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDeviceBufferMemoryRequirementsKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDeviceBufferMemoryRequirementsKHR")
-	pfnGetDeviceImageMemoryRequirementsKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDeviceImageMemoryRequirementsKHR")
-	pfnGetDeviceImageSparseMemoryRequirementsKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDeviceImageSparseMemoryRequirementsKHR")
+// Init resolves and initializes all VK_KHR_maintenance4 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDeviceBufferMemoryRequirementsKHR:      vulkan.GetInstanceProcAddr(instance, "vkGetDeviceBufferMemoryRequirementsKHR"),
+		pfnGetDeviceImageMemoryRequirementsKHR:       vulkan.GetInstanceProcAddr(instance, "vkGetDeviceImageMemoryRequirementsKHR"),
+		pfnGetDeviceImageSparseMemoryRequirementsKHR: vulkan.GetInstanceProcAddr(instance, "vkGetDeviceImageSparseMemoryRequirementsKHR"),
+	}
+	pfnGetDeviceBufferMemoryRequirementsKHR = cmds.pfnGetDeviceBufferMemoryRequirementsKHR
+	pfnGetDeviceImageMemoryRequirementsKHR = cmds.pfnGetDeviceImageMemoryRequirementsKHR
+	pfnGetDeviceImageSparseMemoryRequirementsKHR = cmds.pfnGetDeviceImageSparseMemoryRequirementsKHR
+	return cmds
 }
 
 // GetDeviceBufferMemoryRequirementsKHR executes vkGetDeviceBufferMemoryRequirementsKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceBufferMemoryRequirementsKHR.html
+func (c *Commands) GetDeviceBufferMemoryRequirementsKHR() {
+	vulkan.CallSyscall(c.pfnGetDeviceBufferMemoryRequirementsKHR)
+}
+
 func GetDeviceBufferMemoryRequirementsKHR() {
 	vulkan.CallSyscall(pfnGetDeviceBufferMemoryRequirementsKHR)
 }
 
 // GetDeviceImageMemoryRequirementsKHR executes vkGetDeviceImageMemoryRequirementsKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceImageMemoryRequirementsKHR.html
+func (c *Commands) GetDeviceImageMemoryRequirementsKHR() {
+	vulkan.CallSyscall(c.pfnGetDeviceImageMemoryRequirementsKHR)
+}
+
 func GetDeviceImageMemoryRequirementsKHR() {
 	vulkan.CallSyscall(pfnGetDeviceImageMemoryRequirementsKHR)
 }
 
 // GetDeviceImageSparseMemoryRequirementsKHR executes vkGetDeviceImageSparseMemoryRequirementsKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceImageSparseMemoryRequirementsKHR.html
+func (c *Commands) GetDeviceImageSparseMemoryRequirementsKHR() {
+	vulkan.CallSyscall(c.pfnGetDeviceImageSparseMemoryRequirementsKHR)
+}
+
 func GetDeviceImageSparseMemoryRequirementsKHR() {
 	vulkan.CallSyscall(pfnGetDeviceImageSparseMemoryRequirementsKHR)
 }

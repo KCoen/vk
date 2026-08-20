@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCopyImageToImageEXT           uintptr
+	pfnCopyImageToMemoryEXT          uintptr
+	pfnCopyMemoryToImageEXT          uintptr
+	pfnGetImageSubresourceLayout2EXT uintptr
+	pfnTransitionImageLayoutEXT      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCopyImageToImageEXT           uintptr
 	pfnCopyImageToMemoryEXT          uintptr
@@ -19,41 +28,69 @@ var (
 	pfnTransitionImageLayoutEXT      uintptr
 )
 
-// Init resolves and initializes all VK_EXT_host_image_copy extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCopyImageToImageEXT = vulkan.GetInstanceProcAddr(instance, "vkCopyImageToImageEXT")
-	pfnCopyImageToMemoryEXT = vulkan.GetInstanceProcAddr(instance, "vkCopyImageToMemoryEXT")
-	pfnCopyMemoryToImageEXT = vulkan.GetInstanceProcAddr(instance, "vkCopyMemoryToImageEXT")
-	pfnGetImageSubresourceLayout2EXT = vulkan.GetInstanceProcAddr(instance, "vkGetImageSubresourceLayout2EXT")
-	pfnTransitionImageLayoutEXT = vulkan.GetInstanceProcAddr(instance, "vkTransitionImageLayoutEXT")
+// Init resolves and initializes all VK_EXT_host_image_copy extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCopyImageToImageEXT:           vulkan.GetInstanceProcAddr(instance, "vkCopyImageToImageEXT"),
+		pfnCopyImageToMemoryEXT:          vulkan.GetInstanceProcAddr(instance, "vkCopyImageToMemoryEXT"),
+		pfnCopyMemoryToImageEXT:          vulkan.GetInstanceProcAddr(instance, "vkCopyMemoryToImageEXT"),
+		pfnGetImageSubresourceLayout2EXT: vulkan.GetInstanceProcAddr(instance, "vkGetImageSubresourceLayout2EXT"),
+		pfnTransitionImageLayoutEXT:      vulkan.GetInstanceProcAddr(instance, "vkTransitionImageLayoutEXT"),
+	}
+	pfnCopyImageToImageEXT = cmds.pfnCopyImageToImageEXT
+	pfnCopyImageToMemoryEXT = cmds.pfnCopyImageToMemoryEXT
+	pfnCopyMemoryToImageEXT = cmds.pfnCopyMemoryToImageEXT
+	pfnGetImageSubresourceLayout2EXT = cmds.pfnGetImageSubresourceLayout2EXT
+	pfnTransitionImageLayoutEXT = cmds.pfnTransitionImageLayoutEXT
+	return cmds
 }
 
 // CopyImageToImageEXT executes vkCopyImageToImageEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyImageToImageEXT.html
+func (c *Commands) CopyImageToImageEXT() {
+	vulkan.CallSyscall(c.pfnCopyImageToImageEXT)
+}
+
 func CopyImageToImageEXT() {
 	vulkan.CallSyscall(pfnCopyImageToImageEXT)
 }
 
 // CopyImageToMemoryEXT executes vkCopyImageToMemoryEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyImageToMemoryEXT.html
+func (c *Commands) CopyImageToMemoryEXT() {
+	vulkan.CallSyscall(c.pfnCopyImageToMemoryEXT)
+}
+
 func CopyImageToMemoryEXT() {
 	vulkan.CallSyscall(pfnCopyImageToMemoryEXT)
 }
 
 // CopyMemoryToImageEXT - Copy data from host memory into an image (vkCopyMemoryToImageEXT).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMemoryToImageEXT.html
+func (c *Commands) CopyMemoryToImageEXT() {
+	vulkan.CallSyscall(c.pfnCopyMemoryToImageEXT)
+}
+
 func CopyMemoryToImageEXT() {
 	vulkan.CallSyscall(pfnCopyMemoryToImageEXT)
 }
 
 // GetImageSubresourceLayout2EXT executes vkGetImageSubresourceLayout2EXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageSubresourceLayout2EXT.html
+func (c *Commands) GetImageSubresourceLayout2EXT() {
+	vulkan.CallSyscall(c.pfnGetImageSubresourceLayout2EXT)
+}
+
 func GetImageSubresourceLayout2EXT() {
 	vulkan.CallSyscall(pfnGetImageSubresourceLayout2EXT)
 }
 
 // TransitionImageLayoutEXT executes vkTransitionImageLayoutEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkTransitionImageLayoutEXT.html
+func (c *Commands) TransitionImageLayoutEXT() {
+	vulkan.CallSyscall(c.pfnTransitionImageLayoutEXT)
+}
+
 func TransitionImageLayoutEXT() {
 	vulkan.CallSyscall(pfnTransitionImageLayoutEXT)
 }

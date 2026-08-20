@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDynamicRenderingTilePropertiesQCOM uintptr
+	pfnGetFramebufferTilePropertiesQCOM      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDynamicRenderingTilePropertiesQCOM uintptr
 	pfnGetFramebufferTilePropertiesQCOM      uintptr
 )
 
-// Init resolves and initializes all VK_QCOM_tile_properties extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDynamicRenderingTilePropertiesQCOM = vulkan.GetDeviceProcAddr(device, "vkGetDynamicRenderingTilePropertiesQCOM")
-	pfnGetFramebufferTilePropertiesQCOM = vulkan.GetDeviceProcAddr(device, "vkGetFramebufferTilePropertiesQCOM")
+// Init resolves and initializes all VK_QCOM_tile_properties extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDynamicRenderingTilePropertiesQCOM: vulkan.GetDeviceProcAddr(device, "vkGetDynamicRenderingTilePropertiesQCOM"),
+		pfnGetFramebufferTilePropertiesQCOM:      vulkan.GetDeviceProcAddr(device, "vkGetFramebufferTilePropertiesQCOM"),
+	}
+	pfnGetDynamicRenderingTilePropertiesQCOM = cmds.pfnGetDynamicRenderingTilePropertiesQCOM
+	pfnGetFramebufferTilePropertiesQCOM = cmds.pfnGetFramebufferTilePropertiesQCOM
+	return cmds
 }
 
 // GetDynamicRenderingTilePropertiesQCOM - Get the properties when using dynamic rendering (vkGetDynamicRenderingTilePropertiesQCOM).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDynamicRenderingTilePropertiesQCOM.html
+func (c *Commands) GetDynamicRenderingTilePropertiesQCOM(device vulkan.Device, renderingInfo *vulkan.RenderingInfo) (properties vulkan.TilePropertiesQCOM, result vulkan.Result) {
+	c_renderingInfo := renderingInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDynamicRenderingTilePropertiesQCOM, uintptr(device), uintptr(unsafe.Pointer(c_renderingInfo)), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetDynamicRenderingTilePropertiesQCOM(device vulkan.Device, renderingInfo *vulkan.RenderingInfo) (properties vulkan.TilePropertiesQCOM, result vulkan.Result) {
 	c_renderingInfo := renderingInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetDynamicRenderingTilePropertiesQCOM, uintptr(device), uintptr(unsafe.Pointer(c_renderingInfo)), uintptr(unsafe.Pointer(&properties)))
@@ -47,6 +64,19 @@ func GetDynamicRenderingTilePropertiesQCOM(device vulkan.Device, renderingInfo *
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFramebufferTilePropertiesQCOM.html
+func (c *Commands) GetFramebufferTilePropertiesQCOM(device vulkan.Device, framebuffer vulkan.Framebuffer) (properties []vulkan.TilePropertiesQCOM, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetFramebufferTilePropertiesQCOM, uintptr(device), uintptr(framebuffer), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.TilePropertiesQCOM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetFramebufferTilePropertiesQCOM, uintptr(device), uintptr(framebuffer), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetFramebufferTilePropertiesQCOM(device vulkan.Device, framebuffer vulkan.Framebuffer) (properties []vulkan.TilePropertiesQCOM, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetFramebufferTilePropertiesQCOM, uintptr(device), uintptr(framebuffer), uintptr(unsafe.Pointer(&count)), 0)

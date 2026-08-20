@@ -10,7 +10,22 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBindTensorMemoryARM                          uintptr
+	pfnCmdCopyTensorARM                             uintptr
+	pfnCreateTensorARM                              uintptr
+	pfnCreateTensorViewARM                          uintptr
+	pfnDestroyTensorARM                             uintptr
+	pfnDestroyTensorViewARM                         uintptr
+	pfnGetDeviceTensorMemoryRequirementsARM         uintptr
+	pfnGetPhysicalDeviceExternalTensorPropertiesARM uintptr
+	pfnGetTensorMemoryRequirementsARM               uintptr
+	pfnGetTensorOpaqueCaptureDescriptorDataARM      uintptr
+	pfnGetTensorViewOpaqueCaptureDescriptorDataARM  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBindTensorMemoryARM                          uintptr
 	pfnCmdCopyTensorARM                             uintptr
@@ -25,19 +40,33 @@ var (
 	pfnGetTensorViewOpaqueCaptureDescriptorDataARM  uintptr
 )
 
-// Init resolves and initializes all VK_ARM_tensors extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBindTensorMemoryARM = vulkan.GetDeviceProcAddr(device, "vkBindTensorMemoryARM")
-	pfnCmdCopyTensorARM = vulkan.GetDeviceProcAddr(device, "vkCmdCopyTensorARM")
-	pfnCreateTensorARM = vulkan.GetDeviceProcAddr(device, "vkCreateTensorARM")
-	pfnCreateTensorViewARM = vulkan.GetDeviceProcAddr(device, "vkCreateTensorViewARM")
-	pfnDestroyTensorARM = vulkan.GetDeviceProcAddr(device, "vkDestroyTensorARM")
-	pfnDestroyTensorViewARM = vulkan.GetDeviceProcAddr(device, "vkDestroyTensorViewARM")
-	pfnGetDeviceTensorMemoryRequirementsARM = vulkan.GetDeviceProcAddr(device, "vkGetDeviceTensorMemoryRequirementsARM")
-	pfnGetPhysicalDeviceExternalTensorPropertiesARM = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalTensorPropertiesARM")
-	pfnGetTensorMemoryRequirementsARM = vulkan.GetDeviceProcAddr(device, "vkGetTensorMemoryRequirementsARM")
-	pfnGetTensorOpaqueCaptureDescriptorDataARM = vulkan.GetDeviceProcAddr(device, "vkGetTensorOpaqueCaptureDescriptorDataARM")
-	pfnGetTensorViewOpaqueCaptureDescriptorDataARM = vulkan.GetDeviceProcAddr(device, "vkGetTensorViewOpaqueCaptureDescriptorDataARM")
+// Init resolves and initializes all VK_ARM_tensors extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBindTensorMemoryARM:                          vulkan.GetDeviceProcAddr(device, "vkBindTensorMemoryARM"),
+		pfnCmdCopyTensorARM:                             vulkan.GetDeviceProcAddr(device, "vkCmdCopyTensorARM"),
+		pfnCreateTensorARM:                              vulkan.GetDeviceProcAddr(device, "vkCreateTensorARM"),
+		pfnCreateTensorViewARM:                          vulkan.GetDeviceProcAddr(device, "vkCreateTensorViewARM"),
+		pfnDestroyTensorARM:                             vulkan.GetDeviceProcAddr(device, "vkDestroyTensorARM"),
+		pfnDestroyTensorViewARM:                         vulkan.GetDeviceProcAddr(device, "vkDestroyTensorViewARM"),
+		pfnGetDeviceTensorMemoryRequirementsARM:         vulkan.GetDeviceProcAddr(device, "vkGetDeviceTensorMemoryRequirementsARM"),
+		pfnGetPhysicalDeviceExternalTensorPropertiesARM: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalTensorPropertiesARM"),
+		pfnGetTensorMemoryRequirementsARM:               vulkan.GetDeviceProcAddr(device, "vkGetTensorMemoryRequirementsARM"),
+		pfnGetTensorOpaqueCaptureDescriptorDataARM:      vulkan.GetDeviceProcAddr(device, "vkGetTensorOpaqueCaptureDescriptorDataARM"),
+		pfnGetTensorViewOpaqueCaptureDescriptorDataARM:  vulkan.GetDeviceProcAddr(device, "vkGetTensorViewOpaqueCaptureDescriptorDataARM"),
+	}
+	pfnBindTensorMemoryARM = cmds.pfnBindTensorMemoryARM
+	pfnCmdCopyTensorARM = cmds.pfnCmdCopyTensorARM
+	pfnCreateTensorARM = cmds.pfnCreateTensorARM
+	pfnCreateTensorViewARM = cmds.pfnCreateTensorViewARM
+	pfnDestroyTensorARM = cmds.pfnDestroyTensorARM
+	pfnDestroyTensorViewARM = cmds.pfnDestroyTensorViewARM
+	pfnGetDeviceTensorMemoryRequirementsARM = cmds.pfnGetDeviceTensorMemoryRequirementsARM
+	pfnGetPhysicalDeviceExternalTensorPropertiesARM = cmds.pfnGetPhysicalDeviceExternalTensorPropertiesARM
+	pfnGetTensorMemoryRequirementsARM = cmds.pfnGetTensorMemoryRequirementsARM
+	pfnGetTensorOpaqueCaptureDescriptorDataARM = cmds.pfnGetTensorOpaqueCaptureDescriptorDataARM
+	pfnGetTensorViewOpaqueCaptureDescriptorDataARM = cmds.pfnGetTensorViewOpaqueCaptureDescriptorDataARM
+	return cmds
 }
 
 // BindTensorMemoryARM - Bind device memory to tensor objects (vkBindTensorMemoryARM).
@@ -49,6 +78,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindTensorMemoryARM.html
+func (c *Commands) BindTensorMemoryARM(device vulkan.Device, bindInfos []vulkan.BindTensorMemoryInfoARM) (result vulkan.Result) {
+	c_bindInfos := make([]vulkan.RawBindTensorMemoryInfoARM, len(bindInfos))
+	for i := range bindInfos {
+		if raw := bindInfos[i].Raw(); raw != nil {
+			c_bindInfos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnBindTensorMemoryARM, uintptr(device), uintptr(len(bindInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindInfos))))
+	return vulkan.Result(r1)
+}
+
 func BindTensorMemoryARM(device vulkan.Device, bindInfos []vulkan.BindTensorMemoryInfoARM) (result vulkan.Result) {
 	c_bindInfos := make([]vulkan.RawBindTensorMemoryInfoARM, len(bindInfos))
 	for i := range bindInfos {
@@ -66,6 +106,11 @@ func BindTensorMemoryARM(device vulkan.Device, bindInfos []vulkan.BindTensorMemo
 //   - copyTensorInfo: is a pointer to VkCopyTensorInfoARM structure describing the copy parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyTensorARM.html
+func (c *Commands) CmdCopyTensorARM(commandBuffer vulkan.CommandBuffer, copyTensorInfo *vulkan.CopyTensorInfoARM) {
+	c_copyTensorInfo := copyTensorInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyTensorARM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyTensorInfo)))
+}
+
 func CmdCopyTensorARM(commandBuffer vulkan.CommandBuffer, copyTensorInfo *vulkan.CopyTensorInfoARM) {
 	c_copyTensorInfo := copyTensorInfo.Raw()
 	vulkan.CallSyscall(pfnCmdCopyTensorARM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_copyTensorInfo)))
@@ -81,6 +126,13 @@ func CmdCopyTensorARM(commandBuffer vulkan.CommandBuffer, copyTensorInfo *vulkan
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateTensorARM.html
+func (c *Commands) CreateTensorARM(device vulkan.Device, createInfo *vulkan.TensorCreateInfoARM, allocator *vulkan.AllocationCallbacks) (tensor vulkan.TensorARM, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateTensorARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&tensor)))
+	return tensor, vulkan.Result(r1)
+}
+
 func CreateTensorARM(device vulkan.Device, createInfo *vulkan.TensorCreateInfoARM, allocator *vulkan.AllocationCallbacks) (tensor vulkan.TensorARM, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -98,6 +150,13 @@ func CreateTensorARM(device vulkan.Device, createInfo *vulkan.TensorCreateInfoAR
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateTensorViewARM.html
+func (c *Commands) CreateTensorViewARM(device vulkan.Device, createInfo *vulkan.TensorViewCreateInfoARM, allocator *vulkan.AllocationCallbacks) (view vulkan.TensorViewARM, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateTensorViewARM, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&view)))
+	return view, vulkan.Result(r1)
+}
+
 func CreateTensorViewARM(device vulkan.Device, createInfo *vulkan.TensorViewCreateInfoARM, allocator *vulkan.AllocationCallbacks) (view vulkan.TensorViewARM, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -112,6 +171,11 @@ func CreateTensorViewARM(device vulkan.Device, createInfo *vulkan.TensorViewCrea
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyTensorARM.html
+func (c *Commands) DestroyTensorARM(device vulkan.Device, tensor vulkan.TensorARM, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyTensorARM, uintptr(device), uintptr(tensor), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyTensorARM(device vulkan.Device, tensor vulkan.TensorARM, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyTensorARM, uintptr(device), uintptr(tensor), uintptr(unsafe.Pointer(c_allocator)))
@@ -124,6 +188,11 @@ func DestroyTensorARM(device vulkan.Device, tensor vulkan.TensorARM, allocator *
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyTensorViewARM.html
+func (c *Commands) DestroyTensorViewARM(device vulkan.Device, tensorView vulkan.TensorViewARM, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyTensorViewARM, uintptr(device), uintptr(tensorView), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyTensorViewARM(device vulkan.Device, tensorView vulkan.TensorViewARM, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyTensorViewARM, uintptr(device), uintptr(tensorView), uintptr(unsafe.Pointer(c_allocator)))
@@ -136,6 +205,12 @@ func DestroyTensorViewARM(device vulkan.Device, tensorView vulkan.TensorViewARM,
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the tensor object are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceTensorMemoryRequirementsARM.html
+func (c *Commands) GetDeviceTensorMemoryRequirementsARM(device vulkan.Device, info *vulkan.DeviceTensorMemoryRequirementsARM) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetDeviceTensorMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetDeviceTensorMemoryRequirementsARM(device vulkan.Device, info *vulkan.DeviceTensorMemoryRequirementsARM) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetDeviceTensorMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
@@ -149,6 +224,12 @@ func GetDeviceTensorMemoryRequirementsARM(device vulkan.Device, info *vulkan.Dev
 //   - externalTensorProperties: is a pointer to a VkExternalTensorPropertiesARM structure in which the capabilities are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalTensorPropertiesARM.html
+func (c *Commands) GetPhysicalDeviceExternalTensorPropertiesARM(physicalDevice vulkan.PhysicalDevice, externalTensorInfo *vulkan.PhysicalDeviceExternalTensorInfoARM) (externalTensorProperties vulkan.ExternalTensorPropertiesARM) {
+	c_externalTensorInfo := externalTensorInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceExternalTensorPropertiesARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_externalTensorInfo)), uintptr(unsafe.Pointer(&externalTensorProperties)))
+	return externalTensorProperties
+}
+
 func GetPhysicalDeviceExternalTensorPropertiesARM(physicalDevice vulkan.PhysicalDevice, externalTensorInfo *vulkan.PhysicalDeviceExternalTensorInfoARM) (externalTensorProperties vulkan.ExternalTensorPropertiesARM) {
 	c_externalTensorInfo := externalTensorInfo.Raw()
 	vulkan.CallSyscall(pfnGetPhysicalDeviceExternalTensorPropertiesARM, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_externalTensorInfo)), uintptr(unsafe.Pointer(&externalTensorProperties)))
@@ -162,6 +243,12 @@ func GetPhysicalDeviceExternalTensorPropertiesARM(physicalDevice vulkan.Physical
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the tensor object are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorMemoryRequirementsARM.html
+func (c *Commands) GetTensorMemoryRequirementsARM(device vulkan.Device, info *vulkan.TensorMemoryRequirementsInfoARM) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetTensorMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetTensorMemoryRequirementsARM(device vulkan.Device, info *vulkan.TensorMemoryRequirementsInfoARM) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetTensorMemoryRequirementsARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
@@ -177,6 +264,12 @@ func GetTensorMemoryRequirementsARM(device vulkan.Device, info *vulkan.TensorMem
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorOpaqueCaptureDescriptorDataARM.html
+func (c *Commands) GetTensorOpaqueCaptureDescriptorDataARM(device vulkan.Device, info *vulkan.TensorCaptureDescriptorDataInfoARM) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetTensorOpaqueCaptureDescriptorDataARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetTensorOpaqueCaptureDescriptorDataARM(device vulkan.Device, info *vulkan.TensorCaptureDescriptorDataInfoARM) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetTensorOpaqueCaptureDescriptorDataARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
@@ -192,6 +285,12 @@ func GetTensorOpaqueCaptureDescriptorDataARM(device vulkan.Device, info *vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorViewOpaqueCaptureDescriptorDataARM.html
+func (c *Commands) GetTensorViewOpaqueCaptureDescriptorDataARM(device vulkan.Device, info *vulkan.TensorViewCaptureDescriptorDataInfoARM) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetTensorViewOpaqueCaptureDescriptorDataARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetTensorViewOpaqueCaptureDescriptorDataARM(device vulkan.Device, info *vulkan.TensorViewCaptureDescriptorDataInfoARM) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetTensorViewOpaqueCaptureDescriptorDataARM, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))

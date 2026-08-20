@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPipelineExecutableInternalRepresentationsKHR uintptr
+	pfnGetPipelineExecutablePropertiesKHR              uintptr
+	pfnGetPipelineExecutableStatisticsKHR              uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPipelineExecutableInternalRepresentationsKHR uintptr
 	pfnGetPipelineExecutablePropertiesKHR              uintptr
 	pfnGetPipelineExecutableStatisticsKHR              uintptr
 )
 
-// Init resolves and initializes all VK_KHR_pipeline_executable_properties extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPipelineExecutableInternalRepresentationsKHR = vulkan.GetDeviceProcAddr(device, "vkGetPipelineExecutableInternalRepresentationsKHR")
-	pfnGetPipelineExecutablePropertiesKHR = vulkan.GetDeviceProcAddr(device, "vkGetPipelineExecutablePropertiesKHR")
-	pfnGetPipelineExecutableStatisticsKHR = vulkan.GetDeviceProcAddr(device, "vkGetPipelineExecutableStatisticsKHR")
+// Init resolves and initializes all VK_KHR_pipeline_executable_properties extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPipelineExecutableInternalRepresentationsKHR: vulkan.GetDeviceProcAddr(device, "vkGetPipelineExecutableInternalRepresentationsKHR"),
+		pfnGetPipelineExecutablePropertiesKHR:              vulkan.GetDeviceProcAddr(device, "vkGetPipelineExecutablePropertiesKHR"),
+		pfnGetPipelineExecutableStatisticsKHR:              vulkan.GetDeviceProcAddr(device, "vkGetPipelineExecutableStatisticsKHR"),
+	}
+	pfnGetPipelineExecutableInternalRepresentationsKHR = cmds.pfnGetPipelineExecutableInternalRepresentationsKHR
+	pfnGetPipelineExecutablePropertiesKHR = cmds.pfnGetPipelineExecutablePropertiesKHR
+	pfnGetPipelineExecutableStatisticsKHR = cmds.pfnGetPipelineExecutableStatisticsKHR
+	return cmds
 }
 
 // GetPipelineExecutableInternalRepresentationsKHR - Get internal representations of the pipeline executable (vkGetPipelineExecutableInternalRepresentationsKHR).
@@ -34,6 +47,20 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineExecutableInternalRepresentationsKHR.html
+func (c *Commands) GetPipelineExecutableInternalRepresentationsKHR(device vulkan.Device, executableInfo *vulkan.PipelineExecutableInfoKHR) (internalRepresentations []vulkan.PipelineExecutableInternalRepresentationKHR, result vulkan.Result) {
+	c_executableInfo := executableInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelineExecutableInternalRepresentationsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	internalRepresentations = make([]vulkan.PipelineExecutableInternalRepresentationKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&internalRepresentations[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPipelineExecutableInternalRepresentationsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return internalRepresentations, vulkan.Result(r1)
+}
+
 func GetPipelineExecutableInternalRepresentationsKHR(device vulkan.Device, executableInfo *vulkan.PipelineExecutableInfoKHR) (internalRepresentations []vulkan.PipelineExecutableInternalRepresentationKHR, result vulkan.Result) {
 	c_executableInfo := executableInfo.Raw()
 	var count uint32
@@ -58,6 +85,20 @@ func GetPipelineExecutableInternalRepresentationsKHR(device vulkan.Device, execu
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineExecutablePropertiesKHR.html
+func (c *Commands) GetPipelineExecutablePropertiesKHR(device vulkan.Device, pipelineInfo *vulkan.PipelineInfoKHR) (properties []vulkan.PipelineExecutablePropertiesKHR, result vulkan.Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelineExecutablePropertiesKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.PipelineExecutablePropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPipelineExecutablePropertiesKHR, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPipelineExecutablePropertiesKHR(device vulkan.Device, pipelineInfo *vulkan.PipelineInfoKHR) (properties []vulkan.PipelineExecutablePropertiesKHR, result vulkan.Result) {
 	c_pipelineInfo := pipelineInfo.Raw()
 	var count uint32
@@ -82,6 +123,20 @@ func GetPipelineExecutablePropertiesKHR(device vulkan.Device, pipelineInfo *vulk
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelineExecutableStatisticsKHR.html
+func (c *Commands) GetPipelineExecutableStatisticsKHR(device vulkan.Device, executableInfo *vulkan.PipelineExecutableInfoKHR) (statistics []vulkan.PipelineExecutableStatisticKHR, result vulkan.Result) {
+	c_executableInfo := executableInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelineExecutableStatisticsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	statistics = make([]vulkan.PipelineExecutableStatisticKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&statistics[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPipelineExecutableStatisticsKHR, uintptr(device), uintptr(unsafe.Pointer(c_executableInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return statistics, vulkan.Result(r1)
+}
+
 func GetPipelineExecutableStatisticsKHR(device vulkan.Device, executableInfo *vulkan.PipelineExecutableInfoKHR) (statistics []vulkan.PipelineExecutableStatisticKHR, result vulkan.Result) {
 	c_executableInfo := executableInfo.Raw()
 	var count uint32

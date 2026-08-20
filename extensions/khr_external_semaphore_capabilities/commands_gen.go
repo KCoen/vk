@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_semaphore_capabilities extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR")
+// Init resolves and initializes all VK_KHR_external_semaphore_capabilities extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR"),
+	}
+	pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR = cmds.pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR
+	return cmds
 }
 
 // GetPhysicalDeviceExternalSemaphorePropertiesKHR executes vkGetPhysicalDeviceExternalSemaphorePropertiesKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalSemaphorePropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceExternalSemaphorePropertiesKHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR)
+}
+
 func GetPhysicalDeviceExternalSemaphorePropertiesKHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceExternalSemaphorePropertiesKHR)
 }

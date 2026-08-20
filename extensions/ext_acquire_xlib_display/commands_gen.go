@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquireXlibDisplayEXT    uintptr
+	pfnGetRandROutputDisplayEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquireXlibDisplayEXT    uintptr
 	pfnGetRandROutputDisplayEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_acquire_xlib_display extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquireXlibDisplayEXT = vulkan.GetInstanceProcAddr(instance, "vkAcquireXlibDisplayEXT")
-	pfnGetRandROutputDisplayEXT = vulkan.GetInstanceProcAddr(instance, "vkGetRandROutputDisplayEXT")
+// Init resolves and initializes all VK_EXT_acquire_xlib_display extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquireXlibDisplayEXT:    vulkan.GetInstanceProcAddr(instance, "vkAcquireXlibDisplayEXT"),
+		pfnGetRandROutputDisplayEXT: vulkan.GetInstanceProcAddr(instance, "vkGetRandROutputDisplayEXT"),
+	}
+	pfnAcquireXlibDisplayEXT = cmds.pfnAcquireXlibDisplayEXT
+	pfnGetRandROutputDisplayEXT = cmds.pfnGetRandROutputDisplayEXT
+	return cmds
 }
 
 // AcquireXlibDisplayEXT - Acquire access to a VkDisplayKHR using Xlib (vkAcquireXlibDisplayEXT).
@@ -31,6 +42,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireXlibDisplayEXT.html
+func (c *Commands) AcquireXlibDisplayEXT(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (dpy uintptr, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireXlibDisplayEXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(&dpy)), uintptr(display))
+	return dpy, vulkan.Result(r1)
+}
+
 func AcquireXlibDisplayEXT(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (dpy uintptr, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireXlibDisplayEXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(&dpy)), uintptr(display))
 	return dpy, vulkan.Result(r1)
@@ -46,6 +62,11 @@ func AcquireXlibDisplayEXT(physicalDevice vulkan.PhysicalDevice, display vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRandROutputDisplayEXT.html
+func (c *Commands) GetRandROutputDisplayEXT(physicalDevice vulkan.PhysicalDevice, dpy uintptr, rrOutput uintptr) (display vulkan.DisplayKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetRandROutputDisplayEXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(dpy)), uintptr(rrOutput), uintptr(unsafe.Pointer(&display)))
+	return display, vulkan.Result(r1)
+}
+
 func GetRandROutputDisplayEXT(physicalDevice vulkan.PhysicalDevice, dpy uintptr, rrOutput uintptr) (display vulkan.DisplayKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetRandROutputDisplayEXT, uintptr(physicalDevice), uintptr(unsafe.Pointer(dpy)), uintptr(rrOutput), uintptr(unsafe.Pointer(&display)))
 	return display, vulkan.Result(r1)

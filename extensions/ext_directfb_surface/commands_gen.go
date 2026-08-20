@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateDirectFBSurfaceEXT                        uintptr
+	pfnGetPhysicalDeviceDirectFBPresentationSupportEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateDirectFBSurfaceEXT                        uintptr
 	pfnGetPhysicalDeviceDirectFBPresentationSupportEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_directfb_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateDirectFBSurfaceEXT = vulkan.GetInstanceProcAddr(instance, "vkCreateDirectFBSurfaceEXT")
-	pfnGetPhysicalDeviceDirectFBPresentationSupportEXT = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT")
+// Init resolves and initializes all VK_EXT_directfb_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateDirectFBSurfaceEXT:                        vulkan.GetInstanceProcAddr(instance, "vkCreateDirectFBSurfaceEXT"),
+		pfnGetPhysicalDeviceDirectFBPresentationSupportEXT: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT"),
+	}
+	pfnCreateDirectFBSurfaceEXT = cmds.pfnCreateDirectFBSurfaceEXT
+	pfnGetPhysicalDeviceDirectFBPresentationSupportEXT = cmds.pfnGetPhysicalDeviceDirectFBPresentationSupportEXT
+	return cmds
 }
 
 // CreateDirectFBSurfaceEXT - Create a VkSurfaceKHR object for a DirectFB surface (vkCreateDirectFBSurfaceEXT).
@@ -32,6 +43,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateDirectFBSurfaceEXT.html
+func (c *Commands) CreateDirectFBSurfaceEXT(instance vulkan.Instance, createInfo *vulkan.DirectFBSurfaceCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateDirectFBSurfaceEXT, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateDirectFBSurfaceEXT(instance vulkan.Instance, createInfo *vulkan.DirectFBSurfaceCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -46,6 +64,11 @@ func CreateDirectFBSurfaceEXT(instance vulkan.Instance, createInfo *vulkan.Direc
 //   - dfb: is a pointer to the IDirectFB main interface of DirectFB.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDirectFBPresentationSupportEXT.html
+func (c *Commands) GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (dfb uintptr) {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceDirectFBPresentationSupportEXT, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&dfb)))
+	return dfb
+}
+
 func GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (dfb uintptr) {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceDirectFBPresentationSupportEXT, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&dfb)))
 	return dfb

@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquireWinrtDisplayNV uintptr
+	pfnGetWinrtDisplayNV     uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquireWinrtDisplayNV uintptr
 	pfnGetWinrtDisplayNV     uintptr
 )
 
-// Init resolves and initializes all VK_NV_acquire_winrt_display extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquireWinrtDisplayNV = vulkan.GetInstanceProcAddr(instance, "vkAcquireWinrtDisplayNV")
-	pfnGetWinrtDisplayNV = vulkan.GetInstanceProcAddr(instance, "vkGetWinrtDisplayNV")
+// Init resolves and initializes all VK_NV_acquire_winrt_display extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquireWinrtDisplayNV: vulkan.GetInstanceProcAddr(instance, "vkAcquireWinrtDisplayNV"),
+		pfnGetWinrtDisplayNV:     vulkan.GetInstanceProcAddr(instance, "vkGetWinrtDisplayNV"),
+	}
+	pfnAcquireWinrtDisplayNV = cmds.pfnAcquireWinrtDisplayNV
+	pfnGetWinrtDisplayNV = cmds.pfnGetWinrtDisplayNV
+	return cmds
 }
 
 // AcquireWinrtDisplayNV - Acquire access to a VkDisplayKHR (vkAcquireWinrtDisplayNV).
@@ -30,6 +41,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireWinrtDisplayNV.html
+func (c *Commands) AcquireWinrtDisplayNV(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireWinrtDisplayNV, uintptr(physicalDevice), uintptr(display))
+	return vulkan.Result(r1)
+}
+
 func AcquireWinrtDisplayNV(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireWinrtDisplayNV, uintptr(physicalDevice), uintptr(display))
 	return vulkan.Result(r1)
@@ -44,6 +60,11 @@ func AcquireWinrtDisplayNV(physicalDevice vulkan.PhysicalDevice, display vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetWinrtDisplayNV.html
+func (c *Commands) GetWinrtDisplayNV(physicalDevice vulkan.PhysicalDevice, deviceRelativeId uint32) (display vulkan.DisplayKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetWinrtDisplayNV, uintptr(physicalDevice), uintptr(deviceRelativeId), uintptr(unsafe.Pointer(&display)))
+	return display, vulkan.Result(r1)
+}
+
 func GetWinrtDisplayNV(physicalDevice vulkan.PhysicalDevice, deviceRelativeId uint32) (display vulkan.DisplayKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetWinrtDisplayNV, uintptr(physicalDevice), uintptr(deviceRelativeId), uintptr(unsafe.Pointer(&display)))
 	return display, vulkan.Result(r1)

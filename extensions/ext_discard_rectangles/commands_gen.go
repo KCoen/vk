@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetDiscardRectangleEXT       uintptr
+	pfnCmdSetDiscardRectangleEnableEXT uintptr
+	pfnCmdSetDiscardRectangleModeEXT   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetDiscardRectangleEXT       uintptr
 	pfnCmdSetDiscardRectangleEnableEXT uintptr
 	pfnCmdSetDiscardRectangleModeEXT   uintptr
 )
 
-// Init resolves and initializes all VK_EXT_discard_rectangles extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetDiscardRectangleEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleEXT")
-	pfnCmdSetDiscardRectangleEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleEnableEXT")
-	pfnCmdSetDiscardRectangleModeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleModeEXT")
+// Init resolves and initializes all VK_EXT_discard_rectangles extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetDiscardRectangleEXT:       vulkan.GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleEXT"),
+		pfnCmdSetDiscardRectangleEnableEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleEnableEXT"),
+		pfnCmdSetDiscardRectangleModeEXT:   vulkan.GetDeviceProcAddr(device, "vkCmdSetDiscardRectangleModeEXT"),
+	}
+	pfnCmdSetDiscardRectangleEXT = cmds.pfnCmdSetDiscardRectangleEXT
+	pfnCmdSetDiscardRectangleEnableEXT = cmds.pfnCmdSetDiscardRectangleEnableEXT
+	pfnCmdSetDiscardRectangleModeEXT = cmds.pfnCmdSetDiscardRectangleModeEXT
+	return cmds
 }
 
 // CmdSetDiscardRectangleEXT - Set discard rectangles dynamically for a command buffer (vkCmdSetDiscardRectangleEXT).
@@ -32,6 +45,16 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - discardRectangles: is a pointer to an array of VkRect2D structures specifying discard rectangles.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleEXT.html
+func (c *Commands) CmdSetDiscardRectangleEXT(commandBuffer vulkan.CommandBuffer, firstDiscardRectangle uint32, discardRectangles []vulkan.Rect2D) {
+	c_discardRectangles := make([]vulkan.RawRect2D, len(discardRectangles))
+	for i := range discardRectangles {
+		if raw := discardRectangles[i].Raw(); raw != nil {
+			c_discardRectangles[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetDiscardRectangleEXT, uintptr(commandBuffer), uintptr(firstDiscardRectangle), uintptr(len(discardRectangles)), uintptr(unsafe.Pointer(vulkan.SliceData(c_discardRectangles))))
+}
+
 func CmdSetDiscardRectangleEXT(commandBuffer vulkan.CommandBuffer, firstDiscardRectangle uint32, discardRectangles []vulkan.Rect2D) {
 	c_discardRectangles := make([]vulkan.RawRect2D, len(discardRectangles))
 	for i := range discardRectangles {
@@ -48,6 +71,10 @@ func CmdSetDiscardRectangleEXT(commandBuffer vulkan.CommandBuffer, firstDiscardR
 //   - discardRectangleEnable: specifies whether discard rectangles are enabled or not.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleEnableEXT.html
+func (c *Commands) CmdSetDiscardRectangleEnableEXT(commandBuffer vulkan.CommandBuffer, discardRectangleEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnCmdSetDiscardRectangleEnableEXT, uintptr(commandBuffer), uintptr(discardRectangleEnable))
+}
+
 func CmdSetDiscardRectangleEnableEXT(commandBuffer vulkan.CommandBuffer, discardRectangleEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnCmdSetDiscardRectangleEnableEXT, uintptr(commandBuffer), uintptr(discardRectangleEnable))
 }
@@ -58,6 +85,10 @@ func CmdSetDiscardRectangleEnableEXT(commandBuffer vulkan.CommandBuffer, discard
 //   - discardRectangleMode: specifies the discard rectangle mode for all discard rectangles, either inclusive or exclusive.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDiscardRectangleModeEXT.html
+func (c *Commands) CmdSetDiscardRectangleModeEXT(commandBuffer vulkan.CommandBuffer, discardRectangleMode vulkan.DiscardRectangleModeEXT) {
+	vulkan.CallSyscall(c.pfnCmdSetDiscardRectangleModeEXT, uintptr(commandBuffer), uintptr(discardRectangleMode))
+}
+
 func CmdSetDiscardRectangleModeEXT(commandBuffer vulkan.CommandBuffer, discardRectangleMode vulkan.DiscardRectangleModeEXT) {
 	vulkan.CallSyscall(pfnCmdSetDiscardRectangleModeEXT, uintptr(commandBuffer), uintptr(discardRectangleMode))
 }

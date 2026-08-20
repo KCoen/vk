@@ -10,7 +10,20 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdExecuteGeneratedCommandsEXT            uintptr
+	pfnCmdPreprocessGeneratedCommandsEXT         uintptr
+	pfnCreateIndirectCommandsLayoutEXT           uintptr
+	pfnCreateIndirectExecutionSetEXT             uintptr
+	pfnDestroyIndirectCommandsLayoutEXT          uintptr
+	pfnDestroyIndirectExecutionSetEXT            uintptr
+	pfnGetGeneratedCommandsMemoryRequirementsEXT uintptr
+	pfnUpdateIndirectExecutionSetPipelineEXT     uintptr
+	pfnUpdateIndirectExecutionSetShaderEXT       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdExecuteGeneratedCommandsEXT            uintptr
 	pfnCmdPreprocessGeneratedCommandsEXT         uintptr
@@ -23,17 +36,29 @@ var (
 	pfnUpdateIndirectExecutionSetShaderEXT       uintptr
 )
 
-// Init resolves and initializes all VK_EXT_device_generated_commands extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdExecuteGeneratedCommandsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsEXT")
-	pfnCmdPreprocessGeneratedCommandsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsEXT")
-	pfnCreateIndirectCommandsLayoutEXT = vulkan.GetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutEXT")
-	pfnCreateIndirectExecutionSetEXT = vulkan.GetDeviceProcAddr(device, "vkCreateIndirectExecutionSetEXT")
-	pfnDestroyIndirectCommandsLayoutEXT = vulkan.GetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutEXT")
-	pfnDestroyIndirectExecutionSetEXT = vulkan.GetDeviceProcAddr(device, "vkDestroyIndirectExecutionSetEXT")
-	pfnGetGeneratedCommandsMemoryRequirementsEXT = vulkan.GetDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsEXT")
-	pfnUpdateIndirectExecutionSetPipelineEXT = vulkan.GetDeviceProcAddr(device, "vkUpdateIndirectExecutionSetPipelineEXT")
-	pfnUpdateIndirectExecutionSetShaderEXT = vulkan.GetDeviceProcAddr(device, "vkUpdateIndirectExecutionSetShaderEXT")
+// Init resolves and initializes all VK_EXT_device_generated_commands extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdExecuteGeneratedCommandsEXT:            vulkan.GetDeviceProcAddr(device, "vkCmdExecuteGeneratedCommandsEXT"),
+		pfnCmdPreprocessGeneratedCommandsEXT:         vulkan.GetDeviceProcAddr(device, "vkCmdPreprocessGeneratedCommandsEXT"),
+		pfnCreateIndirectCommandsLayoutEXT:           vulkan.GetDeviceProcAddr(device, "vkCreateIndirectCommandsLayoutEXT"),
+		pfnCreateIndirectExecutionSetEXT:             vulkan.GetDeviceProcAddr(device, "vkCreateIndirectExecutionSetEXT"),
+		pfnDestroyIndirectCommandsLayoutEXT:          vulkan.GetDeviceProcAddr(device, "vkDestroyIndirectCommandsLayoutEXT"),
+		pfnDestroyIndirectExecutionSetEXT:            vulkan.GetDeviceProcAddr(device, "vkDestroyIndirectExecutionSetEXT"),
+		pfnGetGeneratedCommandsMemoryRequirementsEXT: vulkan.GetDeviceProcAddr(device, "vkGetGeneratedCommandsMemoryRequirementsEXT"),
+		pfnUpdateIndirectExecutionSetPipelineEXT:     vulkan.GetDeviceProcAddr(device, "vkUpdateIndirectExecutionSetPipelineEXT"),
+		pfnUpdateIndirectExecutionSetShaderEXT:       vulkan.GetDeviceProcAddr(device, "vkUpdateIndirectExecutionSetShaderEXT"),
+	}
+	pfnCmdExecuteGeneratedCommandsEXT = cmds.pfnCmdExecuteGeneratedCommandsEXT
+	pfnCmdPreprocessGeneratedCommandsEXT = cmds.pfnCmdPreprocessGeneratedCommandsEXT
+	pfnCreateIndirectCommandsLayoutEXT = cmds.pfnCreateIndirectCommandsLayoutEXT
+	pfnCreateIndirectExecutionSetEXT = cmds.pfnCreateIndirectExecutionSetEXT
+	pfnDestroyIndirectCommandsLayoutEXT = cmds.pfnDestroyIndirectCommandsLayoutEXT
+	pfnDestroyIndirectExecutionSetEXT = cmds.pfnDestroyIndirectExecutionSetEXT
+	pfnGetGeneratedCommandsMemoryRequirementsEXT = cmds.pfnGetGeneratedCommandsMemoryRequirementsEXT
+	pfnUpdateIndirectExecutionSetPipelineEXT = cmds.pfnUpdateIndirectExecutionSetPipelineEXT
+	pfnUpdateIndirectExecutionSetShaderEXT = cmds.pfnUpdateIndirectExecutionSetShaderEXT
+	return cmds
 }
 
 // CmdExecuteGeneratedCommandsEXT - Generate and execute commands on the device (vkCmdExecuteGeneratedCommandsEXT).
@@ -43,6 +68,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - generatedCommandsInfo: is a pointer to a VkGeneratedCommandsInfoEXT structure containing parameters affecting the generation of commands.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdExecuteGeneratedCommandsEXT.html
+func (c *Commands) CmdExecuteGeneratedCommandsEXT(commandBuffer vulkan.CommandBuffer, isPreprocessed vulkan.Bool32, generatedCommandsInfo *vulkan.GeneratedCommandsInfoEXT) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdExecuteGeneratedCommandsEXT, uintptr(commandBuffer), uintptr(isPreprocessed), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
+}
+
 func CmdExecuteGeneratedCommandsEXT(commandBuffer vulkan.CommandBuffer, isPreprocessed vulkan.Bool32, generatedCommandsInfo *vulkan.GeneratedCommandsInfoEXT) {
 	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
 	vulkan.CallSyscall(pfnCmdExecuteGeneratedCommandsEXT, uintptr(commandBuffer), uintptr(isPreprocessed), uintptr(unsafe.Pointer(c_generatedCommandsInfo)))
@@ -55,6 +85,11 @@ func CmdExecuteGeneratedCommandsEXT(commandBuffer vulkan.CommandBuffer, isPrepro
 //   - stateCommandBuffer: is a command buffer from which to snapshot current states affecting the preprocessing step. When a graphics command action token is used, graphics state is snapshotted. When a compute action command token is used, compute state is snapshotted. When a ray tracing action command token is used, ray tracing state is snapshotted. It can be deleted at any time after this command has been recorded.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPreprocessGeneratedCommandsEXT.html
+func (c *Commands) CmdPreprocessGeneratedCommandsEXT(commandBuffer vulkan.CommandBuffer, generatedCommandsInfo *vulkan.GeneratedCommandsInfoEXT, stateCommandBuffer vulkan.CommandBuffer) {
+	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdPreprocessGeneratedCommandsEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_generatedCommandsInfo)), uintptr(stateCommandBuffer))
+}
+
 func CmdPreprocessGeneratedCommandsEXT(commandBuffer vulkan.CommandBuffer, generatedCommandsInfo *vulkan.GeneratedCommandsInfoEXT, stateCommandBuffer vulkan.CommandBuffer) {
 	c_generatedCommandsInfo := generatedCommandsInfo.Raw()
 	vulkan.CallSyscall(pfnCmdPreprocessGeneratedCommandsEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_generatedCommandsInfo)), uintptr(stateCommandBuffer))
@@ -70,6 +105,13 @@ func CmdPreprocessGeneratedCommandsEXT(commandBuffer vulkan.CommandBuffer, gener
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIndirectCommandsLayoutEXT.html
+func (c *Commands) CreateIndirectCommandsLayoutEXT(device vulkan.Device, createInfo *vulkan.IndirectCommandsLayoutCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (indirectCommandsLayout vulkan.IndirectCommandsLayoutEXT, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateIndirectCommandsLayoutEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&indirectCommandsLayout)))
+	return indirectCommandsLayout, vulkan.Result(r1)
+}
+
 func CreateIndirectCommandsLayoutEXT(device vulkan.Device, createInfo *vulkan.IndirectCommandsLayoutCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (indirectCommandsLayout vulkan.IndirectCommandsLayoutEXT, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -87,6 +129,13 @@ func CreateIndirectCommandsLayoutEXT(device vulkan.Device, createInfo *vulkan.In
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIndirectExecutionSetEXT.html
+func (c *Commands) CreateIndirectExecutionSetEXT(device vulkan.Device, createInfo *vulkan.IndirectExecutionSetCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (indirectExecutionSet vulkan.IndirectExecutionSetEXT, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateIndirectExecutionSetEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&indirectExecutionSet)))
+	return indirectExecutionSet, vulkan.Result(r1)
+}
+
 func CreateIndirectExecutionSetEXT(device vulkan.Device, createInfo *vulkan.IndirectExecutionSetCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (indirectExecutionSet vulkan.IndirectExecutionSetEXT, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -101,6 +150,11 @@ func CreateIndirectExecutionSetEXT(device vulkan.Device, createInfo *vulkan.Indi
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyIndirectCommandsLayoutEXT.html
+func (c *Commands) DestroyIndirectCommandsLayoutEXT(device vulkan.Device, indirectCommandsLayout vulkan.IndirectCommandsLayoutEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyIndirectCommandsLayoutEXT, uintptr(device), uintptr(indirectCommandsLayout), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyIndirectCommandsLayoutEXT(device vulkan.Device, indirectCommandsLayout vulkan.IndirectCommandsLayoutEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyIndirectCommandsLayoutEXT, uintptr(device), uintptr(indirectCommandsLayout), uintptr(unsafe.Pointer(c_allocator)))
@@ -113,6 +167,11 @@ func DestroyIndirectCommandsLayoutEXT(device vulkan.Device, indirectCommandsLayo
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyIndirectExecutionSetEXT.html
+func (c *Commands) DestroyIndirectExecutionSetEXT(device vulkan.Device, indirectExecutionSet vulkan.IndirectExecutionSetEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyIndirectExecutionSetEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyIndirectExecutionSetEXT(device vulkan.Device, indirectExecutionSet vulkan.IndirectExecutionSetEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyIndirectExecutionSetEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(unsafe.Pointer(c_allocator)))
@@ -125,6 +184,12 @@ func DestroyIndirectExecutionSetEXT(device vulkan.Device, indirectExecutionSet v
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2 structure in which the memory requirements of the buffer object are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGeneratedCommandsMemoryRequirementsEXT.html
+func (c *Commands) GetGeneratedCommandsMemoryRequirementsEXT(device vulkan.Device, info *vulkan.GeneratedCommandsMemoryRequirementsInfoEXT) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetGeneratedCommandsMemoryRequirementsEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetGeneratedCommandsMemoryRequirementsEXT(device vulkan.Device, info *vulkan.GeneratedCommandsMemoryRequirementsInfoEXT) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetGeneratedCommandsMemoryRequirementsEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
@@ -139,6 +204,16 @@ func GetGeneratedCommandsMemoryRequirementsEXT(device vulkan.Device, info *vulka
 //   - executionSetWrites: is a pointer to an array of VkWriteIndirectExecutionSetPipelineEXT structures describing the elements to update.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateIndirectExecutionSetPipelineEXT.html
+func (c *Commands) UpdateIndirectExecutionSetPipelineEXT(device vulkan.Device, indirectExecutionSet vulkan.IndirectExecutionSetEXT, executionSetWrites []vulkan.WriteIndirectExecutionSetPipelineEXT) {
+	c_executionSetWrites := make([]vulkan.RawWriteIndirectExecutionSetPipelineEXT, len(executionSetWrites))
+	for i := range executionSetWrites {
+		if raw := executionSetWrites[i].Raw(); raw != nil {
+			c_executionSetWrites[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnUpdateIndirectExecutionSetPipelineEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(len(executionSetWrites)), uintptr(unsafe.Pointer(vulkan.SliceData(c_executionSetWrites))))
+}
+
 func UpdateIndirectExecutionSetPipelineEXT(device vulkan.Device, indirectExecutionSet vulkan.IndirectExecutionSetEXT, executionSetWrites []vulkan.WriteIndirectExecutionSetPipelineEXT) {
 	c_executionSetWrites := make([]vulkan.RawWriteIndirectExecutionSetPipelineEXT, len(executionSetWrites))
 	for i := range executionSetWrites {
@@ -157,6 +232,16 @@ func UpdateIndirectExecutionSetPipelineEXT(device vulkan.Device, indirectExecuti
 //   - executionSetWrites: is a pointer to an array of VkWriteIndirectExecutionSetShaderEXT structures describing the elements to update.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUpdateIndirectExecutionSetShaderEXT.html
+func (c *Commands) UpdateIndirectExecutionSetShaderEXT(device vulkan.Device, indirectExecutionSet vulkan.IndirectExecutionSetEXT, executionSetWrites []vulkan.WriteIndirectExecutionSetShaderEXT) {
+	c_executionSetWrites := make([]vulkan.RawWriteIndirectExecutionSetShaderEXT, len(executionSetWrites))
+	for i := range executionSetWrites {
+		if raw := executionSetWrites[i].Raw(); raw != nil {
+			c_executionSetWrites[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnUpdateIndirectExecutionSetShaderEXT, uintptr(device), uintptr(indirectExecutionSet), uintptr(len(executionSetWrites)), uintptr(unsafe.Pointer(vulkan.SliceData(c_executionSetWrites))))
+}
+
 func UpdateIndirectExecutionSetShaderEXT(device vulkan.Device, indirectExecutionSet vulkan.IndirectExecutionSetEXT, executionSetWrites []vulkan.WriteIndirectExecutionSetShaderEXT) {
 	c_executionSetWrites := make([]vulkan.RawWriteIndirectExecutionSetShaderEXT, len(executionSetWrites))
 	for i := range executionSetWrites {

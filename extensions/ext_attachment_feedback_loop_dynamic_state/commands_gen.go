@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetAttachmentFeedbackLoopEnableEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetAttachmentFeedbackLoopEnableEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_attachment_feedback_loop_dynamic_state extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetAttachmentFeedbackLoopEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetAttachmentFeedbackLoopEnableEXT")
+// Init resolves and initializes all VK_EXT_attachment_feedback_loop_dynamic_state extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetAttachmentFeedbackLoopEnableEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetAttachmentFeedbackLoopEnableEXT"),
+	}
+	pfnCmdSetAttachmentFeedbackLoopEnableEXT = cmds.pfnCmdSetAttachmentFeedbackLoopEnableEXT
+	return cmds
 }
 
 // CmdSetAttachmentFeedbackLoopEnableEXT - Specify whether attachment feedback loops are enabled dynamically on a command buffer (vkCmdSetAttachmentFeedbackLoopEnableEXT).
@@ -26,6 +35,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - aspectMask: specifies the types of attachments for which feedback loops will be enabled. Attachment types whose aspects are not included in aspectMask will have feedback loops disabled.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetAttachmentFeedbackLoopEnableEXT.html
+func (c *Commands) CmdSetAttachmentFeedbackLoopEnableEXT(commandBuffer vulkan.CommandBuffer, aspectMask vulkan.ImageAspectFlags) {
+	vulkan.CallSyscall(c.pfnCmdSetAttachmentFeedbackLoopEnableEXT, uintptr(commandBuffer), uintptr(aspectMask))
+}
+
 func CmdSetAttachmentFeedbackLoopEnableEXT(commandBuffer vulkan.CommandBuffer, aspectMask vulkan.ImageAspectFlags) {
 	vulkan.CallSyscall(pfnCmdSetAttachmentFeedbackLoopEnableEXT, uintptr(commandBuffer), uintptr(aspectMask))
 }

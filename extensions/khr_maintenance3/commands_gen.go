@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDescriptorSetLayoutSupportKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDescriptorSetLayoutSupportKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_maintenance3 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDescriptorSetLayoutSupportKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDescriptorSetLayoutSupportKHR")
+// Init resolves and initializes all VK_KHR_maintenance3 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDescriptorSetLayoutSupportKHR: vulkan.GetInstanceProcAddr(instance, "vkGetDescriptorSetLayoutSupportKHR"),
+	}
+	pfnGetDescriptorSetLayoutSupportKHR = cmds.pfnGetDescriptorSetLayoutSupportKHR
+	return cmds
 }
 
 // GetDescriptorSetLayoutSupportKHR executes vkGetDescriptorSetLayoutSupportKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSupportKHR.html
+func (c *Commands) GetDescriptorSetLayoutSupportKHR() {
+	vulkan.CallSyscall(c.pfnGetDescriptorSetLayoutSupportKHR)
+}
+
 func GetDescriptorSetLayoutSupportKHR() {
 	vulkan.CallSyscall(pfnGetDescriptorSetLayoutSupportKHR)
 }

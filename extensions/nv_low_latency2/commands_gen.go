@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetLatencyTimingsNV    uintptr
+	pfnLatencySleepNV         uintptr
+	pfnQueueNotifyOutOfBandNV uintptr
+	pfnSetLatencyMarkerNV     uintptr
+	pfnSetLatencySleepModeNV  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetLatencyTimingsNV    uintptr
 	pfnLatencySleepNV         uintptr
@@ -19,13 +28,21 @@ var (
 	pfnSetLatencySleepModeNV  uintptr
 )
 
-// Init resolves and initializes all VK_NV_low_latency2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetLatencyTimingsNV = vulkan.GetDeviceProcAddr(device, "vkGetLatencyTimingsNV")
-	pfnLatencySleepNV = vulkan.GetDeviceProcAddr(device, "vkLatencySleepNV")
-	pfnQueueNotifyOutOfBandNV = vulkan.GetDeviceProcAddr(device, "vkQueueNotifyOutOfBandNV")
-	pfnSetLatencyMarkerNV = vulkan.GetDeviceProcAddr(device, "vkSetLatencyMarkerNV")
-	pfnSetLatencySleepModeNV = vulkan.GetDeviceProcAddr(device, "vkSetLatencySleepModeNV")
+// Init resolves and initializes all VK_NV_low_latency2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetLatencyTimingsNV:    vulkan.GetDeviceProcAddr(device, "vkGetLatencyTimingsNV"),
+		pfnLatencySleepNV:         vulkan.GetDeviceProcAddr(device, "vkLatencySleepNV"),
+		pfnQueueNotifyOutOfBandNV: vulkan.GetDeviceProcAddr(device, "vkQueueNotifyOutOfBandNV"),
+		pfnSetLatencyMarkerNV:     vulkan.GetDeviceProcAddr(device, "vkSetLatencyMarkerNV"),
+		pfnSetLatencySleepModeNV:  vulkan.GetDeviceProcAddr(device, "vkSetLatencySleepModeNV"),
+	}
+	pfnGetLatencyTimingsNV = cmds.pfnGetLatencyTimingsNV
+	pfnLatencySleepNV = cmds.pfnLatencySleepNV
+	pfnQueueNotifyOutOfBandNV = cmds.pfnQueueNotifyOutOfBandNV
+	pfnSetLatencyMarkerNV = cmds.pfnSetLatencyMarkerNV
+	pfnSetLatencySleepModeNV = cmds.pfnSetLatencySleepModeNV
+	return cmds
 }
 
 // GetLatencyTimingsNV - Get latency marker results (vkGetLatencyTimingsNV).
@@ -35,6 +52,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - latencyMarkerInfo: is a pointer to a VkGetLatencyMarkerInfoNV structure specifying the parameters for returning latency information.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetLatencyTimingsNV.html
+func (c *Commands) GetLatencyTimingsNV(device vulkan.Device, swapchain vulkan.SwapchainKHR) (latencyMarkerInfo vulkan.GetLatencyMarkerInfoNV) {
+	vulkan.CallSyscall(c.pfnGetLatencyTimingsNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&latencyMarkerInfo)))
+	return latencyMarkerInfo
+}
+
 func GetLatencyTimingsNV(device vulkan.Device, swapchain vulkan.SwapchainKHR) (latencyMarkerInfo vulkan.GetLatencyMarkerInfoNV) {
 	vulkan.CallSyscall(pfnGetLatencyTimingsNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&latencyMarkerInfo)))
 	return latencyMarkerInfo
@@ -49,6 +71,12 @@ func GetLatencyTimingsNV(device vulkan.Device, swapchain vulkan.SwapchainKHR) (l
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkLatencySleepNV.html
+func (c *Commands) LatencySleepNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, sleepInfo *vulkan.LatencySleepInfoNV) (result vulkan.Result) {
+	c_sleepInfo := sleepInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnLatencySleepNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_sleepInfo)))
+	return vulkan.Result(r1)
+}
+
 func LatencySleepNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, sleepInfo *vulkan.LatencySleepInfoNV) (result vulkan.Result) {
 	c_sleepInfo := sleepInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnLatencySleepNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_sleepInfo)))
@@ -61,6 +89,11 @@ func LatencySleepNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, sleepIn
 //   - queueTypeInfo: is a pointer to a VkOutOfBandQueueTypeInfoNV structure specifying the queue type.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueNotifyOutOfBandNV.html
+func (c *Commands) QueueNotifyOutOfBandNV(queue vulkan.Queue, queueTypeInfo *vulkan.OutOfBandQueueTypeInfoNV) {
+	c_queueTypeInfo := queueTypeInfo.Raw()
+	vulkan.CallSyscall(c.pfnQueueNotifyOutOfBandNV, uintptr(queue), uintptr(unsafe.Pointer(c_queueTypeInfo)))
+}
+
 func QueueNotifyOutOfBandNV(queue vulkan.Queue, queueTypeInfo *vulkan.OutOfBandQueueTypeInfoNV) {
 	c_queueTypeInfo := queueTypeInfo.Raw()
 	vulkan.CallSyscall(pfnQueueNotifyOutOfBandNV, uintptr(queue), uintptr(unsafe.Pointer(c_queueTypeInfo)))
@@ -72,6 +105,11 @@ func QueueNotifyOutOfBandNV(queue vulkan.Queue, queueTypeInfo *vulkan.OutOfBandQ
 //   - swapchain: is the swapchain to capture timestamps on.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencyMarkerNV.html
+func (c *Commands) SetLatencyMarkerNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, latencyMarkerInfo *vulkan.SetLatencyMarkerInfoNV) {
+	c_latencyMarkerInfo := latencyMarkerInfo.Raw()
+	vulkan.CallSyscall(c.pfnSetLatencyMarkerNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_latencyMarkerInfo)))
+}
+
 func SetLatencyMarkerNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, latencyMarkerInfo *vulkan.SetLatencyMarkerInfoNV) {
 	c_latencyMarkerInfo := latencyMarkerInfo.Raw()
 	vulkan.CallSyscall(pfnSetLatencyMarkerNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_latencyMarkerInfo)))
@@ -86,6 +124,12 @@ func SetLatencyMarkerNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, lat
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencySleepModeNV.html
+func (c *Commands) SetLatencySleepModeNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, sleepModeInfo *vulkan.LatencySleepModeInfoNV) (result vulkan.Result) {
+	c_sleepModeInfo := sleepModeInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetLatencySleepModeNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_sleepModeInfo)))
+	return vulkan.Result(r1)
+}
+
 func SetLatencySleepModeNV(device vulkan.Device, swapchain vulkan.SwapchainKHR, sleepModeInfo *vulkan.LatencySleepModeInfoNV) (result vulkan.Result) {
 	c_sleepModeInfo := sleepModeInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnSetLatencySleepModeNV, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_sleepModeInfo)))

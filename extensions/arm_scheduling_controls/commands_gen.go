@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetDispatchParametersARM uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetDispatchParametersARM uintptr
 )
 
-// Init resolves and initializes all VK_ARM_scheduling_controls extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetDispatchParametersARM = vulkan.GetDeviceProcAddr(device, "vkCmdSetDispatchParametersARM")
+// Init resolves and initializes all VK_ARM_scheduling_controls extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetDispatchParametersARM: vulkan.GetDeviceProcAddr(device, "vkCmdSetDispatchParametersARM"),
+	}
+	pfnCmdSetDispatchParametersARM = cmds.pfnCmdSetDispatchParametersARM
+	return cmds
 }
 
 // CmdSetDispatchParametersARM - Set parameters that affect dispatch commands (vkCmdSetDispatchParametersARM).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - dispatchParameters: is a pointer to a VkDispatchParametersARM structure specifying the dispatch parameters to be set.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDispatchParametersARM.html
+func (c *Commands) CmdSetDispatchParametersARM(commandBuffer vulkan.CommandBuffer, dispatchParameters *vulkan.DispatchParametersARM) {
+	c_dispatchParameters := dispatchParameters.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetDispatchParametersARM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dispatchParameters)))
+}
+
 func CmdSetDispatchParametersARM(commandBuffer vulkan.CommandBuffer, dispatchParameters *vulkan.DispatchParametersARM) {
 	c_dispatchParameters := dispatchParameters.Raw()
 	vulkan.CallSyscall(pfnCmdSetDispatchParametersARM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dispatchParameters)))

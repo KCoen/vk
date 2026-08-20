@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnSetDeviceMemoryPriorityEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnSetDeviceMemoryPriorityEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_pageable_device_local_memory extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnSetDeviceMemoryPriorityEXT = vulkan.GetDeviceProcAddr(device, "vkSetDeviceMemoryPriorityEXT")
+// Init resolves and initializes all VK_EXT_pageable_device_local_memory extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnSetDeviceMemoryPriorityEXT: vulkan.GetDeviceProcAddr(device, "vkSetDeviceMemoryPriorityEXT"),
+	}
+	pfnSetDeviceMemoryPriorityEXT = cmds.pfnSetDeviceMemoryPriorityEXT
+	return cmds
 }
 
 // SetDeviceMemoryPriorityEXT - Change a memory allocation priority (vkSetDeviceMemoryPriorityEXT).
@@ -27,6 +36,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - priority: is a floating-point value between 0 and 1, indicating the priority of the allocation relative to other memory allocations. Larger values are higher priority. The granularity of the priorities is implementation-dependent.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetDeviceMemoryPriorityEXT.html
+func (c *Commands) SetDeviceMemoryPriorityEXT(device vulkan.Device, memory vulkan.DeviceMemory, priority float32) {
+	vulkan.CallSyscall(c.pfnSetDeviceMemoryPriorityEXT, uintptr(device), uintptr(memory), uintptr(priority))
+}
+
 func SetDeviceMemoryPriorityEXT(device vulkan.Device, memory vulkan.DeviceMemory, priority float32) {
 	vulkan.CallSyscall(pfnSetDeviceMemoryPriorityEXT, uintptr(device), uintptr(memory), uintptr(priority))
 }

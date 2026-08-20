@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_coverage_reduction_mode extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV")
+// Init resolves and initializes all VK_NV_coverage_reduction_mode extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV"),
+	}
+	pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = cmds.pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV
+	return cmds
 }
 
 // GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV - Query supported sample count combinations (vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV).
@@ -29,6 +38,19 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV.html
+func (c *Commands) GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice vulkan.PhysicalDevice) (combinations []vulkan.FramebufferMixedSamplesCombinationNV, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	combinations = make([]vulkan.FramebufferMixedSamplesCombinationNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&combinations[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return combinations, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice vulkan.PhysicalDevice) (combinations []vulkan.FramebufferMixedSamplesCombinationNV, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

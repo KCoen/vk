@@ -10,7 +10,17 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT uintptr
+	pfnCmdBindDescriptorSets2KHR                   uintptr
+	pfnCmdPushConstants2KHR                        uintptr
+	pfnCmdPushDescriptorSet2KHR                    uintptr
+	pfnCmdPushDescriptorSetWithTemplate2KHR        uintptr
+	pfnCmdSetDescriptorBufferOffsets2EXT           uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT uintptr
 	pfnCmdBindDescriptorSets2KHR                   uintptr
@@ -20,14 +30,23 @@ var (
 	pfnCmdSetDescriptorBufferOffsets2EXT           uintptr
 )
 
-// Init resolves and initializes all VK_KHR_maintenance6 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindDescriptorBufferEmbeddedSamplers2EXT")
-	pfnCmdBindDescriptorSets2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdBindDescriptorSets2KHR")
-	pfnCmdPushConstants2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPushConstants2KHR")
-	pfnCmdPushDescriptorSet2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSet2KHR")
-	pfnCmdPushDescriptorSetWithTemplate2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetWithTemplate2KHR")
-	pfnCmdSetDescriptorBufferOffsets2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDescriptorBufferOffsets2EXT")
+// Init resolves and initializes all VK_KHR_maintenance6 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT: vulkan.GetDeviceProcAddr(device, "vkCmdBindDescriptorBufferEmbeddedSamplers2EXT"),
+		pfnCmdBindDescriptorSets2KHR:                   vulkan.GetInstanceProcAddr(instance, "vkCmdBindDescriptorSets2KHR"),
+		pfnCmdPushConstants2KHR:                        vulkan.GetInstanceProcAddr(instance, "vkCmdPushConstants2KHR"),
+		pfnCmdPushDescriptorSet2KHR:                    vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSet2KHR"),
+		pfnCmdPushDescriptorSetWithTemplate2KHR:        vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetWithTemplate2KHR"),
+		pfnCmdSetDescriptorBufferOffsets2EXT:           vulkan.GetDeviceProcAddr(device, "vkCmdSetDescriptorBufferOffsets2EXT"),
+	}
+	pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT = cmds.pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT
+	pfnCmdBindDescriptorSets2KHR = cmds.pfnCmdBindDescriptorSets2KHR
+	pfnCmdPushConstants2KHR = cmds.pfnCmdPushConstants2KHR
+	pfnCmdPushDescriptorSet2KHR = cmds.pfnCmdPushDescriptorSet2KHR
+	pfnCmdPushDescriptorSetWithTemplate2KHR = cmds.pfnCmdPushDescriptorSetWithTemplate2KHR
+	pfnCmdSetDescriptorBufferOffsets2EXT = cmds.pfnCmdSetDescriptorBufferOffsets2EXT
+	return cmds
 }
 
 // CmdBindDescriptorBufferEmbeddedSamplers2EXT - Setting embedded immutable samplers offsets in a command buffer (vkCmdBindDescriptorBufferEmbeddedSamplers2EXT).
@@ -36,6 +55,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - bindDescriptorBufferEmbeddedSamplersInfo: is a pointer to a VkBindDescriptorBufferEmbeddedSamplersInfoEXT structure.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBufferEmbeddedSamplers2EXT.html
+func (c *Commands) CmdBindDescriptorBufferEmbeddedSamplers2EXT(commandBuffer vulkan.CommandBuffer, bindDescriptorBufferEmbeddedSamplersInfo *vulkan.BindDescriptorBufferEmbeddedSamplersInfoEXT) {
+	c_bindDescriptorBufferEmbeddedSamplersInfo := bindDescriptorBufferEmbeddedSamplersInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindDescriptorBufferEmbeddedSamplersInfo)))
+}
+
 func CmdBindDescriptorBufferEmbeddedSamplers2EXT(commandBuffer vulkan.CommandBuffer, bindDescriptorBufferEmbeddedSamplersInfo *vulkan.BindDescriptorBufferEmbeddedSamplersInfoEXT) {
 	c_bindDescriptorBufferEmbeddedSamplersInfo := bindDescriptorBufferEmbeddedSamplersInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBindDescriptorBufferEmbeddedSamplers2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindDescriptorBufferEmbeddedSamplersInfo)))
@@ -43,24 +67,40 @@ func CmdBindDescriptorBufferEmbeddedSamplers2EXT(commandBuffer vulkan.CommandBuf
 
 // CmdBindDescriptorSets2KHR executes vkCmdBindDescriptorSets2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorSets2KHR.html
+func (c *Commands) CmdBindDescriptorSets2KHR() {
+	vulkan.CallSyscall(c.pfnCmdBindDescriptorSets2KHR)
+}
+
 func CmdBindDescriptorSets2KHR() {
 	vulkan.CallSyscall(pfnCmdBindDescriptorSets2KHR)
 }
 
 // CmdPushConstants2KHR executes vkCmdPushConstants2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushConstants2KHR.html
+func (c *Commands) CmdPushConstants2KHR() {
+	vulkan.CallSyscall(c.pfnCmdPushConstants2KHR)
+}
+
 func CmdPushConstants2KHR() {
 	vulkan.CallSyscall(pfnCmdPushConstants2KHR)
 }
 
 // CmdPushDescriptorSet2KHR executes vkCmdPushDescriptorSet2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDescriptorSet2KHR.html
+func (c *Commands) CmdPushDescriptorSet2KHR() {
+	vulkan.CallSyscall(c.pfnCmdPushDescriptorSet2KHR)
+}
+
 func CmdPushDescriptorSet2KHR() {
 	vulkan.CallSyscall(pfnCmdPushDescriptorSet2KHR)
 }
 
 // CmdPushDescriptorSetWithTemplate2KHR executes vkCmdPushDescriptorSetWithTemplate2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDescriptorSetWithTemplate2KHR.html
+func (c *Commands) CmdPushDescriptorSetWithTemplate2KHR() {
+	vulkan.CallSyscall(c.pfnCmdPushDescriptorSetWithTemplate2KHR)
+}
+
 func CmdPushDescriptorSetWithTemplate2KHR() {
 	vulkan.CallSyscall(pfnCmdPushDescriptorSetWithTemplate2KHR)
 }
@@ -71,6 +111,11 @@ func CmdPushDescriptorSetWithTemplate2KHR() {
 //   - setDescriptorBufferOffsetsInfo: is a pointer to a VkSetDescriptorBufferOffsetsInfoEXT structure.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDescriptorBufferOffsets2EXT.html
+func (c *Commands) CmdSetDescriptorBufferOffsets2EXT(commandBuffer vulkan.CommandBuffer, setDescriptorBufferOffsetsInfo *vulkan.SetDescriptorBufferOffsetsInfoEXT) {
+	c_setDescriptorBufferOffsetsInfo := setDescriptorBufferOffsetsInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetDescriptorBufferOffsets2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_setDescriptorBufferOffsetsInfo)))
+}
+
 func CmdSetDescriptorBufferOffsets2EXT(commandBuffer vulkan.CommandBuffer, setDescriptorBufferOffsetsInfo *vulkan.SetDescriptorBufferOffsetsInfoEXT) {
 	c_setDescriptorBufferOffsetsInfo := setDescriptorBufferOffsetsInfo.Raw()
 	vulkan.CallSyscall(pfnCmdSetDescriptorBufferOffsets2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_setDescriptorBufferOffsetsInfo)))

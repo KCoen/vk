@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetDepthBias2EXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetDepthBias2EXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_depth_bias_control extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetDepthBias2EXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthBias2EXT")
+// Init resolves and initializes all VK_EXT_depth_bias_control extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetDepthBias2EXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthBias2EXT"),
+	}
+	pfnCmdSetDepthBias2EXT = cmds.pfnCmdSetDepthBias2EXT
+	return cmds
 }
 
 // CmdSetDepthBias2EXT - Set depth bias factors and clamp dynamically for a command buffer (vkCmdSetDepthBias2EXT).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - depthBiasInfo: is a pointer to a VkDepthBiasInfoEXT structure specifying depth bias parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBias2EXT.html
+func (c *Commands) CmdSetDepthBias2EXT(commandBuffer vulkan.CommandBuffer, depthBiasInfo *vulkan.DepthBiasInfoEXT) {
+	c_depthBiasInfo := depthBiasInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetDepthBias2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_depthBiasInfo)))
+}
+
 func CmdSetDepthBias2EXT(commandBuffer vulkan.CommandBuffer, depthBiasInfo *vulkan.DepthBiasInfoEXT) {
 	c_depthBiasInfo := depthBiasInfo.Raw()
 	vulkan.CallSyscall(pfnCmdSetDepthBias2EXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_depthBiasInfo)))

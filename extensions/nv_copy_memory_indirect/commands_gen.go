@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdCopyMemoryIndirectNV        uintptr
+	pfnCmdCopyMemoryToImageIndirectNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdCopyMemoryIndirectNV        uintptr
 	pfnCmdCopyMemoryToImageIndirectNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_copy_memory_indirect extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdCopyMemoryIndirectNV = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryIndirectNV")
-	pfnCmdCopyMemoryToImageIndirectNV = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageIndirectNV")
+// Init resolves and initializes all VK_NV_copy_memory_indirect extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdCopyMemoryIndirectNV:        vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryIndirectNV"),
+		pfnCmdCopyMemoryToImageIndirectNV: vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToImageIndirectNV"),
+	}
+	pfnCmdCopyMemoryIndirectNV = cmds.pfnCmdCopyMemoryIndirectNV
+	pfnCmdCopyMemoryToImageIndirectNV = cmds.pfnCmdCopyMemoryToImageIndirectNV
+	return cmds
 }
 
 // CmdCopyMemoryIndirectNV - Copy data between memory regions (vkCmdCopyMemoryIndirectNV).
@@ -30,6 +41,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - stride: is the stride in bytes between successive sets of copy parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryIndirectNV.html
+func (c *Commands) CmdCopyMemoryIndirectNV(commandBuffer vulkan.CommandBuffer, copyBufferAddress vulkan.DeviceAddress, copyCount uint32, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdCopyMemoryIndirectNV, uintptr(commandBuffer), uintptr(copyBufferAddress), uintptr(copyCount), uintptr(stride))
+}
+
 func CmdCopyMemoryIndirectNV(commandBuffer vulkan.CommandBuffer, copyBufferAddress vulkan.DeviceAddress, copyCount uint32, stride uint32) {
 	vulkan.CallSyscall(pfnCmdCopyMemoryIndirectNV, uintptr(commandBuffer), uintptr(copyBufferAddress), uintptr(copyCount), uintptr(stride))
 }
@@ -45,6 +60,16 @@ func CmdCopyMemoryIndirectNV(commandBuffer vulkan.CommandBuffer, copyBufferAddre
 //   - imageSubresources: is a pointer to an array of copyCount VkImageSubresourceLayers structures, specifying the image subresources of the destination image data for the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToImageIndirectNV.html
+func (c *Commands) CmdCopyMemoryToImageIndirectNV(commandBuffer vulkan.CommandBuffer, copyBufferAddress vulkan.DeviceAddress, stride uint32, dstImage vulkan.Image, dstImageLayout vulkan.ImageLayout, imageSubresources []vulkan.ImageSubresourceLayers) {
+	c_imageSubresources := make([]vulkan.RawImageSubresourceLayers, len(imageSubresources))
+	for i := range imageSubresources {
+		if raw := imageSubresources[i].Raw(); raw != nil {
+			c_imageSubresources[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdCopyMemoryToImageIndirectNV, uintptr(commandBuffer), uintptr(copyBufferAddress), uintptr(len(imageSubresources)), uintptr(stride), uintptr(dstImage), uintptr(dstImageLayout), uintptr(unsafe.Pointer(vulkan.SliceData(c_imageSubresources))))
+}
+
 func CmdCopyMemoryToImageIndirectNV(commandBuffer vulkan.CommandBuffer, copyBufferAddress vulkan.DeviceAddress, stride uint32, dstImage vulkan.Image, dstImageLayout vulkan.ImageLayout, imageSubresources []vulkan.ImageSubresourceLayers) {
 	c_imageSubresources := make([]vulkan.RawImageSubresourceLayers, len(imageSubresources))
 	for i := range imageSubresources {

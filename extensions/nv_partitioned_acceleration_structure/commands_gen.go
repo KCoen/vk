@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBuildPartitionedAccelerationStructuresNV      uintptr
+	pfnGetPartitionedAccelerationStructuresBuildSizesNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBuildPartitionedAccelerationStructuresNV      uintptr
 	pfnGetPartitionedAccelerationStructuresBuildSizesNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_partitioned_acceleration_structure extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBuildPartitionedAccelerationStructuresNV = vulkan.GetDeviceProcAddr(device, "vkCmdBuildPartitionedAccelerationStructuresNV")
-	pfnGetPartitionedAccelerationStructuresBuildSizesNV = vulkan.GetDeviceProcAddr(device, "vkGetPartitionedAccelerationStructuresBuildSizesNV")
+// Init resolves and initializes all VK_NV_partitioned_acceleration_structure extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBuildPartitionedAccelerationStructuresNV:      vulkan.GetDeviceProcAddr(device, "vkCmdBuildPartitionedAccelerationStructuresNV"),
+		pfnGetPartitionedAccelerationStructuresBuildSizesNV: vulkan.GetDeviceProcAddr(device, "vkGetPartitionedAccelerationStructuresBuildSizesNV"),
+	}
+	pfnCmdBuildPartitionedAccelerationStructuresNV = cmds.pfnCmdBuildPartitionedAccelerationStructuresNV
+	pfnGetPartitionedAccelerationStructuresBuildSizesNV = cmds.pfnGetPartitionedAccelerationStructuresBuildSizesNV
+	return cmds
 }
 
 // CmdBuildPartitionedAccelerationStructuresNV - Command for building a PTLAS (vkCmdBuildPartitionedAccelerationStructuresNV).
@@ -28,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - buildInfo: is a pointer to a VkBuildPartitionedAccelerationStructureInfoNV structure containing parameters required for building a PTLAS.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildPartitionedAccelerationStructuresNV.html
+func (c *Commands) CmdBuildPartitionedAccelerationStructuresNV(commandBuffer vulkan.CommandBuffer, buildInfo *vulkan.BuildPartitionedAccelerationStructureInfoNV) {
+	c_buildInfo := buildInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBuildPartitionedAccelerationStructuresNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_buildInfo)))
+}
+
 func CmdBuildPartitionedAccelerationStructuresNV(commandBuffer vulkan.CommandBuffer, buildInfo *vulkan.BuildPartitionedAccelerationStructureInfoNV) {
 	c_buildInfo := buildInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBuildPartitionedAccelerationStructuresNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_buildInfo)))
@@ -40,6 +56,12 @@ func CmdBuildPartitionedAccelerationStructuresNV(commandBuffer vulkan.CommandBuf
 //   - sizeInfo: is a pointer to a VkAccelerationStructureBuildSizesInfoKHR structure which returns the size required for an acceleration structure and the sizes required for the scratch buffers, given the build parameters. The size requirements for a scratch buffer may be zero.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPartitionedAccelerationStructuresBuildSizesNV.html
+func (c *Commands) GetPartitionedAccelerationStructuresBuildSizesNV(device vulkan.Device, info *vulkan.PartitionedAccelerationStructureInstancesInputNV) (sizeInfo vulkan.AccelerationStructureBuildSizesInfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetPartitionedAccelerationStructuresBuildSizesNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
 func GetPartitionedAccelerationStructuresBuildSizesNV(device vulkan.Device, info *vulkan.PartitionedAccelerationStructureInstancesInputNV) (sizeInfo vulkan.AccelerationStructureBuildSizesInfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetPartitionedAccelerationStructuresBuildSizesNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&sizeInfo)))

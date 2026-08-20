@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdEndRendering2KHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdEndRendering2KHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_maintenance10 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdEndRendering2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdEndRendering2KHR")
+// Init resolves and initializes all VK_KHR_maintenance10 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdEndRendering2KHR: vulkan.GetDeviceProcAddr(device, "vkCmdEndRendering2KHR"),
+	}
+	pfnCmdEndRendering2KHR = cmds.pfnCmdEndRendering2KHR
+	return cmds
 }
 
 // CmdEndRendering2KHR - End a dynamic render pass instance (vkCmdEndRendering2KHR).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - renderingEndInfo: is NULL or a pointer to a VkRenderingEndInfoKHR structure containing information about how the render pass will be ended.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndRendering2KHR.html
+func (c *Commands) CmdEndRendering2KHR(commandBuffer vulkan.CommandBuffer, renderingEndInfo *vulkan.RenderingEndInfoKHR) {
+	c_renderingEndInfo := renderingEndInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdEndRendering2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_renderingEndInfo)))
+}
+
 func CmdEndRendering2KHR(commandBuffer vulkan.CommandBuffer, renderingEndInfo *vulkan.RenderingEndInfoKHR) {
 	c_renderingEndInfo := renderingEndInfo.Raw()
 	vulkan.CallSyscall(pfnCmdEndRendering2KHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_renderingEndInfo)))

@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdCuLaunchKernelNVX uintptr
+	pfnCreateCuFunctionNVX  uintptr
+	pfnCreateCuModuleNVX    uintptr
+	pfnDestroyCuFunctionNVX uintptr
+	pfnDestroyCuModuleNVX   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdCuLaunchKernelNVX uintptr
 	pfnCreateCuFunctionNVX  uintptr
@@ -19,17 +28,30 @@ var (
 	pfnDestroyCuModuleNVX   uintptr
 )
 
-// Init resolves and initializes all VK_NVX_binary_import extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdCuLaunchKernelNVX = vulkan.GetDeviceProcAddr(device, "vkCmdCuLaunchKernelNVX")
-	pfnCreateCuFunctionNVX = vulkan.GetDeviceProcAddr(device, "vkCreateCuFunctionNVX")
-	pfnCreateCuModuleNVX = vulkan.GetDeviceProcAddr(device, "vkCreateCuModuleNVX")
-	pfnDestroyCuFunctionNVX = vulkan.GetDeviceProcAddr(device, "vkDestroyCuFunctionNVX")
-	pfnDestroyCuModuleNVX = vulkan.GetDeviceProcAddr(device, "vkDestroyCuModuleNVX")
+// Init resolves and initializes all VK_NVX_binary_import extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdCuLaunchKernelNVX: vulkan.GetDeviceProcAddr(device, "vkCmdCuLaunchKernelNVX"),
+		pfnCreateCuFunctionNVX:  vulkan.GetDeviceProcAddr(device, "vkCreateCuFunctionNVX"),
+		pfnCreateCuModuleNVX:    vulkan.GetDeviceProcAddr(device, "vkCreateCuModuleNVX"),
+		pfnDestroyCuFunctionNVX: vulkan.GetDeviceProcAddr(device, "vkDestroyCuFunctionNVX"),
+		pfnDestroyCuModuleNVX:   vulkan.GetDeviceProcAddr(device, "vkDestroyCuModuleNVX"),
+	}
+	pfnCmdCuLaunchKernelNVX = cmds.pfnCmdCuLaunchKernelNVX
+	pfnCreateCuFunctionNVX = cmds.pfnCreateCuFunctionNVX
+	pfnCreateCuModuleNVX = cmds.pfnCreateCuModuleNVX
+	pfnDestroyCuFunctionNVX = cmds.pfnDestroyCuFunctionNVX
+	pfnDestroyCuModuleNVX = cmds.pfnDestroyCuModuleNVX
+	return cmds
 }
 
 // CmdCuLaunchKernelNVX - Stub description of vkCmdCuLaunchKernelNVX (vkCmdCuLaunchKernelNVX).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCuLaunchKernelNVX.html
+func (c *Commands) CmdCuLaunchKernelNVX(commandBuffer vulkan.CommandBuffer, launchInfo *vulkan.CuLaunchInfoNVX) {
+	c_launchInfo := launchInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdCuLaunchKernelNVX, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_launchInfo)))
+}
+
 func CmdCuLaunchKernelNVX(commandBuffer vulkan.CommandBuffer, launchInfo *vulkan.CuLaunchInfoNVX) {
 	c_launchInfo := launchInfo.Raw()
 	vulkan.CallSyscall(pfnCmdCuLaunchKernelNVX, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_launchInfo)))
@@ -39,6 +61,13 @@ func CmdCuLaunchKernelNVX(commandBuffer vulkan.CommandBuffer, launchInfo *vulkan
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCuFunctionNVX.html
+func (c *Commands) CreateCuFunctionNVX(device vulkan.Device, createInfo *vulkan.CuFunctionCreateInfoNVX, allocator *vulkan.AllocationCallbacks) (function vulkan.CuFunctionNVX, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateCuFunctionNVX, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&function)))
+	return function, vulkan.Result(r1)
+}
+
 func CreateCuFunctionNVX(device vulkan.Device, createInfo *vulkan.CuFunctionCreateInfoNVX, allocator *vulkan.AllocationCallbacks) (function vulkan.CuFunctionNVX, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -50,6 +79,13 @@ func CreateCuFunctionNVX(device vulkan.Device, createInfo *vulkan.CuFunctionCrea
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateCuModuleNVX.html
+func (c *Commands) CreateCuModuleNVX(device vulkan.Device, createInfo *vulkan.CuModuleCreateInfoNVX, allocator *vulkan.AllocationCallbacks) (module vulkan.CuModuleNVX, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateCuModuleNVX, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&module)))
+	return module, vulkan.Result(r1)
+}
+
 func CreateCuModuleNVX(device vulkan.Device, createInfo *vulkan.CuModuleCreateInfoNVX, allocator *vulkan.AllocationCallbacks) (module vulkan.CuModuleNVX, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -59,6 +95,11 @@ func CreateCuModuleNVX(device vulkan.Device, createInfo *vulkan.CuModuleCreateIn
 
 // DestroyCuFunctionNVX - Stub description of vkDestroyCuFunctionNVX (vkDestroyCuFunctionNVX).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCuFunctionNVX.html
+func (c *Commands) DestroyCuFunctionNVX(device vulkan.Device, function vulkan.CuFunctionNVX, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyCuFunctionNVX, uintptr(device), uintptr(function), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyCuFunctionNVX(device vulkan.Device, function vulkan.CuFunctionNVX, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyCuFunctionNVX, uintptr(device), uintptr(function), uintptr(unsafe.Pointer(c_allocator)))
@@ -66,6 +107,11 @@ func DestroyCuFunctionNVX(device vulkan.Device, function vulkan.CuFunctionNVX, a
 
 // DestroyCuModuleNVX - Stub description of vkDestroyCuModuleNVX (vkDestroyCuModuleNVX).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyCuModuleNVX.html
+func (c *Commands) DestroyCuModuleNVX(device vulkan.Device, module vulkan.CuModuleNVX, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyCuModuleNVX, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyCuModuleNVX(device vulkan.Device, module vulkan.CuModuleNVX, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyCuModuleNVX, uintptr(device), uintptr(module), uintptr(unsafe.Pointer(c_allocator)))

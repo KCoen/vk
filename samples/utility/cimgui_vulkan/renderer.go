@@ -23,10 +23,10 @@ type Renderer struct {
 	FontMemory          vulkan.DeviceMemory
 	FontView            vulkan.ImageView
 
-	VertexBuffer        *utility.Buffer
-	IndexBuffer         *utility.Buffer
-	VertexBufferSize    int
-	IndexBufferSize     int
+	VertexBuffer     *utility.Buffer
+	IndexBuffer      *utility.Buffer
+	VertexBufferSize int
+	IndexBufferSize  int
 }
 
 // NewRenderer creates and initializes a Vulkan renderer for cimgui-go.

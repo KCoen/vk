@@ -18,7 +18,6 @@ func TestDebugUtilsCallback(t *testing.T) {
 	if err := vulkan.Init(); err != nil {
 		t.Skipf("Vulkan loader not available on host: %v", err)
 	}
-	vulkan.InitCommands(0, 0)
 
 	// 1. Enumerate available extensions to ensure VK_EXT_debug_utils is supported
 	exts, res := vulkan.EnumerateInstanceExtensionProperties("")

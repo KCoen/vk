@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindShadingRateImageNV          uintptr
+	pfnCmdSetCoarseSampleOrderNV          uintptr
+	pfnCmdSetViewportShadingRatePaletteNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindShadingRateImageNV          uintptr
 	pfnCmdSetCoarseSampleOrderNV          uintptr
 	pfnCmdSetViewportShadingRatePaletteNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_shading_rate_image extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindShadingRateImageNV = vulkan.GetDeviceProcAddr(device, "vkCmdBindShadingRateImageNV")
-	pfnCmdSetCoarseSampleOrderNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCoarseSampleOrderNV")
-	pfnCmdSetViewportShadingRatePaletteNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportShadingRatePaletteNV")
+// Init resolves and initializes all VK_NV_shading_rate_image extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindShadingRateImageNV:          vulkan.GetDeviceProcAddr(device, "vkCmdBindShadingRateImageNV"),
+		pfnCmdSetCoarseSampleOrderNV:          vulkan.GetDeviceProcAddr(device, "vkCmdSetCoarseSampleOrderNV"),
+		pfnCmdSetViewportShadingRatePaletteNV: vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportShadingRatePaletteNV"),
+	}
+	pfnCmdBindShadingRateImageNV = cmds.pfnCmdBindShadingRateImageNV
+	pfnCmdSetCoarseSampleOrderNV = cmds.pfnCmdSetCoarseSampleOrderNV
+	pfnCmdSetViewportShadingRatePaletteNV = cmds.pfnCmdSetViewportShadingRatePaletteNV
+	return cmds
 }
 
 // CmdBindShadingRateImageNV - Bind a shading rate image on a command buffer (vkCmdBindShadingRateImageNV).
@@ -31,6 +44,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - imageLayout: is the layout that the image subresources accessible from imageView will be in when the shading rate image is accessed.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindShadingRateImageNV.html
+func (c *Commands) CmdBindShadingRateImageNV(commandBuffer vulkan.CommandBuffer, imageView vulkan.ImageView, imageLayout vulkan.ImageLayout) {
+	vulkan.CallSyscall(c.pfnCmdBindShadingRateImageNV, uintptr(commandBuffer), uintptr(imageView), uintptr(imageLayout))
+}
+
 func CmdBindShadingRateImageNV(commandBuffer vulkan.CommandBuffer, imageView vulkan.ImageView, imageLayout vulkan.ImageLayout) {
 	vulkan.CallSyscall(pfnCmdBindShadingRateImageNV, uintptr(commandBuffer), uintptr(imageView), uintptr(imageLayout))
 }
@@ -43,6 +60,16 @@ func CmdBindShadingRateImageNV(commandBuffer vulkan.CommandBuffer, imageView vul
 //   - customSampleOrders: is a pointer to an array of VkCoarseSampleOrderCustomNV structures, each structure specifying the coverage sample order for a single combination of fragment area and coverage sample count.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCoarseSampleOrderNV.html
+func (c *Commands) CmdSetCoarseSampleOrderNV(commandBuffer vulkan.CommandBuffer, sampleOrderType vulkan.CoarseSampleOrderTypeNV, customSampleOrders []vulkan.CoarseSampleOrderCustomNV) {
+	c_customSampleOrders := make([]vulkan.RawCoarseSampleOrderCustomNV, len(customSampleOrders))
+	for i := range customSampleOrders {
+		if raw := customSampleOrders[i].Raw(); raw != nil {
+			c_customSampleOrders[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetCoarseSampleOrderNV, uintptr(commandBuffer), uintptr(sampleOrderType), uintptr(len(customSampleOrders)), uintptr(unsafe.Pointer(vulkan.SliceData(c_customSampleOrders))))
+}
+
 func CmdSetCoarseSampleOrderNV(commandBuffer vulkan.CommandBuffer, sampleOrderType vulkan.CoarseSampleOrderTypeNV, customSampleOrders []vulkan.CoarseSampleOrderCustomNV) {
 	c_customSampleOrders := make([]vulkan.RawCoarseSampleOrderCustomNV, len(customSampleOrders))
 	for i := range customSampleOrders {
@@ -61,6 +88,16 @@ func CmdSetCoarseSampleOrderNV(commandBuffer vulkan.CommandBuffer, sampleOrderTy
 //   - shadingRatePalettes: is a pointer to an array of VkShadingRatePaletteNV structures defining the palette for each viewport.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportShadingRatePaletteNV.html
+func (c *Commands) CmdSetViewportShadingRatePaletteNV(commandBuffer vulkan.CommandBuffer, firstViewport uint32, shadingRatePalettes []vulkan.ShadingRatePaletteNV) {
+	c_shadingRatePalettes := make([]vulkan.RawShadingRatePaletteNV, len(shadingRatePalettes))
+	for i := range shadingRatePalettes {
+		if raw := shadingRatePalettes[i].Raw(); raw != nil {
+			c_shadingRatePalettes[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetViewportShadingRatePaletteNV, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(shadingRatePalettes)), uintptr(unsafe.Pointer(vulkan.SliceData(c_shadingRatePalettes))))
+}
+
 func CmdSetViewportShadingRatePaletteNV(commandBuffer vulkan.CommandBuffer, firstViewport uint32, shadingRatePalettes []vulkan.ShadingRatePaletteNV) {
 	c_shadingRatePalettes := make([]vulkan.RawShadingRatePaletteNV, len(shadingRatePalettes))
 	for i := range shadingRatePalettes {

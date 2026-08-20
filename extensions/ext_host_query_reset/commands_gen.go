@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnResetQueryPoolEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnResetQueryPoolEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_host_query_reset extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnResetQueryPoolEXT = vulkan.GetInstanceProcAddr(instance, "vkResetQueryPoolEXT")
+// Init resolves and initializes all VK_EXT_host_query_reset extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnResetQueryPoolEXT: vulkan.GetInstanceProcAddr(instance, "vkResetQueryPoolEXT"),
+	}
+	pfnResetQueryPoolEXT = cmds.pfnResetQueryPoolEXT
+	return cmds
 }
 
 // ResetQueryPoolEXT executes vkResetQueryPoolEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkResetQueryPoolEXT.html
+func (c *Commands) ResetQueryPoolEXT() {
+	vulkan.CallSyscall(c.pfnResetQueryPoolEXT)
+}
+
 func ResetQueryPoolEXT() {
 	vulkan.CallSyscall(pfnResetQueryPoolEXT)
 }

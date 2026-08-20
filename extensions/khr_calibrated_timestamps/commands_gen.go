@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetCalibratedTimestampsKHR                   uintptr
+	pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetCalibratedTimestampsKHR                   uintptr
 	pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_calibrated_timestamps extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetCalibratedTimestampsKHR = vulkan.GetDeviceProcAddr(device, "vkGetCalibratedTimestampsKHR")
-	pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsKHR")
+// Init resolves and initializes all VK_KHR_calibrated_timestamps extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetCalibratedTimestampsKHR:                   vulkan.GetDeviceProcAddr(device, "vkGetCalibratedTimestampsKHR"),
+		pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsKHR"),
+	}
+	pfnGetCalibratedTimestampsKHR = cmds.pfnGetCalibratedTimestampsKHR
+	pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR = cmds.pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR
+	return cmds
 }
 
 // GetCalibratedTimestampsKHR - Query calibrated timestamps (vkGetCalibratedTimestampsKHR).
@@ -33,6 +44,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetCalibratedTimestampsKHR.html
+func (c *Commands) GetCalibratedTimestampsKHR(device vulkan.Device, timestampInfos []vulkan.CalibratedTimestampInfoKHR, timestamps *uint64) (maxDeviation uint64, result vulkan.Result) {
+	c_timestampInfos := make([]vulkan.RawCalibratedTimestampInfoKHR, len(timestampInfos))
+	for i := range timestampInfos {
+		if raw := timestampInfos[i].Raw(); raw != nil {
+			c_timestampInfos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetCalibratedTimestampsKHR, uintptr(device), uintptr(len(timestampInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_timestampInfos))), uintptr(unsafe.Pointer(timestamps)), uintptr(unsafe.Pointer(&maxDeviation)))
+	return maxDeviation, vulkan.Result(r1)
+}
+
 func GetCalibratedTimestampsKHR(device vulkan.Device, timestampInfos []vulkan.CalibratedTimestampInfoKHR, timestamps *uint64) (maxDeviation uint64, result vulkan.Result) {
 	c_timestampInfos := make([]vulkan.RawCalibratedTimestampInfoKHR, len(timestampInfos))
 	for i := range timestampInfos {
@@ -53,6 +75,19 @@ func GetCalibratedTimestampsKHR(device vulkan.Device, timestampInfos []vulkan.Ca
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCalibrateableTimeDomainsKHR.html
+func (c *Commands) GetPhysicalDeviceCalibrateableTimeDomainsKHR(physicalDevice vulkan.PhysicalDevice) (timeDomains []vulkan.TimeDomainKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	timeDomains = make([]vulkan.TimeDomainKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&timeDomains[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return timeDomains, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceCalibrateableTimeDomainsKHR(physicalDevice vulkan.PhysicalDevice) (timeDomains []vulkan.TimeDomainKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceCalibrateableTimeDomainsKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

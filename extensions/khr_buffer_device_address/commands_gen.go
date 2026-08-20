@@ -10,34 +10,59 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetBufferDeviceAddressKHR              uintptr
+	pfnGetBufferOpaqueCaptureAddressKHR       uintptr
+	pfnGetDeviceMemoryOpaqueCaptureAddressKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetBufferDeviceAddressKHR              uintptr
 	pfnGetBufferOpaqueCaptureAddressKHR       uintptr
 	pfnGetDeviceMemoryOpaqueCaptureAddressKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_buffer_device_address extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetBufferDeviceAddressKHR = vulkan.GetInstanceProcAddr(instance, "vkGetBufferDeviceAddressKHR")
-	pfnGetBufferOpaqueCaptureAddressKHR = vulkan.GetInstanceProcAddr(instance, "vkGetBufferOpaqueCaptureAddressKHR")
-	pfnGetDeviceMemoryOpaqueCaptureAddressKHR = vulkan.GetInstanceProcAddr(instance, "vkGetDeviceMemoryOpaqueCaptureAddressKHR")
+// Init resolves and initializes all VK_KHR_buffer_device_address extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetBufferDeviceAddressKHR:              vulkan.GetInstanceProcAddr(instance, "vkGetBufferDeviceAddressKHR"),
+		pfnGetBufferOpaqueCaptureAddressKHR:       vulkan.GetInstanceProcAddr(instance, "vkGetBufferOpaqueCaptureAddressKHR"),
+		pfnGetDeviceMemoryOpaqueCaptureAddressKHR: vulkan.GetInstanceProcAddr(instance, "vkGetDeviceMemoryOpaqueCaptureAddressKHR"),
+	}
+	pfnGetBufferDeviceAddressKHR = cmds.pfnGetBufferDeviceAddressKHR
+	pfnGetBufferOpaqueCaptureAddressKHR = cmds.pfnGetBufferOpaqueCaptureAddressKHR
+	pfnGetDeviceMemoryOpaqueCaptureAddressKHR = cmds.pfnGetDeviceMemoryOpaqueCaptureAddressKHR
+	return cmds
 }
 
 // GetBufferDeviceAddressKHR executes vkGetBufferDeviceAddressKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferDeviceAddressKHR.html
+func (c *Commands) GetBufferDeviceAddressKHR() {
+	vulkan.CallSyscall(c.pfnGetBufferDeviceAddressKHR)
+}
+
 func GetBufferDeviceAddressKHR() {
 	vulkan.CallSyscall(pfnGetBufferDeviceAddressKHR)
 }
 
 // GetBufferOpaqueCaptureAddressKHR executes vkGetBufferOpaqueCaptureAddressKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferOpaqueCaptureAddressKHR.html
+func (c *Commands) GetBufferOpaqueCaptureAddressKHR() {
+	vulkan.CallSyscall(c.pfnGetBufferOpaqueCaptureAddressKHR)
+}
+
 func GetBufferOpaqueCaptureAddressKHR() {
 	vulkan.CallSyscall(pfnGetBufferOpaqueCaptureAddressKHR)
 }
 
 // GetDeviceMemoryOpaqueCaptureAddressKHR executes vkGetDeviceMemoryOpaqueCaptureAddressKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceMemoryOpaqueCaptureAddressKHR.html
+func (c *Commands) GetDeviceMemoryOpaqueCaptureAddressKHR() {
+	vulkan.CallSyscall(c.pfnGetDeviceMemoryOpaqueCaptureAddressKHR)
+}
+
 func GetDeviceMemoryOpaqueCaptureAddressKHR() {
 	vulkan.CallSyscall(pfnGetDeviceMemoryOpaqueCaptureAddressKHR)
 }

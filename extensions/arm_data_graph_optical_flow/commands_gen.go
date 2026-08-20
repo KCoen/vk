@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM uintptr
+	pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM uintptr
 	pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM   uintptr
 )
 
-// Init resolves and initializes all VK_ARM_data_graph_optical_flow extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM")
-	pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM")
+// Init resolves and initializes all VK_ARM_data_graph_optical_flow extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM"),
+		pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM:   vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM"),
+	}
+	pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM = cmds.pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM
+	pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM = cmds.pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM
+	return cmds
 }
 
 // GetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM - Query the properties of a data graph processing engine and operation set combination for a specific queue family of a physical device (vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM).
@@ -32,6 +43,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM.html
+func (c *Commands) GetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, queueFamilyDataGraphProperties *vulkan.QueueFamilyDataGraphPropertiesARM) (properties vulkan.BaseOutStructure, result vulkan.Result) {
+	c_queueFamilyDataGraphProperties := queueFamilyDataGraphProperties.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, queueFamilyDataGraphProperties *vulkan.QueueFamilyDataGraphPropertiesARM) (properties vulkan.BaseOutStructure, result vulkan.Result) {
 	c_queueFamilyDataGraphProperties := queueFamilyDataGraphProperties.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(&properties)))
@@ -50,6 +67,21 @@ func GetPhysicalDeviceQueueFamilyDataGraphEngineOperationPropertiesARM(physicalD
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_EXTENSION_NOT_PRESENT, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM.html
+func (c *Commands) GetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, queueFamilyDataGraphProperties *vulkan.QueueFamilyDataGraphPropertiesARM, opticalFlowImageFormatInfo *vulkan.DataGraphOpticalFlowImageFormatInfoARM) (imageFormatProperties []vulkan.DataGraphOpticalFlowImageFormatPropertiesARM, result vulkan.Result) {
+	c_queueFamilyDataGraphProperties := queueFamilyDataGraphProperties.Raw()
+	c_opticalFlowImageFormatInfo := opticalFlowImageFormatInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	imageFormatProperties = make([]vulkan.DataGraphOpticalFlowImageFormatPropertiesARM, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&imageFormatProperties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(c_queueFamilyDataGraphProperties)), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return imageFormatProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceQueueFamilyDataGraphOpticalFlowImageFormatsARM(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, queueFamilyDataGraphProperties *vulkan.QueueFamilyDataGraphPropertiesARM, opticalFlowImageFormatInfo *vulkan.DataGraphOpticalFlowImageFormatInfoARM) (imageFormatProperties []vulkan.DataGraphOpticalFlowImageFormatPropertiesARM, result vulkan.Result) {
 	c_queueFamilyDataGraphProperties := queueFamilyDataGraphProperties.Raw()
 	c_opticalFlowImageFormatInfo := opticalFlowImageFormatInfo.Raw()

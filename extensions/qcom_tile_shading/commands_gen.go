@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginPerTileExecutionQCOM uintptr
+	pfnCmdDispatchTileQCOM          uintptr
+	pfnCmdEndPerTileExecutionQCOM   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginPerTileExecutionQCOM uintptr
 	pfnCmdDispatchTileQCOM          uintptr
 	pfnCmdEndPerTileExecutionQCOM   uintptr
 )
 
-// Init resolves and initializes all VK_QCOM_tile_shading extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginPerTileExecutionQCOM = vulkan.GetDeviceProcAddr(device, "vkCmdBeginPerTileExecutionQCOM")
-	pfnCmdDispatchTileQCOM = vulkan.GetDeviceProcAddr(device, "vkCmdDispatchTileQCOM")
-	pfnCmdEndPerTileExecutionQCOM = vulkan.GetDeviceProcAddr(device, "vkCmdEndPerTileExecutionQCOM")
+// Init resolves and initializes all VK_QCOM_tile_shading extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginPerTileExecutionQCOM: vulkan.GetDeviceProcAddr(device, "vkCmdBeginPerTileExecutionQCOM"),
+		pfnCmdDispatchTileQCOM:          vulkan.GetDeviceProcAddr(device, "vkCmdDispatchTileQCOM"),
+		pfnCmdEndPerTileExecutionQCOM:   vulkan.GetDeviceProcAddr(device, "vkCmdEndPerTileExecutionQCOM"),
+	}
+	pfnCmdBeginPerTileExecutionQCOM = cmds.pfnCmdBeginPerTileExecutionQCOM
+	pfnCmdDispatchTileQCOM = cmds.pfnCmdDispatchTileQCOM
+	pfnCmdEndPerTileExecutionQCOM = cmds.pfnCmdEndPerTileExecutionQCOM
+	return cmds
 }
 
 // CmdBeginPerTileExecutionQCOM - Begin per-tile execution mode (vkCmdBeginPerTileExecutionQCOM).
@@ -30,6 +43,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - perTileBeginInfo: is a pointer to a VkPerTileBeginInfoQCOM structure containing information about how the _per-tile execution model_ is started.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginPerTileExecutionQCOM.html
+func (c *Commands) CmdBeginPerTileExecutionQCOM(commandBuffer vulkan.CommandBuffer, perTileBeginInfo *vulkan.PerTileBeginInfoQCOM) {
+	c_perTileBeginInfo := perTileBeginInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBeginPerTileExecutionQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_perTileBeginInfo)))
+}
+
 func CmdBeginPerTileExecutionQCOM(commandBuffer vulkan.CommandBuffer, perTileBeginInfo *vulkan.PerTileBeginInfoQCOM) {
 	c_perTileBeginInfo := perTileBeginInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBeginPerTileExecutionQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_perTileBeginInfo)))
@@ -41,6 +59,11 @@ func CmdBeginPerTileExecutionQCOM(commandBuffer vulkan.CommandBuffer, perTileBeg
 //   - dispatchTileInfo: is a pointer to a VkDispatchTileInfoQCOM structure containing information about the area-based dispatch.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchTileQCOM.html
+func (c *Commands) CmdDispatchTileQCOM(commandBuffer vulkan.CommandBuffer, dispatchTileInfo *vulkan.DispatchTileInfoQCOM) {
+	c_dispatchTileInfo := dispatchTileInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDispatchTileQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dispatchTileInfo)))
+}
+
 func CmdDispatchTileQCOM(commandBuffer vulkan.CommandBuffer, dispatchTileInfo *vulkan.DispatchTileInfoQCOM) {
 	c_dispatchTileInfo := dispatchTileInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDispatchTileQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_dispatchTileInfo)))
@@ -52,6 +75,11 @@ func CmdDispatchTileQCOM(commandBuffer vulkan.CommandBuffer, dispatchTileInfo *v
 //   - perTileEndInfo: is a pointer to a VkPerTileEndInfoQCOM structure containing information about how the _per-tile execution model_ is ended.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndPerTileExecutionQCOM.html
+func (c *Commands) CmdEndPerTileExecutionQCOM(commandBuffer vulkan.CommandBuffer, perTileEndInfo *vulkan.PerTileEndInfoQCOM) {
+	c_perTileEndInfo := perTileEndInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdEndPerTileExecutionQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_perTileEndInfo)))
+}
+
 func CmdEndPerTileExecutionQCOM(commandBuffer vulkan.CommandBuffer, perTileEndInfo *vulkan.PerTileEndInfoQCOM) {
 	c_perTileEndInfo := perTileEndInfo.Raw()
 	vulkan.CallSyscall(pfnCmdEndPerTileExecutionQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_perTileEndInfo)))

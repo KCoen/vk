@@ -10,7 +10,20 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquireNextImage2KHR                  uintptr
+	pfnAcquireNextImageKHR                   uintptr
+	pfnCreateSwapchainKHR                    uintptr
+	pfnDestroySwapchainKHR                   uintptr
+	pfnGetDeviceGroupPresentCapabilitiesKHR  uintptr
+	pfnGetDeviceGroupSurfacePresentModesKHR  uintptr
+	pfnGetPhysicalDevicePresentRectanglesKHR uintptr
+	pfnGetSwapchainImagesKHR                 uintptr
+	pfnQueuePresentKHR                       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquireNextImage2KHR                  uintptr
 	pfnAcquireNextImageKHR                   uintptr
@@ -23,17 +36,29 @@ var (
 	pfnQueuePresentKHR                       uintptr
 )
 
-// Init resolves and initializes all VK_KHR_swapchain extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquireNextImage2KHR = vulkan.GetDeviceProcAddr(device, "vkAcquireNextImage2KHR")
-	pfnAcquireNextImageKHR = vulkan.GetDeviceProcAddr(device, "vkAcquireNextImageKHR")
-	pfnCreateSwapchainKHR = vulkan.GetDeviceProcAddr(device, "vkCreateSwapchainKHR")
-	pfnDestroySwapchainKHR = vulkan.GetDeviceProcAddr(device, "vkDestroySwapchainKHR")
-	pfnGetDeviceGroupPresentCapabilitiesKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeviceGroupPresentCapabilitiesKHR")
-	pfnGetDeviceGroupSurfacePresentModesKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModesKHR")
-	pfnGetPhysicalDevicePresentRectanglesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDevicePresentRectanglesKHR")
-	pfnGetSwapchainImagesKHR = vulkan.GetDeviceProcAddr(device, "vkGetSwapchainImagesKHR")
-	pfnQueuePresentKHR = vulkan.GetDeviceProcAddr(device, "vkQueuePresentKHR")
+// Init resolves and initializes all VK_KHR_swapchain extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquireNextImage2KHR:                  vulkan.GetDeviceProcAddr(device, "vkAcquireNextImage2KHR"),
+		pfnAcquireNextImageKHR:                   vulkan.GetDeviceProcAddr(device, "vkAcquireNextImageKHR"),
+		pfnCreateSwapchainKHR:                    vulkan.GetDeviceProcAddr(device, "vkCreateSwapchainKHR"),
+		pfnDestroySwapchainKHR:                   vulkan.GetDeviceProcAddr(device, "vkDestroySwapchainKHR"),
+		pfnGetDeviceGroupPresentCapabilitiesKHR:  vulkan.GetDeviceProcAddr(device, "vkGetDeviceGroupPresentCapabilitiesKHR"),
+		pfnGetDeviceGroupSurfacePresentModesKHR:  vulkan.GetDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModesKHR"),
+		pfnGetPhysicalDevicePresentRectanglesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDevicePresentRectanglesKHR"),
+		pfnGetSwapchainImagesKHR:                 vulkan.GetDeviceProcAddr(device, "vkGetSwapchainImagesKHR"),
+		pfnQueuePresentKHR:                       vulkan.GetDeviceProcAddr(device, "vkQueuePresentKHR"),
+	}
+	pfnAcquireNextImage2KHR = cmds.pfnAcquireNextImage2KHR
+	pfnAcquireNextImageKHR = cmds.pfnAcquireNextImageKHR
+	pfnCreateSwapchainKHR = cmds.pfnCreateSwapchainKHR
+	pfnDestroySwapchainKHR = cmds.pfnDestroySwapchainKHR
+	pfnGetDeviceGroupPresentCapabilitiesKHR = cmds.pfnGetDeviceGroupPresentCapabilitiesKHR
+	pfnGetDeviceGroupSurfacePresentModesKHR = cmds.pfnGetDeviceGroupSurfacePresentModesKHR
+	pfnGetPhysicalDevicePresentRectanglesKHR = cmds.pfnGetPhysicalDevicePresentRectanglesKHR
+	pfnGetSwapchainImagesKHR = cmds.pfnGetSwapchainImagesKHR
+	pfnQueuePresentKHR = cmds.pfnQueuePresentKHR
+	return cmds
 }
 
 // AcquireNextImage2KHR - Retrieve the index of the next available presentable image (vkAcquireNextImage2KHR).
@@ -45,6 +70,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_TIMEOUT, VK_NOT_READY, VK_SUBOPTIMAL_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireNextImage2KHR.html
+func (c *Commands) AcquireNextImage2KHR(device vulkan.Device, acquireInfo *vulkan.AcquireNextImageInfoKHR) (imageIndex uint32, result vulkan.Result) {
+	c_acquireInfo := acquireInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireNextImage2KHR, uintptr(device), uintptr(unsafe.Pointer(c_acquireInfo)), uintptr(unsafe.Pointer(&imageIndex)))
+	return imageIndex, vulkan.Result(r1)
+}
+
 func AcquireNextImage2KHR(device vulkan.Device, acquireInfo *vulkan.AcquireNextImageInfoKHR) (imageIndex uint32, result vulkan.Result) {
 	c_acquireInfo := acquireInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireNextImage2KHR, uintptr(device), uintptr(unsafe.Pointer(c_acquireInfo)), uintptr(unsafe.Pointer(&imageIndex)))
@@ -63,6 +94,11 @@ func AcquireNextImage2KHR(device vulkan.Device, acquireInfo *vulkan.AcquireNextI
 // Success codes: VK_SUCCESS, VK_TIMEOUT, VK_NOT_READY, VK_SUBOPTIMAL_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireNextImageKHR.html
+func (c *Commands) AcquireNextImageKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, timeout uint64, semaphore vulkan.Semaphore, fence vulkan.Fence) (imageIndex uint32, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireNextImageKHR, uintptr(device), uintptr(swapchain), uintptr(timeout), uintptr(semaphore), uintptr(fence), uintptr(unsafe.Pointer(&imageIndex)))
+	return imageIndex, vulkan.Result(r1)
+}
+
 func AcquireNextImageKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, timeout uint64, semaphore vulkan.Semaphore, fence vulkan.Fence) (imageIndex uint32, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireNextImageKHR, uintptr(device), uintptr(swapchain), uintptr(timeout), uintptr(semaphore), uintptr(fence), uintptr(unsafe.Pointer(&imageIndex)))
 	return imageIndex, vulkan.Result(r1)
@@ -78,6 +114,13 @@ func AcquireNextImageKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, ti
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_COMPRESSION_EXHAUSTED_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSwapchainKHR.html
+func (c *Commands) CreateSwapchainKHR(device vulkan.Device, createInfo *vulkan.SwapchainCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (swapchain vulkan.SwapchainKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateSwapchainKHR, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&swapchain)))
+	return swapchain, vulkan.Result(r1)
+}
+
 func CreateSwapchainKHR(device vulkan.Device, createInfo *vulkan.SwapchainCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (swapchain vulkan.SwapchainKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -92,6 +135,11 @@ func CreateSwapchainKHR(device vulkan.Device, createInfo *vulkan.SwapchainCreate
 //   - allocator: is the allocator used for host memory allocated for the swapchain object when there is no more specific allocator available (see Memory Allocation).
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySwapchainKHR.html
+func (c *Commands) DestroySwapchainKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroySwapchainKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroySwapchainKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroySwapchainKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_allocator)))
@@ -105,6 +153,11 @@ func DestroySwapchainKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, al
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupPresentCapabilitiesKHR.html
+func (c *Commands) GetDeviceGroupPresentCapabilitiesKHR(device vulkan.Device) (deviceGroupPresentCapabilities vulkan.DeviceGroupPresentCapabilitiesKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceGroupPresentCapabilitiesKHR, uintptr(device), uintptr(unsafe.Pointer(&deviceGroupPresentCapabilities)))
+	return deviceGroupPresentCapabilities, vulkan.Result(r1)
+}
+
 func GetDeviceGroupPresentCapabilitiesKHR(device vulkan.Device) (deviceGroupPresentCapabilities vulkan.DeviceGroupPresentCapabilitiesKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceGroupPresentCapabilitiesKHR, uintptr(device), uintptr(unsafe.Pointer(&deviceGroupPresentCapabilities)))
 	return deviceGroupPresentCapabilities, vulkan.Result(r1)
@@ -119,6 +172,11 @@ func GetDeviceGroupPresentCapabilitiesKHR(device vulkan.Device) (deviceGroupPres
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceGroupSurfacePresentModesKHR.html
+func (c *Commands) GetDeviceGroupSurfacePresentModesKHR(device vulkan.Device, surface vulkan.SurfaceKHR) (modes vulkan.DeviceGroupPresentModeFlagsKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceGroupSurfacePresentModesKHR, uintptr(device), uintptr(surface), uintptr(unsafe.Pointer(&modes)))
+	return modes, vulkan.Result(r1)
+}
+
 func GetDeviceGroupSurfacePresentModesKHR(device vulkan.Device, surface vulkan.SurfaceKHR) (modes vulkan.DeviceGroupPresentModeFlagsKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceGroupSurfacePresentModesKHR, uintptr(device), uintptr(surface), uintptr(unsafe.Pointer(&modes)))
 	return modes, vulkan.Result(r1)
@@ -134,6 +192,19 @@ func GetDeviceGroupSurfacePresentModesKHR(device vulkan.Device, surface vulkan.S
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDevicePresentRectanglesKHR.html
+func (c *Commands) GetPhysicalDevicePresentRectanglesKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (rects []vulkan.Rect2D, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDevicePresentRectanglesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	rects = make([]vulkan.Rect2D, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&rects[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDevicePresentRectanglesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return rects, vulkan.Result(r1)
+}
+
 func GetPhysicalDevicePresentRectanglesKHR(physicalDevice vulkan.PhysicalDevice, surface vulkan.SurfaceKHR) (rects []vulkan.Rect2D, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDevicePresentRectanglesKHR, uintptr(physicalDevice), uintptr(surface), uintptr(unsafe.Pointer(&count)), 0)
@@ -157,6 +228,19 @@ func GetPhysicalDevicePresentRectanglesKHR(physicalDevice vulkan.PhysicalDevice,
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainImagesKHR.html
+func (c *Commands) GetSwapchainImagesKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR) (swapchainImages []vulkan.Image, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSwapchainImagesKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	swapchainImages = make([]vulkan.Image, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&swapchainImages[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetSwapchainImagesKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return swapchainImages, vulkan.Result(r1)
+}
+
 func GetSwapchainImagesKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR) (swapchainImages []vulkan.Image, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetSwapchainImagesKHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(&count)), 0)
@@ -178,6 +262,12 @@ func GetSwapchainImagesKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR) 
 // Success codes: VK_SUCCESS, VK_SUBOPTIMAL_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED, VK_ERROR_PRESENT_TIMING_QUEUE_FULL_EXT
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueuePresentKHR.html
+func (c *Commands) QueuePresentKHR(queue vulkan.Queue, presentInfo *vulkan.PresentInfoKHR) (result vulkan.Result) {
+	c_presentInfo := presentInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnQueuePresentKHR, uintptr(queue), uintptr(unsafe.Pointer(c_presentInfo)))
+	return vulkan.Result(r1)
+}
+
 func QueuePresentKHR(queue vulkan.Queue, presentInfo *vulkan.PresentInfoKHR) (result vulkan.Result) {
 	c_presentInfo := presentInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnQueuePresentKHR, uintptr(queue), uintptr(unsafe.Pointer(c_presentInfo)))

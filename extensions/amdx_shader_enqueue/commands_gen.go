@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDispatchGraphAMDX                     uintptr
+	pfnCmdDispatchGraphIndirectAMDX             uintptr
+	pfnCmdDispatchGraphIndirectCountAMDX        uintptr
+	pfnCmdInitializeGraphScratchMemoryAMDX      uintptr
+	pfnCreateExecutionGraphPipelinesAMDX        uintptr
+	pfnGetExecutionGraphPipelineNodeIndexAMDX   uintptr
+	pfnGetExecutionGraphPipelineScratchSizeAMDX uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDispatchGraphAMDX                     uintptr
 	pfnCmdDispatchGraphIndirectAMDX             uintptr
@@ -21,15 +32,25 @@ var (
 	pfnGetExecutionGraphPipelineScratchSizeAMDX uintptr
 )
 
-// Init resolves and initializes all VK_AMDX_shader_enqueue extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDispatchGraphAMDX = vulkan.GetDeviceProcAddr(device, "vkCmdDispatchGraphAMDX")
-	pfnCmdDispatchGraphIndirectAMDX = vulkan.GetDeviceProcAddr(device, "vkCmdDispatchGraphIndirectAMDX")
-	pfnCmdDispatchGraphIndirectCountAMDX = vulkan.GetDeviceProcAddr(device, "vkCmdDispatchGraphIndirectCountAMDX")
-	pfnCmdInitializeGraphScratchMemoryAMDX = vulkan.GetDeviceProcAddr(device, "vkCmdInitializeGraphScratchMemoryAMDX")
-	pfnCreateExecutionGraphPipelinesAMDX = vulkan.GetDeviceProcAddr(device, "vkCreateExecutionGraphPipelinesAMDX")
-	pfnGetExecutionGraphPipelineNodeIndexAMDX = vulkan.GetDeviceProcAddr(device, "vkGetExecutionGraphPipelineNodeIndexAMDX")
-	pfnGetExecutionGraphPipelineScratchSizeAMDX = vulkan.GetDeviceProcAddr(device, "vkGetExecutionGraphPipelineScratchSizeAMDX")
+// Init resolves and initializes all VK_AMDX_shader_enqueue extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDispatchGraphAMDX:                     vulkan.GetDeviceProcAddr(device, "vkCmdDispatchGraphAMDX"),
+		pfnCmdDispatchGraphIndirectAMDX:             vulkan.GetDeviceProcAddr(device, "vkCmdDispatchGraphIndirectAMDX"),
+		pfnCmdDispatchGraphIndirectCountAMDX:        vulkan.GetDeviceProcAddr(device, "vkCmdDispatchGraphIndirectCountAMDX"),
+		pfnCmdInitializeGraphScratchMemoryAMDX:      vulkan.GetDeviceProcAddr(device, "vkCmdInitializeGraphScratchMemoryAMDX"),
+		pfnCreateExecutionGraphPipelinesAMDX:        vulkan.GetDeviceProcAddr(device, "vkCreateExecutionGraphPipelinesAMDX"),
+		pfnGetExecutionGraphPipelineNodeIndexAMDX:   vulkan.GetDeviceProcAddr(device, "vkGetExecutionGraphPipelineNodeIndexAMDX"),
+		pfnGetExecutionGraphPipelineScratchSizeAMDX: vulkan.GetDeviceProcAddr(device, "vkGetExecutionGraphPipelineScratchSizeAMDX"),
+	}
+	pfnCmdDispatchGraphAMDX = cmds.pfnCmdDispatchGraphAMDX
+	pfnCmdDispatchGraphIndirectAMDX = cmds.pfnCmdDispatchGraphIndirectAMDX
+	pfnCmdDispatchGraphIndirectCountAMDX = cmds.pfnCmdDispatchGraphIndirectCountAMDX
+	pfnCmdInitializeGraphScratchMemoryAMDX = cmds.pfnCmdInitializeGraphScratchMemoryAMDX
+	pfnCreateExecutionGraphPipelinesAMDX = cmds.pfnCreateExecutionGraphPipelinesAMDX
+	pfnGetExecutionGraphPipelineNodeIndexAMDX = cmds.pfnGetExecutionGraphPipelineNodeIndexAMDX
+	pfnGetExecutionGraphPipelineScratchSizeAMDX = cmds.pfnGetExecutionGraphPipelineScratchSizeAMDX
+	return cmds
 }
 
 // CmdDispatchGraphAMDX - Dispatch an execution graph (vkCmdDispatchGraphAMDX).
@@ -40,6 +61,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - countInfo: is a host pointer to a VkDispatchGraphCountInfoAMDX structure defining the nodes which will be initially executed.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchGraphAMDX.html
+func (c *Commands) CmdDispatchGraphAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize, countInfo *vulkan.DispatchGraphCountInfoAMDX) {
+	c_countInfo := countInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDispatchGraphAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(unsafe.Pointer(c_countInfo)))
+}
+
 func CmdDispatchGraphAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize, countInfo *vulkan.DispatchGraphCountInfoAMDX) {
 	c_countInfo := countInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDispatchGraphAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(unsafe.Pointer(c_countInfo)))
@@ -53,6 +79,11 @@ func CmdDispatchGraphAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.Dev
 //   - countInfo: is a host pointer to a VkDispatchGraphCountInfoAMDX structure defining the nodes which will be initially executed.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchGraphIndirectAMDX.html
+func (c *Commands) CmdDispatchGraphIndirectAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize, countInfo *vulkan.DispatchGraphCountInfoAMDX) {
+	c_countInfo := countInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDispatchGraphIndirectAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(unsafe.Pointer(c_countInfo)))
+}
+
 func CmdDispatchGraphIndirectAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize, countInfo *vulkan.DispatchGraphCountInfoAMDX) {
 	c_countInfo := countInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDispatchGraphIndirectAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(unsafe.Pointer(c_countInfo)))
@@ -66,6 +97,10 @@ func CmdDispatchGraphIndirectAMDX(commandBuffer vulkan.CommandBuffer, scratch vu
 //   - countInfo: is a device address of a VkDispatchGraphCountInfoAMDX structure defining the nodes which will be initially executed.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchGraphIndirectCountAMDX.html
+func (c *Commands) CmdDispatchGraphIndirectCountAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize, countInfo vulkan.DeviceAddress) {
+	vulkan.CallSyscall(c.pfnCmdDispatchGraphIndirectCountAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(countInfo))
+}
+
 func CmdDispatchGraphIndirectCountAMDX(commandBuffer vulkan.CommandBuffer, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize, countInfo vulkan.DeviceAddress) {
 	vulkan.CallSyscall(pfnCmdDispatchGraphIndirectCountAMDX, uintptr(commandBuffer), uintptr(scratch), uintptr(scratchSize), uintptr(countInfo))
 }
@@ -78,6 +113,10 @@ func CmdDispatchGraphIndirectCountAMDX(commandBuffer vulkan.CommandBuffer, scrat
 //   - scratchSize: is a range in bytes of scratch memory to be initialized.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdInitializeGraphScratchMemoryAMDX.html
+func (c *Commands) CmdInitializeGraphScratchMemoryAMDX(commandBuffer vulkan.CommandBuffer, executionGraph vulkan.Pipeline, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize) {
+	vulkan.CallSyscall(c.pfnCmdInitializeGraphScratchMemoryAMDX, uintptr(commandBuffer), uintptr(executionGraph), uintptr(scratch), uintptr(scratchSize))
+}
+
 func CmdInitializeGraphScratchMemoryAMDX(commandBuffer vulkan.CommandBuffer, executionGraph vulkan.Pipeline, scratch vulkan.DeviceAddress, scratchSize vulkan.DeviceSize) {
 	vulkan.CallSyscall(pfnCmdInitializeGraphScratchMemoryAMDX, uintptr(commandBuffer), uintptr(executionGraph), uintptr(scratch), uintptr(scratchSize))
 }
@@ -94,6 +133,18 @@ func CmdInitializeGraphScratchMemoryAMDX(commandBuffer vulkan.CommandBuffer, exe
 // Success codes: VK_SUCCESS, VK_PIPELINE_COMPILE_REQUIRED_EXT
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateExecutionGraphPipelinesAMDX.html
+func (c *Commands) CreateExecutionGraphPipelinesAMDX(device vulkan.Device, pipelineCache vulkan.PipelineCache, createInfos []vulkan.ExecutionGraphPipelineCreateInfoAMDX, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
+	c_createInfos := make([]vulkan.RawExecutionGraphPipelineCreateInfoAMDX, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateExecutionGraphPipelinesAMDX, uintptr(device), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, vulkan.Result(r1)
+}
+
 func CreateExecutionGraphPipelinesAMDX(device vulkan.Device, pipelineCache vulkan.PipelineCache, createInfos []vulkan.ExecutionGraphPipelineCreateInfoAMDX, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
 	c_createInfos := make([]vulkan.RawExecutionGraphPipelineCreateInfoAMDX, len(createInfos))
 	for i := range createInfos {
@@ -116,6 +167,12 @@ func CreateExecutionGraphPipelinesAMDX(device vulkan.Device, pipelineCache vulka
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetExecutionGraphPipelineNodeIndexAMDX.html
+func (c *Commands) GetExecutionGraphPipelineNodeIndexAMDX(device vulkan.Device, executionGraph vulkan.Pipeline, nodeInfo *vulkan.PipelineShaderStageNodeCreateInfoAMDX) (nodeIndex uint32, result vulkan.Result) {
+	c_nodeInfo := nodeInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetExecutionGraphPipelineNodeIndexAMDX, uintptr(device), uintptr(executionGraph), uintptr(unsafe.Pointer(c_nodeInfo)), uintptr(unsafe.Pointer(&nodeIndex)))
+	return nodeIndex, vulkan.Result(r1)
+}
+
 func GetExecutionGraphPipelineNodeIndexAMDX(device vulkan.Device, executionGraph vulkan.Pipeline, nodeInfo *vulkan.PipelineShaderStageNodeCreateInfoAMDX) (nodeIndex uint32, result vulkan.Result) {
 	c_nodeInfo := nodeInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetExecutionGraphPipelineNodeIndexAMDX, uintptr(device), uintptr(executionGraph), uintptr(unsafe.Pointer(c_nodeInfo)), uintptr(unsafe.Pointer(&nodeIndex)))
@@ -131,6 +188,11 @@ func GetExecutionGraphPipelineNodeIndexAMDX(device vulkan.Device, executionGraph
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetExecutionGraphPipelineScratchSizeAMDX.html
+func (c *Commands) GetExecutionGraphPipelineScratchSizeAMDX(device vulkan.Device, executionGraph vulkan.Pipeline) (sizeInfo vulkan.ExecutionGraphPipelineScratchSizeAMDX, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetExecutionGraphPipelineScratchSizeAMDX, uintptr(device), uintptr(executionGraph), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo, vulkan.Result(r1)
+}
+
 func GetExecutionGraphPipelineScratchSizeAMDX(device vulkan.Device, executionGraph vulkan.Pipeline) (sizeInfo vulkan.ExecutionGraphPipelineScratchSizeAMDX, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetExecutionGraphPipelineScratchSizeAMDX, uintptr(device), uintptr(executionGraph), uintptr(unsafe.Pointer(&sizeInfo)))
 	return sizeInfo, vulkan.Result(r1)

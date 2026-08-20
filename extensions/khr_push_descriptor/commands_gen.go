@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdPushDescriptorSetKHR             uintptr
+	pfnCmdPushDescriptorSetWithTemplateKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdPushDescriptorSetKHR             uintptr
 	pfnCmdPushDescriptorSetWithTemplateKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_push_descriptor extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdPushDescriptorSetKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetKHR")
-	pfnCmdPushDescriptorSetWithTemplateKHR = vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetWithTemplateKHR")
+// Init resolves and initializes all VK_KHR_push_descriptor extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdPushDescriptorSetKHR:             vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetKHR"),
+		pfnCmdPushDescriptorSetWithTemplateKHR: vulkan.GetInstanceProcAddr(instance, "vkCmdPushDescriptorSetWithTemplateKHR"),
+	}
+	pfnCmdPushDescriptorSetKHR = cmds.pfnCmdPushDescriptorSetKHR
+	pfnCmdPushDescriptorSetWithTemplateKHR = cmds.pfnCmdPushDescriptorSetWithTemplateKHR
+	return cmds
 }
 
 // CmdPushDescriptorSetKHR executes vkCmdPushDescriptorSetKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDescriptorSetKHR.html
+func (c *Commands) CmdPushDescriptorSetKHR() {
+	vulkan.CallSyscall(c.pfnCmdPushDescriptorSetKHR)
+}
+
 func CmdPushDescriptorSetKHR() {
 	vulkan.CallSyscall(pfnCmdPushDescriptorSetKHR)
 }
 
 // CmdPushDescriptorSetWithTemplateKHR executes vkCmdPushDescriptorSetWithTemplateKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDescriptorSetWithTemplateKHR.html
+func (c *Commands) CmdPushDescriptorSetWithTemplateKHR() {
+	vulkan.CallSyscall(c.pfnCmdPushDescriptorSetWithTemplateKHR)
+}
+
 func CmdPushDescriptorSetWithTemplateKHR() {
 	vulkan.CallSyscall(pfnCmdPushDescriptorSetWithTemplateKHR)
 }

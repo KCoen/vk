@@ -10,7 +10,22 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindDescriptorBufferEmbeddedSamplersEXT             uintptr
+	pfnCmdBindDescriptorBuffersEXT                            uintptr
+	pfnCmdSetDescriptorBufferOffsetsEXT                       uintptr
+	pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT uintptr
+	pfnGetBufferOpaqueCaptureDescriptorDataEXT                uintptr
+	pfnGetDescriptorEXT                                       uintptr
+	pfnGetDescriptorSetLayoutBindingOffsetEXT                 uintptr
+	pfnGetDescriptorSetLayoutSizeEXT                          uintptr
+	pfnGetImageOpaqueCaptureDescriptorDataEXT                 uintptr
+	pfnGetImageViewOpaqueCaptureDescriptorDataEXT             uintptr
+	pfnGetSamplerOpaqueCaptureDescriptorDataEXT               uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindDescriptorBufferEmbeddedSamplersEXT             uintptr
 	pfnCmdBindDescriptorBuffersEXT                            uintptr
@@ -25,19 +40,33 @@ var (
 	pfnGetSamplerOpaqueCaptureDescriptorDataEXT               uintptr
 )
 
-// Init resolves and initializes all VK_EXT_descriptor_buffer extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindDescriptorBufferEmbeddedSamplersEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindDescriptorBufferEmbeddedSamplersEXT")
-	pfnCmdBindDescriptorBuffersEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindDescriptorBuffersEXT")
-	pfnCmdSetDescriptorBufferOffsetsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDescriptorBufferOffsetsEXT")
-	pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT")
-	pfnGetBufferOpaqueCaptureDescriptorDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetBufferOpaqueCaptureDescriptorDataEXT")
-	pfnGetDescriptorEXT = vulkan.GetDeviceProcAddr(device, "vkGetDescriptorEXT")
-	pfnGetDescriptorSetLayoutBindingOffsetEXT = vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutBindingOffsetEXT")
-	pfnGetDescriptorSetLayoutSizeEXT = vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutSizeEXT")
-	pfnGetImageOpaqueCaptureDescriptorDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetImageOpaqueCaptureDescriptorDataEXT")
-	pfnGetImageViewOpaqueCaptureDescriptorDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetImageViewOpaqueCaptureDescriptorDataEXT")
-	pfnGetSamplerOpaqueCaptureDescriptorDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetSamplerOpaqueCaptureDescriptorDataEXT")
+// Init resolves and initializes all VK_EXT_descriptor_buffer extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindDescriptorBufferEmbeddedSamplersEXT:             vulkan.GetDeviceProcAddr(device, "vkCmdBindDescriptorBufferEmbeddedSamplersEXT"),
+		pfnCmdBindDescriptorBuffersEXT:                            vulkan.GetDeviceProcAddr(device, "vkCmdBindDescriptorBuffersEXT"),
+		pfnCmdSetDescriptorBufferOffsetsEXT:                       vulkan.GetDeviceProcAddr(device, "vkCmdSetDescriptorBufferOffsetsEXT"),
+		pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT: vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT"),
+		pfnGetBufferOpaqueCaptureDescriptorDataEXT:                vulkan.GetDeviceProcAddr(device, "vkGetBufferOpaqueCaptureDescriptorDataEXT"),
+		pfnGetDescriptorEXT:                                       vulkan.GetDeviceProcAddr(device, "vkGetDescriptorEXT"),
+		pfnGetDescriptorSetLayoutBindingOffsetEXT:                 vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutBindingOffsetEXT"),
+		pfnGetDescriptorSetLayoutSizeEXT:                          vulkan.GetDeviceProcAddr(device, "vkGetDescriptorSetLayoutSizeEXT"),
+		pfnGetImageOpaqueCaptureDescriptorDataEXT:                 vulkan.GetDeviceProcAddr(device, "vkGetImageOpaqueCaptureDescriptorDataEXT"),
+		pfnGetImageViewOpaqueCaptureDescriptorDataEXT:             vulkan.GetDeviceProcAddr(device, "vkGetImageViewOpaqueCaptureDescriptorDataEXT"),
+		pfnGetSamplerOpaqueCaptureDescriptorDataEXT:               vulkan.GetDeviceProcAddr(device, "vkGetSamplerOpaqueCaptureDescriptorDataEXT"),
+	}
+	pfnCmdBindDescriptorBufferEmbeddedSamplersEXT = cmds.pfnCmdBindDescriptorBufferEmbeddedSamplersEXT
+	pfnCmdBindDescriptorBuffersEXT = cmds.pfnCmdBindDescriptorBuffersEXT
+	pfnCmdSetDescriptorBufferOffsetsEXT = cmds.pfnCmdSetDescriptorBufferOffsetsEXT
+	pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT = cmds.pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT
+	pfnGetBufferOpaqueCaptureDescriptorDataEXT = cmds.pfnGetBufferOpaqueCaptureDescriptorDataEXT
+	pfnGetDescriptorEXT = cmds.pfnGetDescriptorEXT
+	pfnGetDescriptorSetLayoutBindingOffsetEXT = cmds.pfnGetDescriptorSetLayoutBindingOffsetEXT
+	pfnGetDescriptorSetLayoutSizeEXT = cmds.pfnGetDescriptorSetLayoutSizeEXT
+	pfnGetImageOpaqueCaptureDescriptorDataEXT = cmds.pfnGetImageOpaqueCaptureDescriptorDataEXT
+	pfnGetImageViewOpaqueCaptureDescriptorDataEXT = cmds.pfnGetImageViewOpaqueCaptureDescriptorDataEXT
+	pfnGetSamplerOpaqueCaptureDescriptorDataEXT = cmds.pfnGetSamplerOpaqueCaptureDescriptorDataEXT
+	return cmds
 }
 
 // CmdBindDescriptorBufferEmbeddedSamplersEXT - Setting embedded immutable samplers offsets in a command buffer (vkCmdBindDescriptorBufferEmbeddedSamplersEXT).
@@ -48,6 +77,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - set: is the number of the set to be bound.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBufferEmbeddedSamplersEXT.html
+func (c *Commands) CmdBindDescriptorBufferEmbeddedSamplersEXT(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, layout vulkan.PipelineLayout, set uint32) {
+	vulkan.CallSyscall(c.pfnCmdBindDescriptorBufferEmbeddedSamplersEXT, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(layout), uintptr(set))
+}
+
 func CmdBindDescriptorBufferEmbeddedSamplersEXT(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, layout vulkan.PipelineLayout, set uint32) {
 	vulkan.CallSyscall(pfnCmdBindDescriptorBufferEmbeddedSamplersEXT, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(layout), uintptr(set))
 }
@@ -59,6 +92,16 @@ func CmdBindDescriptorBufferEmbeddedSamplersEXT(commandBuffer vulkan.CommandBuff
 //   - bindingInfos: is a pointer to an array of VkDescriptorBufferBindingInfoEXT structures.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBuffersEXT.html
+func (c *Commands) CmdBindDescriptorBuffersEXT(commandBuffer vulkan.CommandBuffer, bindingInfos []vulkan.DescriptorBufferBindingInfoEXT) {
+	c_bindingInfos := make([]vulkan.RawDescriptorBufferBindingInfoEXT, len(bindingInfos))
+	for i := range bindingInfos {
+		if raw := bindingInfos[i].Raw(); raw != nil {
+			c_bindingInfos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBindDescriptorBuffersEXT, uintptr(commandBuffer), uintptr(len(bindingInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindingInfos))))
+}
+
 func CmdBindDescriptorBuffersEXT(commandBuffer vulkan.CommandBuffer, bindingInfos []vulkan.DescriptorBufferBindingInfoEXT) {
 	c_bindingInfos := make([]vulkan.RawDescriptorBufferBindingInfoEXT, len(bindingInfos))
 	for i := range bindingInfos {
@@ -80,6 +123,11 @@ func CmdBindDescriptorBuffersEXT(commandBuffer vulkan.CommandBuffer, bindingInfo
 //   - offsets: is a pointer to an array of basetype:VkDeviceSize offsets to apply to the bound descriptor buffers.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDescriptorBufferOffsetsEXT.html
+func (c *Commands) CmdSetDescriptorBufferOffsetsEXT(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, layout vulkan.PipelineLayout, firstSet uint32, bufferIndices []uint32, offsets *vulkan.DeviceSize) {
+	c_bufferIndices := vulkan.SliceData(bufferIndices)
+	vulkan.CallSyscall(c.pfnCmdSetDescriptorBufferOffsetsEXT, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(layout), uintptr(firstSet), uintptr(len(bufferIndices)), uintptr(unsafe.Pointer(c_bufferIndices)), uintptr(unsafe.Pointer(offsets)))
+}
+
 func CmdSetDescriptorBufferOffsetsEXT(commandBuffer vulkan.CommandBuffer, pipelineBindPoint vulkan.PipelineBindPoint, layout vulkan.PipelineLayout, firstSet uint32, bufferIndices []uint32, offsets *vulkan.DeviceSize) {
 	c_bufferIndices := vulkan.SliceData(bufferIndices)
 	vulkan.CallSyscall(pfnCmdSetDescriptorBufferOffsetsEXT, uintptr(commandBuffer), uintptr(pipelineBindPoint), uintptr(layout), uintptr(firstSet), uintptr(len(bufferIndices)), uintptr(unsafe.Pointer(c_bufferIndices)), uintptr(unsafe.Pointer(offsets)))
@@ -94,6 +142,12 @@ func CmdSetDescriptorBufferOffsetsEXT(commandBuffer vulkan.CommandBuffer, pipeli
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT.html
+func (c *Commands) GetAccelerationStructureOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.AccelerationStructureCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetAccelerationStructureOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.AccelerationStructureCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetAccelerationStructureOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
@@ -109,6 +163,12 @@ func GetAccelerationStructureOpaqueCaptureDescriptorDataEXT(device vulkan.Device
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferOpaqueCaptureDescriptorDataEXT.html
+func (c *Commands) GetBufferOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.BufferCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetBufferOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetBufferOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.BufferCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetBufferOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
@@ -123,6 +183,12 @@ func GetBufferOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.
 //   - descriptor: is a pointer to an application-allocated buffer where the descriptor will be written.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorEXT.html
+func (c *Commands) GetDescriptorEXT(device vulkan.Device, descriptorInfo *vulkan.DescriptorGetInfoEXT, descriptor []unsafe.Pointer) {
+	c_descriptorInfo := descriptorInfo.Raw()
+	c_descriptor := vulkan.SliceData(descriptor)
+	vulkan.CallSyscall(c.pfnGetDescriptorEXT, uintptr(device), uintptr(unsafe.Pointer(c_descriptorInfo)), uintptr(len(descriptor)), uintptr(unsafe.Pointer(c_descriptor)))
+}
+
 func GetDescriptorEXT(device vulkan.Device, descriptorInfo *vulkan.DescriptorGetInfoEXT, descriptor []unsafe.Pointer) {
 	c_descriptorInfo := descriptorInfo.Raw()
 	c_descriptor := vulkan.SliceData(descriptor)
@@ -137,6 +203,11 @@ func GetDescriptorEXT(device vulkan.Device, descriptorInfo *vulkan.DescriptorGet
 //   - offset: is a pointer to basetype:VkDeviceSize where the byte offset of the binding will be written.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutBindingOffsetEXT.html
+func (c *Commands) GetDescriptorSetLayoutBindingOffsetEXT(device vulkan.Device, layout vulkan.DescriptorSetLayout, binding uint32) (offset vulkan.DeviceSize) {
+	vulkan.CallSyscall(c.pfnGetDescriptorSetLayoutBindingOffsetEXT, uintptr(device), uintptr(layout), uintptr(binding), uintptr(unsafe.Pointer(&offset)))
+	return offset
+}
+
 func GetDescriptorSetLayoutBindingOffsetEXT(device vulkan.Device, layout vulkan.DescriptorSetLayout, binding uint32) (offset vulkan.DeviceSize) {
 	vulkan.CallSyscall(pfnGetDescriptorSetLayoutBindingOffsetEXT, uintptr(device), uintptr(layout), uintptr(binding), uintptr(unsafe.Pointer(&offset)))
 	return offset
@@ -149,6 +220,11 @@ func GetDescriptorSetLayoutBindingOffsetEXT(device vulkan.Device, layout vulkan.
 //   - layoutSizeInBytes: is a pointer to basetype:VkDeviceSize where the size in bytes will be written.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSizeEXT.html
+func (c *Commands) GetDescriptorSetLayoutSizeEXT(device vulkan.Device, layout vulkan.DescriptorSetLayout) (layoutSizeInBytes vulkan.DeviceSize) {
+	vulkan.CallSyscall(c.pfnGetDescriptorSetLayoutSizeEXT, uintptr(device), uintptr(layout), uintptr(unsafe.Pointer(&layoutSizeInBytes)))
+	return layoutSizeInBytes
+}
+
 func GetDescriptorSetLayoutSizeEXT(device vulkan.Device, layout vulkan.DescriptorSetLayout) (layoutSizeInBytes vulkan.DeviceSize) {
 	vulkan.CallSyscall(pfnGetDescriptorSetLayoutSizeEXT, uintptr(device), uintptr(layout), uintptr(unsafe.Pointer(&layoutSizeInBytes)))
 	return layoutSizeInBytes
@@ -163,6 +239,12 @@ func GetDescriptorSetLayoutSizeEXT(device vulkan.Device, layout vulkan.Descripto
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageOpaqueCaptureDescriptorDataEXT.html
+func (c *Commands) GetImageOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.ImageCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetImageOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.ImageCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
@@ -178,6 +260,12 @@ func GetImageOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.I
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewOpaqueCaptureDescriptorDataEXT.html
+func (c *Commands) GetImageViewOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.ImageViewCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageViewOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetImageViewOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.ImageViewCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageViewOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
@@ -193,6 +281,12 @@ func GetImageViewOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulk
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSamplerOpaqueCaptureDescriptorDataEXT.html
+func (c *Commands) GetSamplerOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.SamplerCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSamplerOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))
+	return data, vulkan.Result(r1)
+}
+
 func GetSamplerOpaqueCaptureDescriptorDataEXT(device vulkan.Device, info *vulkan.SamplerCaptureDescriptorDataInfoEXT) (data unsafe.Pointer, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetSamplerOpaqueCaptureDescriptorDataEXT, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&data)))

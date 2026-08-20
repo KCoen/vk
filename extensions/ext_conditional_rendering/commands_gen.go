@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginConditionalRenderingEXT uintptr
+	pfnCmdEndConditionalRenderingEXT   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginConditionalRenderingEXT uintptr
 	pfnCmdEndConditionalRenderingEXT   uintptr
 )
 
-// Init resolves and initializes all VK_EXT_conditional_rendering extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginConditionalRenderingEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginConditionalRenderingEXT")
-	pfnCmdEndConditionalRenderingEXT = vulkan.GetDeviceProcAddr(device, "vkCmdEndConditionalRenderingEXT")
+// Init resolves and initializes all VK_EXT_conditional_rendering extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginConditionalRenderingEXT: vulkan.GetDeviceProcAddr(device, "vkCmdBeginConditionalRenderingEXT"),
+		pfnCmdEndConditionalRenderingEXT:   vulkan.GetDeviceProcAddr(device, "vkCmdEndConditionalRenderingEXT"),
+	}
+	pfnCmdBeginConditionalRenderingEXT = cmds.pfnCmdBeginConditionalRenderingEXT
+	pfnCmdEndConditionalRenderingEXT = cmds.pfnCmdEndConditionalRenderingEXT
+	return cmds
 }
 
 // CmdBeginConditionalRenderingEXT - Define the beginning of a conditional rendering block (vkCmdBeginConditionalRenderingEXT).
@@ -28,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - conditionalRenderingBegin: is a pointer to a VkConditionalRenderingBeginInfoEXT structure specifying parameters of conditional rendering.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginConditionalRenderingEXT.html
+func (c *Commands) CmdBeginConditionalRenderingEXT(commandBuffer vulkan.CommandBuffer, conditionalRenderingBegin *vulkan.ConditionalRenderingBeginInfoEXT) {
+	c_conditionalRenderingBegin := conditionalRenderingBegin.Raw()
+	vulkan.CallSyscall(c.pfnCmdBeginConditionalRenderingEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_conditionalRenderingBegin)))
+}
+
 func CmdBeginConditionalRenderingEXT(commandBuffer vulkan.CommandBuffer, conditionalRenderingBegin *vulkan.ConditionalRenderingBeginInfoEXT) {
 	c_conditionalRenderingBegin := conditionalRenderingBegin.Raw()
 	vulkan.CallSyscall(pfnCmdBeginConditionalRenderingEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_conditionalRenderingBegin)))
@@ -38,6 +54,10 @@ func CmdBeginConditionalRenderingEXT(commandBuffer vulkan.CommandBuffer, conditi
 //   - commandBuffer: is the command buffer into which this command will be recorded.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndConditionalRenderingEXT.html
+func (c *Commands) CmdEndConditionalRenderingEXT(commandBuffer vulkan.CommandBuffer) {
+	vulkan.CallSyscall(c.pfnCmdEndConditionalRenderingEXT, uintptr(commandBuffer))
+}
+
 func CmdEndConditionalRenderingEXT(commandBuffer vulkan.CommandBuffer) {
 	vulkan.CallSyscall(pfnCmdEndConditionalRenderingEXT, uintptr(commandBuffer))
 }

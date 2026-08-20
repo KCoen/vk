@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetShaderInfoAMD uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetShaderInfoAMD uintptr
 )
 
-// Init resolves and initializes all VK_AMD_shader_info extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetShaderInfoAMD = vulkan.GetDeviceProcAddr(device, "vkGetShaderInfoAMD")
+// Init resolves and initializes all VK_AMD_shader_info extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetShaderInfoAMD: vulkan.GetDeviceProcAddr(device, "vkGetShaderInfoAMD"),
+	}
+	pfnGetShaderInfoAMD = cmds.pfnGetShaderInfoAMD
+	return cmds
 }
 
 // GetShaderInfoAMD - Get information about a shader in a pipeline (vkGetShaderInfoAMD).
@@ -32,6 +41,19 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_FEATURE_NOT_PRESENT, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderInfoAMD.html
+func (c *Commands) GetShaderInfoAMD(device vulkan.Device, pipeline vulkan.Pipeline, shaderStage vulkan.ShaderStageFlagBits, infoType vulkan.ShaderInfoTypeAMD) (info []unsafe.Pointer, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetShaderInfoAMD, uintptr(device), uintptr(pipeline), uintptr(shaderStage), uintptr(infoType), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	info = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&info[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetShaderInfoAMD, uintptr(device), uintptr(pipeline), uintptr(shaderStage), uintptr(infoType), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return info, vulkan.Result(r1)
+}
+
 func GetShaderInfoAMD(device vulkan.Device, pipeline vulkan.Pipeline, shaderStage vulkan.ShaderStageFlagBits, infoType vulkan.ShaderInfoTypeAMD) (info []unsafe.Pointer, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetShaderInfoAMD, uintptr(device), uintptr(pipeline), uintptr(shaderStage), uintptr(infoType), uintptr(unsafe.Pointer(&count)), 0)

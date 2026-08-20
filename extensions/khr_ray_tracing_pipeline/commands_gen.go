@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetRayTracingPipelineStackSizeKHR            uintptr
+	pfnCmdTraceRaysIndirectKHR                         uintptr
+	pfnCmdTraceRaysKHR                                 uintptr
+	pfnCreateRayTracingPipelinesKHR                    uintptr
+	pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR uintptr
+	pfnGetRayTracingShaderGroupHandlesKHR              uintptr
+	pfnGetRayTracingShaderGroupStackSizeKHR            uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetRayTracingPipelineStackSizeKHR            uintptr
 	pfnCmdTraceRaysIndirectKHR                         uintptr
@@ -21,15 +32,25 @@ var (
 	pfnGetRayTracingShaderGroupStackSizeKHR            uintptr
 )
 
-// Init resolves and initializes all VK_KHR_ray_tracing_pipeline extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetRayTracingPipelineStackSizeKHR = vulkan.GetDeviceProcAddr(device, "vkCmdSetRayTracingPipelineStackSizeKHR")
-	pfnCmdTraceRaysIndirectKHR = vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysIndirectKHR")
-	pfnCmdTraceRaysKHR = vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysKHR")
-	pfnCreateRayTracingPipelinesKHR = vulkan.GetDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR")
-	pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR = vulkan.GetDeviceProcAddr(device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR")
-	pfnGetRayTracingShaderGroupHandlesKHR = vulkan.GetDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR")
-	pfnGetRayTracingShaderGroupStackSizeKHR = vulkan.GetDeviceProcAddr(device, "vkGetRayTracingShaderGroupStackSizeKHR")
+// Init resolves and initializes all VK_KHR_ray_tracing_pipeline extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetRayTracingPipelineStackSizeKHR:            vulkan.GetDeviceProcAddr(device, "vkCmdSetRayTracingPipelineStackSizeKHR"),
+		pfnCmdTraceRaysIndirectKHR:                         vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysIndirectKHR"),
+		pfnCmdTraceRaysKHR:                                 vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysKHR"),
+		pfnCreateRayTracingPipelinesKHR:                    vulkan.GetDeviceProcAddr(device, "vkCreateRayTracingPipelinesKHR"),
+		pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR: vulkan.GetDeviceProcAddr(device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR"),
+		pfnGetRayTracingShaderGroupHandlesKHR:              vulkan.GetDeviceProcAddr(device, "vkGetRayTracingShaderGroupHandlesKHR"),
+		pfnGetRayTracingShaderGroupStackSizeKHR:            vulkan.GetDeviceProcAddr(device, "vkGetRayTracingShaderGroupStackSizeKHR"),
+	}
+	pfnCmdSetRayTracingPipelineStackSizeKHR = cmds.pfnCmdSetRayTracingPipelineStackSizeKHR
+	pfnCmdTraceRaysIndirectKHR = cmds.pfnCmdTraceRaysIndirectKHR
+	pfnCmdTraceRaysKHR = cmds.pfnCmdTraceRaysKHR
+	pfnCreateRayTracingPipelinesKHR = cmds.pfnCreateRayTracingPipelinesKHR
+	pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR = cmds.pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR
+	pfnGetRayTracingShaderGroupHandlesKHR = cmds.pfnGetRayTracingShaderGroupHandlesKHR
+	pfnGetRayTracingShaderGroupStackSizeKHR = cmds.pfnGetRayTracingShaderGroupStackSizeKHR
+	return cmds
 }
 
 // CmdSetRayTracingPipelineStackSizeKHR - Set the stack size dynamically for a ray tracing pipeline (vkCmdSetRayTracingPipelineStackSizeKHR).
@@ -38,6 +59,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - pipelineStackSize: is the stack size to use for subsequent ray tracing trace commands.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRayTracingPipelineStackSizeKHR.html
+func (c *Commands) CmdSetRayTracingPipelineStackSizeKHR(commandBuffer vulkan.CommandBuffer, pipelineStackSize uint32) {
+	vulkan.CallSyscall(c.pfnCmdSetRayTracingPipelineStackSizeKHR, uintptr(commandBuffer), uintptr(pipelineStackSize))
+}
+
 func CmdSetRayTracingPipelineStackSizeKHR(commandBuffer vulkan.CommandBuffer, pipelineStackSize uint32) {
 	vulkan.CallSyscall(pfnCmdSetRayTracingPipelineStackSizeKHR, uintptr(commandBuffer), uintptr(pipelineStackSize))
 }
@@ -52,6 +77,14 @@ func CmdSetRayTracingPipelineStackSizeKHR(commandBuffer vulkan.CommandBuffer, pi
 //   - indirectDeviceAddress: is a buffer device address which is a pointer to a VkTraceRaysIndirectCommandKHR structure containing the trace ray parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirectKHR.html
+func (c *Commands) CmdTraceRaysIndirectKHR(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, missShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, hitShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, callableShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, indirectDeviceAddress vulkan.DeviceAddress) {
+	c_raygenShaderBindingTable := raygenShaderBindingTable.Raw()
+	c_missShaderBindingTable := missShaderBindingTable.Raw()
+	c_hitShaderBindingTable := hitShaderBindingTable.Raw()
+	c_callableShaderBindingTable := callableShaderBindingTable.Raw()
+	vulkan.CallSyscall(c.pfnCmdTraceRaysIndirectKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_raygenShaderBindingTable)), uintptr(unsafe.Pointer(c_missShaderBindingTable)), uintptr(unsafe.Pointer(c_hitShaderBindingTable)), uintptr(unsafe.Pointer(c_callableShaderBindingTable)), uintptr(indirectDeviceAddress))
+}
+
 func CmdTraceRaysIndirectKHR(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, missShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, hitShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, callableShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, indirectDeviceAddress vulkan.DeviceAddress) {
 	c_raygenShaderBindingTable := raygenShaderBindingTable.Raw()
 	c_missShaderBindingTable := missShaderBindingTable.Raw()
@@ -72,6 +105,14 @@ func CmdTraceRaysIndirectKHR(commandBuffer vulkan.CommandBuffer, raygenShaderBin
 //   - depth: is depth of the ray trace query dimensions.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysKHR.html
+func (c *Commands) CmdTraceRaysKHR(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, missShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, hitShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, callableShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, width uint32, height uint32, depth uint32) {
+	c_raygenShaderBindingTable := raygenShaderBindingTable.Raw()
+	c_missShaderBindingTable := missShaderBindingTable.Raw()
+	c_hitShaderBindingTable := hitShaderBindingTable.Raw()
+	c_callableShaderBindingTable := callableShaderBindingTable.Raw()
+	vulkan.CallSyscall(c.pfnCmdTraceRaysKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_raygenShaderBindingTable)), uintptr(unsafe.Pointer(c_missShaderBindingTable)), uintptr(unsafe.Pointer(c_hitShaderBindingTable)), uintptr(unsafe.Pointer(c_callableShaderBindingTable)), uintptr(width), uintptr(height), uintptr(depth))
+}
+
 func CmdTraceRaysKHR(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, missShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, hitShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, callableShaderBindingTable *vulkan.StridedDeviceAddressRegionKHR, width uint32, height uint32, depth uint32) {
 	c_raygenShaderBindingTable := raygenShaderBindingTable.Raw()
 	c_missShaderBindingTable := missShaderBindingTable.Raw()
@@ -93,6 +134,18 @@ func CmdTraceRaysKHR(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTabl
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR, VK_PIPELINE_COMPILE_REQUIRED_EXT
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS, VK_ERROR_NO_PIPELINE_MATCH, VK_ERROR_OUT_OF_POOL_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateRayTracingPipelinesKHR.html
+func (c *Commands) CreateRayTracingPipelinesKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, pipelineCache vulkan.PipelineCache, createInfos []vulkan.RayTracingPipelineCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
+	c_createInfos := make([]vulkan.RawRayTracingPipelineCreateInfoKHR, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateRayTracingPipelinesKHR, uintptr(device), uintptr(deferredOperation), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, vulkan.Result(r1)
+}
+
 func CreateRayTracingPipelinesKHR(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, pipelineCache vulkan.PipelineCache, createInfos []vulkan.RayTracingPipelineCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
 	c_createInfos := make([]vulkan.RawRayTracingPipelineCreateInfoKHR, len(createInfos))
 	for i := range createInfos {
@@ -117,6 +170,12 @@ func CreateRayTracingPipelinesKHR(device vulkan.Device, deferredOperation vulkan
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingCaptureReplayShaderGroupHandlesKHR.html
+func (c *Commands) GetRayTracingCaptureReplayShaderGroupHandlesKHR(device vulkan.Device, pipeline vulkan.Pipeline, firstGroup uint32, groupCount uint32, data []unsafe.Pointer) (result vulkan.Result) {
+	c_data := vulkan.SliceData(data)
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR, uintptr(device), uintptr(pipeline), uintptr(firstGroup), uintptr(groupCount), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+	return vulkan.Result(r1)
+}
+
 func GetRayTracingCaptureReplayShaderGroupHandlesKHR(device vulkan.Device, pipeline vulkan.Pipeline, firstGroup uint32, groupCount uint32, data []unsafe.Pointer) (result vulkan.Result) {
 	c_data := vulkan.SliceData(data)
 	r1, _, _ := vulkan.CallSyscall(pfnGetRayTracingCaptureReplayShaderGroupHandlesKHR, uintptr(device), uintptr(pipeline), uintptr(firstGroup), uintptr(groupCount), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
@@ -135,6 +194,12 @@ func GetRayTracingCaptureReplayShaderGroupHandlesKHR(device vulkan.Device, pipel
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html
+func (c *Commands) GetRayTracingShaderGroupHandlesKHR(device vulkan.Device, pipeline vulkan.Pipeline, firstGroup uint32, groupCount uint32, data []unsafe.Pointer) (result vulkan.Result) {
+	c_data := vulkan.SliceData(data)
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetRayTracingShaderGroupHandlesKHR, uintptr(device), uintptr(pipeline), uintptr(firstGroup), uintptr(groupCount), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+	return vulkan.Result(r1)
+}
+
 func GetRayTracingShaderGroupHandlesKHR(device vulkan.Device, pipeline vulkan.Pipeline, firstGroup uint32, groupCount uint32, data []unsafe.Pointer) (result vulkan.Result) {
 	c_data := vulkan.SliceData(data)
 	r1, _, _ := vulkan.CallSyscall(pfnGetRayTracingShaderGroupHandlesKHR, uintptr(device), uintptr(pipeline), uintptr(firstGroup), uintptr(groupCount), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
@@ -149,6 +214,11 @@ func GetRayTracingShaderGroupHandlesKHR(device vulkan.Device, pipeline vulkan.Pi
 //   - groupShader: is the type of shader from the group to query.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupStackSizeKHR.html
+func (c *Commands) GetRayTracingShaderGroupStackSizeKHR(device vulkan.Device, pipeline vulkan.Pipeline, group uint32, groupShader vulkan.ShaderGroupShaderKHR) (result vulkan.DeviceSize) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetRayTracingShaderGroupStackSizeKHR, uintptr(device), uintptr(pipeline), uintptr(group), uintptr(groupShader))
+	return vulkan.DeviceSize(r1)
+}
+
 func GetRayTracingShaderGroupStackSizeKHR(device vulkan.Device, pipeline vulkan.Pipeline, group uint32, groupShader vulkan.ShaderGroupShaderKHR) (result vulkan.DeviceSize) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetRayTracingShaderGroupStackSizeKHR, uintptr(device), uintptr(pipeline), uintptr(group), uintptr(groupShader))
 	return vulkan.DeviceSize(r1)

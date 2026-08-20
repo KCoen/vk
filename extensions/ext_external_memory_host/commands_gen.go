@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryHostPointerPropertiesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryHostPointerPropertiesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_external_memory_host extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryHostPointerPropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkGetMemoryHostPointerPropertiesEXT")
+// Init resolves and initializes all VK_EXT_external_memory_host extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryHostPointerPropertiesEXT: vulkan.GetDeviceProcAddr(device, "vkGetMemoryHostPointerPropertiesEXT"),
+	}
+	pfnGetMemoryHostPointerPropertiesEXT = cmds.pfnGetMemoryHostPointerPropertiesEXT
+	return cmds
 }
 
 // GetMemoryHostPointerPropertiesEXT - Get properties of external memory host pointer (vkGetMemoryHostPointerPropertiesEXT).
@@ -30,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryHostPointerPropertiesEXT.html
+func (c *Commands) GetMemoryHostPointerPropertiesEXT(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, hostPointer unsafe.Pointer) (memoryHostPointerProperties vulkan.MemoryHostPointerPropertiesEXT, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryHostPointerPropertiesEXT, uintptr(device), uintptr(handleType), uintptr(unsafe.Pointer(hostPointer)), uintptr(unsafe.Pointer(&memoryHostPointerProperties)))
+	return memoryHostPointerProperties, vulkan.Result(r1)
+}
+
 func GetMemoryHostPointerPropertiesEXT(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, hostPointer unsafe.Pointer) (memoryHostPointerProperties vulkan.MemoryHostPointerPropertiesEXT, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryHostPointerPropertiesEXT, uintptr(device), uintptr(handleType), uintptr(unsafe.Pointer(hostPointer)), uintptr(unsafe.Pointer(&memoryHostPointerProperties)))
 	return memoryHostPointerProperties, vulkan.Result(r1)

@@ -34,14 +34,13 @@ type VulkanContext struct {
 
 // ContextConfig specifies options for initializing the Vulkan context.
 type ContextConfig struct {
-	AppName                     string
-	RequireMDI                  bool
-	RequireCompute              bool
-	EnableBufferDeviceAddress   bool
-	EnableValidation            bool
-	ValidationCallback          vulkan.PFN_vkDebugUtilsMessengerCallbackEXT
-	InstanceExtensions          []string
-	DeviceExtensions            []string
+	AppName                   string
+	ApiVersion                uint32
+	EnableBufferDeviceAddress bool
+	EnableValidation          bool
+	ValidationCallback        vulkan.PFN_vkDebugUtilsMessengerCallbackEXT
+	InstanceExtensions        []string
+	DeviceExtensions          []string
 }
 
 // NewVulkanContext initializes a VulkanContext based on the provided configuration.
@@ -51,7 +50,6 @@ func NewVulkanContext(cfg ContextConfig) (*VulkanContext, error) {
 	if err := vulkan.Init(); err != nil {
 		return nil, fmt.Errorf("failed to init vulkan loader: %w", err)
 	}
-	vulkan.InitCommands(0, 0)
 
 	ctx := &VulkanContext{}
 
@@ -91,12 +89,17 @@ func NewVulkanContext(cfg ContextConfig) (*VulkanContext, error) {
 		}
 	}
 
+	apiVersion := cfg.ApiVersion
+	if apiVersion == 0 {
+		apiVersion = vulkan.API_VERSION_1_3
+	}
+
 	appInfo := vulkan.ApplicationInfo{
 		ApplicationName:    cfg.AppName,
 		ApplicationVersion: vulkan.MakeVersion(1, 0, 0),
 		EngineName:         "vk_google_samples",
 		EngineVersion:      vulkan.MakeVersion(1, 0, 0),
-		ApiVersion:         vulkan.API_VERSION_1_3,
+		ApiVersion:         apiVersion,
 	}
 
 	instanceCreateInfo := vulkan.InstanceCreateInfo{

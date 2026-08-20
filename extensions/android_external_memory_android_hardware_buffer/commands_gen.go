@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetAndroidHardwareBufferPropertiesANDROID uintptr
+	pfnGetMemoryAndroidHardwareBufferANDROID     uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetAndroidHardwareBufferPropertiesANDROID uintptr
 	pfnGetMemoryAndroidHardwareBufferANDROID     uintptr
 )
 
-// Init resolves and initializes all VK_ANDROID_external_memory_android_hardware_buffer extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetAndroidHardwareBufferPropertiesANDROID = vulkan.GetDeviceProcAddr(device, "vkGetAndroidHardwareBufferPropertiesANDROID")
-	pfnGetMemoryAndroidHardwareBufferANDROID = vulkan.GetDeviceProcAddr(device, "vkGetMemoryAndroidHardwareBufferANDROID")
+// Init resolves and initializes all VK_ANDROID_external_memory_android_hardware_buffer extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetAndroidHardwareBufferPropertiesANDROID: vulkan.GetDeviceProcAddr(device, "vkGetAndroidHardwareBufferPropertiesANDROID"),
+		pfnGetMemoryAndroidHardwareBufferANDROID:     vulkan.GetDeviceProcAddr(device, "vkGetMemoryAndroidHardwareBufferANDROID"),
+	}
+	pfnGetAndroidHardwareBufferPropertiesANDROID = cmds.pfnGetAndroidHardwareBufferPropertiesANDROID
+	pfnGetMemoryAndroidHardwareBufferANDROID = cmds.pfnGetMemoryAndroidHardwareBufferANDROID
+	return cmds
 }
 
 // GetAndroidHardwareBufferPropertiesANDROID - Get Properties of External Memory Android Hardware Buffers (vkGetAndroidHardwareBufferPropertiesANDROID).
@@ -31,6 +42,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAndroidHardwareBufferPropertiesANDROID.html
+func (c *Commands) GetAndroidHardwareBufferPropertiesANDROID(device vulkan.Device, buffer uintptr) (properties vulkan.AndroidHardwareBufferPropertiesANDROID, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetAndroidHardwareBufferPropertiesANDROID, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetAndroidHardwareBufferPropertiesANDROID(device vulkan.Device, buffer uintptr) (properties vulkan.AndroidHardwareBufferPropertiesANDROID, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetAndroidHardwareBufferPropertiesANDROID, uintptr(device), uintptr(unsafe.Pointer(buffer)), uintptr(unsafe.Pointer(&properties)))
 	return properties, vulkan.Result(r1)
@@ -45,6 +61,12 @@ func GetAndroidHardwareBufferPropertiesANDROID(device vulkan.Device, buffer uint
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryAndroidHardwareBufferANDROID.html
+func (c *Commands) GetMemoryAndroidHardwareBufferANDROID(device vulkan.Device, info *vulkan.MemoryGetAndroidHardwareBufferInfoANDROID) (buffer uintptr, result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryAndroidHardwareBufferANDROID, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&buffer)))
+	return buffer, vulkan.Result(r1)
+}
+
 func GetMemoryAndroidHardwareBufferANDROID(device vulkan.Device, info *vulkan.MemoryGetAndroidHardwareBufferInfoANDROID) (buffer uintptr, result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryAndroidHardwareBufferANDROID, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&buffer)))

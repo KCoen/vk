@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdEncodeVideoKHR                                     uintptr
+	pfnGetEncodedVideoSessionParametersKHR                   uintptr
+	pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdEncodeVideoKHR                                     uintptr
 	pfnGetEncodedVideoSessionParametersKHR                   uintptr
 	pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_video_encode_queue extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdEncodeVideoKHR = vulkan.GetDeviceProcAddr(device, "vkCmdEncodeVideoKHR")
-	pfnGetEncodedVideoSessionParametersKHR = vulkan.GetDeviceProcAddr(device, "vkGetEncodedVideoSessionParametersKHR")
-	pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR")
+// Init resolves and initializes all VK_KHR_video_encode_queue extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdEncodeVideoKHR:                                     vulkan.GetDeviceProcAddr(device, "vkCmdEncodeVideoKHR"),
+		pfnGetEncodedVideoSessionParametersKHR:                   vulkan.GetDeviceProcAddr(device, "vkGetEncodedVideoSessionParametersKHR"),
+		pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR"),
+	}
+	pfnCmdEncodeVideoKHR = cmds.pfnCmdEncodeVideoKHR
+	pfnGetEncodedVideoSessionParametersKHR = cmds.pfnGetEncodedVideoSessionParametersKHR
+	pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR = cmds.pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR
+	return cmds
 }
 
 // CmdEncodeVideoKHR - Launch video encode operations (vkCmdEncodeVideoKHR).
@@ -30,6 +43,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - encodeInfo: is a pointer to a VkVideoEncodeInfoKHR structure specifying the parameters of the video encode operations.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEncodeVideoKHR.html
+func (c *Commands) CmdEncodeVideoKHR(commandBuffer vulkan.CommandBuffer, encodeInfo *vulkan.VideoEncodeInfoKHR) {
+	c_encodeInfo := encodeInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdEncodeVideoKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_encodeInfo)))
+}
+
 func CmdEncodeVideoKHR(commandBuffer vulkan.CommandBuffer, encodeInfo *vulkan.VideoEncodeInfoKHR) {
 	c_encodeInfo := encodeInfo.Raw()
 	vulkan.CallSyscall(pfnCmdEncodeVideoKHR, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_encodeInfo)))
@@ -46,6 +64,21 @@ func CmdEncodeVideoKHR(commandBuffer vulkan.CommandBuffer, encodeInfo *vulkan.Vi
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetEncodedVideoSessionParametersKHR.html
+func (c *Commands) GetEncodedVideoSessionParametersKHR(device vulkan.Device, videoSessionParametersInfo *vulkan.VideoEncodeSessionParametersGetInfoKHR, feedbackInfo *vulkan.VideoEncodeSessionParametersFeedbackInfoKHR) (data []unsafe.Pointer, result vulkan.Result) {
+	c_videoSessionParametersInfo := videoSessionParametersInfo.Raw()
+	c_feedbackInfo := feedbackInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetEncodedVideoSessionParametersKHR, uintptr(device), uintptr(unsafe.Pointer(c_videoSessionParametersInfo)), uintptr(unsafe.Pointer(c_feedbackInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetEncodedVideoSessionParametersKHR, uintptr(device), uintptr(unsafe.Pointer(c_videoSessionParametersInfo)), uintptr(unsafe.Pointer(c_feedbackInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, vulkan.Result(r1)
+}
+
 func GetEncodedVideoSessionParametersKHR(device vulkan.Device, videoSessionParametersInfo *vulkan.VideoEncodeSessionParametersGetInfoKHR, feedbackInfo *vulkan.VideoEncodeSessionParametersFeedbackInfoKHR) (data []unsafe.Pointer, result vulkan.Result) {
 	c_videoSessionParametersInfo := videoSessionParametersInfo.Raw()
 	c_feedbackInfo := feedbackInfo.Raw()
@@ -70,6 +103,12 @@ func GetEncodedVideoSessionParametersKHR(device vulkan.Device, videoSessionParam
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR, VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice vulkan.PhysicalDevice, qualityLevelInfo *vulkan.PhysicalDeviceVideoEncodeQualityLevelInfoKHR) (qualityLevelProperties vulkan.VideoEncodeQualityLevelPropertiesKHR, result vulkan.Result) {
+	c_qualityLevelInfo := qualityLevelInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_qualityLevelInfo)), uintptr(unsafe.Pointer(&qualityLevelProperties)))
+	return qualityLevelProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR(physicalDevice vulkan.PhysicalDevice, qualityLevelInfo *vulkan.PhysicalDeviceVideoEncodeQualityLevelInfoKHR) (qualityLevelProperties vulkan.VideoEncodeQualityLevelPropertiesKHR, result vulkan.Result) {
 	c_qualityLevelInfo := qualityLevelInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_qualityLevelInfo)), uintptr(unsafe.Pointer(&qualityLevelProperties)))

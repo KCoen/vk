@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginRenderPass2KHR uintptr
+	pfnCmdEndRenderPass2KHR   uintptr
+	pfnCmdNextSubpass2KHR     uintptr
+	pfnCreateRenderPass2KHR   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginRenderPass2KHR uintptr
 	pfnCmdEndRenderPass2KHR   uintptr
@@ -18,34 +26,57 @@ var (
 	pfnCreateRenderPass2KHR   uintptr
 )
 
-// Init resolves and initializes all VK_KHR_create_renderpass2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginRenderPass2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdBeginRenderPass2KHR")
-	pfnCmdEndRenderPass2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdEndRenderPass2KHR")
-	pfnCmdNextSubpass2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdNextSubpass2KHR")
-	pfnCreateRenderPass2KHR = vulkan.GetInstanceProcAddr(instance, "vkCreateRenderPass2KHR")
+// Init resolves and initializes all VK_KHR_create_renderpass2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginRenderPass2KHR: vulkan.GetInstanceProcAddr(instance, "vkCmdBeginRenderPass2KHR"),
+		pfnCmdEndRenderPass2KHR:   vulkan.GetInstanceProcAddr(instance, "vkCmdEndRenderPass2KHR"),
+		pfnCmdNextSubpass2KHR:     vulkan.GetInstanceProcAddr(instance, "vkCmdNextSubpass2KHR"),
+		pfnCreateRenderPass2KHR:   vulkan.GetInstanceProcAddr(instance, "vkCreateRenderPass2KHR"),
+	}
+	pfnCmdBeginRenderPass2KHR = cmds.pfnCmdBeginRenderPass2KHR
+	pfnCmdEndRenderPass2KHR = cmds.pfnCmdEndRenderPass2KHR
+	pfnCmdNextSubpass2KHR = cmds.pfnCmdNextSubpass2KHR
+	pfnCreateRenderPass2KHR = cmds.pfnCreateRenderPass2KHR
+	return cmds
 }
 
 // CmdBeginRenderPass2KHR executes vkCmdBeginRenderPass2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRenderPass2KHR.html
+func (c *Commands) CmdBeginRenderPass2KHR() {
+	vulkan.CallSyscall(c.pfnCmdBeginRenderPass2KHR)
+}
+
 func CmdBeginRenderPass2KHR() {
 	vulkan.CallSyscall(pfnCmdBeginRenderPass2KHR)
 }
 
 // CmdEndRenderPass2KHR executes vkCmdEndRenderPass2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndRenderPass2KHR.html
+func (c *Commands) CmdEndRenderPass2KHR() {
+	vulkan.CallSyscall(c.pfnCmdEndRenderPass2KHR)
+}
+
 func CmdEndRenderPass2KHR() {
 	vulkan.CallSyscall(pfnCmdEndRenderPass2KHR)
 }
 
 // CmdNextSubpass2KHR executes vkCmdNextSubpass2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdNextSubpass2KHR.html
+func (c *Commands) CmdNextSubpass2KHR() {
+	vulkan.CallSyscall(c.pfnCmdNextSubpass2KHR)
+}
+
 func CmdNextSubpass2KHR() {
 	vulkan.CallSyscall(pfnCmdNextSubpass2KHR)
 }
 
 // CreateRenderPass2KHR executes vkCreateRenderPass2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateRenderPass2KHR.html
+func (c *Commands) CreateRenderPass2KHR() {
+	vulkan.CallSyscall(c.pfnCreateRenderPass2KHR)
+}
+
 func CreateRenderPass2KHR() {
 	vulkan.CallSyscall(pfnCreateRenderPass2KHR)
 }

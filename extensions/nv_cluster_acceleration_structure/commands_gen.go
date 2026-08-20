@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBuildClusterAccelerationStructureIndirectNV uintptr
+	pfnGetClusterAccelerationStructureBuildSizesNV    uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBuildClusterAccelerationStructureIndirectNV uintptr
 	pfnGetClusterAccelerationStructureBuildSizesNV    uintptr
 )
 
-// Init resolves and initializes all VK_NV_cluster_acceleration_structure extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBuildClusterAccelerationStructureIndirectNV = vulkan.GetDeviceProcAddr(device, "vkCmdBuildClusterAccelerationStructureIndirectNV")
-	pfnGetClusterAccelerationStructureBuildSizesNV = vulkan.GetDeviceProcAddr(device, "vkGetClusterAccelerationStructureBuildSizesNV")
+// Init resolves and initializes all VK_NV_cluster_acceleration_structure extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBuildClusterAccelerationStructureIndirectNV: vulkan.GetDeviceProcAddr(device, "vkCmdBuildClusterAccelerationStructureIndirectNV"),
+		pfnGetClusterAccelerationStructureBuildSizesNV:    vulkan.GetDeviceProcAddr(device, "vkGetClusterAccelerationStructureBuildSizesNV"),
+	}
+	pfnCmdBuildClusterAccelerationStructureIndirectNV = cmds.pfnCmdBuildClusterAccelerationStructureIndirectNV
+	pfnGetClusterAccelerationStructureBuildSizesNV = cmds.pfnGetClusterAccelerationStructureBuildSizesNV
+	return cmds
 }
 
 // CmdBuildClusterAccelerationStructureIndirectNV - Build or move cluster acceleration structures (vkCmdBuildClusterAccelerationStructureIndirectNV).
@@ -28,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - commandInfos: is a pointer to a VkClusterAccelerationStructureCommandsInfoNV structure containing parameters required for building or moving the cluster acceleration structure.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildClusterAccelerationStructureIndirectNV.html
+func (c *Commands) CmdBuildClusterAccelerationStructureIndirectNV(commandBuffer vulkan.CommandBuffer, commandInfos *vulkan.ClusterAccelerationStructureCommandsInfoNV) {
+	c_commandInfos := commandInfos.Raw()
+	vulkan.CallSyscall(c.pfnCmdBuildClusterAccelerationStructureIndirectNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_commandInfos)))
+}
+
 func CmdBuildClusterAccelerationStructureIndirectNV(commandBuffer vulkan.CommandBuffer, commandInfos *vulkan.ClusterAccelerationStructureCommandsInfoNV) {
 	c_commandInfos := commandInfos.Raw()
 	vulkan.CallSyscall(pfnCmdBuildClusterAccelerationStructureIndirectNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_commandInfos)))
@@ -40,6 +56,12 @@ func CmdBuildClusterAccelerationStructureIndirectNV(commandBuffer vulkan.Command
 //   - sizeInfo: is a pointer to a VkAccelerationStructureBuildSizesInfoKHR structure which returns the size required for an acceleration structure and scratch buffer, given the build parameters. The size requirements for a scratch buffer may be zero.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetClusterAccelerationStructureBuildSizesNV.html
+func (c *Commands) GetClusterAccelerationStructureBuildSizesNV(device vulkan.Device, info *vulkan.ClusterAccelerationStructureInputInfoNV) (sizeInfo vulkan.AccelerationStructureBuildSizesInfoKHR) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetClusterAccelerationStructureBuildSizesNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
 func GetClusterAccelerationStructureBuildSizesNV(device vulkan.Device, info *vulkan.ClusterAccelerationStructureInputInfoNV) (sizeInfo vulkan.AccelerationStructureBuildSizesInfoKHR) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetClusterAccelerationStructureBuildSizesNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&sizeInfo)))

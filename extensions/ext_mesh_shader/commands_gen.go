@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDrawMeshTasksEXT              uintptr
+	pfnCmdDrawMeshTasksIndirectCountEXT uintptr
+	pfnCmdDrawMeshTasksIndirectEXT      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDrawMeshTasksEXT              uintptr
 	pfnCmdDrawMeshTasksIndirectCountEXT uintptr
 	pfnCmdDrawMeshTasksIndirectEXT      uintptr
 )
 
-// Init resolves and initializes all VK_EXT_mesh_shader extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDrawMeshTasksEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksEXT")
-	pfnCmdDrawMeshTasksIndirectCountEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountEXT")
-	pfnCmdDrawMeshTasksIndirectEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectEXT")
+// Init resolves and initializes all VK_EXT_mesh_shader extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDrawMeshTasksEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksEXT"),
+		pfnCmdDrawMeshTasksIndirectCountEXT: vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountEXT"),
+		pfnCmdDrawMeshTasksIndirectEXT:      vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectEXT"),
+	}
+	pfnCmdDrawMeshTasksEXT = cmds.pfnCmdDrawMeshTasksEXT
+	pfnCmdDrawMeshTasksIndirectCountEXT = cmds.pfnCmdDrawMeshTasksIndirectCountEXT
+	pfnCmdDrawMeshTasksIndirectEXT = cmds.pfnCmdDrawMeshTasksIndirectEXT
+	return cmds
 }
 
 // CmdDrawMeshTasksEXT - Draw mesh task work items (vkCmdDrawMeshTasksEXT).
@@ -32,6 +45,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - groupCountZ: is the number of local workgroups to dispatch in the Z dimension.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksEXT.html
+func (c *Commands) CmdDrawMeshTasksEXT(commandBuffer vulkan.CommandBuffer, groupCountX uint32, groupCountY uint32, groupCountZ uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksEXT, uintptr(commandBuffer), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
+}
+
 func CmdDrawMeshTasksEXT(commandBuffer vulkan.CommandBuffer, groupCountX uint32, groupCountY uint32, groupCountZ uint32) {
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksEXT, uintptr(commandBuffer), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
 }
@@ -47,6 +64,10 @@ func CmdDrawMeshTasksEXT(commandBuffer vulkan.CommandBuffer, groupCountX uint32,
 //   - stride: is the byte stride between successive sets of draw parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountEXT.html
+func (c *Commands) CmdDrawMeshTasksIndirectCountEXT(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, countBuffer vulkan.Buffer, countBufferOffset vulkan.DeviceSize, maxDrawCount uint32, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksIndirectCountEXT, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
+}
+
 func CmdDrawMeshTasksIndirectCountEXT(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, countBuffer vulkan.Buffer, countBufferOffset vulkan.DeviceSize, maxDrawCount uint32, stride uint32) {
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksIndirectCountEXT, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
 }
@@ -60,6 +81,10 @@ func CmdDrawMeshTasksIndirectCountEXT(commandBuffer vulkan.CommandBuffer, buffer
 //   - stride: is the byte stride between successive sets of draw parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectEXT.html
+func (c *Commands) CmdDrawMeshTasksIndirectEXT(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, drawCount uint32, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksIndirectEXT, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
+}
+
 func CmdDrawMeshTasksIndirectEXT(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, drawCount uint32, stride uint32) {
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksIndirectEXT, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
 }

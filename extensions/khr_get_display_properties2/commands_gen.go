@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDisplayModeProperties2KHR                uintptr
+	pfnGetDisplayPlaneCapabilities2KHR             uintptr
+	pfnGetPhysicalDeviceDisplayPlaneProperties2KHR uintptr
+	pfnGetPhysicalDeviceDisplayProperties2KHR      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDisplayModeProperties2KHR                uintptr
 	pfnGetDisplayPlaneCapabilities2KHR             uintptr
@@ -18,12 +26,19 @@ var (
 	pfnGetPhysicalDeviceDisplayProperties2KHR      uintptr
 )
 
-// Init resolves and initializes all VK_KHR_get_display_properties2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDisplayModeProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetDisplayModeProperties2KHR")
-	pfnGetDisplayPlaneCapabilities2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilities2KHR")
-	pfnGetPhysicalDeviceDisplayPlaneProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR")
-	pfnGetPhysicalDeviceDisplayProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayProperties2KHR")
+// Init resolves and initializes all VK_KHR_get_display_properties2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDisplayModeProperties2KHR:                vulkan.GetInstanceProcAddr(instance, "vkGetDisplayModeProperties2KHR"),
+		pfnGetDisplayPlaneCapabilities2KHR:             vulkan.GetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilities2KHR"),
+		pfnGetPhysicalDeviceDisplayPlaneProperties2KHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR"),
+		pfnGetPhysicalDeviceDisplayProperties2KHR:      vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayProperties2KHR"),
+	}
+	pfnGetDisplayModeProperties2KHR = cmds.pfnGetDisplayModeProperties2KHR
+	pfnGetDisplayPlaneCapabilities2KHR = cmds.pfnGetDisplayPlaneCapabilities2KHR
+	pfnGetPhysicalDeviceDisplayPlaneProperties2KHR = cmds.pfnGetPhysicalDeviceDisplayPlaneProperties2KHR
+	pfnGetPhysicalDeviceDisplayProperties2KHR = cmds.pfnGetPhysicalDeviceDisplayProperties2KHR
+	return cmds
 }
 
 // GetDisplayModeProperties2KHR - Query information about the available display modes. (vkGetDisplayModeProperties2KHR).
@@ -36,6 +51,19 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayModeProperties2KHR.html
+func (c *Commands) GetDisplayModeProperties2KHR(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (properties []vulkan.DisplayModeProperties2KHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDisplayModeProperties2KHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DisplayModeProperties2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetDisplayModeProperties2KHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetDisplayModeProperties2KHR(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (properties []vulkan.DisplayModeProperties2KHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetDisplayModeProperties2KHR, uintptr(physicalDevice), uintptr(display), uintptr(unsafe.Pointer(&count)), 0)
@@ -58,6 +86,12 @@ func GetDisplayModeProperties2KHR(physicalDevice vulkan.PhysicalDevice, display 
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDisplayPlaneCapabilities2KHR.html
+func (c *Commands) GetDisplayPlaneCapabilities2KHR(physicalDevice vulkan.PhysicalDevice, displayPlaneInfo *vulkan.DisplayPlaneInfo2KHR) (capabilities vulkan.DisplayPlaneCapabilities2KHR, result vulkan.Result) {
+	c_displayPlaneInfo := displayPlaneInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDisplayPlaneCapabilities2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_displayPlaneInfo)), uintptr(unsafe.Pointer(&capabilities)))
+	return capabilities, vulkan.Result(r1)
+}
+
 func GetDisplayPlaneCapabilities2KHR(physicalDevice vulkan.PhysicalDevice, displayPlaneInfo *vulkan.DisplayPlaneInfo2KHR) (capabilities vulkan.DisplayPlaneCapabilities2KHR, result vulkan.Result) {
 	c_displayPlaneInfo := displayPlaneInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetDisplayPlaneCapabilities2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_displayPlaneInfo)), uintptr(unsafe.Pointer(&capabilities)))
@@ -73,6 +107,19 @@ func GetDisplayPlaneCapabilities2KHR(physicalDevice vulkan.PhysicalDevice, displ
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayPlaneProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayPlaneProperties2KHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayPlaneProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DisplayPlaneProperties2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayPlaneProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayPlaneProperties2KHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceDisplayPlaneProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
@@ -95,6 +142,19 @@ func GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice vulkan.PhysicalD
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDisplayProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceDisplayProperties2KHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayProperties2KHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.DisplayProperties2KHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceDisplayProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceDisplayProperties2KHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.DisplayProperties2KHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceDisplayProperties2KHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

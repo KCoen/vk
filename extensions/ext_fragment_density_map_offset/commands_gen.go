@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdEndRendering2EXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdEndRendering2EXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_fragment_density_map_offset extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdEndRendering2EXT = vulkan.GetInstanceProcAddr(instance, "vkCmdEndRendering2EXT")
+// Init resolves and initializes all VK_EXT_fragment_density_map_offset extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdEndRendering2EXT: vulkan.GetInstanceProcAddr(instance, "vkCmdEndRendering2EXT"),
+	}
+	pfnCmdEndRendering2EXT = cmds.pfnCmdEndRendering2EXT
+	return cmds
 }
 
 // CmdEndRendering2EXT executes vkCmdEndRendering2EXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndRendering2EXT.html
+func (c *Commands) CmdEndRendering2EXT() {
+	vulkan.CallSyscall(c.pfnCmdEndRendering2EXT)
+}
+
 func CmdEndRendering2EXT() {
 	vulkan.CallSyscall(pfnCmdEndRendering2EXT)
 }

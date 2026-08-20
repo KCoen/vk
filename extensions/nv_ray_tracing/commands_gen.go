@@ -10,7 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBindAccelerationStructureMemoryNV            uintptr
+	pfnCmdBuildAccelerationStructureNV              uintptr
+	pfnCmdCopyAccelerationStructureNV               uintptr
+	pfnCmdTraceRaysNV                               uintptr
+	pfnCmdWriteAccelerationStructuresPropertiesNV   uintptr
+	pfnCompileDeferredNV                            uintptr
+	pfnCreateAccelerationStructureNV                uintptr
+	pfnCreateRayTracingPipelinesNV                  uintptr
+	pfnDestroyAccelerationStructureNV               uintptr
+	pfnGetAccelerationStructureHandleNV             uintptr
+	pfnGetAccelerationStructureMemoryRequirementsNV uintptr
+	pfnGetRayTracingShaderGroupHandlesNV            uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBindAccelerationStructureMemoryNV            uintptr
 	pfnCmdBuildAccelerationStructureNV              uintptr
@@ -26,20 +42,35 @@ var (
 	pfnGetRayTracingShaderGroupHandlesNV            uintptr
 )
 
-// Init resolves and initializes all VK_NV_ray_tracing extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBindAccelerationStructureMemoryNV = vulkan.GetDeviceProcAddr(device, "vkBindAccelerationStructureMemoryNV")
-	pfnCmdBuildAccelerationStructureNV = vulkan.GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructureNV")
-	pfnCmdCopyAccelerationStructureNV = vulkan.GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureNV")
-	pfnCmdTraceRaysNV = vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysNV")
-	pfnCmdWriteAccelerationStructuresPropertiesNV = vulkan.GetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesNV")
-	pfnCompileDeferredNV = vulkan.GetDeviceProcAddr(device, "vkCompileDeferredNV")
-	pfnCreateAccelerationStructureNV = vulkan.GetDeviceProcAddr(device, "vkCreateAccelerationStructureNV")
-	pfnCreateRayTracingPipelinesNV = vulkan.GetDeviceProcAddr(device, "vkCreateRayTracingPipelinesNV")
-	pfnDestroyAccelerationStructureNV = vulkan.GetDeviceProcAddr(device, "vkDestroyAccelerationStructureNV")
-	pfnGetAccelerationStructureHandleNV = vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureHandleNV")
-	pfnGetAccelerationStructureMemoryRequirementsNV = vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureMemoryRequirementsNV")
-	pfnGetRayTracingShaderGroupHandlesNV = vulkan.GetInstanceProcAddr(instance, "vkGetRayTracingShaderGroupHandlesNV")
+// Init resolves and initializes all VK_NV_ray_tracing extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBindAccelerationStructureMemoryNV:            vulkan.GetDeviceProcAddr(device, "vkBindAccelerationStructureMemoryNV"),
+		pfnCmdBuildAccelerationStructureNV:              vulkan.GetDeviceProcAddr(device, "vkCmdBuildAccelerationStructureNV"),
+		pfnCmdCopyAccelerationStructureNV:               vulkan.GetDeviceProcAddr(device, "vkCmdCopyAccelerationStructureNV"),
+		pfnCmdTraceRaysNV:                               vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysNV"),
+		pfnCmdWriteAccelerationStructuresPropertiesNV:   vulkan.GetDeviceProcAddr(device, "vkCmdWriteAccelerationStructuresPropertiesNV"),
+		pfnCompileDeferredNV:                            vulkan.GetDeviceProcAddr(device, "vkCompileDeferredNV"),
+		pfnCreateAccelerationStructureNV:                vulkan.GetDeviceProcAddr(device, "vkCreateAccelerationStructureNV"),
+		pfnCreateRayTracingPipelinesNV:                  vulkan.GetDeviceProcAddr(device, "vkCreateRayTracingPipelinesNV"),
+		pfnDestroyAccelerationStructureNV:               vulkan.GetDeviceProcAddr(device, "vkDestroyAccelerationStructureNV"),
+		pfnGetAccelerationStructureHandleNV:             vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureHandleNV"),
+		pfnGetAccelerationStructureMemoryRequirementsNV: vulkan.GetDeviceProcAddr(device, "vkGetAccelerationStructureMemoryRequirementsNV"),
+		pfnGetRayTracingShaderGroupHandlesNV:            vulkan.GetInstanceProcAddr(instance, "vkGetRayTracingShaderGroupHandlesNV"),
+	}
+	pfnBindAccelerationStructureMemoryNV = cmds.pfnBindAccelerationStructureMemoryNV
+	pfnCmdBuildAccelerationStructureNV = cmds.pfnCmdBuildAccelerationStructureNV
+	pfnCmdCopyAccelerationStructureNV = cmds.pfnCmdCopyAccelerationStructureNV
+	pfnCmdTraceRaysNV = cmds.pfnCmdTraceRaysNV
+	pfnCmdWriteAccelerationStructuresPropertiesNV = cmds.pfnCmdWriteAccelerationStructuresPropertiesNV
+	pfnCompileDeferredNV = cmds.pfnCompileDeferredNV
+	pfnCreateAccelerationStructureNV = cmds.pfnCreateAccelerationStructureNV
+	pfnCreateRayTracingPipelinesNV = cmds.pfnCreateRayTracingPipelinesNV
+	pfnDestroyAccelerationStructureNV = cmds.pfnDestroyAccelerationStructureNV
+	pfnGetAccelerationStructureHandleNV = cmds.pfnGetAccelerationStructureHandleNV
+	pfnGetAccelerationStructureMemoryRequirementsNV = cmds.pfnGetAccelerationStructureMemoryRequirementsNV
+	pfnGetRayTracingShaderGroupHandlesNV = cmds.pfnGetRayTracingShaderGroupHandlesNV
+	return cmds
 }
 
 // BindAccelerationStructureMemoryNV - Bind acceleration structure memory (vkBindAccelerationStructureMemoryNV).
@@ -51,6 +82,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindAccelerationStructureMemoryNV.html
+func (c *Commands) BindAccelerationStructureMemoryNV(device vulkan.Device, bindInfos []vulkan.BindAccelerationStructureMemoryInfoNV) (result vulkan.Result) {
+	c_bindInfos := make([]vulkan.RawBindAccelerationStructureMemoryInfoNV, len(bindInfos))
+	for i := range bindInfos {
+		if raw := bindInfos[i].Raw(); raw != nil {
+			c_bindInfos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnBindAccelerationStructureMemoryNV, uintptr(device), uintptr(len(bindInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_bindInfos))))
+	return vulkan.Result(r1)
+}
+
 func BindAccelerationStructureMemoryNV(device vulkan.Device, bindInfos []vulkan.BindAccelerationStructureMemoryInfoNV) (result vulkan.Result) {
 	c_bindInfos := make([]vulkan.RawBindAccelerationStructureMemoryInfoNV, len(bindInfos))
 	for i := range bindInfos {
@@ -75,6 +117,11 @@ func BindAccelerationStructureMemoryNV(device vulkan.Device, bindInfos []vulkan.
 //   - scratchOffset: is the offset in bytes relative to the start of scratch that will be used as a scratch memory.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructureNV.html
+func (c *Commands) CmdBuildAccelerationStructureNV(commandBuffer vulkan.CommandBuffer, info *vulkan.AccelerationStructureInfoNV, instanceData vulkan.Buffer, instanceOffset vulkan.DeviceSize, update vulkan.Bool32, dst vulkan.AccelerationStructureNV, src vulkan.AccelerationStructureNV, scratch vulkan.Buffer, scratchOffset vulkan.DeviceSize) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdBuildAccelerationStructureNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)), uintptr(instanceData), uintptr(instanceOffset), uintptr(update), uintptr(dst), uintptr(src), uintptr(scratch), uintptr(scratchOffset))
+}
+
 func CmdBuildAccelerationStructureNV(commandBuffer vulkan.CommandBuffer, info *vulkan.AccelerationStructureInfoNV, instanceData vulkan.Buffer, instanceOffset vulkan.DeviceSize, update vulkan.Bool32, dst vulkan.AccelerationStructureNV, src vulkan.AccelerationStructureNV, scratch vulkan.Buffer, scratchOffset vulkan.DeviceSize) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdBuildAccelerationStructureNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)), uintptr(instanceData), uintptr(instanceOffset), uintptr(update), uintptr(dst), uintptr(src), uintptr(scratch), uintptr(scratchOffset))
@@ -88,6 +135,10 @@ func CmdBuildAccelerationStructureNV(commandBuffer vulkan.CommandBuffer, info *v
 //   - mode: is a VkCopyAccelerationStructureModeKHR value specifying additional operations to perform during the copy.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyAccelerationStructureNV.html
+func (c *Commands) CmdCopyAccelerationStructureNV(commandBuffer vulkan.CommandBuffer, dst vulkan.AccelerationStructureNV, src vulkan.AccelerationStructureNV, mode vulkan.CopyAccelerationStructureModeKHR) {
+	vulkan.CallSyscall(c.pfnCmdCopyAccelerationStructureNV, uintptr(commandBuffer), uintptr(dst), uintptr(src), uintptr(mode))
+}
+
 func CmdCopyAccelerationStructureNV(commandBuffer vulkan.CommandBuffer, dst vulkan.AccelerationStructureNV, src vulkan.AccelerationStructureNV, mode vulkan.CopyAccelerationStructureModeKHR) {
 	vulkan.CallSyscall(pfnCmdCopyAccelerationStructureNV, uintptr(commandBuffer), uintptr(dst), uintptr(src), uintptr(mode))
 }
@@ -111,6 +162,10 @@ func CmdCopyAccelerationStructureNV(commandBuffer vulkan.CommandBuffer, dst vulk
 //   - depth: is depth of the ray trace query dimensions.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysNV.html
+func (c *Commands) CmdTraceRaysNV(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTableBuffer vulkan.Buffer, raygenShaderBindingOffset vulkan.DeviceSize, missShaderBindingTableBuffer vulkan.Buffer, missShaderBindingOffset vulkan.DeviceSize, missShaderBindingStride vulkan.DeviceSize, hitShaderBindingTableBuffer vulkan.Buffer, hitShaderBindingOffset vulkan.DeviceSize, hitShaderBindingStride vulkan.DeviceSize, callableShaderBindingTableBuffer vulkan.Buffer, callableShaderBindingOffset vulkan.DeviceSize, callableShaderBindingStride vulkan.DeviceSize, width uint32, height uint32, depth uint32) {
+	vulkan.CallSyscall(c.pfnCmdTraceRaysNV, uintptr(commandBuffer), uintptr(raygenShaderBindingTableBuffer), uintptr(raygenShaderBindingOffset), uintptr(missShaderBindingTableBuffer), uintptr(missShaderBindingOffset), uintptr(missShaderBindingStride), uintptr(hitShaderBindingTableBuffer), uintptr(hitShaderBindingOffset), uintptr(hitShaderBindingStride), uintptr(callableShaderBindingTableBuffer), uintptr(callableShaderBindingOffset), uintptr(callableShaderBindingStride), uintptr(width), uintptr(height), uintptr(depth))
+}
+
 func CmdTraceRaysNV(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTableBuffer vulkan.Buffer, raygenShaderBindingOffset vulkan.DeviceSize, missShaderBindingTableBuffer vulkan.Buffer, missShaderBindingOffset vulkan.DeviceSize, missShaderBindingStride vulkan.DeviceSize, hitShaderBindingTableBuffer vulkan.Buffer, hitShaderBindingOffset vulkan.DeviceSize, hitShaderBindingStride vulkan.DeviceSize, callableShaderBindingTableBuffer vulkan.Buffer, callableShaderBindingOffset vulkan.DeviceSize, callableShaderBindingStride vulkan.DeviceSize, width uint32, height uint32, depth uint32) {
 	vulkan.CallSyscall(pfnCmdTraceRaysNV, uintptr(commandBuffer), uintptr(raygenShaderBindingTableBuffer), uintptr(raygenShaderBindingOffset), uintptr(missShaderBindingTableBuffer), uintptr(missShaderBindingOffset), uintptr(missShaderBindingStride), uintptr(hitShaderBindingTableBuffer), uintptr(hitShaderBindingOffset), uintptr(hitShaderBindingStride), uintptr(callableShaderBindingTableBuffer), uintptr(callableShaderBindingOffset), uintptr(callableShaderBindingStride), uintptr(width), uintptr(height), uintptr(depth))
 }
@@ -125,6 +180,11 @@ func CmdTraceRaysNV(commandBuffer vulkan.CommandBuffer, raygenShaderBindingTable
 //   - firstQuery: is the first query index within the query pool that will contain the accelerationStructureCount number of results.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteAccelerationStructuresPropertiesNV.html
+func (c *Commands) CmdWriteAccelerationStructuresPropertiesNV(commandBuffer vulkan.CommandBuffer, accelerationStructures []vulkan.AccelerationStructureNV, queryType vulkan.QueryType, queryPool vulkan.QueryPool, firstQuery uint32) {
+	c_accelerationStructures := vulkan.SliceData(accelerationStructures)
+	vulkan.CallSyscall(c.pfnCmdWriteAccelerationStructuresPropertiesNV, uintptr(commandBuffer), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
+}
+
 func CmdWriteAccelerationStructuresPropertiesNV(commandBuffer vulkan.CommandBuffer, accelerationStructures []vulkan.AccelerationStructureNV, queryType vulkan.QueryType, queryPool vulkan.QueryPool, firstQuery uint32) {
 	c_accelerationStructures := vulkan.SliceData(accelerationStructures)
 	vulkan.CallSyscall(pfnCmdWriteAccelerationStructuresPropertiesNV, uintptr(commandBuffer), uintptr(len(accelerationStructures)), uintptr(unsafe.Pointer(c_accelerationStructures)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
@@ -139,6 +199,11 @@ func CmdWriteAccelerationStructuresPropertiesNV(commandBuffer vulkan.CommandBuff
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCompileDeferredNV.html
+func (c *Commands) CompileDeferredNV(device vulkan.Device, pipeline vulkan.Pipeline, shader uint32) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnCompileDeferredNV, uintptr(device), uintptr(pipeline), uintptr(shader))
+	return vulkan.Result(r1)
+}
+
 func CompileDeferredNV(device vulkan.Device, pipeline vulkan.Pipeline, shader uint32) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnCompileDeferredNV, uintptr(device), uintptr(pipeline), uintptr(shader))
 	return vulkan.Result(r1)
@@ -154,6 +219,13 @@ func CompileDeferredNV(device vulkan.Device, pipeline vulkan.Pipeline, shader ui
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureNV.html
+func (c *Commands) CreateAccelerationStructureNV(device vulkan.Device, createInfo *vulkan.AccelerationStructureCreateInfoNV, allocator *vulkan.AllocationCallbacks) (accelerationStructure vulkan.AccelerationStructureNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateAccelerationStructureNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&accelerationStructure)))
+	return accelerationStructure, vulkan.Result(r1)
+}
+
 func CreateAccelerationStructureNV(device vulkan.Device, createInfo *vulkan.AccelerationStructureCreateInfoNV, allocator *vulkan.AllocationCallbacks) (accelerationStructure vulkan.AccelerationStructureNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -173,6 +245,18 @@ func CreateAccelerationStructureNV(device vulkan.Device, createInfo *vulkan.Acce
 // Success codes: VK_SUCCESS, VK_PIPELINE_COMPILE_REQUIRED_EXT
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NO_PIPELINE_MATCH, VK_ERROR_OUT_OF_POOL_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateRayTracingPipelinesNV.html
+func (c *Commands) CreateRayTracingPipelinesNV(device vulkan.Device, pipelineCache vulkan.PipelineCache, createInfos []vulkan.RayTracingPipelineCreateInfoNV, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
+	c_createInfos := make([]vulkan.RawRayTracingPipelineCreateInfoNV, len(createInfos))
+	for i := range createInfos {
+		if raw := createInfos[i].Raw(); raw != nil {
+			c_createInfos[i] = *raw
+		}
+	}
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateRayTracingPipelinesNV, uintptr(device), uintptr(pipelineCache), uintptr(len(createInfos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_createInfos))), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&pipelines)))
+	return pipelines, vulkan.Result(r1)
+}
+
 func CreateRayTracingPipelinesNV(device vulkan.Device, pipelineCache vulkan.PipelineCache, createInfos []vulkan.RayTracingPipelineCreateInfoNV, allocator *vulkan.AllocationCallbacks) (pipelines vulkan.Pipeline, result vulkan.Result) {
 	c_createInfos := make([]vulkan.RawRayTracingPipelineCreateInfoNV, len(createInfos))
 	for i := range createInfos {
@@ -192,6 +276,11 @@ func CreateRayTracingPipelinesNV(device vulkan.Device, pipelineCache vulkan.Pipe
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyAccelerationStructureNV.html
+func (c *Commands) DestroyAccelerationStructureNV(device vulkan.Device, accelerationStructure vulkan.AccelerationStructureNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyAccelerationStructureNV, uintptr(device), uintptr(accelerationStructure), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyAccelerationStructureNV(device vulkan.Device, accelerationStructure vulkan.AccelerationStructureNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyAccelerationStructureNV, uintptr(device), uintptr(accelerationStructure), uintptr(unsafe.Pointer(c_allocator)))
@@ -207,6 +296,12 @@ func DestroyAccelerationStructureNV(device vulkan.Device, accelerationStructure 
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureHandleNV.html
+func (c *Commands) GetAccelerationStructureHandleNV(device vulkan.Device, accelerationStructure vulkan.AccelerationStructureNV, data []unsafe.Pointer) (result vulkan.Result) {
+	c_data := vulkan.SliceData(data)
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetAccelerationStructureHandleNV, uintptr(device), uintptr(accelerationStructure), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
+	return vulkan.Result(r1)
+}
+
 func GetAccelerationStructureHandleNV(device vulkan.Device, accelerationStructure vulkan.AccelerationStructureNV, data []unsafe.Pointer) (result vulkan.Result) {
 	c_data := vulkan.SliceData(data)
 	r1, _, _ := vulkan.CallSyscall(pfnGetAccelerationStructureHandleNV, uintptr(device), uintptr(accelerationStructure), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)))
@@ -220,6 +315,12 @@ func GetAccelerationStructureHandleNV(device vulkan.Device, accelerationStructur
 //   - memoryRequirements: is a pointer to a VkMemoryRequirements2KHR structure in which the requested acceleration structure memory requirements are returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureMemoryRequirementsNV.html
+func (c *Commands) GetAccelerationStructureMemoryRequirementsNV(device vulkan.Device, info *vulkan.AccelerationStructureMemoryRequirementsInfoNV) (memoryRequirements vulkan.MemoryRequirements2) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnGetAccelerationStructureMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
+	return memoryRequirements
+}
+
 func GetAccelerationStructureMemoryRequirementsNV(device vulkan.Device, info *vulkan.AccelerationStructureMemoryRequirementsInfoNV) (memoryRequirements vulkan.MemoryRequirements2) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnGetAccelerationStructureMemoryRequirementsNV, uintptr(device), uintptr(unsafe.Pointer(c_info)), uintptr(unsafe.Pointer(&memoryRequirements)))
@@ -228,6 +329,10 @@ func GetAccelerationStructureMemoryRequirementsNV(device vulkan.Device, info *vu
 
 // GetRayTracingShaderGroupHandlesNV executes vkGetRayTracingShaderGroupHandlesNV.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupHandlesNV.html
+func (c *Commands) GetRayTracingShaderGroupHandlesNV() {
+	vulkan.CallSyscall(c.pfnGetRayTracingShaderGroupHandlesNV)
+}
+
 func GetRayTracingShaderGroupHandlesNV() {
 	vulkan.CallSyscall(pfnGetRayTracingShaderGroupHandlesNV)
 }

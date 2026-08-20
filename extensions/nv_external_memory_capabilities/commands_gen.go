@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceExternalImageFormatPropertiesNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceExternalImageFormatPropertiesNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_external_memory_capabilities extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceExternalImageFormatPropertiesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV")
+// Init resolves and initializes all VK_NV_external_memory_capabilities extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceExternalImageFormatPropertiesNV: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV"),
+	}
+	pfnGetPhysicalDeviceExternalImageFormatPropertiesNV = cmds.pfnGetPhysicalDeviceExternalImageFormatPropertiesNV
+	return cmds
 }
 
 // GetPhysicalDeviceExternalImageFormatPropertiesNV - Determine image capabilities compatible with external memory handle types (vkGetPhysicalDeviceExternalImageFormatPropertiesNV).
@@ -34,6 +43,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalImageFormatPropertiesNV.html
+func (c *Commands) GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice vulkan.PhysicalDevice, format vulkan.Format, typ vulkan.ImageType, tiling vulkan.ImageTiling, usage vulkan.ImageUsageFlags, flags vulkan.ImageCreateFlags, externalHandleType vulkan.ExternalMemoryHandleTypeFlagsNV) (externalImageFormatProperties vulkan.ExternalImageFormatPropertiesNV, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceExternalImageFormatPropertiesNV, uintptr(physicalDevice), uintptr(format), uintptr(typ), uintptr(tiling), uintptr(usage), uintptr(flags), uintptr(externalHandleType), uintptr(unsafe.Pointer(&externalImageFormatProperties)))
+	return externalImageFormatProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice vulkan.PhysicalDevice, format vulkan.Format, typ vulkan.ImageType, tiling vulkan.ImageTiling, usage vulkan.ImageUsageFlags, flags vulkan.ImageCreateFlags, externalHandleType vulkan.ExternalMemoryHandleTypeFlagsNV) (externalImageFormatProperties vulkan.ExternalImageFormatPropertiesNV, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceExternalImageFormatPropertiesNV, uintptr(physicalDevice), uintptr(format), uintptr(typ), uintptr(tiling), uintptr(usage), uintptr(flags), uintptr(externalHandleType), uintptr(unsafe.Pointer(&externalImageFormatProperties)))
 	return externalImageFormatProperties, vulkan.Result(r1)

@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdConvertCooperativeVectorMatrixNV            uintptr
+	pfnConvertCooperativeVectorMatrixNV               uintptr
+	pfnGetPhysicalDeviceCooperativeVectorPropertiesNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdConvertCooperativeVectorMatrixNV            uintptr
 	pfnConvertCooperativeVectorMatrixNV               uintptr
 	pfnGetPhysicalDeviceCooperativeVectorPropertiesNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_cooperative_vector extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdConvertCooperativeVectorMatrixNV = vulkan.GetDeviceProcAddr(device, "vkCmdConvertCooperativeVectorMatrixNV")
-	pfnConvertCooperativeVectorMatrixNV = vulkan.GetDeviceProcAddr(device, "vkConvertCooperativeVectorMatrixNV")
-	pfnGetPhysicalDeviceCooperativeVectorPropertiesNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeVectorPropertiesNV")
+// Init resolves and initializes all VK_NV_cooperative_vector extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdConvertCooperativeVectorMatrixNV:            vulkan.GetDeviceProcAddr(device, "vkCmdConvertCooperativeVectorMatrixNV"),
+		pfnConvertCooperativeVectorMatrixNV:               vulkan.GetDeviceProcAddr(device, "vkConvertCooperativeVectorMatrixNV"),
+		pfnGetPhysicalDeviceCooperativeVectorPropertiesNV: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeVectorPropertiesNV"),
+	}
+	pfnCmdConvertCooperativeVectorMatrixNV = cmds.pfnCmdConvertCooperativeVectorMatrixNV
+	pfnConvertCooperativeVectorMatrixNV = cmds.pfnConvertCooperativeVectorMatrixNV
+	pfnGetPhysicalDeviceCooperativeVectorPropertiesNV = cmds.pfnGetPhysicalDeviceCooperativeVectorPropertiesNV
+	return cmds
 }
 
 // CmdConvertCooperativeVectorMatrixNV - Convert a cooperative vector matrix from one layout and type to another (vkCmdConvertCooperativeVectorMatrixNV).
@@ -31,6 +44,16 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - infos: is a pointer to an array of VkConvertCooperativeVectorMatrixInfoNV structures containing information about the layout conversion.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdConvertCooperativeVectorMatrixNV.html
+func (c *Commands) CmdConvertCooperativeVectorMatrixNV(commandBuffer vulkan.CommandBuffer, infos []vulkan.ConvertCooperativeVectorMatrixInfoNV) {
+	c_infos := make([]vulkan.RawConvertCooperativeVectorMatrixInfoNV, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdConvertCooperativeVectorMatrixNV, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_infos))))
+}
+
 func CmdConvertCooperativeVectorMatrixNV(commandBuffer vulkan.CommandBuffer, infos []vulkan.ConvertCooperativeVectorMatrixInfoNV) {
 	c_infos := make([]vulkan.RawConvertCooperativeVectorMatrixInfoNV, len(infos))
 	for i := range infos {
@@ -49,6 +72,12 @@ func CmdConvertCooperativeVectorMatrixNV(commandBuffer vulkan.CommandBuffer, inf
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkConvertCooperativeVectorMatrixNV.html
+func (c *Commands) ConvertCooperativeVectorMatrixNV(device vulkan.Device, info *vulkan.ConvertCooperativeVectorMatrixInfoNV) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnConvertCooperativeVectorMatrixNV, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func ConvertCooperativeVectorMatrixNV(device vulkan.Device, info *vulkan.ConvertCooperativeVectorMatrixInfoNV) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnConvertCooperativeVectorMatrixNV, uintptr(device), uintptr(unsafe.Pointer(c_info)))
@@ -64,6 +93,19 @@ func ConvertCooperativeVectorMatrixNV(device vulkan.Device, info *vulkan.Convert
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeVectorPropertiesNV.html
+func (c *Commands) GetPhysicalDeviceCooperativeVectorPropertiesNV(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.CooperativeVectorPropertiesNV, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceCooperativeVectorPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.CooperativeVectorPropertiesNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceCooperativeVectorPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceCooperativeVectorPropertiesNV(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.CooperativeVectorPropertiesNV, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceCooperativeVectorPropertiesNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

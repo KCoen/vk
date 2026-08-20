@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryZirconHandleFUCHSIA           uintptr
+	pfnGetMemoryZirconHandlePropertiesFUCHSIA uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryZirconHandleFUCHSIA           uintptr
 	pfnGetMemoryZirconHandlePropertiesFUCHSIA uintptr
 )
 
-// Init resolves and initializes all VK_FUCHSIA_external_memory extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryZirconHandleFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkGetMemoryZirconHandleFUCHSIA")
-	pfnGetMemoryZirconHandlePropertiesFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkGetMemoryZirconHandlePropertiesFUCHSIA")
+// Init resolves and initializes all VK_FUCHSIA_external_memory extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryZirconHandleFUCHSIA:           vulkan.GetDeviceProcAddr(device, "vkGetMemoryZirconHandleFUCHSIA"),
+		pfnGetMemoryZirconHandlePropertiesFUCHSIA: vulkan.GetDeviceProcAddr(device, "vkGetMemoryZirconHandlePropertiesFUCHSIA"),
+	}
+	pfnGetMemoryZirconHandleFUCHSIA = cmds.pfnGetMemoryZirconHandleFUCHSIA
+	pfnGetMemoryZirconHandlePropertiesFUCHSIA = cmds.pfnGetMemoryZirconHandlePropertiesFUCHSIA
+	return cmds
 }
 
 // GetMemoryZirconHandleFUCHSIA - Get a Zircon handle for an external memory object (vkGetMemoryZirconHandleFUCHSIA).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryZirconHandleFUCHSIA.html
+func (c *Commands) GetMemoryZirconHandleFUCHSIA(device vulkan.Device, getZirconHandleInfo *vulkan.MemoryGetZirconHandleInfoFUCHSIA) (zirconHandle uint32, result vulkan.Result) {
+	c_getZirconHandleInfo := getZirconHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_getZirconHandleInfo)), uintptr(unsafe.Pointer(&zirconHandle)))
+	return zirconHandle, vulkan.Result(r1)
+}
+
 func GetMemoryZirconHandleFUCHSIA(device vulkan.Device, getZirconHandleInfo *vulkan.MemoryGetZirconHandleInfoFUCHSIA) (zirconHandle uint32, result vulkan.Result) {
 	c_getZirconHandleInfo := getZirconHandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_getZirconHandleInfo)), uintptr(unsafe.Pointer(&zirconHandle)))
@@ -47,6 +64,11 @@ func GetMemoryZirconHandleFUCHSIA(device vulkan.Device, getZirconHandleInfo *vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryZirconHandlePropertiesFUCHSIA.html
+func (c *Commands) GetMemoryZirconHandlePropertiesFUCHSIA(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, zirconHandle uint32) (memoryZirconHandleProperties vulkan.MemoryZirconHandlePropertiesFUCHSIA, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryZirconHandlePropertiesFUCHSIA, uintptr(device), uintptr(handleType), uintptr(zirconHandle), uintptr(unsafe.Pointer(&memoryZirconHandleProperties)))
+	return memoryZirconHandleProperties, vulkan.Result(r1)
+}
+
 func GetMemoryZirconHandlePropertiesFUCHSIA(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, zirconHandle uint32) (memoryZirconHandleProperties vulkan.MemoryZirconHandlePropertiesFUCHSIA, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryZirconHandlePropertiesFUCHSIA, uintptr(device), uintptr(handleType), uintptr(zirconHandle), uintptr(unsafe.Pointer(&memoryZirconHandleProperties)))
 	return memoryZirconHandleProperties, vulkan.Result(r1)

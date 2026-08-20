@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetImageSubresourceLayout2EXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetImageSubresourceLayout2EXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_image_compression_control extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetImageSubresourceLayout2EXT = vulkan.GetInstanceProcAddr(instance, "vkGetImageSubresourceLayout2EXT")
+// Init resolves and initializes all VK_EXT_image_compression_control extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetImageSubresourceLayout2EXT: vulkan.GetInstanceProcAddr(instance, "vkGetImageSubresourceLayout2EXT"),
+	}
+	pfnGetImageSubresourceLayout2EXT = cmds.pfnGetImageSubresourceLayout2EXT
+	return cmds
 }
 
 // GetImageSubresourceLayout2EXT executes vkGetImageSubresourceLayout2EXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageSubresourceLayout2EXT.html
+func (c *Commands) GetImageSubresourceLayout2EXT() {
+	vulkan.CallSyscall(c.pfnGetImageSubresourceLayout2EXT)
+}
+
 func GetImageSubresourceLayout2EXT() {
 	vulkan.CallSyscall(pfnGetImageSubresourceLayout2EXT)
 }

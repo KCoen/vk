@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateSurfaceOHOS uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateSurfaceOHOS uintptr
 )
 
-// Init resolves and initializes all VK_OHOS_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateSurfaceOHOS = vulkan.GetInstanceProcAddr(instance, "vkCreateSurfaceOHOS")
+// Init resolves and initializes all VK_OHOS_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateSurfaceOHOS: vulkan.GetInstanceProcAddr(instance, "vkCreateSurfaceOHOS"),
+	}
+	pfnCreateSurfaceOHOS = cmds.pfnCreateSurfaceOHOS
+	return cmds
 }
 
 // CreateSurfaceOHOS - Create a VkSurfaceKHR object for an Open Harmony OS native window (vkCreateSurfaceOHOS).
@@ -30,6 +39,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSurfaceOHOS.html
+func (c *Commands) CreateSurfaceOHOS(instance vulkan.Instance, createInfo *vulkan.SurfaceCreateInfoOHOS, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateSurfaceOHOS, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateSurfaceOHOS(instance vulkan.Instance, createInfo *vulkan.SurfaceCreateInfoOHOS, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()

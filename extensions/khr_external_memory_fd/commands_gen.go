@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryFdKHR           uintptr
+	pfnGetMemoryFdPropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryFdKHR           uintptr
 	pfnGetMemoryFdPropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_memory_fd extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryFdKHR = vulkan.GetDeviceProcAddr(device, "vkGetMemoryFdKHR")
-	pfnGetMemoryFdPropertiesKHR = vulkan.GetDeviceProcAddr(device, "vkGetMemoryFdPropertiesKHR")
+// Init resolves and initializes all VK_KHR_external_memory_fd extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryFdKHR:           vulkan.GetDeviceProcAddr(device, "vkGetMemoryFdKHR"),
+		pfnGetMemoryFdPropertiesKHR: vulkan.GetDeviceProcAddr(device, "vkGetMemoryFdPropertiesKHR"),
+	}
+	pfnGetMemoryFdKHR = cmds.pfnGetMemoryFdKHR
+	pfnGetMemoryFdPropertiesKHR = cmds.pfnGetMemoryFdPropertiesKHR
+	return cmds
 }
 
 // GetMemoryFdKHR - Get a POSIX file descriptor for a memory object (vkGetMemoryFdKHR).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryFdKHR.html
+func (c *Commands) GetMemoryFdKHR(device vulkan.Device, getFdInfo *vulkan.MemoryGetFdInfoKHR) (fd int32, result vulkan.Result) {
+	c_getFdInfo := getFdInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
+	return fd, vulkan.Result(r1)
+}
+
 func GetMemoryFdKHR(device vulkan.Device, getFdInfo *vulkan.MemoryGetFdInfoKHR) (fd int32, result vulkan.Result) {
 	c_getFdInfo := getFdInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
@@ -47,6 +64,11 @@ func GetMemoryFdKHR(device vulkan.Device, getFdInfo *vulkan.MemoryGetFdInfoKHR) 
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryFdPropertiesKHR.html
+func (c *Commands) GetMemoryFdPropertiesKHR(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, fd int32) (memoryFdProperties vulkan.MemoryFdPropertiesKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryFdPropertiesKHR, uintptr(device), uintptr(handleType), uintptr(fd), uintptr(unsafe.Pointer(&memoryFdProperties)))
+	return memoryFdProperties, vulkan.Result(r1)
+}
+
 func GetMemoryFdPropertiesKHR(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, fd int32) (memoryFdProperties vulkan.MemoryFdPropertiesKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryFdPropertiesKHR, uintptr(device), uintptr(handleType), uintptr(fd), uintptr(unsafe.Pointer(&memoryFdProperties)))
 	return memoryFdProperties, vulkan.Result(r1)

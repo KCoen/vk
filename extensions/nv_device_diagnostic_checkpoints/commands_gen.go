@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetCheckpointNV        uintptr
+	pfnGetQueueCheckpointData2NV uintptr
+	pfnGetQueueCheckpointDataNV  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetCheckpointNV        uintptr
 	pfnGetQueueCheckpointData2NV uintptr
 	pfnGetQueueCheckpointDataNV  uintptr
 )
 
-// Init resolves and initializes all VK_NV_device_diagnostic_checkpoints extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetCheckpointNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetCheckpointNV")
-	pfnGetQueueCheckpointData2NV = vulkan.GetDeviceProcAddr(device, "vkGetQueueCheckpointData2NV")
-	pfnGetQueueCheckpointDataNV = vulkan.GetDeviceProcAddr(device, "vkGetQueueCheckpointDataNV")
+// Init resolves and initializes all VK_NV_device_diagnostic_checkpoints extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetCheckpointNV:        vulkan.GetDeviceProcAddr(device, "vkCmdSetCheckpointNV"),
+		pfnGetQueueCheckpointData2NV: vulkan.GetDeviceProcAddr(device, "vkGetQueueCheckpointData2NV"),
+		pfnGetQueueCheckpointDataNV:  vulkan.GetDeviceProcAddr(device, "vkGetQueueCheckpointDataNV"),
+	}
+	pfnCmdSetCheckpointNV = cmds.pfnCmdSetCheckpointNV
+	pfnGetQueueCheckpointData2NV = cmds.pfnGetQueueCheckpointData2NV
+	pfnGetQueueCheckpointDataNV = cmds.pfnGetQueueCheckpointDataNV
+	return cmds
 }
 
 // CmdSetCheckpointNV - Insert diagnostic checkpoint in command stream (vkCmdSetCheckpointNV).
@@ -30,6 +43,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - checkpointMarker: is an opaque application-provided value that will be associated with the checkpoint.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCheckpointNV.html
+func (c *Commands) CmdSetCheckpointNV(commandBuffer vulkan.CommandBuffer, checkpointMarker unsafe.Pointer) {
+	vulkan.CallSyscall(c.pfnCmdSetCheckpointNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(checkpointMarker)))
+}
+
 func CmdSetCheckpointNV(commandBuffer vulkan.CommandBuffer, checkpointMarker unsafe.Pointer) {
 	vulkan.CallSyscall(pfnCmdSetCheckpointNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(checkpointMarker)))
 }
@@ -41,6 +58,19 @@ func CmdSetCheckpointNV(commandBuffer vulkan.CommandBuffer, checkpointMarker uns
 //   - checkpointData: is either NULL or a pointer to an array of VkCheckpointData2NV structures.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetQueueCheckpointData2NV.html
+func (c *Commands) GetQueueCheckpointData2NV(queue vulkan.Queue) (checkpointData []vulkan.CheckpointData2NV, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetQueueCheckpointData2NV, uintptr(queue), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	checkpointData = make([]vulkan.CheckpointData2NV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&checkpointData[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetQueueCheckpointData2NV, uintptr(queue), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return checkpointData, vulkan.Result(r1)
+}
+
 func GetQueueCheckpointData2NV(queue vulkan.Queue) (checkpointData []vulkan.CheckpointData2NV, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetQueueCheckpointData2NV, uintptr(queue), uintptr(unsafe.Pointer(&count)), 0)
@@ -61,6 +91,19 @@ func GetQueueCheckpointData2NV(queue vulkan.Queue) (checkpointData []vulkan.Chec
 //   - checkpointData: is either NULL or a pointer to an array of VkCheckpointDataNV structures.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetQueueCheckpointDataNV.html
+func (c *Commands) GetQueueCheckpointDataNV(queue vulkan.Queue) (checkpointData []vulkan.CheckpointDataNV, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetQueueCheckpointDataNV, uintptr(queue), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	checkpointData = make([]vulkan.CheckpointDataNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&checkpointData[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetQueueCheckpointDataNV, uintptr(queue), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return checkpointData, vulkan.Result(r1)
+}
+
 func GetQueueCheckpointDataNV(queue vulkan.Queue) (checkpointData []vulkan.CheckpointDataNV, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetQueueCheckpointDataNV, uintptr(queue), uintptr(unsafe.Pointer(&count)), 0)

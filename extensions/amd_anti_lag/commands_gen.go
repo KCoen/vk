@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAntiLagUpdateAMD uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAntiLagUpdateAMD uintptr
 )
 
-// Init resolves and initializes all VK_AMD_anti_lag extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAntiLagUpdateAMD = vulkan.GetDeviceProcAddr(device, "vkAntiLagUpdateAMD")
+// Init resolves and initializes all VK_AMD_anti_lag extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAntiLagUpdateAMD: vulkan.GetDeviceProcAddr(device, "vkAntiLagUpdateAMD"),
+	}
+	pfnAntiLagUpdateAMD = cmds.pfnAntiLagUpdateAMD
+	return cmds
 }
 
 // AntiLagUpdateAMD - Provide information to reduce latency (vkAntiLagUpdateAMD).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - data: is a pointer to a VkAntiLagDataAMD structure containing latency reduction parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAntiLagUpdateAMD.html
+func (c *Commands) AntiLagUpdateAMD(device vulkan.Device, data *vulkan.AntiLagDataAMD) {
+	c_data := data.Raw()
+	vulkan.CallSyscall(c.pfnAntiLagUpdateAMD, uintptr(device), uintptr(unsafe.Pointer(c_data)))
+}
+
 func AntiLagUpdateAMD(device vulkan.Device, data *vulkan.AntiLagDataAMD) {
 	c_data := data.Raw()
 	vulkan.CallSyscall(pfnAntiLagUpdateAMD, uintptr(device), uintptr(unsafe.Pointer(c_data)))

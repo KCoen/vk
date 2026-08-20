@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdWriteBufferMarker2AMD uintptr
+	pfnCmdWriteBufferMarkerAMD  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdWriteBufferMarker2AMD uintptr
 	pfnCmdWriteBufferMarkerAMD  uintptr
 )
 
-// Init resolves and initializes all VK_AMD_buffer_marker extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdWriteBufferMarker2AMD = vulkan.GetDeviceProcAddr(device, "vkCmdWriteBufferMarker2AMD")
-	pfnCmdWriteBufferMarkerAMD = vulkan.GetDeviceProcAddr(device, "vkCmdWriteBufferMarkerAMD")
+// Init resolves and initializes all VK_AMD_buffer_marker extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdWriteBufferMarker2AMD: vulkan.GetDeviceProcAddr(device, "vkCmdWriteBufferMarker2AMD"),
+		pfnCmdWriteBufferMarkerAMD:  vulkan.GetDeviceProcAddr(device, "vkCmdWriteBufferMarkerAMD"),
+	}
+	pfnCmdWriteBufferMarker2AMD = cmds.pfnCmdWriteBufferMarker2AMD
+	pfnCmdWriteBufferMarkerAMD = cmds.pfnCmdWriteBufferMarkerAMD
+	return cmds
 }
 
 // CmdWriteBufferMarker2AMD - Execute a pipelined write of a marker value into a buffer (vkCmdWriteBufferMarker2AMD).
@@ -31,6 +42,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - marker: is the 32-bit value of the marker.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteBufferMarker2AMD.html
+func (c *Commands) CmdWriteBufferMarker2AMD(commandBuffer vulkan.CommandBuffer, stage vulkan.PipelineStageFlags2, dstBuffer vulkan.Buffer, dstOffset vulkan.DeviceSize, marker uint32) {
+	vulkan.CallSyscall(c.pfnCmdWriteBufferMarker2AMD, uintptr(commandBuffer), uintptr(stage), uintptr(dstBuffer), uintptr(dstOffset), uintptr(marker))
+}
+
 func CmdWriteBufferMarker2AMD(commandBuffer vulkan.CommandBuffer, stage vulkan.PipelineStageFlags2, dstBuffer vulkan.Buffer, dstOffset vulkan.DeviceSize, marker uint32) {
 	vulkan.CallSyscall(pfnCmdWriteBufferMarker2AMD, uintptr(commandBuffer), uintptr(stage), uintptr(dstBuffer), uintptr(dstOffset), uintptr(marker))
 }
@@ -44,6 +59,10 @@ func CmdWriteBufferMarker2AMD(commandBuffer vulkan.CommandBuffer, stage vulkan.P
 //   - marker: is the 32-bit value of the marker.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteBufferMarkerAMD.html
+func (c *Commands) CmdWriteBufferMarkerAMD(commandBuffer vulkan.CommandBuffer, pipelineStage vulkan.PipelineStageFlagBits, dstBuffer vulkan.Buffer, dstOffset vulkan.DeviceSize, marker uint32) {
+	vulkan.CallSyscall(c.pfnCmdWriteBufferMarkerAMD, uintptr(commandBuffer), uintptr(pipelineStage), uintptr(dstBuffer), uintptr(dstOffset), uintptr(marker))
+}
+
 func CmdWriteBufferMarkerAMD(commandBuffer vulkan.CommandBuffer, pipelineStage vulkan.PipelineStageFlagBits, dstBuffer vulkan.Buffer, dstOffset vulkan.DeviceSize, marker uint32) {
 	vulkan.CallSyscall(pfnCmdWriteBufferMarkerAMD, uintptr(commandBuffer), uintptr(pipelineStage), uintptr(dstBuffer), uintptr(dstOffset), uintptr(marker))
 }

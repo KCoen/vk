@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetFenceFdKHR    uintptr
+	pfnImportFenceFdKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetFenceFdKHR    uintptr
 	pfnImportFenceFdKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_fence_fd extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetFenceFdKHR = vulkan.GetDeviceProcAddr(device, "vkGetFenceFdKHR")
-	pfnImportFenceFdKHR = vulkan.GetDeviceProcAddr(device, "vkImportFenceFdKHR")
+// Init resolves and initializes all VK_KHR_external_fence_fd extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetFenceFdKHR:    vulkan.GetDeviceProcAddr(device, "vkGetFenceFdKHR"),
+		pfnImportFenceFdKHR: vulkan.GetDeviceProcAddr(device, "vkImportFenceFdKHR"),
+	}
+	pfnGetFenceFdKHR = cmds.pfnGetFenceFdKHR
+	pfnImportFenceFdKHR = cmds.pfnImportFenceFdKHR
+	return cmds
 }
 
 // GetFenceFdKHR - Get a POSIX file descriptor handle for a fence (vkGetFenceFdKHR).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetFenceFdKHR.html
+func (c *Commands) GetFenceFdKHR(device vulkan.Device, getFdInfo *vulkan.FenceGetFdInfoKHR) (fd int32, result vulkan.Result) {
+	c_getFdInfo := getFdInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetFenceFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
+	return fd, vulkan.Result(r1)
+}
+
 func GetFenceFdKHR(device vulkan.Device, getFdInfo *vulkan.FenceGetFdInfoKHR) (fd int32, result vulkan.Result) {
 	c_getFdInfo := getFdInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetFenceFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
@@ -45,6 +62,12 @@ func GetFenceFdKHR(device vulkan.Device, getFdInfo *vulkan.FenceGetFdInfoKHR) (f
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportFenceFdKHR.html
+func (c *Commands) ImportFenceFdKHR(device vulkan.Device, importFenceFdInfo *vulkan.ImportFenceFdInfoKHR) (result vulkan.Result) {
+	c_importFenceFdInfo := importFenceFdInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportFenceFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_importFenceFdInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportFenceFdKHR(device vulkan.Device, importFenceFdInfo *vulkan.ImportFenceFdInfoKHR) (result vulkan.Result) {
 	c_importFenceFdInfo := importFenceFdInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportFenceFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_importFenceFdInfo)))

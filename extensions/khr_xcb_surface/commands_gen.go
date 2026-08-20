@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateXcbSurfaceKHR                        uintptr
+	pfnGetPhysicalDeviceXcbPresentationSupportKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateXcbSurfaceKHR                        uintptr
 	pfnGetPhysicalDeviceXcbPresentationSupportKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_xcb_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateXcbSurfaceKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateXcbSurfaceKHR")
-	pfnGetPhysicalDeviceXcbPresentationSupportKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR")
+// Init resolves and initializes all VK_KHR_xcb_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateXcbSurfaceKHR:                        vulkan.GetInstanceProcAddr(instance, "vkCreateXcbSurfaceKHR"),
+		pfnGetPhysicalDeviceXcbPresentationSupportKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR"),
+	}
+	pfnCreateXcbSurfaceKHR = cmds.pfnCreateXcbSurfaceKHR
+	pfnGetPhysicalDeviceXcbPresentationSupportKHR = cmds.pfnGetPhysicalDeviceXcbPresentationSupportKHR
+	return cmds
 }
 
 // CreateXcbSurfaceKHR - Create a VkSurfaceKHR object for a X11 window, using the XCB client-side library (vkCreateXcbSurfaceKHR).
@@ -32,6 +43,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateXcbSurfaceKHR.html
+func (c *Commands) CreateXcbSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.XcbSurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateXcbSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateXcbSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.XcbSurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -47,6 +65,11 @@ func CreateXcbSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.XcbSurface
 //   - visual_id: is an X11 visual (xcb_visualid_t).
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceXcbPresentationSupportKHR.html
+func (c *Commands) GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, visual_id uintptr) (connection uintptr) {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceXcbPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&connection)), uintptr(visual_id))
+	return connection
+}
+
 func GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32, visual_id uintptr) (connection uintptr) {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceXcbPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&connection)), uintptr(visual_id))
 	return connection

@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDrawClusterHUAWEI         uintptr
+	pfnCmdDrawClusterIndirectHUAWEI uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDrawClusterHUAWEI         uintptr
 	pfnCmdDrawClusterIndirectHUAWEI uintptr
 )
 
-// Init resolves and initializes all VK_HUAWEI_cluster_culling_shader extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDrawClusterHUAWEI = vulkan.GetDeviceProcAddr(device, "vkCmdDrawClusterHUAWEI")
-	pfnCmdDrawClusterIndirectHUAWEI = vulkan.GetDeviceProcAddr(device, "vkCmdDrawClusterIndirectHUAWEI")
+// Init resolves and initializes all VK_HUAWEI_cluster_culling_shader extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDrawClusterHUAWEI:         vulkan.GetDeviceProcAddr(device, "vkCmdDrawClusterHUAWEI"),
+		pfnCmdDrawClusterIndirectHUAWEI: vulkan.GetDeviceProcAddr(device, "vkCmdDrawClusterIndirectHUAWEI"),
+	}
+	pfnCmdDrawClusterHUAWEI = cmds.pfnCmdDrawClusterHUAWEI
+	pfnCmdDrawClusterIndirectHUAWEI = cmds.pfnCmdDrawClusterIndirectHUAWEI
+	return cmds
 }
 
 // CmdDrawClusterHUAWEI - Draw cluster culling work items (vkCmdDrawClusterHUAWEI).
@@ -30,6 +41,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - groupCountZ: is the number of local workgroups to dispatch in the Z dimension.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawClusterHUAWEI.html
+func (c *Commands) CmdDrawClusterHUAWEI(commandBuffer vulkan.CommandBuffer, groupCountX uint32, groupCountY uint32, groupCountZ uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawClusterHUAWEI, uintptr(commandBuffer), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
+}
+
 func CmdDrawClusterHUAWEI(commandBuffer vulkan.CommandBuffer, groupCountX uint32, groupCountY uint32, groupCountZ uint32) {
 	vulkan.CallSyscall(pfnCmdDrawClusterHUAWEI, uintptr(commandBuffer), uintptr(groupCountX), uintptr(groupCountY), uintptr(groupCountZ))
 }
@@ -41,6 +56,10 @@ func CmdDrawClusterHUAWEI(commandBuffer vulkan.CommandBuffer, groupCountX uint32
 //   - offset: is the byte offset into buffer where parameters begin.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawClusterIndirectHUAWEI.html
+func (c *Commands) CmdDrawClusterIndirectHUAWEI(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize) {
+	vulkan.CallSyscall(c.pfnCmdDrawClusterIndirectHUAWEI, uintptr(commandBuffer), uintptr(buffer), uintptr(offset))
+}
+
 func CmdDrawClusterIndirectHUAWEI(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize) {
 	vulkan.CallSyscall(pfnCmdDrawClusterIndirectHUAWEI, uintptr(commandBuffer), uintptr(buffer), uintptr(offset))
 }

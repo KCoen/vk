@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDeviceCombinedImageSamplerIndexNVX uintptr
+	pfnGetImageViewAddressNVX                uintptr
+	pfnGetImageViewHandle64NVX               uintptr
+	pfnGetImageViewHandleNVX                 uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDeviceCombinedImageSamplerIndexNVX uintptr
 	pfnGetImageViewAddressNVX                uintptr
@@ -18,12 +26,19 @@ var (
 	pfnGetImageViewHandleNVX                 uintptr
 )
 
-// Init resolves and initializes all VK_NVX_image_view_handle extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDeviceCombinedImageSamplerIndexNVX = vulkan.GetDeviceProcAddr(device, "vkGetDeviceCombinedImageSamplerIndexNVX")
-	pfnGetImageViewAddressNVX = vulkan.GetDeviceProcAddr(device, "vkGetImageViewAddressNVX")
-	pfnGetImageViewHandle64NVX = vulkan.GetDeviceProcAddr(device, "vkGetImageViewHandle64NVX")
-	pfnGetImageViewHandleNVX = vulkan.GetDeviceProcAddr(device, "vkGetImageViewHandleNVX")
+// Init resolves and initializes all VK_NVX_image_view_handle extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDeviceCombinedImageSamplerIndexNVX: vulkan.GetDeviceProcAddr(device, "vkGetDeviceCombinedImageSamplerIndexNVX"),
+		pfnGetImageViewAddressNVX:                vulkan.GetDeviceProcAddr(device, "vkGetImageViewAddressNVX"),
+		pfnGetImageViewHandle64NVX:               vulkan.GetDeviceProcAddr(device, "vkGetImageViewHandle64NVX"),
+		pfnGetImageViewHandleNVX:                 vulkan.GetDeviceProcAddr(device, "vkGetImageViewHandleNVX"),
+	}
+	pfnGetDeviceCombinedImageSamplerIndexNVX = cmds.pfnGetDeviceCombinedImageSamplerIndexNVX
+	pfnGetImageViewAddressNVX = cmds.pfnGetImageViewAddressNVX
+	pfnGetImageViewHandle64NVX = cmds.pfnGetImageViewHandle64NVX
+	pfnGetImageViewHandleNVX = cmds.pfnGetImageViewHandleNVX
+	return cmds
 }
 
 // GetDeviceCombinedImageSamplerIndexNVX - Get the handle for an image view and sampler index (vkGetDeviceCombinedImageSamplerIndexNVX).
@@ -33,6 +48,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - samplerIndex: is the index within the sampler heap.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceCombinedImageSamplerIndexNVX.html
+func (c *Commands) GetDeviceCombinedImageSamplerIndexNVX(device vulkan.Device, imageViewIndex uint64, samplerIndex uint64) (result uint64) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceCombinedImageSamplerIndexNVX, uintptr(device), uintptr(imageViewIndex), uintptr(samplerIndex))
+	return uint64(r1)
+}
+
 func GetDeviceCombinedImageSamplerIndexNVX(device vulkan.Device, imageViewIndex uint64, samplerIndex uint64) (result uint64) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceCombinedImageSamplerIndexNVX, uintptr(device), uintptr(imageViewIndex), uintptr(samplerIndex))
 	return uint64(r1)
@@ -47,6 +67,11 @@ func GetDeviceCombinedImageSamplerIndexNVX(device vulkan.Device, imageViewIndex 
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewAddressNVX.html
+func (c *Commands) GetImageViewAddressNVX(device vulkan.Device, imageView vulkan.ImageView) (properties vulkan.ImageViewAddressPropertiesNVX, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageViewAddressNVX, uintptr(device), uintptr(imageView), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetImageViewAddressNVX(device vulkan.Device, imageView vulkan.ImageView) (properties vulkan.ImageViewAddressPropertiesNVX, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageViewAddressNVX, uintptr(device), uintptr(imageView), uintptr(unsafe.Pointer(&properties)))
 	return properties, vulkan.Result(r1)
@@ -58,6 +83,12 @@ func GetImageViewAddressNVX(device vulkan.Device, imageView vulkan.ImageView) (p
 //   - info: describes the image view to query and type of handle.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewHandle64NVX.html
+func (c *Commands) GetImageViewHandle64NVX(device vulkan.Device, info *vulkan.ImageViewHandleInfoNVX) (result uint64) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageViewHandle64NVX, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return uint64(r1)
+}
+
 func GetImageViewHandle64NVX(device vulkan.Device, info *vulkan.ImageViewHandleInfoNVX) (result uint64) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageViewHandle64NVX, uintptr(device), uintptr(unsafe.Pointer(c_info)))
@@ -70,6 +101,12 @@ func GetImageViewHandle64NVX(device vulkan.Device, info *vulkan.ImageViewHandleI
 //   - info: describes the image view to query and type of handle.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageViewHandleNVX.html
+func (c *Commands) GetImageViewHandleNVX(device vulkan.Device, info *vulkan.ImageViewHandleInfoNVX) (result uint32) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageViewHandleNVX, uintptr(device), uintptr(unsafe.Pointer(c_info)))
+	return uint32(r1)
+}
+
 func GetImageViewHandleNVX(device vulkan.Device, info *vulkan.ImageViewHandleInfoNVX) (result uint32) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageViewHandleNVX, uintptr(device), uintptr(unsafe.Pointer(c_info)))

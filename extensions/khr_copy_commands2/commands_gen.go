@@ -10,7 +10,17 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBlitImage2KHR         uintptr
+	pfnCmdCopyBuffer2KHR        uintptr
+	pfnCmdCopyBufferToImage2KHR uintptr
+	pfnCmdCopyImage2KHR         uintptr
+	pfnCmdCopyImageToBuffer2KHR uintptr
+	pfnCmdResolveImage2KHR      uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBlitImage2KHR         uintptr
 	pfnCmdCopyBuffer2KHR        uintptr
@@ -20,48 +30,81 @@ var (
 	pfnCmdResolveImage2KHR      uintptr
 )
 
-// Init resolves and initializes all VK_KHR_copy_commands2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBlitImage2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdBlitImage2KHR")
-	pfnCmdCopyBuffer2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdCopyBuffer2KHR")
-	pfnCmdCopyBufferToImage2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdCopyBufferToImage2KHR")
-	pfnCmdCopyImage2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdCopyImage2KHR")
-	pfnCmdCopyImageToBuffer2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdCopyImageToBuffer2KHR")
-	pfnCmdResolveImage2KHR = vulkan.GetInstanceProcAddr(instance, "vkCmdResolveImage2KHR")
+// Init resolves and initializes all VK_KHR_copy_commands2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBlitImage2KHR:         vulkan.GetInstanceProcAddr(instance, "vkCmdBlitImage2KHR"),
+		pfnCmdCopyBuffer2KHR:        vulkan.GetInstanceProcAddr(instance, "vkCmdCopyBuffer2KHR"),
+		pfnCmdCopyBufferToImage2KHR: vulkan.GetInstanceProcAddr(instance, "vkCmdCopyBufferToImage2KHR"),
+		pfnCmdCopyImage2KHR:         vulkan.GetInstanceProcAddr(instance, "vkCmdCopyImage2KHR"),
+		pfnCmdCopyImageToBuffer2KHR: vulkan.GetInstanceProcAddr(instance, "vkCmdCopyImageToBuffer2KHR"),
+		pfnCmdResolveImage2KHR:      vulkan.GetInstanceProcAddr(instance, "vkCmdResolveImage2KHR"),
+	}
+	pfnCmdBlitImage2KHR = cmds.pfnCmdBlitImage2KHR
+	pfnCmdCopyBuffer2KHR = cmds.pfnCmdCopyBuffer2KHR
+	pfnCmdCopyBufferToImage2KHR = cmds.pfnCmdCopyBufferToImage2KHR
+	pfnCmdCopyImage2KHR = cmds.pfnCmdCopyImage2KHR
+	pfnCmdCopyImageToBuffer2KHR = cmds.pfnCmdCopyImageToBuffer2KHR
+	pfnCmdResolveImage2KHR = cmds.pfnCmdResolveImage2KHR
+	return cmds
 }
 
 // CmdBlitImage2KHR executes vkCmdBlitImage2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBlitImage2KHR.html
+func (c *Commands) CmdBlitImage2KHR() {
+	vulkan.CallSyscall(c.pfnCmdBlitImage2KHR)
+}
+
 func CmdBlitImage2KHR() {
 	vulkan.CallSyscall(pfnCmdBlitImage2KHR)
 }
 
 // CmdCopyBuffer2KHR executes vkCmdCopyBuffer2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer2KHR.html
+func (c *Commands) CmdCopyBuffer2KHR() {
+	vulkan.CallSyscall(c.pfnCmdCopyBuffer2KHR)
+}
+
 func CmdCopyBuffer2KHR() {
 	vulkan.CallSyscall(pfnCmdCopyBuffer2KHR)
 }
 
 // CmdCopyBufferToImage2KHR executes vkCmdCopyBufferToImage2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBufferToImage2KHR.html
+func (c *Commands) CmdCopyBufferToImage2KHR() {
+	vulkan.CallSyscall(c.pfnCmdCopyBufferToImage2KHR)
+}
+
 func CmdCopyBufferToImage2KHR() {
 	vulkan.CallSyscall(pfnCmdCopyBufferToImage2KHR)
 }
 
 // CmdCopyImage2KHR executes vkCmdCopyImage2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImage2KHR.html
+func (c *Commands) CmdCopyImage2KHR() {
+	vulkan.CallSyscall(c.pfnCmdCopyImage2KHR)
+}
+
 func CmdCopyImage2KHR() {
 	vulkan.CallSyscall(pfnCmdCopyImage2KHR)
 }
 
 // CmdCopyImageToBuffer2KHR executes vkCmdCopyImageToBuffer2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer2KHR.html
+func (c *Commands) CmdCopyImageToBuffer2KHR() {
+	vulkan.CallSyscall(c.pfnCmdCopyImageToBuffer2KHR)
+}
+
 func CmdCopyImageToBuffer2KHR() {
 	vulkan.CallSyscall(pfnCmdCopyImageToBuffer2KHR)
 }
 
 // CmdResolveImage2KHR executes vkCmdResolveImage2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdResolveImage2KHR.html
+func (c *Commands) CmdResolveImage2KHR() {
+	vulkan.CallSyscall(c.pfnCmdResolveImage2KHR)
+}
+
 func CmdResolveImage2KHR() {
 	vulkan.CallSyscall(pfnCmdResolveImage2KHR)
 }

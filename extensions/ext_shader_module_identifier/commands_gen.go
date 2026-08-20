@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetShaderModuleCreateInfoIdentifierEXT uintptr
+	pfnGetShaderModuleIdentifierEXT           uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetShaderModuleCreateInfoIdentifierEXT uintptr
 	pfnGetShaderModuleIdentifierEXT           uintptr
 )
 
-// Init resolves and initializes all VK_EXT_shader_module_identifier extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetShaderModuleCreateInfoIdentifierEXT = vulkan.GetDeviceProcAddr(device, "vkGetShaderModuleCreateInfoIdentifierEXT")
-	pfnGetShaderModuleIdentifierEXT = vulkan.GetDeviceProcAddr(device, "vkGetShaderModuleIdentifierEXT")
+// Init resolves and initializes all VK_EXT_shader_module_identifier extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetShaderModuleCreateInfoIdentifierEXT: vulkan.GetDeviceProcAddr(device, "vkGetShaderModuleCreateInfoIdentifierEXT"),
+		pfnGetShaderModuleIdentifierEXT:           vulkan.GetDeviceProcAddr(device, "vkGetShaderModuleIdentifierEXT"),
+	}
+	pfnGetShaderModuleCreateInfoIdentifierEXT = cmds.pfnGetShaderModuleCreateInfoIdentifierEXT
+	pfnGetShaderModuleIdentifierEXT = cmds.pfnGetShaderModuleIdentifierEXT
+	return cmds
 }
 
 // GetShaderModuleCreateInfoIdentifierEXT - Query a unique identifier for a shader module create info (vkGetShaderModuleCreateInfoIdentifierEXT).
@@ -29,6 +40,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - identifier: is a pointer to the returned VkShaderModuleIdentifierEXT.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderModuleCreateInfoIdentifierEXT.html
+func (c *Commands) GetShaderModuleCreateInfoIdentifierEXT(device vulkan.Device, createInfo *vulkan.ShaderModuleCreateInfo) (identifier vulkan.ShaderModuleIdentifierEXT) {
+	c_createInfo := createInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetShaderModuleCreateInfoIdentifierEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(&identifier)))
+	return identifier
+}
+
 func GetShaderModuleCreateInfoIdentifierEXT(device vulkan.Device, createInfo *vulkan.ShaderModuleCreateInfo) (identifier vulkan.ShaderModuleIdentifierEXT) {
 	c_createInfo := createInfo.Raw()
 	vulkan.CallSyscall(pfnGetShaderModuleCreateInfoIdentifierEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(&identifier)))
@@ -42,6 +59,11 @@ func GetShaderModuleCreateInfoIdentifierEXT(device vulkan.Device, createInfo *vu
 //   - identifier: is a pointer to the returned VkShaderModuleIdentifierEXT.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetShaderModuleIdentifierEXT.html
+func (c *Commands) GetShaderModuleIdentifierEXT(device vulkan.Device, shaderModule vulkan.ShaderModule) (identifier vulkan.ShaderModuleIdentifierEXT) {
+	vulkan.CallSyscall(c.pfnGetShaderModuleIdentifierEXT, uintptr(device), uintptr(shaderModule), uintptr(unsafe.Pointer(&identifier)))
+	return identifier
+}
+
 func GetShaderModuleIdentifierEXT(device vulkan.Device, shaderModule vulkan.ShaderModule) (identifier vulkan.ShaderModuleIdentifierEXT) {
 	vulkan.CallSyscall(pfnGetShaderModuleIdentifierEXT, uintptr(device), uintptr(shaderModule), uintptr(unsafe.Pointer(&identifier)))
 	return identifier

@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetDepthBiasEnableEXT         uintptr
+	pfnCmdSetLogicOpEXT                 uintptr
+	pfnCmdSetPatchControlPointsEXT      uintptr
+	pfnCmdSetPrimitiveRestartEnableEXT  uintptr
+	pfnCmdSetRasterizerDiscardEnableEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetDepthBiasEnableEXT         uintptr
 	pfnCmdSetLogicOpEXT                 uintptr
@@ -19,17 +28,29 @@ var (
 	pfnCmdSetRasterizerDiscardEnableEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_extended_dynamic_state2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetDepthBiasEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBiasEnableEXT")
-	pfnCmdSetLogicOpEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetLogicOpEXT")
-	pfnCmdSetPatchControlPointsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetPatchControlPointsEXT")
-	pfnCmdSetPrimitiveRestartEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveRestartEnableEXT")
-	pfnCmdSetRasterizerDiscardEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetRasterizerDiscardEnableEXT")
+// Init resolves and initializes all VK_EXT_extended_dynamic_state2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetDepthBiasEnableEXT:         vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBiasEnableEXT"),
+		pfnCmdSetLogicOpEXT:                 vulkan.GetDeviceProcAddr(device, "vkCmdSetLogicOpEXT"),
+		pfnCmdSetPatchControlPointsEXT:      vulkan.GetDeviceProcAddr(device, "vkCmdSetPatchControlPointsEXT"),
+		pfnCmdSetPrimitiveRestartEnableEXT:  vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveRestartEnableEXT"),
+		pfnCmdSetRasterizerDiscardEnableEXT: vulkan.GetInstanceProcAddr(instance, "vkCmdSetRasterizerDiscardEnableEXT"),
+	}
+	pfnCmdSetDepthBiasEnableEXT = cmds.pfnCmdSetDepthBiasEnableEXT
+	pfnCmdSetLogicOpEXT = cmds.pfnCmdSetLogicOpEXT
+	pfnCmdSetPatchControlPointsEXT = cmds.pfnCmdSetPatchControlPointsEXT
+	pfnCmdSetPrimitiveRestartEnableEXT = cmds.pfnCmdSetPrimitiveRestartEnableEXT
+	pfnCmdSetRasterizerDiscardEnableEXT = cmds.pfnCmdSetRasterizerDiscardEnableEXT
+	return cmds
 }
 
 // CmdSetDepthBiasEnableEXT executes vkCmdSetDepthBiasEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBiasEnableEXT.html
+func (c *Commands) CmdSetDepthBiasEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthBiasEnableEXT)
+}
+
 func CmdSetDepthBiasEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthBiasEnableEXT)
 }
@@ -40,6 +61,10 @@ func CmdSetDepthBiasEnableEXT() {
 //   - logicOp: specifies the logical operation to apply for blend state.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetLogicOpEXT.html
+func (c *Commands) CmdSetLogicOpEXT(commandBuffer vulkan.CommandBuffer, logicOp vulkan.LogicOp) {
+	vulkan.CallSyscall(c.pfnCmdSetLogicOpEXT, uintptr(commandBuffer), uintptr(logicOp))
+}
+
 func CmdSetLogicOpEXT(commandBuffer vulkan.CommandBuffer, logicOp vulkan.LogicOp) {
 	vulkan.CallSyscall(pfnCmdSetLogicOpEXT, uintptr(commandBuffer), uintptr(logicOp))
 }
@@ -50,18 +75,30 @@ func CmdSetLogicOpEXT(commandBuffer vulkan.CommandBuffer, logicOp vulkan.LogicOp
 //   - patchControlPoints: specifies the number of control points per patch.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPatchControlPointsEXT.html
+func (c *Commands) CmdSetPatchControlPointsEXT(commandBuffer vulkan.CommandBuffer, patchControlPoints uint32) {
+	vulkan.CallSyscall(c.pfnCmdSetPatchControlPointsEXT, uintptr(commandBuffer), uintptr(patchControlPoints))
+}
+
 func CmdSetPatchControlPointsEXT(commandBuffer vulkan.CommandBuffer, patchControlPoints uint32) {
 	vulkan.CallSyscall(pfnCmdSetPatchControlPointsEXT, uintptr(commandBuffer), uintptr(patchControlPoints))
 }
 
 // CmdSetPrimitiveRestartEnableEXT executes vkCmdSetPrimitiveRestartEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartEnableEXT.html
+func (c *Commands) CmdSetPrimitiveRestartEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetPrimitiveRestartEnableEXT)
+}
+
 func CmdSetPrimitiveRestartEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetPrimitiveRestartEnableEXT)
 }
 
 // CmdSetRasterizerDiscardEnableEXT executes vkCmdSetRasterizerDiscardEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizerDiscardEnableEXT.html
+func (c *Commands) CmdSetRasterizerDiscardEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetRasterizerDiscardEnableEXT)
+}
+
 func CmdSetRasterizerDiscardEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetRasterizerDiscardEnableEXT)
 }

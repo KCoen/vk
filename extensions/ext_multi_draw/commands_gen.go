@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDrawMultiEXT        uintptr
+	pfnCmdDrawMultiIndexedEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDrawMultiEXT        uintptr
 	pfnCmdDrawMultiIndexedEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_multi_draw extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDrawMultiEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMultiEXT")
-	pfnCmdDrawMultiIndexedEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMultiIndexedEXT")
+// Init resolves and initializes all VK_EXT_multi_draw extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDrawMultiEXT:        vulkan.GetDeviceProcAddr(device, "vkCmdDrawMultiEXT"),
+		pfnCmdDrawMultiIndexedEXT: vulkan.GetDeviceProcAddr(device, "vkCmdDrawMultiIndexedEXT"),
+	}
+	pfnCmdDrawMultiEXT = cmds.pfnCmdDrawMultiEXT
+	pfnCmdDrawMultiIndexedEXT = cmds.pfnCmdDrawMultiIndexedEXT
+	return cmds
 }
 
 // CmdDrawMultiEXT - Draw primitives (vkCmdDrawMultiEXT).
@@ -32,6 +43,16 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - stride: is the byte stride between consecutive elements of pVertexInfo.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMultiEXT.html
+func (c *Commands) CmdDrawMultiEXT(commandBuffer vulkan.CommandBuffer, vertexInfo []vulkan.MultiDrawInfoEXT, instanceCount uint32, firstInstance uint32, stride uint32) {
+	c_vertexInfo := make([]vulkan.RawMultiDrawInfoEXT, len(vertexInfo))
+	for i := range vertexInfo {
+		if raw := vertexInfo[i].Raw(); raw != nil {
+			c_vertexInfo[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdDrawMultiEXT, uintptr(commandBuffer), uintptr(len(vertexInfo)), uintptr(unsafe.Pointer(vulkan.SliceData(c_vertexInfo))), uintptr(instanceCount), uintptr(firstInstance), uintptr(stride))
+}
+
 func CmdDrawMultiEXT(commandBuffer vulkan.CommandBuffer, vertexInfo []vulkan.MultiDrawInfoEXT, instanceCount uint32, firstInstance uint32, stride uint32) {
 	c_vertexInfo := make([]vulkan.RawMultiDrawInfoEXT, len(vertexInfo))
 	for i := range vertexInfo {
@@ -53,6 +74,16 @@ func CmdDrawMultiEXT(commandBuffer vulkan.CommandBuffer, vertexInfo []vulkan.Mul
 //   - vertexOffset: is NULL or a pointer to the value added to the vertex index before indexing into the vertex buffer. When specified, VkMultiDrawIndexedInfoEXT::pname:offset is ignored.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMultiIndexedEXT.html
+func (c *Commands) CmdDrawMultiIndexedEXT(commandBuffer vulkan.CommandBuffer, indexInfo []vulkan.MultiDrawIndexedInfoEXT, instanceCount uint32, firstInstance uint32, stride uint32, vertexOffset *int32) {
+	c_indexInfo := make([]vulkan.RawMultiDrawIndexedInfoEXT, len(indexInfo))
+	for i := range indexInfo {
+		if raw := indexInfo[i].Raw(); raw != nil {
+			c_indexInfo[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdDrawMultiIndexedEXT, uintptr(commandBuffer), uintptr(len(indexInfo)), uintptr(unsafe.Pointer(vulkan.SliceData(c_indexInfo))), uintptr(instanceCount), uintptr(firstInstance), uintptr(stride), uintptr(unsafe.Pointer(vertexOffset)))
+}
+
 func CmdDrawMultiIndexedEXT(commandBuffer vulkan.CommandBuffer, indexInfo []vulkan.MultiDrawIndexedInfoEXT, instanceCount uint32, firstInstance uint32, stride uint32, vertexOffset *int32) {
 	c_indexInfo := make([]vulkan.RawMultiDrawIndexedInfoEXT, len(indexInfo))
 	for i := range indexInfo {

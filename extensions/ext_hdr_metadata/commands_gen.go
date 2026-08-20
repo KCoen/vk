@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnSetHdrMetadataEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnSetHdrMetadataEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_hdr_metadata extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnSetHdrMetadataEXT = vulkan.GetDeviceProcAddr(device, "vkSetHdrMetadataEXT")
+// Init resolves and initializes all VK_EXT_hdr_metadata extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnSetHdrMetadataEXT: vulkan.GetDeviceProcAddr(device, "vkSetHdrMetadataEXT"),
+	}
+	pfnSetHdrMetadataEXT = cmds.pfnSetHdrMetadataEXT
+	return cmds
 }
 
 // SetHdrMetadataEXT - Set HDR metadata (vkSetHdrMetadataEXT).
@@ -28,6 +37,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - metadata: is a pointer to an array of swapchainCount VkHdrMetadataEXT structures.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetHdrMetadataEXT.html
+func (c *Commands) SetHdrMetadataEXT(device vulkan.Device, swapchains []vulkan.SwapchainKHR, metadata *vulkan.HdrMetadataEXT) {
+	c_swapchains := vulkan.SliceData(swapchains)
+	c_metadata := metadata.Raw()
+	vulkan.CallSyscall(c.pfnSetHdrMetadataEXT, uintptr(device), uintptr(len(swapchains)), uintptr(unsafe.Pointer(c_swapchains)), uintptr(unsafe.Pointer(c_metadata)))
+}
+
 func SetHdrMetadataEXT(device vulkan.Device, swapchains []vulkan.SwapchainKHR, metadata *vulkan.HdrMetadataEXT) {
 	c_swapchains := vulkan.SliceData(swapchains)
 	c_metadata := metadata.Raw()

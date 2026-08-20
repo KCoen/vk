@@ -10,7 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindVertexBuffers2EXT       uintptr
+	pfnCmdSetCullModeEXT              uintptr
+	pfnCmdSetDepthBoundsTestEnableEXT uintptr
+	pfnCmdSetDepthCompareOpEXT        uintptr
+	pfnCmdSetDepthTestEnableEXT       uintptr
+	pfnCmdSetDepthWriteEnableEXT      uintptr
+	pfnCmdSetFrontFaceEXT             uintptr
+	pfnCmdSetPrimitiveTopologyEXT     uintptr
+	pfnCmdSetScissorWithCountEXT      uintptr
+	pfnCmdSetStencilOpEXT             uintptr
+	pfnCmdSetStencilTestEnableEXT     uintptr
+	pfnCmdSetViewportWithCountEXT     uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindVertexBuffers2EXT       uintptr
 	pfnCmdSetCullModeEXT              uintptr
@@ -26,90 +42,153 @@ var (
 	pfnCmdSetViewportWithCountEXT     uintptr
 )
 
-// Init resolves and initializes all VK_EXT_extended_dynamic_state extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindVertexBuffers2EXT = vulkan.GetInstanceProcAddr(instance, "vkCmdBindVertexBuffers2EXT")
-	pfnCmdSetCullModeEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetCullModeEXT")
-	pfnCmdSetDepthBoundsTestEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBoundsTestEnableEXT")
-	pfnCmdSetDepthCompareOpEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthCompareOpEXT")
-	pfnCmdSetDepthTestEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthTestEnableEXT")
-	pfnCmdSetDepthWriteEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthWriteEnableEXT")
-	pfnCmdSetFrontFaceEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetFrontFaceEXT")
-	pfnCmdSetPrimitiveTopologyEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveTopologyEXT")
-	pfnCmdSetScissorWithCountEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetScissorWithCountEXT")
-	pfnCmdSetStencilOpEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilOpEXT")
-	pfnCmdSetStencilTestEnableEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilTestEnableEXT")
-	pfnCmdSetViewportWithCountEXT = vulkan.GetInstanceProcAddr(instance, "vkCmdSetViewportWithCountEXT")
+// Init resolves and initializes all VK_EXT_extended_dynamic_state extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindVertexBuffers2EXT:       vulkan.GetInstanceProcAddr(instance, "vkCmdBindVertexBuffers2EXT"),
+		pfnCmdSetCullModeEXT:              vulkan.GetInstanceProcAddr(instance, "vkCmdSetCullModeEXT"),
+		pfnCmdSetDepthBoundsTestEnableEXT: vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthBoundsTestEnableEXT"),
+		pfnCmdSetDepthCompareOpEXT:        vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthCompareOpEXT"),
+		pfnCmdSetDepthTestEnableEXT:       vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthTestEnableEXT"),
+		pfnCmdSetDepthWriteEnableEXT:      vulkan.GetInstanceProcAddr(instance, "vkCmdSetDepthWriteEnableEXT"),
+		pfnCmdSetFrontFaceEXT:             vulkan.GetInstanceProcAddr(instance, "vkCmdSetFrontFaceEXT"),
+		pfnCmdSetPrimitiveTopologyEXT:     vulkan.GetInstanceProcAddr(instance, "vkCmdSetPrimitiveTopologyEXT"),
+		pfnCmdSetScissorWithCountEXT:      vulkan.GetInstanceProcAddr(instance, "vkCmdSetScissorWithCountEXT"),
+		pfnCmdSetStencilOpEXT:             vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilOpEXT"),
+		pfnCmdSetStencilTestEnableEXT:     vulkan.GetInstanceProcAddr(instance, "vkCmdSetStencilTestEnableEXT"),
+		pfnCmdSetViewportWithCountEXT:     vulkan.GetInstanceProcAddr(instance, "vkCmdSetViewportWithCountEXT"),
+	}
+	pfnCmdBindVertexBuffers2EXT = cmds.pfnCmdBindVertexBuffers2EXT
+	pfnCmdSetCullModeEXT = cmds.pfnCmdSetCullModeEXT
+	pfnCmdSetDepthBoundsTestEnableEXT = cmds.pfnCmdSetDepthBoundsTestEnableEXT
+	pfnCmdSetDepthCompareOpEXT = cmds.pfnCmdSetDepthCompareOpEXT
+	pfnCmdSetDepthTestEnableEXT = cmds.pfnCmdSetDepthTestEnableEXT
+	pfnCmdSetDepthWriteEnableEXT = cmds.pfnCmdSetDepthWriteEnableEXT
+	pfnCmdSetFrontFaceEXT = cmds.pfnCmdSetFrontFaceEXT
+	pfnCmdSetPrimitiveTopologyEXT = cmds.pfnCmdSetPrimitiveTopologyEXT
+	pfnCmdSetScissorWithCountEXT = cmds.pfnCmdSetScissorWithCountEXT
+	pfnCmdSetStencilOpEXT = cmds.pfnCmdSetStencilOpEXT
+	pfnCmdSetStencilTestEnableEXT = cmds.pfnCmdSetStencilTestEnableEXT
+	pfnCmdSetViewportWithCountEXT = cmds.pfnCmdSetViewportWithCountEXT
+	return cmds
 }
 
 // CmdBindVertexBuffers2EXT executes vkCmdBindVertexBuffers2EXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2EXT.html
+func (c *Commands) CmdBindVertexBuffers2EXT() {
+	vulkan.CallSyscall(c.pfnCmdBindVertexBuffers2EXT)
+}
+
 func CmdBindVertexBuffers2EXT() {
 	vulkan.CallSyscall(pfnCmdBindVertexBuffers2EXT)
 }
 
 // CmdSetCullModeEXT executes vkCmdSetCullModeEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullModeEXT.html
+func (c *Commands) CmdSetCullModeEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetCullModeEXT)
+}
+
 func CmdSetCullModeEXT() {
 	vulkan.CallSyscall(pfnCmdSetCullModeEXT)
 }
 
 // CmdSetDepthBoundsTestEnableEXT executes vkCmdSetDepthBoundsTestEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthBoundsTestEnableEXT.html
+func (c *Commands) CmdSetDepthBoundsTestEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthBoundsTestEnableEXT)
+}
+
 func CmdSetDepthBoundsTestEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthBoundsTestEnableEXT)
 }
 
 // CmdSetDepthCompareOpEXT executes vkCmdSetDepthCompareOpEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOpEXT.html
+func (c *Commands) CmdSetDepthCompareOpEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthCompareOpEXT)
+}
+
 func CmdSetDepthCompareOpEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthCompareOpEXT)
 }
 
 // CmdSetDepthTestEnableEXT executes vkCmdSetDepthTestEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthTestEnableEXT.html
+func (c *Commands) CmdSetDepthTestEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthTestEnableEXT)
+}
+
 func CmdSetDepthTestEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthTestEnableEXT)
 }
 
 // CmdSetDepthWriteEnableEXT executes vkCmdSetDepthWriteEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnableEXT.html
+func (c *Commands) CmdSetDepthWriteEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetDepthWriteEnableEXT)
+}
+
 func CmdSetDepthWriteEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetDepthWriteEnableEXT)
 }
 
 // CmdSetFrontFaceEXT executes vkCmdSetFrontFaceEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFaceEXT.html
+func (c *Commands) CmdSetFrontFaceEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetFrontFaceEXT)
+}
+
 func CmdSetFrontFaceEXT() {
 	vulkan.CallSyscall(pfnCmdSetFrontFaceEXT)
 }
 
 // CmdSetPrimitiveTopologyEXT executes vkCmdSetPrimitiveTopologyEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopologyEXT.html
+func (c *Commands) CmdSetPrimitiveTopologyEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetPrimitiveTopologyEXT)
+}
+
 func CmdSetPrimitiveTopologyEXT() {
 	vulkan.CallSyscall(pfnCmdSetPrimitiveTopologyEXT)
 }
 
 // CmdSetScissorWithCountEXT executes vkCmdSetScissorWithCountEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCountEXT.html
+func (c *Commands) CmdSetScissorWithCountEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetScissorWithCountEXT)
+}
+
 func CmdSetScissorWithCountEXT() {
 	vulkan.CallSyscall(pfnCmdSetScissorWithCountEXT)
 }
 
 // CmdSetStencilOpEXT executes vkCmdSetStencilOpEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilOpEXT.html
+func (c *Commands) CmdSetStencilOpEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetStencilOpEXT)
+}
+
 func CmdSetStencilOpEXT() {
 	vulkan.CallSyscall(pfnCmdSetStencilOpEXT)
 }
 
 // CmdSetStencilTestEnableEXT executes vkCmdSetStencilTestEnableEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetStencilTestEnableEXT.html
+func (c *Commands) CmdSetStencilTestEnableEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetStencilTestEnableEXT)
+}
+
 func CmdSetStencilTestEnableEXT() {
 	vulkan.CallSyscall(pfnCmdSetStencilTestEnableEXT)
 }
 
 // CmdSetViewportWithCountEXT executes vkCmdSetViewportWithCountEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWithCountEXT.html
+func (c *Commands) CmdSetViewportWithCountEXT() {
+	vulkan.CallSyscall(c.pfnCmdSetViewportWithCountEXT)
+}
+
 func CmdSetViewportWithCountEXT() {
 	vulkan.CallSyscall(pfnCmdSetViewportWithCountEXT)
 }

@@ -10,7 +10,21 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindResourceHeapEXT             uintptr
+	pfnCmdBindSamplerHeapEXT              uintptr
+	pfnCmdPushDataEXT                     uintptr
+	pfnGetImageOpaqueCaptureDataEXT       uintptr
+	pfnGetPhysicalDeviceDescriptorSizeEXT uintptr
+	pfnGetTensorOpaqueCaptureDataARM      uintptr
+	pfnRegisterCustomBorderColorEXT       uintptr
+	pfnUnregisterCustomBorderColorEXT     uintptr
+	pfnWriteResourceDescriptorsEXT        uintptr
+	pfnWriteSamplerDescriptorsEXT         uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindResourceHeapEXT             uintptr
 	pfnCmdBindSamplerHeapEXT              uintptr
@@ -24,18 +38,31 @@ var (
 	pfnWriteSamplerDescriptorsEXT         uintptr
 )
 
-// Init resolves and initializes all VK_EXT_descriptor_heap extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindResourceHeapEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindResourceHeapEXT")
-	pfnCmdBindSamplerHeapEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBindSamplerHeapEXT")
-	pfnCmdPushDataEXT = vulkan.GetDeviceProcAddr(device, "vkCmdPushDataEXT")
-	pfnGetImageOpaqueCaptureDataEXT = vulkan.GetDeviceProcAddr(device, "vkGetImageOpaqueCaptureDataEXT")
-	pfnGetPhysicalDeviceDescriptorSizeEXT = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDescriptorSizeEXT")
-	pfnGetTensorOpaqueCaptureDataARM = vulkan.GetDeviceProcAddr(device, "vkGetTensorOpaqueCaptureDataARM")
-	pfnRegisterCustomBorderColorEXT = vulkan.GetDeviceProcAddr(device, "vkRegisterCustomBorderColorEXT")
-	pfnUnregisterCustomBorderColorEXT = vulkan.GetDeviceProcAddr(device, "vkUnregisterCustomBorderColorEXT")
-	pfnWriteResourceDescriptorsEXT = vulkan.GetDeviceProcAddr(device, "vkWriteResourceDescriptorsEXT")
-	pfnWriteSamplerDescriptorsEXT = vulkan.GetDeviceProcAddr(device, "vkWriteSamplerDescriptorsEXT")
+// Init resolves and initializes all VK_EXT_descriptor_heap extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindResourceHeapEXT:             vulkan.GetDeviceProcAddr(device, "vkCmdBindResourceHeapEXT"),
+		pfnCmdBindSamplerHeapEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdBindSamplerHeapEXT"),
+		pfnCmdPushDataEXT:                     vulkan.GetDeviceProcAddr(device, "vkCmdPushDataEXT"),
+		pfnGetImageOpaqueCaptureDataEXT:       vulkan.GetDeviceProcAddr(device, "vkGetImageOpaqueCaptureDataEXT"),
+		pfnGetPhysicalDeviceDescriptorSizeEXT: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceDescriptorSizeEXT"),
+		pfnGetTensorOpaqueCaptureDataARM:      vulkan.GetDeviceProcAddr(device, "vkGetTensorOpaqueCaptureDataARM"),
+		pfnRegisterCustomBorderColorEXT:       vulkan.GetDeviceProcAddr(device, "vkRegisterCustomBorderColorEXT"),
+		pfnUnregisterCustomBorderColorEXT:     vulkan.GetDeviceProcAddr(device, "vkUnregisterCustomBorderColorEXT"),
+		pfnWriteResourceDescriptorsEXT:        vulkan.GetDeviceProcAddr(device, "vkWriteResourceDescriptorsEXT"),
+		pfnWriteSamplerDescriptorsEXT:         vulkan.GetDeviceProcAddr(device, "vkWriteSamplerDescriptorsEXT"),
+	}
+	pfnCmdBindResourceHeapEXT = cmds.pfnCmdBindResourceHeapEXT
+	pfnCmdBindSamplerHeapEXT = cmds.pfnCmdBindSamplerHeapEXT
+	pfnCmdPushDataEXT = cmds.pfnCmdPushDataEXT
+	pfnGetImageOpaqueCaptureDataEXT = cmds.pfnGetImageOpaqueCaptureDataEXT
+	pfnGetPhysicalDeviceDescriptorSizeEXT = cmds.pfnGetPhysicalDeviceDescriptorSizeEXT
+	pfnGetTensorOpaqueCaptureDataARM = cmds.pfnGetTensorOpaqueCaptureDataARM
+	pfnRegisterCustomBorderColorEXT = cmds.pfnRegisterCustomBorderColorEXT
+	pfnUnregisterCustomBorderColorEXT = cmds.pfnUnregisterCustomBorderColorEXT
+	pfnWriteResourceDescriptorsEXT = cmds.pfnWriteResourceDescriptorsEXT
+	pfnWriteSamplerDescriptorsEXT = cmds.pfnWriteSamplerDescriptorsEXT
+	return cmds
 }
 
 // CmdBindResourceHeapEXT - Binds a resource heap to a command buffer (vkCmdBindResourceHeapEXT).
@@ -44,6 +71,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - bindInfo: is a VkBindHeapInfoEXT specifying the device address range used for the heap and any implementation reservations.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindResourceHeapEXT.html
+func (c *Commands) CmdBindResourceHeapEXT(commandBuffer vulkan.CommandBuffer, bindInfo *vulkan.BindHeapInfoEXT) {
+	c_bindInfo := bindInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBindResourceHeapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindInfo)))
+}
+
 func CmdBindResourceHeapEXT(commandBuffer vulkan.CommandBuffer, bindInfo *vulkan.BindHeapInfoEXT) {
 	c_bindInfo := bindInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBindResourceHeapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindInfo)))
@@ -55,6 +87,11 @@ func CmdBindResourceHeapEXT(commandBuffer vulkan.CommandBuffer, bindInfo *vulkan
 //   - bindInfo: is a VkBindHeapInfoEXT specifying the device address range used for the heap and any implementation reservations.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindSamplerHeapEXT.html
+func (c *Commands) CmdBindSamplerHeapEXT(commandBuffer vulkan.CommandBuffer, bindInfo *vulkan.BindHeapInfoEXT) {
+	c_bindInfo := bindInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBindSamplerHeapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindInfo)))
+}
+
 func CmdBindSamplerHeapEXT(commandBuffer vulkan.CommandBuffer, bindInfo *vulkan.BindHeapInfoEXT) {
 	c_bindInfo := bindInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBindSamplerHeapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_bindInfo)))
@@ -66,6 +103,11 @@ func CmdBindSamplerHeapEXT(commandBuffer vulkan.CommandBuffer, bindInfo *vulkan.
 //   - pushDataInfo: is a pointer to a VkPushDataInfoEXT structure.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdPushDataEXT.html
+func (c *Commands) CmdPushDataEXT(commandBuffer vulkan.CommandBuffer, pushDataInfo *vulkan.PushDataInfoEXT) {
+	c_pushDataInfo := pushDataInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdPushDataEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_pushDataInfo)))
+}
+
 func CmdPushDataEXT(commandBuffer vulkan.CommandBuffer, pushDataInfo *vulkan.PushDataInfoEXT) {
 	c_pushDataInfo := pushDataInfo.Raw()
 	vulkan.CallSyscall(pfnCmdPushDataEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_pushDataInfo)))
@@ -81,6 +123,12 @@ func CmdPushDataEXT(commandBuffer vulkan.CommandBuffer, pushDataInfo *vulkan.Pus
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageOpaqueCaptureDataEXT.html
+func (c *Commands) GetImageOpaqueCaptureDataEXT(device vulkan.Device, images []vulkan.Image) (datas vulkan.HostAddressRangeEXT, result vulkan.Result) {
+	c_images := vulkan.SliceData(images)
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageOpaqueCaptureDataEXT, uintptr(device), uintptr(len(images)), uintptr(unsafe.Pointer(c_images)), uintptr(unsafe.Pointer(&datas)))
+	return datas, vulkan.Result(r1)
+}
+
 func GetImageOpaqueCaptureDataEXT(device vulkan.Device, images []vulkan.Image) (datas vulkan.HostAddressRangeEXT, result vulkan.Result) {
 	c_images := vulkan.SliceData(images)
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageOpaqueCaptureDataEXT, uintptr(device), uintptr(len(images)), uintptr(unsafe.Pointer(c_images)), uintptr(unsafe.Pointer(&datas)))
@@ -93,6 +141,11 @@ func GetImageOpaqueCaptureDataEXT(device vulkan.Device, images []vulkan.Image) (
 //   - descriptorType: is a VkDescriptorType specifying the type of heap descriptor to query the size for.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceDescriptorSizeEXT.html
+func (c *Commands) GetPhysicalDeviceDescriptorSizeEXT(physicalDevice vulkan.PhysicalDevice, descriptorType vulkan.DescriptorType) (result vulkan.DeviceSize) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceDescriptorSizeEXT, uintptr(physicalDevice), uintptr(descriptorType))
+	return vulkan.DeviceSize(r1)
+}
+
 func GetPhysicalDeviceDescriptorSizeEXT(physicalDevice vulkan.PhysicalDevice, descriptorType vulkan.DescriptorType) (result vulkan.DeviceSize) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceDescriptorSizeEXT, uintptr(physicalDevice), uintptr(descriptorType))
 	return vulkan.DeviceSize(r1)
@@ -108,6 +161,12 @@ func GetPhysicalDeviceDescriptorSizeEXT(physicalDevice vulkan.PhysicalDevice, de
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetTensorOpaqueCaptureDataARM.html
+func (c *Commands) GetTensorOpaqueCaptureDataARM(device vulkan.Device, tensors []vulkan.TensorARM) (datas vulkan.HostAddressRangeEXT, result vulkan.Result) {
+	c_tensors := vulkan.SliceData(tensors)
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetTensorOpaqueCaptureDataARM, uintptr(device), uintptr(len(tensors)), uintptr(unsafe.Pointer(c_tensors)), uintptr(unsafe.Pointer(&datas)))
+	return datas, vulkan.Result(r1)
+}
+
 func GetTensorOpaqueCaptureDataARM(device vulkan.Device, tensors []vulkan.TensorARM) (datas vulkan.HostAddressRangeEXT, result vulkan.Result) {
 	c_tensors := vulkan.SliceData(tensors)
 	r1, _, _ := vulkan.CallSyscall(pfnGetTensorOpaqueCaptureDataARM, uintptr(device), uintptr(len(tensors)), uintptr(unsafe.Pointer(c_tensors)), uintptr(unsafe.Pointer(&datas)))
@@ -124,6 +183,12 @@ func GetTensorOpaqueCaptureDataARM(device vulkan.Device, tensors []vulkan.Tensor
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkRegisterCustomBorderColorEXT.html
+func (c *Commands) RegisterCustomBorderColorEXT(device vulkan.Device, borderColor *vulkan.SamplerCustomBorderColorCreateInfoEXT, requestIndex vulkan.Bool32) (index uint32, result vulkan.Result) {
+	c_borderColor := borderColor.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnRegisterCustomBorderColorEXT, uintptr(device), uintptr(unsafe.Pointer(c_borderColor)), uintptr(requestIndex), uintptr(unsafe.Pointer(&index)))
+	return index, vulkan.Result(r1)
+}
+
 func RegisterCustomBorderColorEXT(device vulkan.Device, borderColor *vulkan.SamplerCustomBorderColorCreateInfoEXT, requestIndex vulkan.Bool32) (index uint32, result vulkan.Result) {
 	c_borderColor := borderColor.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnRegisterCustomBorderColorEXT, uintptr(device), uintptr(unsafe.Pointer(c_borderColor)), uintptr(requestIndex), uintptr(unsafe.Pointer(&index)))
@@ -136,6 +201,10 @@ func RegisterCustomBorderColorEXT(device vulkan.Device, borderColor *vulkan.Samp
 //   - index: is the uint32_t index value to unregister.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUnregisterCustomBorderColorEXT.html
+func (c *Commands) UnregisterCustomBorderColorEXT(device vulkan.Device, index uint32) {
+	vulkan.CallSyscall(c.pfnUnregisterCustomBorderColorEXT, uintptr(device), uintptr(index))
+}
+
 func UnregisterCustomBorderColorEXT(device vulkan.Device, index uint32) {
 	vulkan.CallSyscall(pfnUnregisterCustomBorderColorEXT, uintptr(device), uintptr(index))
 }
@@ -150,6 +219,18 @@ func UnregisterCustomBorderColorEXT(device vulkan.Device, index uint32) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteResourceDescriptorsEXT.html
+func (c *Commands) WriteResourceDescriptorsEXT(device vulkan.Device, resources []vulkan.ResourceDescriptorInfoEXT, descriptors *vulkan.HostAddressRangeEXT) (result vulkan.Result) {
+	c_resources := make([]vulkan.RawResourceDescriptorInfoEXT, len(resources))
+	for i := range resources {
+		if raw := resources[i].Raw(); raw != nil {
+			c_resources[i] = *raw
+		}
+	}
+	c_descriptors := descriptors.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnWriteResourceDescriptorsEXT, uintptr(device), uintptr(len(resources)), uintptr(unsafe.Pointer(vulkan.SliceData(c_resources))), uintptr(unsafe.Pointer(c_descriptors)))
+	return vulkan.Result(r1)
+}
+
 func WriteResourceDescriptorsEXT(device vulkan.Device, resources []vulkan.ResourceDescriptorInfoEXT, descriptors *vulkan.HostAddressRangeEXT) (result vulkan.Result) {
 	c_resources := make([]vulkan.RawResourceDescriptorInfoEXT, len(resources))
 	for i := range resources {
@@ -172,6 +253,18 @@ func WriteResourceDescriptorsEXT(device vulkan.Device, resources []vulkan.Resour
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteSamplerDescriptorsEXT.html
+func (c *Commands) WriteSamplerDescriptorsEXT(device vulkan.Device, samplers []vulkan.SamplerCreateInfo, descriptors *vulkan.HostAddressRangeEXT) (result vulkan.Result) {
+	c_samplers := make([]vulkan.RawSamplerCreateInfo, len(samplers))
+	for i := range samplers {
+		if raw := samplers[i].Raw(); raw != nil {
+			c_samplers[i] = *raw
+		}
+	}
+	c_descriptors := descriptors.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnWriteSamplerDescriptorsEXT, uintptr(device), uintptr(len(samplers)), uintptr(unsafe.Pointer(vulkan.SliceData(c_samplers))), uintptr(unsafe.Pointer(c_descriptors)))
+	return vulkan.Result(r1)
+}
+
 func WriteSamplerDescriptorsEXT(device vulkan.Device, samplers []vulkan.SamplerCreateInfo, descriptors *vulkan.HostAddressRangeEXT) (result vulkan.Result) {
 	c_samplers := make([]vulkan.RawSamplerCreateInfo, len(samplers))
 	for i := range samplers {

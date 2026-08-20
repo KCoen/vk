@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateAndroidSurfaceKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateAndroidSurfaceKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_android_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateAndroidSurfaceKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR")
+// Init resolves and initializes all VK_KHR_android_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateAndroidSurfaceKHR: vulkan.GetInstanceProcAddr(instance, "vkCreateAndroidSurfaceKHR"),
+	}
+	pfnCreateAndroidSurfaceKHR = cmds.pfnCreateAndroidSurfaceKHR
+	return cmds
 }
 
 // CreateAndroidSurfaceKHR - Create a VkSurfaceKHR object for an Android native window (vkCreateAndroidSurfaceKHR).
@@ -30,6 +39,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateAndroidSurfaceKHR.html
+func (c *Commands) CreateAndroidSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.AndroidSurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateAndroidSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateAndroidSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.AndroidSurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()

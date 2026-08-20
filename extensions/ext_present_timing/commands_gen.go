@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPastPresentationTimingEXT          uintptr
+	pfnGetSwapchainTimeDomainPropertiesEXT   uintptr
+	pfnGetSwapchainTimingPropertiesEXT       uintptr
+	pfnSetSwapchainPresentTimingQueueSizeEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPastPresentationTimingEXT          uintptr
 	pfnGetSwapchainTimeDomainPropertiesEXT   uintptr
@@ -18,12 +26,19 @@ var (
 	pfnSetSwapchainPresentTimingQueueSizeEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_present_timing extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPastPresentationTimingEXT = vulkan.GetDeviceProcAddr(device, "vkGetPastPresentationTimingEXT")
-	pfnGetSwapchainTimeDomainPropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkGetSwapchainTimeDomainPropertiesEXT")
-	pfnGetSwapchainTimingPropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkGetSwapchainTimingPropertiesEXT")
-	pfnSetSwapchainPresentTimingQueueSizeEXT = vulkan.GetDeviceProcAddr(device, "vkSetSwapchainPresentTimingQueueSizeEXT")
+// Init resolves and initializes all VK_EXT_present_timing extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPastPresentationTimingEXT:          vulkan.GetDeviceProcAddr(device, "vkGetPastPresentationTimingEXT"),
+		pfnGetSwapchainTimeDomainPropertiesEXT:   vulkan.GetDeviceProcAddr(device, "vkGetSwapchainTimeDomainPropertiesEXT"),
+		pfnGetSwapchainTimingPropertiesEXT:       vulkan.GetDeviceProcAddr(device, "vkGetSwapchainTimingPropertiesEXT"),
+		pfnSetSwapchainPresentTimingQueueSizeEXT: vulkan.GetDeviceProcAddr(device, "vkSetSwapchainPresentTimingQueueSizeEXT"),
+	}
+	pfnGetPastPresentationTimingEXT = cmds.pfnGetPastPresentationTimingEXT
+	pfnGetSwapchainTimeDomainPropertiesEXT = cmds.pfnGetSwapchainTimeDomainPropertiesEXT
+	pfnGetSwapchainTimingPropertiesEXT = cmds.pfnGetSwapchainTimingPropertiesEXT
+	pfnSetSwapchainPresentTimingQueueSizeEXT = cmds.pfnSetSwapchainPresentTimingQueueSizeEXT
+	return cmds
 }
 
 // GetPastPresentationTimingEXT - Obtain timing of previously-presented images (vkGetPastPresentationTimingEXT).
@@ -35,6 +50,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPastPresentationTimingEXT.html
+func (c *Commands) GetPastPresentationTimingEXT(device vulkan.Device, pastPresentationTimingInfo *vulkan.PastPresentationTimingInfoEXT) (pastPresentationTimingProperties vulkan.PastPresentationTimingPropertiesEXT, result vulkan.Result) {
+	c_pastPresentationTimingInfo := pastPresentationTimingInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPastPresentationTimingEXT, uintptr(device), uintptr(unsafe.Pointer(c_pastPresentationTimingInfo)), uintptr(unsafe.Pointer(&pastPresentationTimingProperties)))
+	return pastPresentationTimingProperties, vulkan.Result(r1)
+}
+
 func GetPastPresentationTimingEXT(device vulkan.Device, pastPresentationTimingInfo *vulkan.PastPresentationTimingInfoEXT) (pastPresentationTimingProperties vulkan.PastPresentationTimingPropertiesEXT, result vulkan.Result) {
 	c_pastPresentationTimingInfo := pastPresentationTimingInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPastPresentationTimingEXT, uintptr(device), uintptr(unsafe.Pointer(c_pastPresentationTimingInfo)), uintptr(unsafe.Pointer(&pastPresentationTimingProperties)))
@@ -51,6 +72,12 @@ func GetPastPresentationTimingEXT(device vulkan.Device, pastPresentationTimingIn
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainTimeDomainPropertiesEXT.html
+func (c *Commands) GetSwapchainTimeDomainPropertiesEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, swapchainTimeDomainProperties *vulkan.SwapchainTimeDomainPropertiesEXT) (timeDomainsCounter uint64, result vulkan.Result) {
+	c_swapchainTimeDomainProperties := swapchainTimeDomainProperties.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSwapchainTimeDomainPropertiesEXT, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_swapchainTimeDomainProperties)), uintptr(unsafe.Pointer(&timeDomainsCounter)))
+	return timeDomainsCounter, vulkan.Result(r1)
+}
+
 func GetSwapchainTimeDomainPropertiesEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, swapchainTimeDomainProperties *vulkan.SwapchainTimeDomainPropertiesEXT) (timeDomainsCounter uint64, result vulkan.Result) {
 	c_swapchainTimeDomainProperties := swapchainTimeDomainProperties.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetSwapchainTimeDomainPropertiesEXT, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_swapchainTimeDomainProperties)), uintptr(unsafe.Pointer(&timeDomainsCounter)))
@@ -67,6 +94,12 @@ func GetSwapchainTimeDomainPropertiesEXT(device vulkan.Device, swapchain vulkan.
 // Success codes: VK_SUCCESS, VK_NOT_READY
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainTimingPropertiesEXT.html
+func (c *Commands) GetSwapchainTimingPropertiesEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, swapchainTimingProperties *vulkan.SwapchainTimingPropertiesEXT) (swapchainTimingPropertiesCounter uint64, result vulkan.Result) {
+	c_swapchainTimingProperties := swapchainTimingProperties.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSwapchainTimingPropertiesEXT, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_swapchainTimingProperties)), uintptr(unsafe.Pointer(&swapchainTimingPropertiesCounter)))
+	return swapchainTimingPropertiesCounter, vulkan.Result(r1)
+}
+
 func GetSwapchainTimingPropertiesEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, swapchainTimingProperties *vulkan.SwapchainTimingPropertiesEXT) (swapchainTimingPropertiesCounter uint64, result vulkan.Result) {
 	c_swapchainTimingProperties := swapchainTimingProperties.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetSwapchainTimingPropertiesEXT, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_swapchainTimingProperties)), uintptr(unsafe.Pointer(&swapchainTimingPropertiesCounter)))
@@ -82,6 +115,11 @@ func GetSwapchainTimingPropertiesEXT(device vulkan.Device, swapchain vulkan.Swap
 // Success codes: VK_SUCCESS, VK_NOT_READY
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetSwapchainPresentTimingQueueSizeEXT.html
+func (c *Commands) SetSwapchainPresentTimingQueueSizeEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, size uint32) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetSwapchainPresentTimingQueueSizeEXT, uintptr(device), uintptr(swapchain), uintptr(size))
+	return vulkan.Result(r1)
+}
+
 func SetSwapchainPresentTimingQueueSizeEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, size uint32) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnSetSwapchainPresentTimingQueueSizeEXT, uintptr(device), uintptr(swapchain), uintptr(size))
 	return vulkan.Result(r1)

@@ -10,7 +10,20 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquirePerformanceConfigurationINTEL  uintptr
+	pfnCmdSetPerformanceMarkerINTEL          uintptr
+	pfnCmdSetPerformanceOverrideINTEL        uintptr
+	pfnCmdSetPerformanceStreamMarkerINTEL    uintptr
+	pfnGetPerformanceParameterINTEL          uintptr
+	pfnInitializePerformanceApiINTEL         uintptr
+	pfnQueueSetPerformanceConfigurationINTEL uintptr
+	pfnReleasePerformanceConfigurationINTEL  uintptr
+	pfnUninitializePerformanceApiINTEL       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquirePerformanceConfigurationINTEL  uintptr
 	pfnCmdSetPerformanceMarkerINTEL          uintptr
@@ -23,17 +36,29 @@ var (
 	pfnUninitializePerformanceApiINTEL       uintptr
 )
 
-// Init resolves and initializes all VK_INTEL_performance_query extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquirePerformanceConfigurationINTEL = vulkan.GetDeviceProcAddr(device, "vkAcquirePerformanceConfigurationINTEL")
-	pfnCmdSetPerformanceMarkerINTEL = vulkan.GetDeviceProcAddr(device, "vkCmdSetPerformanceMarkerINTEL")
-	pfnCmdSetPerformanceOverrideINTEL = vulkan.GetDeviceProcAddr(device, "vkCmdSetPerformanceOverrideINTEL")
-	pfnCmdSetPerformanceStreamMarkerINTEL = vulkan.GetDeviceProcAddr(device, "vkCmdSetPerformanceStreamMarkerINTEL")
-	pfnGetPerformanceParameterINTEL = vulkan.GetDeviceProcAddr(device, "vkGetPerformanceParameterINTEL")
-	pfnInitializePerformanceApiINTEL = vulkan.GetDeviceProcAddr(device, "vkInitializePerformanceApiINTEL")
-	pfnQueueSetPerformanceConfigurationINTEL = vulkan.GetDeviceProcAddr(device, "vkQueueSetPerformanceConfigurationINTEL")
-	pfnReleasePerformanceConfigurationINTEL = vulkan.GetDeviceProcAddr(device, "vkReleasePerformanceConfigurationINTEL")
-	pfnUninitializePerformanceApiINTEL = vulkan.GetDeviceProcAddr(device, "vkUninitializePerformanceApiINTEL")
+// Init resolves and initializes all VK_INTEL_performance_query extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquirePerformanceConfigurationINTEL:  vulkan.GetDeviceProcAddr(device, "vkAcquirePerformanceConfigurationINTEL"),
+		pfnCmdSetPerformanceMarkerINTEL:          vulkan.GetDeviceProcAddr(device, "vkCmdSetPerformanceMarkerINTEL"),
+		pfnCmdSetPerformanceOverrideINTEL:        vulkan.GetDeviceProcAddr(device, "vkCmdSetPerformanceOverrideINTEL"),
+		pfnCmdSetPerformanceStreamMarkerINTEL:    vulkan.GetDeviceProcAddr(device, "vkCmdSetPerformanceStreamMarkerINTEL"),
+		pfnGetPerformanceParameterINTEL:          vulkan.GetDeviceProcAddr(device, "vkGetPerformanceParameterINTEL"),
+		pfnInitializePerformanceApiINTEL:         vulkan.GetDeviceProcAddr(device, "vkInitializePerformanceApiINTEL"),
+		pfnQueueSetPerformanceConfigurationINTEL: vulkan.GetDeviceProcAddr(device, "vkQueueSetPerformanceConfigurationINTEL"),
+		pfnReleasePerformanceConfigurationINTEL:  vulkan.GetDeviceProcAddr(device, "vkReleasePerformanceConfigurationINTEL"),
+		pfnUninitializePerformanceApiINTEL:       vulkan.GetDeviceProcAddr(device, "vkUninitializePerformanceApiINTEL"),
+	}
+	pfnAcquirePerformanceConfigurationINTEL = cmds.pfnAcquirePerformanceConfigurationINTEL
+	pfnCmdSetPerformanceMarkerINTEL = cmds.pfnCmdSetPerformanceMarkerINTEL
+	pfnCmdSetPerformanceOverrideINTEL = cmds.pfnCmdSetPerformanceOverrideINTEL
+	pfnCmdSetPerformanceStreamMarkerINTEL = cmds.pfnCmdSetPerformanceStreamMarkerINTEL
+	pfnGetPerformanceParameterINTEL = cmds.pfnGetPerformanceParameterINTEL
+	pfnInitializePerformanceApiINTEL = cmds.pfnInitializePerformanceApiINTEL
+	pfnQueueSetPerformanceConfigurationINTEL = cmds.pfnQueueSetPerformanceConfigurationINTEL
+	pfnReleasePerformanceConfigurationINTEL = cmds.pfnReleasePerformanceConfigurationINTEL
+	pfnUninitializePerformanceApiINTEL = cmds.pfnUninitializePerformanceApiINTEL
+	return cmds
 }
 
 // AcquirePerformanceConfigurationINTEL - Acquire the performance query capability (vkAcquirePerformanceConfigurationINTEL).
@@ -45,6 +70,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquirePerformanceConfigurationINTEL.html
+func (c *Commands) AcquirePerformanceConfigurationINTEL(device vulkan.Device, acquireInfo *vulkan.PerformanceConfigurationAcquireInfoINTEL) (configuration vulkan.PerformanceConfigurationINTEL, result vulkan.Result) {
+	c_acquireInfo := acquireInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquirePerformanceConfigurationINTEL, uintptr(device), uintptr(unsafe.Pointer(c_acquireInfo)), uintptr(unsafe.Pointer(&configuration)))
+	return configuration, vulkan.Result(r1)
+}
+
 func AcquirePerformanceConfigurationINTEL(device vulkan.Device, acquireInfo *vulkan.PerformanceConfigurationAcquireInfoINTEL) (configuration vulkan.PerformanceConfigurationINTEL, result vulkan.Result) {
 	c_acquireInfo := acquireInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnAcquirePerformanceConfigurationINTEL, uintptr(device), uintptr(unsafe.Pointer(c_acquireInfo)), uintptr(unsafe.Pointer(&configuration)))
@@ -55,6 +86,12 @@ func AcquirePerformanceConfigurationINTEL(device vulkan.Device, acquireInfo *vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPerformanceMarkerINTEL.html
+func (c *Commands) CmdSetPerformanceMarkerINTEL(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.PerformanceMarkerInfoINTEL) (result vulkan.Result) {
+	c_markerInfo := markerInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCmdSetPerformanceMarkerINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+	return vulkan.Result(r1)
+}
+
 func CmdSetPerformanceMarkerINTEL(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.PerformanceMarkerInfoINTEL) (result vulkan.Result) {
 	c_markerInfo := markerInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCmdSetPerformanceMarkerINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
@@ -69,6 +106,12 @@ func CmdSetPerformanceMarkerINTEL(commandBuffer vulkan.CommandBuffer, markerInfo
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPerformanceOverrideINTEL.html
+func (c *Commands) CmdSetPerformanceOverrideINTEL(commandBuffer vulkan.CommandBuffer, overrideInfo *vulkan.PerformanceOverrideInfoINTEL) (result vulkan.Result) {
+	c_overrideInfo := overrideInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCmdSetPerformanceOverrideINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_overrideInfo)))
+	return vulkan.Result(r1)
+}
+
 func CmdSetPerformanceOverrideINTEL(commandBuffer vulkan.CommandBuffer, overrideInfo *vulkan.PerformanceOverrideInfoINTEL) (result vulkan.Result) {
 	c_overrideInfo := overrideInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCmdSetPerformanceOverrideINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_overrideInfo)))
@@ -83,6 +126,12 @@ func CmdSetPerformanceOverrideINTEL(commandBuffer vulkan.CommandBuffer, override
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPerformanceStreamMarkerINTEL.html
+func (c *Commands) CmdSetPerformanceStreamMarkerINTEL(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.PerformanceStreamMarkerInfoINTEL) (result vulkan.Result) {
+	c_markerInfo := markerInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCmdSetPerformanceStreamMarkerINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+	return vulkan.Result(r1)
+}
+
 func CmdSetPerformanceStreamMarkerINTEL(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.PerformanceStreamMarkerInfoINTEL) (result vulkan.Result) {
 	c_markerInfo := markerInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCmdSetPerformanceStreamMarkerINTEL, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
@@ -98,6 +147,11 @@ func CmdSetPerformanceStreamMarkerINTEL(commandBuffer vulkan.CommandBuffer, mark
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPerformanceParameterINTEL.html
+func (c *Commands) GetPerformanceParameterINTEL(device vulkan.Device, parameter vulkan.PerformanceParameterTypeINTEL) (value vulkan.PerformanceValueINTEL, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPerformanceParameterINTEL, uintptr(device), uintptr(parameter), uintptr(unsafe.Pointer(&value)))
+	return value, vulkan.Result(r1)
+}
+
 func GetPerformanceParameterINTEL(device vulkan.Device, parameter vulkan.PerformanceParameterTypeINTEL) (value vulkan.PerformanceValueINTEL, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPerformanceParameterINTEL, uintptr(device), uintptr(parameter), uintptr(unsafe.Pointer(&value)))
 	return value, vulkan.Result(r1)
@@ -111,6 +165,12 @@ func GetPerformanceParameterINTEL(device vulkan.Device, parameter vulkan.Perform
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkInitializePerformanceApiINTEL.html
+func (c *Commands) InitializePerformanceApiINTEL(device vulkan.Device, initializeInfo *vulkan.InitializePerformanceApiInfoINTEL) (result vulkan.Result) {
+	c_initializeInfo := initializeInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnInitializePerformanceApiINTEL, uintptr(device), uintptr(unsafe.Pointer(c_initializeInfo)))
+	return vulkan.Result(r1)
+}
+
 func InitializePerformanceApiINTEL(device vulkan.Device, initializeInfo *vulkan.InitializePerformanceApiInfoINTEL) (result vulkan.Result) {
 	c_initializeInfo := initializeInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnInitializePerformanceApiINTEL, uintptr(device), uintptr(unsafe.Pointer(c_initializeInfo)))
@@ -125,6 +185,11 @@ func InitializePerformanceApiINTEL(device vulkan.Device, initializeInfo *vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSetPerformanceConfigurationINTEL.html
+func (c *Commands) QueueSetPerformanceConfigurationINTEL(queue vulkan.Queue, configuration vulkan.PerformanceConfigurationINTEL) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnQueueSetPerformanceConfigurationINTEL, uintptr(queue), uintptr(configuration))
+	return vulkan.Result(r1)
+}
+
 func QueueSetPerformanceConfigurationINTEL(queue vulkan.Queue, configuration vulkan.PerformanceConfigurationINTEL) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnQueueSetPerformanceConfigurationINTEL, uintptr(queue), uintptr(configuration))
 	return vulkan.Result(r1)
@@ -138,6 +203,11 @@ func QueueSetPerformanceConfigurationINTEL(queue vulkan.Queue, configuration vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleasePerformanceConfigurationINTEL.html
+func (c *Commands) ReleasePerformanceConfigurationINTEL(device vulkan.Device, configuration vulkan.PerformanceConfigurationINTEL) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnReleasePerformanceConfigurationINTEL, uintptr(device), uintptr(configuration))
+	return vulkan.Result(r1)
+}
+
 func ReleasePerformanceConfigurationINTEL(device vulkan.Device, configuration vulkan.PerformanceConfigurationINTEL) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnReleasePerformanceConfigurationINTEL, uintptr(device), uintptr(configuration))
 	return vulkan.Result(r1)
@@ -148,6 +218,10 @@ func ReleasePerformanceConfigurationINTEL(device vulkan.Device, configuration vu
 //   - device: is the logical device used for the queries.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkUninitializePerformanceApiINTEL.html
+func (c *Commands) UninitializePerformanceApiINTEL(device vulkan.Device) {
+	vulkan.CallSyscall(c.pfnUninitializePerformanceApiINTEL, uintptr(device))
+}
+
 func UninitializePerformanceApiINTEL(device vulkan.Device) {
 	vulkan.CallSyscall(pfnUninitializePerformanceApiINTEL, uintptr(device))
 }

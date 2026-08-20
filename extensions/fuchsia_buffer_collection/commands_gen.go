@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateBufferCollectionFUCHSIA               uintptr
+	pfnDestroyBufferCollectionFUCHSIA              uintptr
+	pfnGetBufferCollectionPropertiesFUCHSIA        uintptr
+	pfnSetBufferCollectionBufferConstraintsFUCHSIA uintptr
+	pfnSetBufferCollectionImageConstraintsFUCHSIA  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateBufferCollectionFUCHSIA               uintptr
 	pfnDestroyBufferCollectionFUCHSIA              uintptr
@@ -19,13 +28,21 @@ var (
 	pfnSetBufferCollectionImageConstraintsFUCHSIA  uintptr
 )
 
-// Init resolves and initializes all VK_FUCHSIA_buffer_collection extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateBufferCollectionFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkCreateBufferCollectionFUCHSIA")
-	pfnDestroyBufferCollectionFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkDestroyBufferCollectionFUCHSIA")
-	pfnGetBufferCollectionPropertiesFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkGetBufferCollectionPropertiesFUCHSIA")
-	pfnSetBufferCollectionBufferConstraintsFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkSetBufferCollectionBufferConstraintsFUCHSIA")
-	pfnSetBufferCollectionImageConstraintsFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkSetBufferCollectionImageConstraintsFUCHSIA")
+// Init resolves and initializes all VK_FUCHSIA_buffer_collection extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateBufferCollectionFUCHSIA:               vulkan.GetDeviceProcAddr(device, "vkCreateBufferCollectionFUCHSIA"),
+		pfnDestroyBufferCollectionFUCHSIA:              vulkan.GetDeviceProcAddr(device, "vkDestroyBufferCollectionFUCHSIA"),
+		pfnGetBufferCollectionPropertiesFUCHSIA:        vulkan.GetDeviceProcAddr(device, "vkGetBufferCollectionPropertiesFUCHSIA"),
+		pfnSetBufferCollectionBufferConstraintsFUCHSIA: vulkan.GetDeviceProcAddr(device, "vkSetBufferCollectionBufferConstraintsFUCHSIA"),
+		pfnSetBufferCollectionImageConstraintsFUCHSIA:  vulkan.GetDeviceProcAddr(device, "vkSetBufferCollectionImageConstraintsFUCHSIA"),
+	}
+	pfnCreateBufferCollectionFUCHSIA = cmds.pfnCreateBufferCollectionFUCHSIA
+	pfnDestroyBufferCollectionFUCHSIA = cmds.pfnDestroyBufferCollectionFUCHSIA
+	pfnGetBufferCollectionPropertiesFUCHSIA = cmds.pfnGetBufferCollectionPropertiesFUCHSIA
+	pfnSetBufferCollectionBufferConstraintsFUCHSIA = cmds.pfnSetBufferCollectionBufferConstraintsFUCHSIA
+	pfnSetBufferCollectionImageConstraintsFUCHSIA = cmds.pfnSetBufferCollectionImageConstraintsFUCHSIA
+	return cmds
 }
 
 // CreateBufferCollectionFUCHSIA - Create a new buffer collection (vkCreateBufferCollectionFUCHSIA).
@@ -38,6 +55,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateBufferCollectionFUCHSIA.html
+func (c *Commands) CreateBufferCollectionFUCHSIA(device vulkan.Device, createInfo *vulkan.BufferCollectionCreateInfoFUCHSIA, allocator *vulkan.AllocationCallbacks) (collection vulkan.BufferCollectionFUCHSIA, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateBufferCollectionFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&collection)))
+	return collection, vulkan.Result(r1)
+}
+
 func CreateBufferCollectionFUCHSIA(device vulkan.Device, createInfo *vulkan.BufferCollectionCreateInfoFUCHSIA, allocator *vulkan.AllocationCallbacks) (collection vulkan.BufferCollectionFUCHSIA, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -52,6 +76,11 @@ func CreateBufferCollectionFUCHSIA(device vulkan.Device, createInfo *vulkan.Buff
 //   - allocator: is a pointer to a VkAllocationCallbacks structure controlling host memory allocation as described in the Memory Allocation chapter
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyBufferCollectionFUCHSIA.html
+func (c *Commands) DestroyBufferCollectionFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyBufferCollectionFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyBufferCollectionFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyBufferCollectionFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_allocator)))
@@ -66,6 +95,11 @@ func DestroyBufferCollectionFUCHSIA(device vulkan.Device, collection vulkan.Buff
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferCollectionPropertiesFUCHSIA.html
+func (c *Commands) GetBufferCollectionPropertiesFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA) (properties vulkan.BufferCollectionPropertiesFUCHSIA, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetBufferCollectionPropertiesFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetBufferCollectionPropertiesFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA) (properties vulkan.BufferCollectionPropertiesFUCHSIA, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetBufferCollectionPropertiesFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(&properties)))
 	return properties, vulkan.Result(r1)
@@ -80,6 +114,12 @@ func GetBufferCollectionPropertiesFUCHSIA(device vulkan.Device, collection vulka
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetBufferCollectionBufferConstraintsFUCHSIA.html
+func (c *Commands) SetBufferCollectionBufferConstraintsFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA, bufferConstraintsInfo *vulkan.BufferConstraintsInfoFUCHSIA) (result vulkan.Result) {
+	c_bufferConstraintsInfo := bufferConstraintsInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetBufferCollectionBufferConstraintsFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_bufferConstraintsInfo)))
+	return vulkan.Result(r1)
+}
+
 func SetBufferCollectionBufferConstraintsFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA, bufferConstraintsInfo *vulkan.BufferConstraintsInfoFUCHSIA) (result vulkan.Result) {
 	c_bufferConstraintsInfo := bufferConstraintsInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnSetBufferCollectionBufferConstraintsFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_bufferConstraintsInfo)))
@@ -95,6 +135,12 @@ func SetBufferCollectionBufferConstraintsFUCHSIA(device vulkan.Device, collectio
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetBufferCollectionImageConstraintsFUCHSIA.html
+func (c *Commands) SetBufferCollectionImageConstraintsFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA, imageConstraintsInfo *vulkan.ImageConstraintsInfoFUCHSIA) (result vulkan.Result) {
+	c_imageConstraintsInfo := imageConstraintsInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetBufferCollectionImageConstraintsFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_imageConstraintsInfo)))
+	return vulkan.Result(r1)
+}
+
 func SetBufferCollectionImageConstraintsFUCHSIA(device vulkan.Device, collection vulkan.BufferCollectionFUCHSIA, imageConstraintsInfo *vulkan.ImageConstraintsInfoFUCHSIA) (result vulkan.Result) {
 	c_imageConstraintsInfo := imageConstraintsInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnSetBufferCollectionImageConstraintsFUCHSIA, uintptr(device), uintptr(collection), uintptr(unsafe.Pointer(c_imageConstraintsInfo)))

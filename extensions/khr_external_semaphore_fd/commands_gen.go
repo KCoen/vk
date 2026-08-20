@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetSemaphoreFdKHR    uintptr
+	pfnImportSemaphoreFdKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetSemaphoreFdKHR    uintptr
 	pfnImportSemaphoreFdKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_semaphore_fd extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetSemaphoreFdKHR = vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreFdKHR")
-	pfnImportSemaphoreFdKHR = vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreFdKHR")
+// Init resolves and initializes all VK_KHR_external_semaphore_fd extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetSemaphoreFdKHR:    vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreFdKHR"),
+		pfnImportSemaphoreFdKHR: vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreFdKHR"),
+	}
+	pfnGetSemaphoreFdKHR = cmds.pfnGetSemaphoreFdKHR
+	pfnImportSemaphoreFdKHR = cmds.pfnImportSemaphoreFdKHR
+	return cmds
 }
 
 // GetSemaphoreFdKHR - Get a POSIX file descriptor handle for a semaphore (vkGetSemaphoreFdKHR).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreFdKHR.html
+func (c *Commands) GetSemaphoreFdKHR(device vulkan.Device, getFdInfo *vulkan.SemaphoreGetFdInfoKHR) (fd int32, result vulkan.Result) {
+	c_getFdInfo := getFdInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSemaphoreFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
+	return fd, vulkan.Result(r1)
+}
+
 func GetSemaphoreFdKHR(device vulkan.Device, getFdInfo *vulkan.SemaphoreGetFdInfoKHR) (fd int32, result vulkan.Result) {
 	c_getFdInfo := getFdInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetSemaphoreFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_getFdInfo)), uintptr(unsafe.Pointer(&fd)))
@@ -45,6 +62,12 @@ func GetSemaphoreFdKHR(device vulkan.Device, getFdInfo *vulkan.SemaphoreGetFdInf
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreFdKHR.html
+func (c *Commands) ImportSemaphoreFdKHR(device vulkan.Device, importSemaphoreFdInfo *vulkan.ImportSemaphoreFdInfoKHR) (result vulkan.Result) {
+	c_importSemaphoreFdInfo := importSemaphoreFdInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportSemaphoreFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreFdInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportSemaphoreFdKHR(device vulkan.Device, importSemaphoreFdInfo *vulkan.ImportSemaphoreFdInfoKHR) (result vulkan.Result) {
 	c_importSemaphoreFdInfo := importSemaphoreFdInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportSemaphoreFdKHR, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreFdInfo)))

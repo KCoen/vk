@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreatePrivateDataSlotEXT  uintptr
+	pfnDestroyPrivateDataSlotEXT uintptr
+	pfnGetPrivateDataEXT         uintptr
+	pfnSetPrivateDataEXT         uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreatePrivateDataSlotEXT  uintptr
 	pfnDestroyPrivateDataSlotEXT uintptr
@@ -18,34 +26,57 @@ var (
 	pfnSetPrivateDataEXT         uintptr
 )
 
-// Init resolves and initializes all VK_EXT_private_data extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreatePrivateDataSlotEXT = vulkan.GetInstanceProcAddr(instance, "vkCreatePrivateDataSlotEXT")
-	pfnDestroyPrivateDataSlotEXT = vulkan.GetInstanceProcAddr(instance, "vkDestroyPrivateDataSlotEXT")
-	pfnGetPrivateDataEXT = vulkan.GetInstanceProcAddr(instance, "vkGetPrivateDataEXT")
-	pfnSetPrivateDataEXT = vulkan.GetInstanceProcAddr(instance, "vkSetPrivateDataEXT")
+// Init resolves and initializes all VK_EXT_private_data extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreatePrivateDataSlotEXT:  vulkan.GetInstanceProcAddr(instance, "vkCreatePrivateDataSlotEXT"),
+		pfnDestroyPrivateDataSlotEXT: vulkan.GetInstanceProcAddr(instance, "vkDestroyPrivateDataSlotEXT"),
+		pfnGetPrivateDataEXT:         vulkan.GetInstanceProcAddr(instance, "vkGetPrivateDataEXT"),
+		pfnSetPrivateDataEXT:         vulkan.GetInstanceProcAddr(instance, "vkSetPrivateDataEXT"),
+	}
+	pfnCreatePrivateDataSlotEXT = cmds.pfnCreatePrivateDataSlotEXT
+	pfnDestroyPrivateDataSlotEXT = cmds.pfnDestroyPrivateDataSlotEXT
+	pfnGetPrivateDataEXT = cmds.pfnGetPrivateDataEXT
+	pfnSetPrivateDataEXT = cmds.pfnSetPrivateDataEXT
+	return cmds
 }
 
 // CreatePrivateDataSlotEXT executes vkCreatePrivateDataSlotEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreatePrivateDataSlotEXT.html
+func (c *Commands) CreatePrivateDataSlotEXT() {
+	vulkan.CallSyscall(c.pfnCreatePrivateDataSlotEXT)
+}
+
 func CreatePrivateDataSlotEXT() {
 	vulkan.CallSyscall(pfnCreatePrivateDataSlotEXT)
 }
 
 // DestroyPrivateDataSlotEXT executes vkDestroyPrivateDataSlotEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyPrivateDataSlotEXT.html
+func (c *Commands) DestroyPrivateDataSlotEXT() {
+	vulkan.CallSyscall(c.pfnDestroyPrivateDataSlotEXT)
+}
+
 func DestroyPrivateDataSlotEXT() {
 	vulkan.CallSyscall(pfnDestroyPrivateDataSlotEXT)
 }
 
 // GetPrivateDataEXT executes vkGetPrivateDataEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPrivateDataEXT.html
+func (c *Commands) GetPrivateDataEXT() {
+	vulkan.CallSyscall(c.pfnGetPrivateDataEXT)
+}
+
 func GetPrivateDataEXT() {
 	vulkan.CallSyscall(pfnGetPrivateDataEXT)
 }
 
 // SetPrivateDataEXT executes vkSetPrivateDataEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetPrivateDataEXT.html
+func (c *Commands) SetPrivateDataEXT() {
+	vulkan.CallSyscall(c.pfnSetPrivateDataEXT)
+}
+
 func SetPrivateDataEXT() {
 	vulkan.CallSyscall(pfnSetPrivateDataEXT)
 }

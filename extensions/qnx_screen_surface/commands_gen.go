@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateScreenSurfaceQNX                        uintptr
+	pfnGetPhysicalDeviceScreenPresentationSupportQNX uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateScreenSurfaceQNX                        uintptr
 	pfnGetPhysicalDeviceScreenPresentationSupportQNX uintptr
 )
 
-// Init resolves and initializes all VK_QNX_screen_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateScreenSurfaceQNX = vulkan.GetInstanceProcAddr(instance, "vkCreateScreenSurfaceQNX")
-	pfnGetPhysicalDeviceScreenPresentationSupportQNX = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceScreenPresentationSupportQNX")
+// Init resolves and initializes all VK_QNX_screen_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateScreenSurfaceQNX:                        vulkan.GetInstanceProcAddr(instance, "vkCreateScreenSurfaceQNX"),
+		pfnGetPhysicalDeviceScreenPresentationSupportQNX: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceScreenPresentationSupportQNX"),
+	}
+	pfnCreateScreenSurfaceQNX = cmds.pfnCreateScreenSurfaceQNX
+	pfnGetPhysicalDeviceScreenPresentationSupportQNX = cmds.pfnGetPhysicalDeviceScreenPresentationSupportQNX
+	return cmds
 }
 
 // CreateScreenSurfaceQNX - Create a VkSurfaceKHR object for a QNX Screen window (vkCreateScreenSurfaceQNX).
@@ -32,6 +43,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateScreenSurfaceQNX.html
+func (c *Commands) CreateScreenSurfaceQNX(instance vulkan.Instance, createInfo *vulkan.ScreenSurfaceCreateInfoQNX, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateScreenSurfaceQNX, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateScreenSurfaceQNX(instance vulkan.Instance, createInfo *vulkan.ScreenSurfaceCreateInfoQNX, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -46,6 +64,11 @@ func CreateScreenSurfaceQNX(instance vulkan.Instance, createInfo *vulkan.ScreenS
 //   - window: is the QNX Screen window object.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceScreenPresentationSupportQNX.html
+func (c *Commands) GetPhysicalDeviceScreenPresentationSupportQNX(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (window uintptr) {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceScreenPresentationSupportQNX, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&window)))
+	return window
+}
+
 func GetPhysicalDeviceScreenPresentationSupportQNX(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (window uintptr) {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceScreenPresentationSupportQNX, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&window)))
 	return window

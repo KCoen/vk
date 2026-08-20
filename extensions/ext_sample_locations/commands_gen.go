@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetSampleLocationsEXT                  uintptr
+	pfnGetPhysicalDeviceMultisamplePropertiesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetSampleLocationsEXT                  uintptr
 	pfnGetPhysicalDeviceMultisamplePropertiesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_sample_locations extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetSampleLocationsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetSampleLocationsEXT")
-	pfnGetPhysicalDeviceMultisamplePropertiesEXT = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMultisamplePropertiesEXT")
+// Init resolves and initializes all VK_EXT_sample_locations extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetSampleLocationsEXT:                  vulkan.GetDeviceProcAddr(device, "vkCmdSetSampleLocationsEXT"),
+		pfnGetPhysicalDeviceMultisamplePropertiesEXT: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMultisamplePropertiesEXT"),
+	}
+	pfnCmdSetSampleLocationsEXT = cmds.pfnCmdSetSampleLocationsEXT
+	pfnGetPhysicalDeviceMultisamplePropertiesEXT = cmds.pfnGetPhysicalDeviceMultisamplePropertiesEXT
+	return cmds
 }
 
 // CmdSetSampleLocationsEXT - Set sample locations dynamically for a command buffer (vkCmdSetSampleLocationsEXT).
@@ -28,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - sampleLocationsInfo: is the sample locations state to set.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetSampleLocationsEXT.html
+func (c *Commands) CmdSetSampleLocationsEXT(commandBuffer vulkan.CommandBuffer, sampleLocationsInfo *vulkan.SampleLocationsInfoEXT) {
+	c_sampleLocationsInfo := sampleLocationsInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetSampleLocationsEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_sampleLocationsInfo)))
+}
+
 func CmdSetSampleLocationsEXT(commandBuffer vulkan.CommandBuffer, sampleLocationsInfo *vulkan.SampleLocationsInfoEXT) {
 	c_sampleLocationsInfo := sampleLocationsInfo.Raw()
 	vulkan.CallSyscall(pfnCmdSetSampleLocationsEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_sampleLocationsInfo)))
@@ -40,6 +56,11 @@ func CmdSetSampleLocationsEXT(commandBuffer vulkan.CommandBuffer, sampleLocation
 //   - multisampleProperties: is a pointer to a VkMultisamplePropertiesEXT structure in which information about additional multisampling capabilities specific to the sample count is returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMultisamplePropertiesEXT.html
+func (c *Commands) GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice vulkan.PhysicalDevice, samples vulkan.SampleCountFlagBits) (multisampleProperties vulkan.MultisamplePropertiesEXT) {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceMultisamplePropertiesEXT, uintptr(physicalDevice), uintptr(samples), uintptr(unsafe.Pointer(&multisampleProperties)))
+	return multisampleProperties
+}
+
 func GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice vulkan.PhysicalDevice, samples vulkan.SampleCountFlagBits) (multisampleProperties vulkan.MultisamplePropertiesEXT) {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceMultisamplePropertiesEXT, uintptr(physicalDevice), uintptr(samples), uintptr(unsafe.Pointer(&multisampleProperties)))
 	return multisampleProperties

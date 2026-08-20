@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnSetLocalDimmingAMD uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnSetLocalDimmingAMD uintptr
 )
 
-// Init resolves and initializes all VK_AMD_display_native_hdr extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnSetLocalDimmingAMD = vulkan.GetDeviceProcAddr(device, "vkSetLocalDimmingAMD")
+// Init resolves and initializes all VK_AMD_display_native_hdr extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnSetLocalDimmingAMD: vulkan.GetDeviceProcAddr(device, "vkSetLocalDimmingAMD"),
+	}
+	pfnSetLocalDimmingAMD = cmds.pfnSetLocalDimmingAMD
+	return cmds
 }
 
 // SetLocalDimmingAMD - Set Local Dimming (vkSetLocalDimmingAMD).
@@ -27,6 +36,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - localDimmingEnable: specifies whether local dimming is enabled for the swapchain.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLocalDimmingAMD.html
+func (c *Commands) SetLocalDimmingAMD(device vulkan.Device, swapChain vulkan.SwapchainKHR, localDimmingEnable vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnSetLocalDimmingAMD, uintptr(device), uintptr(swapChain), uintptr(localDimmingEnable))
+}
+
 func SetLocalDimmingAMD(device vulkan.Device, swapChain vulkan.SwapchainKHR, localDimmingEnable vulkan.Bool32) {
 	vulkan.CallSyscall(pfnSetLocalDimmingAMD, uintptr(device), uintptr(swapChain), uintptr(localDimmingEnable))
 }

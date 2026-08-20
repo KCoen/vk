@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateWin32SurfaceKHR                        uintptr
+	pfnGetPhysicalDeviceWin32PresentationSupportKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateWin32SurfaceKHR                        uintptr
 	pfnGetPhysicalDeviceWin32PresentationSupportKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_win32_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateWin32SurfaceKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR")
-	pfnGetPhysicalDeviceWin32PresentationSupportKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR")
+// Init resolves and initializes all VK_KHR_win32_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateWin32SurfaceKHR:                        vulkan.GetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR"),
+		pfnGetPhysicalDeviceWin32PresentationSupportKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR"),
+	}
+	pfnCreateWin32SurfaceKHR = cmds.pfnCreateWin32SurfaceKHR
+	pfnGetPhysicalDeviceWin32PresentationSupportKHR = cmds.pfnGetPhysicalDeviceWin32PresentationSupportKHR
+	return cmds
 }
 
 // CreateWin32SurfaceKHR - Create a VkSurfaceKHR object for a Win32 native window (vkCreateWin32SurfaceKHR).
@@ -32,6 +43,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateWin32SurfaceKHR.html
+func (c *Commands) CreateWin32SurfaceKHR(instance vulkan.Instance, createInfo *vulkan.Win32SurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateWin32SurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateWin32SurfaceKHR(instance vulkan.Instance, createInfo *vulkan.Win32SurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -45,6 +63,11 @@ func CreateWin32SurfaceKHR(instance vulkan.Instance, createInfo *vulkan.Win32Sur
 //   - queueFamilyIndex: is the queue family index.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceWin32PresentationSupportKHR.html
+func (c *Commands) GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (result vulkan.Bool32) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceWin32PresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex))
+	return vulkan.Bool32(r1)
+}
+
 func GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (result vulkan.Bool32) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceWin32PresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex))
 	return vulkan.Bool32(r1)

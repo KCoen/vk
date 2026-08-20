@@ -10,7 +10,15 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnDisplayPowerControlEXT  uintptr
+	pfnGetSwapchainCounterEXT  uintptr
+	pfnRegisterDeviceEventEXT  uintptr
+	pfnRegisterDisplayEventEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnDisplayPowerControlEXT  uintptr
 	pfnGetSwapchainCounterEXT  uintptr
@@ -18,12 +26,19 @@ var (
 	pfnRegisterDisplayEventEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_display_control extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnDisplayPowerControlEXT = vulkan.GetDeviceProcAddr(device, "vkDisplayPowerControlEXT")
-	pfnGetSwapchainCounterEXT = vulkan.GetDeviceProcAddr(device, "vkGetSwapchainCounterEXT")
-	pfnRegisterDeviceEventEXT = vulkan.GetDeviceProcAddr(device, "vkRegisterDeviceEventEXT")
-	pfnRegisterDisplayEventEXT = vulkan.GetDeviceProcAddr(device, "vkRegisterDisplayEventEXT")
+// Init resolves and initializes all VK_EXT_display_control extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnDisplayPowerControlEXT:  vulkan.GetDeviceProcAddr(device, "vkDisplayPowerControlEXT"),
+		pfnGetSwapchainCounterEXT:  vulkan.GetDeviceProcAddr(device, "vkGetSwapchainCounterEXT"),
+		pfnRegisterDeviceEventEXT:  vulkan.GetDeviceProcAddr(device, "vkRegisterDeviceEventEXT"),
+		pfnRegisterDisplayEventEXT: vulkan.GetDeviceProcAddr(device, "vkRegisterDisplayEventEXT"),
+	}
+	pfnDisplayPowerControlEXT = cmds.pfnDisplayPowerControlEXT
+	pfnGetSwapchainCounterEXT = cmds.pfnGetSwapchainCounterEXT
+	pfnRegisterDeviceEventEXT = cmds.pfnRegisterDeviceEventEXT
+	pfnRegisterDisplayEventEXT = cmds.pfnRegisterDisplayEventEXT
+	return cmds
 }
 
 // DisplayPowerControlEXT - Set the power state of a display (vkDisplayPowerControlEXT).
@@ -35,6 +50,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDisplayPowerControlEXT.html
+func (c *Commands) DisplayPowerControlEXT(device vulkan.Device, display vulkan.DisplayKHR, displayPowerInfo *vulkan.DisplayPowerInfoEXT) (result vulkan.Result) {
+	c_displayPowerInfo := displayPowerInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnDisplayPowerControlEXT, uintptr(device), uintptr(display), uintptr(unsafe.Pointer(c_displayPowerInfo)))
+	return vulkan.Result(r1)
+}
+
 func DisplayPowerControlEXT(device vulkan.Device, display vulkan.DisplayKHR, displayPowerInfo *vulkan.DisplayPowerInfoEXT) (result vulkan.Result) {
 	c_displayPowerInfo := displayPowerInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnDisplayPowerControlEXT, uintptr(device), uintptr(display), uintptr(unsafe.Pointer(c_displayPowerInfo)))
@@ -51,6 +72,11 @@ func DisplayPowerControlEXT(device vulkan.Device, display vulkan.DisplayKHR, dis
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainCounterEXT.html
+func (c *Commands) GetSwapchainCounterEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, counter vulkan.SurfaceCounterFlagBitsEXT) (counterValue uint64, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSwapchainCounterEXT, uintptr(device), uintptr(swapchain), uintptr(counter), uintptr(unsafe.Pointer(&counterValue)))
+	return counterValue, vulkan.Result(r1)
+}
+
 func GetSwapchainCounterEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR, counter vulkan.SurfaceCounterFlagBitsEXT) (counterValue uint64, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetSwapchainCounterEXT, uintptr(device), uintptr(swapchain), uintptr(counter), uintptr(unsafe.Pointer(&counterValue)))
 	return counterValue, vulkan.Result(r1)
@@ -66,6 +92,13 @@ func GetSwapchainCounterEXT(device vulkan.Device, swapchain vulkan.SwapchainKHR,
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkRegisterDeviceEventEXT.html
+func (c *Commands) RegisterDeviceEventEXT(device vulkan.Device, deviceEventInfo *vulkan.DeviceEventInfoEXT, allocator *vulkan.AllocationCallbacks) (fence vulkan.Fence, result vulkan.Result) {
+	c_deviceEventInfo := deviceEventInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnRegisterDeviceEventEXT, uintptr(device), uintptr(unsafe.Pointer(c_deviceEventInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&fence)))
+	return fence, vulkan.Result(r1)
+}
+
 func RegisterDeviceEventEXT(device vulkan.Device, deviceEventInfo *vulkan.DeviceEventInfoEXT, allocator *vulkan.AllocationCallbacks) (fence vulkan.Fence, result vulkan.Result) {
 	c_deviceEventInfo := deviceEventInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -84,6 +117,13 @@ func RegisterDeviceEventEXT(device vulkan.Device, deviceEventInfo *vulkan.Device
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkRegisterDisplayEventEXT.html
+func (c *Commands) RegisterDisplayEventEXT(device vulkan.Device, display vulkan.DisplayKHR, displayEventInfo *vulkan.DisplayEventInfoEXT, allocator *vulkan.AllocationCallbacks) (fence vulkan.Fence, result vulkan.Result) {
+	c_displayEventInfo := displayEventInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnRegisterDisplayEventEXT, uintptr(device), uintptr(display), uintptr(unsafe.Pointer(c_displayEventInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&fence)))
+	return fence, vulkan.Result(r1)
+}
+
 func RegisterDisplayEventEXT(device vulkan.Device, display vulkan.DisplayKHR, displayEventInfo *vulkan.DisplayEventInfoEXT, allocator *vulkan.AllocationCallbacks) (fence vulkan.Fence, result vulkan.Result) {
 	c_displayEventInfo := displayEventInfo.Raw()
 	c_allocator := allocator.Raw()

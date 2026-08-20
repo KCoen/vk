@@ -14,8 +14,7 @@ var (
 	vulkanLib                uintptr
 	vkGetInstanceProcAddrPtr uintptr
 	vkGetDeviceProcAddrPtr   uintptr
-	customProcLoader         func(name string) uintptr
-	loaderMu                 sync.RWMutex
+	loaderMu                 sync.Mutex
 )
 
 // Init initializes the Vulkan library by dynamically loading the Vulkan loader without CGO.
@@ -23,7 +22,7 @@ func Init() error {
 	loaderMu.Lock()
 	defer loaderMu.Unlock()
 
-	if vulkanLib != 0 || customProcLoader != nil {
+	if vulkanLib != 0 {
 		return nil
 	}
 
@@ -47,77 +46,37 @@ func Init() error {
 		return errors.New("failed to resolve vkGetInstanceProcAddr")
 	}
 	vkGetInstanceProcAddrPtr = addr
+
+	cName := StringToNullTerminated("vkGetDeviceProcAddr")
+	r1, _, _ := purego.SyscallN(vkGetInstanceProcAddrPtr, 0, uintptr(unsafe.Pointer(cName)))
+	if r1 != 0 {
+		vkGetDeviceProcAddrPtr = r1
+	} else if devAddr, err := purego.Dlsym(vulkanLib, "vkGetDeviceProcAddr"); err == nil && devAddr != 0 {
+		vkGetDeviceProcAddrPtr = devAddr
+	}
+
+	InitCommands(0, 0)
 	return nil
 }
 
-// InitWithLoader allows using a custom proc address loader function (such as from GLFW or SDL).
-func InitWithLoader(loader func(name string) uintptr) error {
-	if loader == nil {
-		return errors.New("loader cannot be nil")
-	}
-	loaderMu.Lock()
-	defer loaderMu.Unlock()
-	customProcLoader = loader
-	addr := loader("vkGetInstanceProcAddr")
-	if addr != 0 {
-		vkGetInstanceProcAddrPtr = addr
-	}
-	return nil
-}
-
-// GetInstanceProcAddr resolves a Vulkan procedure address for an instance.
+// GetInstanceProcAddr resolves a Vulkan procedure address for an instance (instance may be 0).
 func GetInstanceProcAddr(instance Instance, name string) uintptr {
-	loaderMu.RLock()
-	custom := customProcLoader
-	gpa := vkGetInstanceProcAddrPtr
-	lib := vulkanLib
-	loaderMu.RUnlock()
-
-	if custom != nil {
-		if addr := custom(name); addr != 0 {
-			return addr
-		}
+	if vkGetInstanceProcAddrPtr == 0 {
+		return 0
 	}
-
-	if gpa != 0 {
-		cName := StringToNullTerminated(name)
-		r1, _, _ := purego.SyscallN(gpa, uintptr(instance), uintptr(unsafe.Pointer(cName)))
-		if r1 != 0 {
-			return r1
-		}
-	}
-
-	if lib != 0 {
-		if addr, err := purego.Dlsym(lib, name); err == nil && addr != 0 {
-			return addr
-		}
-	}
-	return 0
+	cName := StringToNullTerminated(name)
+	r1, _, _ := purego.SyscallN(vkGetInstanceProcAddrPtr, uintptr(instance), uintptr(unsafe.Pointer(cName)))
+	return r1
 }
 
-// GetDeviceProcAddr resolves a Vulkan procedure address for a device.
+// GetDeviceProcAddr resolves a Vulkan procedure address for a device (device may be 0).
 func GetDeviceProcAddr(device Device, name string) uintptr {
-	loaderMu.RLock()
-	gpa := vkGetDeviceProcAddrPtr
-	loaderMu.RUnlock()
-
-	if gpa == 0 {
-		gpa = GetInstanceProcAddr(0, "vkGetDeviceProcAddr")
-		if gpa != 0 {
-			loaderMu.Lock()
-			vkGetDeviceProcAddrPtr = gpa
-			loaderMu.Unlock()
-		}
+	if vkGetDeviceProcAddrPtr == 0 {
+		return 0
 	}
-
-	if gpa != 0 {
-		cName := StringToNullTerminated(name)
-		r1, _, _ := purego.SyscallN(gpa, uintptr(device), uintptr(unsafe.Pointer(cName)))
-		if r1 != 0 {
-			return r1
-		}
-	}
-	return GetInstanceProcAddr(0, name)
+	cName := StringToNullTerminated(name)
+	r1, _, _ := purego.SyscallN(vkGetDeviceProcAddrPtr, uintptr(device), uintptr(unsafe.Pointer(cName)))
+	return r1
 }
 
 // CallSyscall executes a function pointer via Purego SyscallN without CGO.

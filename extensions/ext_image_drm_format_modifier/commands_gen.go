@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetImageDrmFormatModifierPropertiesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetImageDrmFormatModifierPropertiesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_image_drm_format_modifier extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetImageDrmFormatModifierPropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkGetImageDrmFormatModifierPropertiesEXT")
+// Init resolves and initializes all VK_EXT_image_drm_format_modifier extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetImageDrmFormatModifierPropertiesEXT: vulkan.GetDeviceProcAddr(device, "vkGetImageDrmFormatModifierPropertiesEXT"),
+	}
+	pfnGetImageDrmFormatModifierPropertiesEXT = cmds.pfnGetImageDrmFormatModifierPropertiesEXT
+	return cmds
 }
 
 // GetImageDrmFormatModifierPropertiesEXT - Returns an image\ (vkGetImageDrmFormatModifierPropertiesEXT).
@@ -29,6 +38,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetImageDrmFormatModifierPropertiesEXT.html
+func (c *Commands) GetImageDrmFormatModifierPropertiesEXT(device vulkan.Device, image vulkan.Image) (properties vulkan.ImageDrmFormatModifierPropertiesEXT, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetImageDrmFormatModifierPropertiesEXT, uintptr(device), uintptr(image), uintptr(unsafe.Pointer(&properties)))
+	return properties, vulkan.Result(r1)
+}
+
 func GetImageDrmFormatModifierPropertiesEXT(device vulkan.Device, image vulkan.Image) (properties vulkan.ImageDrmFormatModifierPropertiesEXT, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetImageDrmFormatModifierPropertiesEXT, uintptr(device), uintptr(image), uintptr(unsafe.Pointer(&properties)))
 	return properties, vulkan.Result(r1)

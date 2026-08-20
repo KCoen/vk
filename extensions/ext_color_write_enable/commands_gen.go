@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetColorWriteEnableEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetColorWriteEnableEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_color_write_enable extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetColorWriteEnableEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetColorWriteEnableEXT")
+// Init resolves and initializes all VK_EXT_color_write_enable extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetColorWriteEnableEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetColorWriteEnableEXT"),
+	}
+	pfnCmdSetColorWriteEnableEXT = cmds.pfnCmdSetColorWriteEnableEXT
+	return cmds
 }
 
 // CmdSetColorWriteEnableEXT - Enable or disable writes to a color attachment dynamically for a command buffer (vkCmdSetColorWriteEnableEXT).
@@ -27,6 +36,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - colorWriteEnables: is a pointer to an array of per target attachment boolean values specifying whether color writes are enabled for the given attachment.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteEnableEXT.html
+func (c *Commands) CmdSetColorWriteEnableEXT(commandBuffer vulkan.CommandBuffer, colorWriteEnables []vulkan.Bool32) {
+	c_colorWriteEnables := vulkan.SliceData(colorWriteEnables)
+	vulkan.CallSyscall(c.pfnCmdSetColorWriteEnableEXT, uintptr(commandBuffer), uintptr(len(colorWriteEnables)), uintptr(unsafe.Pointer(c_colorWriteEnables)))
+}
+
 func CmdSetColorWriteEnableEXT(commandBuffer vulkan.CommandBuffer, colorWriteEnables []vulkan.Bool32) {
 	c_colorWriteEnables := vulkan.SliceData(colorWriteEnables)
 	vulkan.CallSyscall(pfnCmdSetColorWriteEnableEXT, uintptr(commandBuffer), uintptr(len(colorWriteEnables)), uintptr(unsafe.Pointer(c_colorWriteEnables)))

@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetMemoryMetalHandleEXT           uintptr
+	pfnGetMemoryMetalHandlePropertiesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetMemoryMetalHandleEXT           uintptr
 	pfnGetMemoryMetalHandlePropertiesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_external_memory_metal extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetMemoryMetalHandleEXT = vulkan.GetDeviceProcAddr(device, "vkGetMemoryMetalHandleEXT")
-	pfnGetMemoryMetalHandlePropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkGetMemoryMetalHandlePropertiesEXT")
+// Init resolves and initializes all VK_EXT_external_memory_metal extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetMemoryMetalHandleEXT:           vulkan.GetDeviceProcAddr(device, "vkGetMemoryMetalHandleEXT"),
+		pfnGetMemoryMetalHandlePropertiesEXT: vulkan.GetDeviceProcAddr(device, "vkGetMemoryMetalHandlePropertiesEXT"),
+	}
+	pfnGetMemoryMetalHandleEXT = cmds.pfnGetMemoryMetalHandleEXT
+	pfnGetMemoryMetalHandlePropertiesEXT = cmds.pfnGetMemoryMetalHandlePropertiesEXT
+	return cmds
 }
 
 // GetMemoryMetalHandleEXT - Get a Metal handle for a memory object (vkGetMemoryMetalHandleEXT).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryMetalHandleEXT.html
+func (c *Commands) GetMemoryMetalHandleEXT(device vulkan.Device, getMetalHandleInfo *vulkan.MemoryGetMetalHandleInfoEXT) (handle unsafe.Pointer, result vulkan.Result) {
+	c_getMetalHandleInfo := getMetalHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryMetalHandleEXT, uintptr(device), uintptr(unsafe.Pointer(c_getMetalHandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetMemoryMetalHandleEXT(device vulkan.Device, getMetalHandleInfo *vulkan.MemoryGetMetalHandleInfoEXT) (handle unsafe.Pointer, result vulkan.Result) {
 	c_getMetalHandleInfo := getMetalHandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryMetalHandleEXT, uintptr(device), uintptr(unsafe.Pointer(c_getMetalHandleInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -47,6 +64,11 @@ func GetMemoryMetalHandleEXT(device vulkan.Device, getMetalHandleInfo *vulkan.Me
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMemoryMetalHandlePropertiesEXT.html
+func (c *Commands) GetMemoryMetalHandlePropertiesEXT(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle unsafe.Pointer) (memoryMetalHandleProperties vulkan.MemoryMetalHandlePropertiesEXT, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetMemoryMetalHandlePropertiesEXT, uintptr(device), uintptr(handleType), uintptr(unsafe.Pointer(handle)), uintptr(unsafe.Pointer(&memoryMetalHandleProperties)))
+	return memoryMetalHandleProperties, vulkan.Result(r1)
+}
+
 func GetMemoryMetalHandlePropertiesEXT(device vulkan.Device, handleType vulkan.ExternalMemoryHandleTypeFlagBits, handle unsafe.Pointer) (memoryMetalHandleProperties vulkan.MemoryMetalHandlePropertiesEXT, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetMemoryMetalHandlePropertiesEXT, uintptr(device), uintptr(handleType), uintptr(unsafe.Pointer(handle)), uintptr(unsafe.Pointer(&memoryMetalHandleProperties)))
 	return memoryMetalHandleProperties, vulkan.Result(r1)

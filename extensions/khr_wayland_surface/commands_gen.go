@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateWaylandSurfaceKHR                        uintptr
+	pfnGetPhysicalDeviceWaylandPresentationSupportKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateWaylandSurfaceKHR                        uintptr
 	pfnGetPhysicalDeviceWaylandPresentationSupportKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_wayland_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateWaylandSurfaceKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR")
-	pfnGetPhysicalDeviceWaylandPresentationSupportKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR")
+// Init resolves and initializes all VK_KHR_wayland_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateWaylandSurfaceKHR:                        vulkan.GetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR"),
+		pfnGetPhysicalDeviceWaylandPresentationSupportKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR"),
+	}
+	pfnCreateWaylandSurfaceKHR = cmds.pfnCreateWaylandSurfaceKHR
+	pfnGetPhysicalDeviceWaylandPresentationSupportKHR = cmds.pfnGetPhysicalDeviceWaylandPresentationSupportKHR
+	return cmds
 }
 
 // CreateWaylandSurfaceKHR - Create a VkSurfaceKHR object for a Wayland window (vkCreateWaylandSurfaceKHR).
@@ -32,6 +43,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateWaylandSurfaceKHR.html
+func (c *Commands) CreateWaylandSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.WaylandSurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateWaylandSurfaceKHR, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateWaylandSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.WaylandSurfaceCreateInfoKHR, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -46,6 +64,11 @@ func CreateWaylandSurfaceKHR(instance vulkan.Instance, createInfo *vulkan.Waylan
 //   - display: is a pointer to the wl_display associated with a Wayland compositor.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceWaylandPresentationSupportKHR.html
+func (c *Commands) GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (display uintptr) {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceWaylandPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&display)))
+	return display
+}
+
 func GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice vulkan.PhysicalDevice, queueFamilyIndex uint32) (display uintptr) {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceWaylandPresentationSupportKHR, uintptr(physicalDevice), uintptr(queueFamilyIndex), uintptr(unsafe.Pointer(&display)))
 	return display

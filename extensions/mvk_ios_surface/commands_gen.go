@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateIOSSurfaceMVK uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateIOSSurfaceMVK uintptr
 )
 
-// Init resolves and initializes all VK_MVK_ios_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateIOSSurfaceMVK = vulkan.GetInstanceProcAddr(instance, "vkCreateIOSSurfaceMVK")
+// Init resolves and initializes all VK_MVK_ios_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateIOSSurfaceMVK: vulkan.GetInstanceProcAddr(instance, "vkCreateIOSSurfaceMVK"),
+	}
+	pfnCreateIOSSurfaceMVK = cmds.pfnCreateIOSSurfaceMVK
+	return cmds
 }
 
 // CreateIOSSurfaceMVK - Create a VkSurfaceKHR object for an iOS UIView (vkCreateIOSSurfaceMVK).
@@ -30,6 +39,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateIOSSurfaceMVK.html
+func (c *Commands) CreateIOSSurfaceMVK(instance vulkan.Instance, createInfo *vulkan.IOSSurfaceCreateInfoMVK, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateIOSSurfaceMVK, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateIOSSurfaceMVK(instance vulkan.Instance, createInfo *vulkan.IOSSurfaceCreateInfoMVK, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()

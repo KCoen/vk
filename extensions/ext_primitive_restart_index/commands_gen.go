@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetPrimitiveRestartIndexEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetPrimitiveRestartIndexEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_primitive_restart_index extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetPrimitiveRestartIndexEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetPrimitiveRestartIndexEXT")
+// Init resolves and initializes all VK_EXT_primitive_restart_index extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetPrimitiveRestartIndexEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetPrimitiveRestartIndexEXT"),
+	}
+	pfnCmdSetPrimitiveRestartIndexEXT = cmds.pfnCmdSetPrimitiveRestartIndexEXT
+	return cmds
 }
 
 // CmdSetPrimitiveRestartIndexEXT - Set primitive assembly restart index dynamically for a command buffer (vkCmdSetPrimitiveRestartIndexEXT).
@@ -26,6 +35,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - primitiveRestartIndex: controls which special vertex index value is treated as restarting the assembly of primitives. This overrides the default restart index value as defined as part of the description of the VkPipelineInputAssemblyStateCreateInfo::pname:primitiveRestartEnable state. Default values are applied when binding an index buffer.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveRestartIndexEXT.html
+func (c *Commands) CmdSetPrimitiveRestartIndexEXT(commandBuffer vulkan.CommandBuffer, primitiveRestartIndex uint32) {
+	vulkan.CallSyscall(c.pfnCmdSetPrimitiveRestartIndexEXT, uintptr(commandBuffer), uintptr(primitiveRestartIndex))
+}
+
 func CmdSetPrimitiveRestartIndexEXT(commandBuffer vulkan.CommandBuffer, primitiveRestartIndex uint32) {
 	vulkan.CallSyscall(pfnCmdSetPrimitiveRestartIndexEXT, uintptr(commandBuffer), uintptr(primitiveRestartIndex))
 }

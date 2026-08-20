@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnReleaseSwapchainImagesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnReleaseSwapchainImagesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_swapchain_maintenance1 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnReleaseSwapchainImagesKHR = vulkan.GetDeviceProcAddr(device, "vkReleaseSwapchainImagesKHR")
+// Init resolves and initializes all VK_KHR_swapchain_maintenance1 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnReleaseSwapchainImagesKHR: vulkan.GetDeviceProcAddr(device, "vkReleaseSwapchainImagesKHR"),
+	}
+	pfnReleaseSwapchainImagesKHR = cmds.pfnReleaseSwapchainImagesKHR
+	return cmds
 }
 
 // ReleaseSwapchainImagesKHR - Release previously acquired but unused images (vkReleaseSwapchainImagesKHR).
@@ -28,6 +37,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseSwapchainImagesKHR.html
+func (c *Commands) ReleaseSwapchainImagesKHR(device vulkan.Device, releaseInfo *vulkan.ReleaseSwapchainImagesInfoKHR) (result vulkan.Result) {
+	c_releaseInfo := releaseInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnReleaseSwapchainImagesKHR, uintptr(device), uintptr(unsafe.Pointer(c_releaseInfo)))
+	return vulkan.Result(r1)
+}
+
 func ReleaseSwapchainImagesKHR(device vulkan.Device, releaseInfo *vulkan.ReleaseSwapchainImagesInfoKHR) (result vulkan.Result) {
 	c_releaseInfo := releaseInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnReleaseSwapchainImagesKHR, uintptr(device), uintptr(unsafe.Pointer(c_releaseInfo)))

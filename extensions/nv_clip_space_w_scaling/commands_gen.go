@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetViewportWScalingNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetViewportWScalingNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_clip_space_w_scaling extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetViewportWScalingNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportWScalingNV")
+// Init resolves and initializes all VK_NV_clip_space_w_scaling extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetViewportWScalingNV: vulkan.GetDeviceProcAddr(device, "vkCmdSetViewportWScalingNV"),
+	}
+	pfnCmdSetViewportWScalingNV = cmds.pfnCmdSetViewportWScalingNV
+	return cmds
 }
 
 // CmdSetViewportWScalingNV - Set the viewport W scaling dynamically for a command buffer (vkCmdSetViewportWScalingNV).
@@ -28,6 +37,16 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - viewportWScalings: is a pointer to an array of VkViewportWScalingNV structures specifying viewport parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWScalingNV.html
+func (c *Commands) CmdSetViewportWScalingNV(commandBuffer vulkan.CommandBuffer, firstViewport uint32, viewportWScalings []vulkan.ViewportWScalingNV) {
+	c_viewportWScalings := make([]vulkan.RawViewportWScalingNV, len(viewportWScalings))
+	for i := range viewportWScalings {
+		if raw := viewportWScalings[i].Raw(); raw != nil {
+			c_viewportWScalings[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetViewportWScalingNV, uintptr(commandBuffer), uintptr(firstViewport), uintptr(len(viewportWScalings)), uintptr(unsafe.Pointer(vulkan.SliceData(c_viewportWScalings))))
+}
+
 func CmdSetViewportWScalingNV(commandBuffer vulkan.CommandBuffer, firstViewport uint32, viewportWScalings []vulkan.ViewportWScalingNV) {
 	c_viewportWScalings := make([]vulkan.RawViewportWScalingNV, len(viewportWScalings))
 	for i := range viewportWScalings {

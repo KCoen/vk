@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateExternalComputeQueueNV  uintptr
+	pfnDestroyExternalComputeQueueNV uintptr
+	pfnGetExternalComputeQueueDataNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateExternalComputeQueueNV  uintptr
 	pfnDestroyExternalComputeQueueNV uintptr
 	pfnGetExternalComputeQueueDataNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_external_compute_queue extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateExternalComputeQueueNV = vulkan.GetDeviceProcAddr(device, "vkCreateExternalComputeQueueNV")
-	pfnDestroyExternalComputeQueueNV = vulkan.GetDeviceProcAddr(device, "vkDestroyExternalComputeQueueNV")
-	pfnGetExternalComputeQueueDataNV = vulkan.GetInstanceProcAddr(instance, "vkGetExternalComputeQueueDataNV")
+// Init resolves and initializes all VK_NV_external_compute_queue extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateExternalComputeQueueNV:  vulkan.GetDeviceProcAddr(device, "vkCreateExternalComputeQueueNV"),
+		pfnDestroyExternalComputeQueueNV: vulkan.GetDeviceProcAddr(device, "vkDestroyExternalComputeQueueNV"),
+		pfnGetExternalComputeQueueDataNV: vulkan.GetInstanceProcAddr(instance, "vkGetExternalComputeQueueDataNV"),
+	}
+	pfnCreateExternalComputeQueueNV = cmds.pfnCreateExternalComputeQueueNV
+	pfnDestroyExternalComputeQueueNV = cmds.pfnDestroyExternalComputeQueueNV
+	pfnGetExternalComputeQueueDataNV = cmds.pfnGetExternalComputeQueueDataNV
+	return cmds
 }
 
 // CreateExternalComputeQueueNV - Create an external compute queue for use by a compatible external API. (vkCreateExternalComputeQueueNV).
@@ -34,6 +47,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateExternalComputeQueueNV.html
+func (c *Commands) CreateExternalComputeQueueNV(device vulkan.Device, createInfo *vulkan.ExternalComputeQueueCreateInfoNV, allocator *vulkan.AllocationCallbacks) (externalQueue vulkan.ExternalComputeQueueNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateExternalComputeQueueNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&externalQueue)))
+	return externalQueue, vulkan.Result(r1)
+}
+
 func CreateExternalComputeQueueNV(device vulkan.Device, createInfo *vulkan.ExternalComputeQueueCreateInfoNV, allocator *vulkan.AllocationCallbacks) (externalQueue vulkan.ExternalComputeQueueNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -48,6 +68,11 @@ func CreateExternalComputeQueueNV(device vulkan.Device, createInfo *vulkan.Exter
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyExternalComputeQueueNV.html
+func (c *Commands) DestroyExternalComputeQueueNV(device vulkan.Device, externalQueue vulkan.ExternalComputeQueueNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyExternalComputeQueueNV, uintptr(device), uintptr(externalQueue), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyExternalComputeQueueNV(device vulkan.Device, externalQueue vulkan.ExternalComputeQueueNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyExternalComputeQueueNV, uintptr(device), uintptr(externalQueue), uintptr(unsafe.Pointer(c_allocator)))
@@ -60,6 +85,12 @@ func DestroyExternalComputeQueueNV(device vulkan.Device, externalQueue vulkan.Ex
 //   - data: is a pointer to application-allocated memory in which the requested data will be returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetExternalComputeQueueDataNV.html
+func (c *Commands) GetExternalComputeQueueDataNV(externalQueue vulkan.ExternalComputeQueueNV, params *vulkan.ExternalComputeQueueDataParamsNV) (data unsafe.Pointer) {
+	c_params := params.Raw()
+	vulkan.CallSyscall(c.pfnGetExternalComputeQueueDataNV, uintptr(externalQueue), uintptr(unsafe.Pointer(c_params)), uintptr(unsafe.Pointer(&data)))
+	return data
+}
+
 func GetExternalComputeQueueDataNV(externalQueue vulkan.ExternalComputeQueueNV, params *vulkan.ExternalComputeQueueDataParamsNV) (data unsafe.Pointer) {
 	c_params := params.Raw()
 	vulkan.CallSyscall(pfnGetExternalComputeQueueDataNV, uintptr(externalQueue), uintptr(unsafe.Pointer(c_params)), uintptr(unsafe.Pointer(&data)))

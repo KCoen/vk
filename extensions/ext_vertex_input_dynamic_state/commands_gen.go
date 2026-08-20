@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetVertexInputEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetVertexInputEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_vertex_input_dynamic_state extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetVertexInputEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetVertexInputEXT")
+// Init resolves and initializes all VK_EXT_vertex_input_dynamic_state extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetVertexInputEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetVertexInputEXT"),
+	}
+	pfnCmdSetVertexInputEXT = cmds.pfnCmdSetVertexInputEXT
+	return cmds
 }
 
 // CmdSetVertexInputEXT - Set the vertex input state dynamically for a command buffer (vkCmdSetVertexInputEXT).
@@ -29,6 +38,22 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - vertexAttributeDescriptions: is a pointer to an array of VkVertexInputAttributeDescription2EXT structures.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetVertexInputEXT.html
+func (c *Commands) CmdSetVertexInputEXT(commandBuffer vulkan.CommandBuffer, vertexBindingDescriptions []vulkan.VertexInputBindingDescription2EXT, vertexAttributeDescriptions []vulkan.VertexInputAttributeDescription2EXT) {
+	c_vertexBindingDescriptions := make([]vulkan.RawVertexInputBindingDescription2EXT, len(vertexBindingDescriptions))
+	for i := range vertexBindingDescriptions {
+		if raw := vertexBindingDescriptions[i].Raw(); raw != nil {
+			c_vertexBindingDescriptions[i] = *raw
+		}
+	}
+	c_vertexAttributeDescriptions := make([]vulkan.RawVertexInputAttributeDescription2EXT, len(vertexAttributeDescriptions))
+	for i := range vertexAttributeDescriptions {
+		if raw := vertexAttributeDescriptions[i].Raw(); raw != nil {
+			c_vertexAttributeDescriptions[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdSetVertexInputEXT, uintptr(commandBuffer), uintptr(len(vertexBindingDescriptions)), uintptr(unsafe.Pointer(vulkan.SliceData(c_vertexBindingDescriptions))), uintptr(len(vertexAttributeDescriptions)), uintptr(unsafe.Pointer(vulkan.SliceData(c_vertexAttributeDescriptions))))
+}
+
 func CmdSetVertexInputEXT(commandBuffer vulkan.CommandBuffer, vertexBindingDescriptions []vulkan.VertexInputBindingDescription2EXT, vertexAttributeDescriptions []vulkan.VertexInputAttributeDescription2EXT) {
 	c_vertexBindingDescriptions := make([]vulkan.RawVertexInputBindingDescription2EXT, len(vertexBindingDescriptions))
 	for i := range vertexBindingDescriptions {

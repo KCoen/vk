@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnAcquireDrmDisplayEXT uintptr
+	pfnGetDrmDisplayEXT     uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnAcquireDrmDisplayEXT uintptr
 	pfnGetDrmDisplayEXT     uintptr
 )
 
-// Init resolves and initializes all VK_EXT_acquire_drm_display extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnAcquireDrmDisplayEXT = vulkan.GetInstanceProcAddr(instance, "vkAcquireDrmDisplayEXT")
-	pfnGetDrmDisplayEXT = vulkan.GetInstanceProcAddr(instance, "vkGetDrmDisplayEXT")
+// Init resolves and initializes all VK_EXT_acquire_drm_display extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnAcquireDrmDisplayEXT: vulkan.GetInstanceProcAddr(instance, "vkAcquireDrmDisplayEXT"),
+		pfnGetDrmDisplayEXT:     vulkan.GetInstanceProcAddr(instance, "vkGetDrmDisplayEXT"),
+	}
+	pfnAcquireDrmDisplayEXT = cmds.pfnAcquireDrmDisplayEXT
+	pfnGetDrmDisplayEXT = cmds.pfnGetDrmDisplayEXT
+	return cmds
 }
 
 // AcquireDrmDisplayEXT - Acquire access to a VkDisplayKHR using DRM (vkAcquireDrmDisplayEXT).
@@ -31,6 +42,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkAcquireDrmDisplayEXT.html
+func (c *Commands) AcquireDrmDisplayEXT(physicalDevice vulkan.PhysicalDevice, drmFd int32, display vulkan.DisplayKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnAcquireDrmDisplayEXT, uintptr(physicalDevice), uintptr(drmFd), uintptr(display))
+	return vulkan.Result(r1)
+}
+
 func AcquireDrmDisplayEXT(physicalDevice vulkan.PhysicalDevice, drmFd int32, display vulkan.DisplayKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnAcquireDrmDisplayEXT, uintptr(physicalDevice), uintptr(drmFd), uintptr(display))
 	return vulkan.Result(r1)
@@ -45,6 +61,11 @@ func AcquireDrmDisplayEXT(physicalDevice vulkan.PhysicalDevice, drmFd int32, dis
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDrmDisplayEXT.html
+func (c *Commands) GetDrmDisplayEXT(physicalDevice vulkan.PhysicalDevice, drmFd int32, connectorId uint32) (display vulkan.DisplayKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDrmDisplayEXT, uintptr(physicalDevice), uintptr(drmFd), uintptr(connectorId), uintptr(unsafe.Pointer(&display)))
+	return display, vulkan.Result(r1)
+}
+
 func GetDrmDisplayEXT(physicalDevice vulkan.PhysicalDevice, drmFd int32, connectorId uint32) (display vulkan.DisplayKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDrmDisplayEXT, uintptr(physicalDevice), uintptr(drmFd), uintptr(connectorId), uintptr(unsafe.Pointer(&display)))
 	return display, vulkan.Result(r1)

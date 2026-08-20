@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnQueueSetPerfHintQCOM uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnQueueSetPerfHintQCOM uintptr
 )
 
-// Init resolves and initializes all VK_QCOM_queue_perf_hint extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnQueueSetPerfHintQCOM = vulkan.GetDeviceProcAddr(device, "vkQueueSetPerfHintQCOM")
+// Init resolves and initializes all VK_QCOM_queue_perf_hint extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnQueueSetPerfHintQCOM: vulkan.GetDeviceProcAddr(device, "vkQueueSetPerfHintQCOM"),
+	}
+	pfnQueueSetPerfHintQCOM = cmds.pfnQueueSetPerfHintQCOM
+	return cmds
 }
 
 // QueueSetPerfHintQCOM - Set a performance hint on a queue (vkQueueSetPerfHintQCOM).
@@ -28,6 +37,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_DEVICE_LOST, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueSetPerfHintQCOM.html
+func (c *Commands) QueueSetPerfHintQCOM(queue vulkan.Queue, perfHintInfo *vulkan.PerfHintInfoQCOM) (result vulkan.Result) {
+	c_perfHintInfo := perfHintInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnQueueSetPerfHintQCOM, uintptr(queue), uintptr(unsafe.Pointer(c_perfHintInfo)))
+	return vulkan.Result(r1)
+}
+
 func QueueSetPerfHintQCOM(queue vulkan.Queue, perfHintInfo *vulkan.PerfHintInfoQCOM) (result vulkan.Result) {
 	c_perfHintInfo := perfHintInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnQueueSetPerfHintQCOM, uintptr(queue), uintptr(unsafe.Pointer(c_perfHintInfo)))

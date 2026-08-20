@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateSamplerYcbcrConversionKHR  uintptr
+	pfnDestroySamplerYcbcrConversionKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateSamplerYcbcrConversionKHR  uintptr
 	pfnDestroySamplerYcbcrConversionKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_sampler_ycbcr_conversion extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateSamplerYcbcrConversionKHR = vulkan.GetInstanceProcAddr(instance, "vkCreateSamplerYcbcrConversionKHR")
-	pfnDestroySamplerYcbcrConversionKHR = vulkan.GetInstanceProcAddr(instance, "vkDestroySamplerYcbcrConversionKHR")
+// Init resolves and initializes all VK_KHR_sampler_ycbcr_conversion extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateSamplerYcbcrConversionKHR:  vulkan.GetInstanceProcAddr(instance, "vkCreateSamplerYcbcrConversionKHR"),
+		pfnDestroySamplerYcbcrConversionKHR: vulkan.GetInstanceProcAddr(instance, "vkDestroySamplerYcbcrConversionKHR"),
+	}
+	pfnCreateSamplerYcbcrConversionKHR = cmds.pfnCreateSamplerYcbcrConversionKHR
+	pfnDestroySamplerYcbcrConversionKHR = cmds.pfnDestroySamplerYcbcrConversionKHR
+	return cmds
 }
 
 // CreateSamplerYcbcrConversionKHR executes vkCreateSamplerYcbcrConversionKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateSamplerYcbcrConversionKHR.html
+func (c *Commands) CreateSamplerYcbcrConversionKHR() {
+	vulkan.CallSyscall(c.pfnCreateSamplerYcbcrConversionKHR)
+}
+
 func CreateSamplerYcbcrConversionKHR() {
 	vulkan.CallSyscall(pfnCreateSamplerYcbcrConversionKHR)
 }
 
 // DestroySamplerYcbcrConversionKHR executes vkDestroySamplerYcbcrConversionKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroySamplerYcbcrConversionKHR.html
+func (c *Commands) DestroySamplerYcbcrConversionKHR() {
+	vulkan.CallSyscall(c.pfnDestroySamplerYcbcrConversionKHR)
+}
+
 func DestroySamplerYcbcrConversionKHR() {
 	vulkan.CallSyscall(pfnDestroySamplerYcbcrConversionKHR)
 }

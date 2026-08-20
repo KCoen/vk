@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdTraceRaysIndirect2KHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdTraceRaysIndirect2KHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_ray_tracing_maintenance1 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdTraceRaysIndirect2KHR = vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysIndirect2KHR")
+// Init resolves and initializes all VK_KHR_ray_tracing_maintenance1 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdTraceRaysIndirect2KHR: vulkan.GetDeviceProcAddr(device, "vkCmdTraceRaysIndirect2KHR"),
+	}
+	pfnCmdTraceRaysIndirect2KHR = cmds.pfnCmdTraceRaysIndirect2KHR
+	return cmds
 }
 
 // CmdTraceRaysIndirect2KHR - Initialize an indirect ray tracing dispatch with indirect shader binding tables (vkCmdTraceRaysIndirect2KHR).
@@ -26,6 +35,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - indirectDeviceAddress: is a buffer device address which is a pointer to a VkTraceRaysIndirectCommand2KHR structure containing the trace ray parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirect2KHR.html
+func (c *Commands) CmdTraceRaysIndirect2KHR(commandBuffer vulkan.CommandBuffer, indirectDeviceAddress vulkan.DeviceAddress) {
+	vulkan.CallSyscall(c.pfnCmdTraceRaysIndirect2KHR, uintptr(commandBuffer), uintptr(indirectDeviceAddress))
+}
+
 func CmdTraceRaysIndirect2KHR(commandBuffer vulkan.CommandBuffer, indirectDeviceAddress vulkan.DeviceAddress) {
 	vulkan.CallSyscall(pfnCmdTraceRaysIndirect2KHR, uintptr(commandBuffer), uintptr(indirectDeviceAddress))
 }

@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetDepthClampRangeEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetDepthClampRangeEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_depth_clamp_control extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetDepthClampRangeEXT = vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClampRangeEXT")
+// Init resolves and initializes all VK_EXT_depth_clamp_control extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetDepthClampRangeEXT: vulkan.GetDeviceProcAddr(device, "vkCmdSetDepthClampRangeEXT"),
+	}
+	pfnCmdSetDepthClampRangeEXT = cmds.pfnCmdSetDepthClampRangeEXT
+	return cmds
 }
 
 // CmdSetDepthClampRangeEXT - Set the viewport depth clamp range dynamically for a command buffer (vkCmdSetDepthClampRangeEXT).
@@ -27,6 +36,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - depthClampRange: sets the depth clamp range for all viewports if depthClampMode is VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthClampRangeEXT.html
+func (c *Commands) CmdSetDepthClampRangeEXT(commandBuffer vulkan.CommandBuffer, depthClampMode vulkan.DepthClampModeEXT, depthClampRange *vulkan.DepthClampRangeEXT) {
+	c_depthClampRange := depthClampRange.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetDepthClampRangeEXT, uintptr(commandBuffer), uintptr(depthClampMode), uintptr(unsafe.Pointer(c_depthClampRange)))
+}
+
 func CmdSetDepthClampRangeEXT(commandBuffer vulkan.CommandBuffer, depthClampMode vulkan.DepthClampModeEXT, depthClampRange *vulkan.DepthClampRangeEXT) {
 	c_depthClampRange := depthClampRange.Raw()
 	vulkan.CallSyscall(pfnCmdSetDepthClampRangeEXT, uintptr(commandBuffer), uintptr(depthClampMode), uintptr(unsafe.Pointer(c_depthClampRange)))

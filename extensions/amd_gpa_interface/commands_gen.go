@@ -10,7 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginGpaSampleAMD        uintptr
+	pfnCmdBeginGpaSessionAMD       uintptr
+	pfnCmdCopyGpaSessionResultsAMD uintptr
+	pfnCmdEndGpaSampleAMD          uintptr
+	pfnCmdEndGpaSessionAMD         uintptr
+	pfnCreateGpaSessionAMD         uintptr
+	pfnDestroyGpaSessionAMD        uintptr
+	pfnGetGpaDeviceClockInfoAMD    uintptr
+	pfnGetGpaSessionResultsAMD     uintptr
+	pfnGetGpaSessionStatusAMD      uintptr
+	pfnResetGpaSessionAMD          uintptr
+	pfnSetGpaDeviceClockModeAMD    uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginGpaSampleAMD        uintptr
 	pfnCmdBeginGpaSessionAMD       uintptr
@@ -26,20 +42,35 @@ var (
 	pfnSetGpaDeviceClockModeAMD    uintptr
 )
 
-// Init resolves and initializes all VK_AMD_gpa_interface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginGpaSampleAMD = vulkan.GetDeviceProcAddr(device, "vkCmdBeginGpaSampleAMD")
-	pfnCmdBeginGpaSessionAMD = vulkan.GetDeviceProcAddr(device, "vkCmdBeginGpaSessionAMD")
-	pfnCmdCopyGpaSessionResultsAMD = vulkan.GetDeviceProcAddr(device, "vkCmdCopyGpaSessionResultsAMD")
-	pfnCmdEndGpaSampleAMD = vulkan.GetDeviceProcAddr(device, "vkCmdEndGpaSampleAMD")
-	pfnCmdEndGpaSessionAMD = vulkan.GetDeviceProcAddr(device, "vkCmdEndGpaSessionAMD")
-	pfnCreateGpaSessionAMD = vulkan.GetDeviceProcAddr(device, "vkCreateGpaSessionAMD")
-	pfnDestroyGpaSessionAMD = vulkan.GetDeviceProcAddr(device, "vkDestroyGpaSessionAMD")
-	pfnGetGpaDeviceClockInfoAMD = vulkan.GetDeviceProcAddr(device, "vkGetGpaDeviceClockInfoAMD")
-	pfnGetGpaSessionResultsAMD = vulkan.GetDeviceProcAddr(device, "vkGetGpaSessionResultsAMD")
-	pfnGetGpaSessionStatusAMD = vulkan.GetDeviceProcAddr(device, "vkGetGpaSessionStatusAMD")
-	pfnResetGpaSessionAMD = vulkan.GetDeviceProcAddr(device, "vkResetGpaSessionAMD")
-	pfnSetGpaDeviceClockModeAMD = vulkan.GetDeviceProcAddr(device, "vkSetGpaDeviceClockModeAMD")
+// Init resolves and initializes all VK_AMD_gpa_interface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginGpaSampleAMD:        vulkan.GetDeviceProcAddr(device, "vkCmdBeginGpaSampleAMD"),
+		pfnCmdBeginGpaSessionAMD:       vulkan.GetDeviceProcAddr(device, "vkCmdBeginGpaSessionAMD"),
+		pfnCmdCopyGpaSessionResultsAMD: vulkan.GetDeviceProcAddr(device, "vkCmdCopyGpaSessionResultsAMD"),
+		pfnCmdEndGpaSampleAMD:          vulkan.GetDeviceProcAddr(device, "vkCmdEndGpaSampleAMD"),
+		pfnCmdEndGpaSessionAMD:         vulkan.GetDeviceProcAddr(device, "vkCmdEndGpaSessionAMD"),
+		pfnCreateGpaSessionAMD:         vulkan.GetDeviceProcAddr(device, "vkCreateGpaSessionAMD"),
+		pfnDestroyGpaSessionAMD:        vulkan.GetDeviceProcAddr(device, "vkDestroyGpaSessionAMD"),
+		pfnGetGpaDeviceClockInfoAMD:    vulkan.GetDeviceProcAddr(device, "vkGetGpaDeviceClockInfoAMD"),
+		pfnGetGpaSessionResultsAMD:     vulkan.GetDeviceProcAddr(device, "vkGetGpaSessionResultsAMD"),
+		pfnGetGpaSessionStatusAMD:      vulkan.GetDeviceProcAddr(device, "vkGetGpaSessionStatusAMD"),
+		pfnResetGpaSessionAMD:          vulkan.GetDeviceProcAddr(device, "vkResetGpaSessionAMD"),
+		pfnSetGpaDeviceClockModeAMD:    vulkan.GetDeviceProcAddr(device, "vkSetGpaDeviceClockModeAMD"),
+	}
+	pfnCmdBeginGpaSampleAMD = cmds.pfnCmdBeginGpaSampleAMD
+	pfnCmdBeginGpaSessionAMD = cmds.pfnCmdBeginGpaSessionAMD
+	pfnCmdCopyGpaSessionResultsAMD = cmds.pfnCmdCopyGpaSessionResultsAMD
+	pfnCmdEndGpaSampleAMD = cmds.pfnCmdEndGpaSampleAMD
+	pfnCmdEndGpaSessionAMD = cmds.pfnCmdEndGpaSessionAMD
+	pfnCreateGpaSessionAMD = cmds.pfnCreateGpaSessionAMD
+	pfnDestroyGpaSessionAMD = cmds.pfnDestroyGpaSessionAMD
+	pfnGetGpaDeviceClockInfoAMD = cmds.pfnGetGpaDeviceClockInfoAMD
+	pfnGetGpaSessionResultsAMD = cmds.pfnGetGpaSessionResultsAMD
+	pfnGetGpaSessionStatusAMD = cmds.pfnGetGpaSessionStatusAMD
+	pfnResetGpaSessionAMD = cmds.pfnResetGpaSessionAMD
+	pfnSetGpaDeviceClockModeAMD = cmds.pfnSetGpaDeviceClockModeAMD
+	return cmds
 }
 
 // CmdBeginGpaSampleAMD - Beginning a sample (vkCmdBeginGpaSampleAMD).
@@ -52,6 +83,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginGpaSampleAMD.html
+func (c *Commands) CmdBeginGpaSampleAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD, gpaSampleBeginInfo *vulkan.GpaSampleBeginInfoAMD) (sampleID uint32, result vulkan.Result) {
+	c_gpaSampleBeginInfo := gpaSampleBeginInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCmdBeginGpaSampleAMD, uintptr(commandBuffer), uintptr(gpaSession), uintptr(unsafe.Pointer(c_gpaSampleBeginInfo)), uintptr(unsafe.Pointer(&sampleID)))
+	return sampleID, vulkan.Result(r1)
+}
+
 func CmdBeginGpaSampleAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD, gpaSampleBeginInfo *vulkan.GpaSampleBeginInfoAMD) (sampleID uint32, result vulkan.Result) {
 	c_gpaSampleBeginInfo := gpaSampleBeginInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCmdBeginGpaSampleAMD, uintptr(commandBuffer), uintptr(gpaSession), uintptr(unsafe.Pointer(c_gpaSampleBeginInfo)), uintptr(unsafe.Pointer(&sampleID)))
@@ -66,6 +103,11 @@ func CmdBeginGpaSampleAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginGpaSessionAMD.html
+func (c *Commands) CmdBeginGpaSessionAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnCmdBeginGpaSessionAMD, uintptr(commandBuffer), uintptr(gpaSession))
+	return vulkan.Result(r1)
+}
+
 func CmdBeginGpaSessionAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnCmdBeginGpaSessionAMD, uintptr(commandBuffer), uintptr(gpaSession))
 	return vulkan.Result(r1)
@@ -77,6 +119,10 @@ func CmdBeginGpaSessionAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan
 //   - gpaSession: is the handle of the GPA session that is the destination of the copy.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyGpaSessionResultsAMD.html
+func (c *Commands) CmdCopyGpaSessionResultsAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD) {
+	vulkan.CallSyscall(c.pfnCmdCopyGpaSessionResultsAMD, uintptr(commandBuffer), uintptr(gpaSession))
+}
+
 func CmdCopyGpaSessionResultsAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD) {
 	vulkan.CallSyscall(pfnCmdCopyGpaSessionResultsAMD, uintptr(commandBuffer), uintptr(gpaSession))
 }
@@ -88,6 +134,10 @@ func CmdCopyGpaSessionResultsAMD(commandBuffer vulkan.CommandBuffer, gpaSession 
 //   - sampleID: is a unique sample ID returned by a previous call to vkCmdBeginGpaSampleAMD.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndGpaSampleAMD.html
+func (c *Commands) CmdEndGpaSampleAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD, sampleID uint32) {
+	vulkan.CallSyscall(c.pfnCmdEndGpaSampleAMD, uintptr(commandBuffer), uintptr(gpaSession), uintptr(sampleID))
+}
+
 func CmdEndGpaSampleAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD, sampleID uint32) {
 	vulkan.CallSyscall(pfnCmdEndGpaSampleAMD, uintptr(commandBuffer), uintptr(gpaSession), uintptr(sampleID))
 }
@@ -100,6 +150,11 @@ func CmdEndGpaSampleAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.Gp
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdEndGpaSessionAMD.html
+func (c *Commands) CmdEndGpaSessionAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnCmdEndGpaSessionAMD, uintptr(commandBuffer), uintptr(gpaSession))
+	return vulkan.Result(r1)
+}
+
 func CmdEndGpaSessionAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnCmdEndGpaSessionAMD, uintptr(commandBuffer), uintptr(gpaSession))
 	return vulkan.Result(r1)
@@ -115,6 +170,13 @@ func CmdEndGpaSessionAMD(commandBuffer vulkan.CommandBuffer, gpaSession vulkan.G
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateGpaSessionAMD.html
+func (c *Commands) CreateGpaSessionAMD(device vulkan.Device, createInfo *vulkan.GpaSessionCreateInfoAMD, allocator *vulkan.AllocationCallbacks) (gpaSession vulkan.GpaSessionAMD, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateGpaSessionAMD, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&gpaSession)))
+	return gpaSession, vulkan.Result(r1)
+}
+
 func CreateGpaSessionAMD(device vulkan.Device, createInfo *vulkan.GpaSessionCreateInfoAMD, allocator *vulkan.AllocationCallbacks) (gpaSession vulkan.GpaSessionAMD, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -129,6 +191,11 @@ func CreateGpaSessionAMD(device vulkan.Device, createInfo *vulkan.GpaSessionCrea
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyGpaSessionAMD.html
+func (c *Commands) DestroyGpaSessionAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyGpaSessionAMD, uintptr(device), uintptr(gpaSession), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyGpaSessionAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyGpaSessionAMD, uintptr(device), uintptr(gpaSession), uintptr(unsafe.Pointer(c_allocator)))
@@ -142,6 +209,11 @@ func DestroyGpaSessionAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD,
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGpaDeviceClockInfoAMD.html
+func (c *Commands) GetGpaDeviceClockInfoAMD(device vulkan.Device) (info vulkan.GpaDeviceGetClockInfoAMD, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetGpaDeviceClockInfoAMD, uintptr(device), uintptr(unsafe.Pointer(&info)))
+	return info, vulkan.Result(r1)
+}
+
 func GetGpaDeviceClockInfoAMD(device vulkan.Device) (info vulkan.GpaDeviceGetClockInfoAMD, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetGpaDeviceClockInfoAMD, uintptr(device), uintptr(unsafe.Pointer(&info)))
 	return info, vulkan.Result(r1)
@@ -158,6 +230,19 @@ func GetGpaDeviceClockInfoAMD(device vulkan.Device) (info vulkan.GpaDeviceGetClo
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGpaSessionResultsAMD.html
+func (c *Commands) GetGpaSessionResultsAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD, sampleID uint32) (data []unsafe.Pointer, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetGpaSessionResultsAMD, uintptr(device), uintptr(gpaSession), uintptr(sampleID), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	data = make([]unsafe.Pointer, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&data[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetGpaSessionResultsAMD, uintptr(device), uintptr(gpaSession), uintptr(sampleID), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return data, vulkan.Result(r1)
+}
+
 func GetGpaSessionResultsAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD, sampleID uint32) (data []unsafe.Pointer, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetGpaSessionResultsAMD, uintptr(device), uintptr(gpaSession), uintptr(sampleID), uintptr(unsafe.Pointer(&count)), 0)
@@ -179,6 +264,11 @@ func GetGpaSessionResultsAMD(device vulkan.Device, gpaSession vulkan.GpaSessionA
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetGpaSessionStatusAMD.html
+func (c *Commands) GetGpaSessionStatusAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetGpaSessionStatusAMD, uintptr(device), uintptr(gpaSession))
+	return vulkan.Result(r1)
+}
+
 func GetGpaSessionStatusAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetGpaSessionStatusAMD, uintptr(device), uintptr(gpaSession))
 	return vulkan.Result(r1)
@@ -192,6 +282,11 @@ func GetGpaSessionStatusAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAM
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkResetGpaSessionAMD.html
+func (c *Commands) ResetGpaSessionAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnResetGpaSessionAMD, uintptr(device), uintptr(gpaSession))
+	return vulkan.Result(r1)
+}
+
 func ResetGpaSessionAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnResetGpaSessionAMD, uintptr(device), uintptr(gpaSession))
 	return vulkan.Result(r1)
@@ -205,6 +300,11 @@ func ResetGpaSessionAMD(device vulkan.Device, gpaSession vulkan.GpaSessionAMD) (
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetGpaDeviceClockModeAMD.html
+func (c *Commands) SetGpaDeviceClockModeAMD(device vulkan.Device) (info vulkan.GpaDeviceClockModeInfoAMD, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnSetGpaDeviceClockModeAMD, uintptr(device), uintptr(unsafe.Pointer(&info)))
+	return info, vulkan.Result(r1)
+}
+
 func SetGpaDeviceClockModeAMD(device vulkan.Device) (info vulkan.GpaDeviceClockModeInfoAMD, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnSetGpaDeviceClockModeAMD, uintptr(device), uintptr(unsafe.Pointer(&info)))
 	return info, vulkan.Result(r1)

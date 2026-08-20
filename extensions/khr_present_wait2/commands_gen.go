@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnWaitForPresent2KHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnWaitForPresent2KHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_present_wait2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnWaitForPresent2KHR = vulkan.GetDeviceProcAddr(device, "vkWaitForPresent2KHR")
+// Init resolves and initializes all VK_KHR_present_wait2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnWaitForPresent2KHR: vulkan.GetDeviceProcAddr(device, "vkWaitForPresent2KHR"),
+	}
+	pfnWaitForPresent2KHR = cmds.pfnWaitForPresent2KHR
+	return cmds
 }
 
 // WaitForPresent2KHR - Wait for presentation (vkWaitForPresent2KHR).
@@ -29,6 +38,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_TIMEOUT, VK_SUBOPTIMAL_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWaitForPresent2KHR.html
+func (c *Commands) WaitForPresent2KHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, presentWait2Info *vulkan.PresentWait2InfoKHR) (result vulkan.Result) {
+	c_presentWait2Info := presentWait2Info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnWaitForPresent2KHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_presentWait2Info)))
+	return vulkan.Result(r1)
+}
+
 func WaitForPresent2KHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, presentWait2Info *vulkan.PresentWait2InfoKHR) (result vulkan.Result) {
 	c_presentWait2Info := presentWait2Info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnWaitForPresent2KHR, uintptr(device), uintptr(swapchain), uintptr(unsafe.Pointer(c_presentWait2Info)))

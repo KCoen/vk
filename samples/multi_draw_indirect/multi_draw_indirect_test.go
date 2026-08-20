@@ -39,7 +39,7 @@ func TestMultiDrawIndirectSample(t *testing.T) {
 
 	cfg := utility.ContextConfig{
 		AppName:          "MDI_UnitTest",
-		RequireMDI:       true,
+		ApiVersion:       vulkan.API_VERSION_1_3,
 		EnableValidation: true,
 	}
 

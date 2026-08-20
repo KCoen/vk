@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBindOpticalFlowSessionImageNV              uintptr
+	pfnCmdOpticalFlowExecuteNV                    uintptr
+	pfnCreateOpticalFlowSessionNV                 uintptr
+	pfnDestroyOpticalFlowSessionNV                uintptr
+	pfnGetPhysicalDeviceOpticalFlowImageFormatsNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBindOpticalFlowSessionImageNV              uintptr
 	pfnCmdOpticalFlowExecuteNV                    uintptr
@@ -19,13 +28,21 @@ var (
 	pfnGetPhysicalDeviceOpticalFlowImageFormatsNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_optical_flow extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBindOpticalFlowSessionImageNV = vulkan.GetDeviceProcAddr(device, "vkBindOpticalFlowSessionImageNV")
-	pfnCmdOpticalFlowExecuteNV = vulkan.GetDeviceProcAddr(device, "vkCmdOpticalFlowExecuteNV")
-	pfnCreateOpticalFlowSessionNV = vulkan.GetDeviceProcAddr(device, "vkCreateOpticalFlowSessionNV")
-	pfnDestroyOpticalFlowSessionNV = vulkan.GetDeviceProcAddr(device, "vkDestroyOpticalFlowSessionNV")
-	pfnGetPhysicalDeviceOpticalFlowImageFormatsNV = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceOpticalFlowImageFormatsNV")
+// Init resolves and initializes all VK_NV_optical_flow extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBindOpticalFlowSessionImageNV:              vulkan.GetDeviceProcAddr(device, "vkBindOpticalFlowSessionImageNV"),
+		pfnCmdOpticalFlowExecuteNV:                    vulkan.GetDeviceProcAddr(device, "vkCmdOpticalFlowExecuteNV"),
+		pfnCreateOpticalFlowSessionNV:                 vulkan.GetDeviceProcAddr(device, "vkCreateOpticalFlowSessionNV"),
+		pfnDestroyOpticalFlowSessionNV:                vulkan.GetDeviceProcAddr(device, "vkDestroyOpticalFlowSessionNV"),
+		pfnGetPhysicalDeviceOpticalFlowImageFormatsNV: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceOpticalFlowImageFormatsNV"),
+	}
+	pfnBindOpticalFlowSessionImageNV = cmds.pfnBindOpticalFlowSessionImageNV
+	pfnCmdOpticalFlowExecuteNV = cmds.pfnCmdOpticalFlowExecuteNV
+	pfnCreateOpticalFlowSessionNV = cmds.pfnCreateOpticalFlowSessionNV
+	pfnDestroyOpticalFlowSessionNV = cmds.pfnDestroyOpticalFlowSessionNV
+	pfnGetPhysicalDeviceOpticalFlowImageFormatsNV = cmds.pfnGetPhysicalDeviceOpticalFlowImageFormatsNV
+	return cmds
 }
 
 // BindOpticalFlowSessionImageNV - Bind image to an optical flow session (vkBindOpticalFlowSessionImageNV).
@@ -39,6 +56,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBindOpticalFlowSessionImageNV.html
+func (c *Commands) BindOpticalFlowSessionImageNV(device vulkan.Device, session vulkan.OpticalFlowSessionNV, bindingPoint vulkan.OpticalFlowSessionBindingPointNV, view vulkan.ImageView, layout vulkan.ImageLayout) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnBindOpticalFlowSessionImageNV, uintptr(device), uintptr(session), uintptr(bindingPoint), uintptr(view), uintptr(layout))
+	return vulkan.Result(r1)
+}
+
 func BindOpticalFlowSessionImageNV(device vulkan.Device, session vulkan.OpticalFlowSessionNV, bindingPoint vulkan.OpticalFlowSessionBindingPointNV, view vulkan.ImageView, layout vulkan.ImageLayout) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnBindOpticalFlowSessionImageNV, uintptr(device), uintptr(session), uintptr(bindingPoint), uintptr(view), uintptr(layout))
 	return vulkan.Result(r1)
@@ -51,6 +73,11 @@ func BindOpticalFlowSessionImageNV(device vulkan.Device, session vulkan.OpticalF
 //   - executeInfo: Info is a pointer to a VkOpticalFlowExecuteInfoNV.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdOpticalFlowExecuteNV.html
+func (c *Commands) CmdOpticalFlowExecuteNV(commandBuffer vulkan.CommandBuffer, session vulkan.OpticalFlowSessionNV, executeInfo *vulkan.OpticalFlowExecuteInfoNV) {
+	c_executeInfo := executeInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdOpticalFlowExecuteNV, uintptr(commandBuffer), uintptr(session), uintptr(unsafe.Pointer(c_executeInfo)))
+}
+
 func CmdOpticalFlowExecuteNV(commandBuffer vulkan.CommandBuffer, session vulkan.OpticalFlowSessionNV, executeInfo *vulkan.OpticalFlowExecuteInfoNV) {
 	c_executeInfo := executeInfo.Raw()
 	vulkan.CallSyscall(pfnCmdOpticalFlowExecuteNV, uintptr(commandBuffer), uintptr(session), uintptr(unsafe.Pointer(c_executeInfo)))
@@ -66,6 +93,13 @@ func CmdOpticalFlowExecuteNV(commandBuffer vulkan.CommandBuffer, session vulkan.
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateOpticalFlowSessionNV.html
+func (c *Commands) CreateOpticalFlowSessionNV(device vulkan.Device, createInfo *vulkan.OpticalFlowSessionCreateInfoNV, allocator *vulkan.AllocationCallbacks) (session vulkan.OpticalFlowSessionNV, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateOpticalFlowSessionNV, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&session)))
+	return session, vulkan.Result(r1)
+}
+
 func CreateOpticalFlowSessionNV(device vulkan.Device, createInfo *vulkan.OpticalFlowSessionCreateInfoNV, allocator *vulkan.AllocationCallbacks) (session vulkan.OpticalFlowSessionNV, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -80,6 +114,11 @@ func CreateOpticalFlowSessionNV(device vulkan.Device, createInfo *vulkan.Optical
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyOpticalFlowSessionNV.html
+func (c *Commands) DestroyOpticalFlowSessionNV(device vulkan.Device, session vulkan.OpticalFlowSessionNV, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyOpticalFlowSessionNV, uintptr(device), uintptr(session), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyOpticalFlowSessionNV(device vulkan.Device, session vulkan.OpticalFlowSessionNV, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyOpticalFlowSessionNV, uintptr(device), uintptr(session), uintptr(unsafe.Pointer(c_allocator)))
@@ -95,6 +134,20 @@ func DestroyOpticalFlowSessionNV(device vulkan.Device, session vulkan.OpticalFlo
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_EXTENSION_NOT_PRESENT, VK_ERROR_INITIALIZATION_FAILED, VK_ERROR_FORMAT_NOT_SUPPORTED, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceOpticalFlowImageFormatsNV.html
+func (c *Commands) GetPhysicalDeviceOpticalFlowImageFormatsNV(physicalDevice vulkan.PhysicalDevice, opticalFlowImageFormatInfo *vulkan.OpticalFlowImageFormatInfoNV) (imageFormatProperties []vulkan.OpticalFlowImageFormatPropertiesNV, result vulkan.Result) {
+	c_opticalFlowImageFormatInfo := opticalFlowImageFormatInfo.Raw()
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceOpticalFlowImageFormatsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	imageFormatProperties = make([]vulkan.OpticalFlowImageFormatPropertiesNV, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&imageFormatProperties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceOpticalFlowImageFormatsNV, uintptr(physicalDevice), uintptr(unsafe.Pointer(c_opticalFlowImageFormatInfo)), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return imageFormatProperties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceOpticalFlowImageFormatsNV(physicalDevice vulkan.PhysicalDevice, opticalFlowImageFormatInfo *vulkan.OpticalFlowImageFormatInfoNV) (imageFormatProperties []vulkan.OpticalFlowImageFormatPropertiesNV, result vulkan.Result) {
 	c_opticalFlowImageFormatInfo := opticalFlowImageFormatInfo.Raw()
 	var count uint32

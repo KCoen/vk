@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBeginCustomResolveEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBeginCustomResolveEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_custom_resolve extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBeginCustomResolveEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBeginCustomResolveEXT")
+// Init resolves and initializes all VK_EXT_custom_resolve extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBeginCustomResolveEXT: vulkan.GetDeviceProcAddr(device, "vkCmdBeginCustomResolveEXT"),
+	}
+	pfnCmdBeginCustomResolveEXT = cmds.pfnCmdBeginCustomResolveEXT
+	return cmds
 }
 
 // CmdBeginCustomResolveEXT - Begins a shader resolve operation (vkCmdBeginCustomResolveEXT).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - beginCustomResolveInfo: is an optional struct with which to extend functionality.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBeginCustomResolveEXT.html
+func (c *Commands) CmdBeginCustomResolveEXT(commandBuffer vulkan.CommandBuffer, beginCustomResolveInfo *vulkan.BeginCustomResolveInfoEXT) {
+	c_beginCustomResolveInfo := beginCustomResolveInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBeginCustomResolveEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginCustomResolveInfo)))
+}
+
 func CmdBeginCustomResolveEXT(commandBuffer vulkan.CommandBuffer, beginCustomResolveInfo *vulkan.BeginCustomResolveInfoEXT) {
 	c_beginCustomResolveInfo := beginCustomResolveInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBeginCustomResolveEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_beginCustomResolveInfo)))

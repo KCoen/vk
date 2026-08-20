@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSubpassShadingHUAWEI                       uintptr
+	pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSubpassShadingHUAWEI                       uintptr
 	pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI uintptr
 )
 
-// Init resolves and initializes all VK_HUAWEI_subpass_shading extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSubpassShadingHUAWEI = vulkan.GetDeviceProcAddr(device, "vkCmdSubpassShadingHUAWEI")
-	pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = vulkan.GetDeviceProcAddr(device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI")
+// Init resolves and initializes all VK_HUAWEI_subpass_shading extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSubpassShadingHUAWEI:                       vulkan.GetDeviceProcAddr(device, "vkCmdSubpassShadingHUAWEI"),
+		pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI: vulkan.GetDeviceProcAddr(device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI"),
+	}
+	pfnCmdSubpassShadingHUAWEI = cmds.pfnCmdSubpassShadingHUAWEI
+	pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = cmds.pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI
+	return cmds
 }
 
 // CmdSubpassShadingHUAWEI - Dispatch compute work items (vkCmdSubpassShadingHUAWEI).
@@ -27,6 +38,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - commandBuffer: is the command buffer into which the command will be recorded.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSubpassShadingHUAWEI.html
+func (c *Commands) CmdSubpassShadingHUAWEI(commandBuffer vulkan.CommandBuffer) {
+	vulkan.CallSyscall(c.pfnCmdSubpassShadingHUAWEI, uintptr(commandBuffer))
+}
+
 func CmdSubpassShadingHUAWEI(commandBuffer vulkan.CommandBuffer) {
 	vulkan.CallSyscall(pfnCmdSubpassShadingHUAWEI, uintptr(commandBuffer))
 }
@@ -40,6 +55,11 @@ func CmdSubpassShadingHUAWEI(commandBuffer vulkan.CommandBuffer) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI.html
+func (c *Commands) GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(device vulkan.Device, renderpass vulkan.RenderPass) (maxWorkgroupSize vulkan.Extent2D, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI, uintptr(device), uintptr(renderpass), uintptr(unsafe.Pointer(&maxWorkgroupSize)))
+	return maxWorkgroupSize, vulkan.Result(r1)
+}
+
 func GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(device vulkan.Device, renderpass vulkan.RenderPass) (maxWorkgroupSize vulkan.Extent2D, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI, uintptr(device), uintptr(renderpass), uintptr(unsafe.Pointer(&maxWorkgroupSize)))
 	return maxWorkgroupSize, vulkan.Result(r1)

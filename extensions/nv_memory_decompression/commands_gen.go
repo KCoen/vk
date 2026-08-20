@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDecompressMemoryIndirectCountNV uintptr
+	pfnCmdDecompressMemoryNV              uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDecompressMemoryIndirectCountNV uintptr
 	pfnCmdDecompressMemoryNV              uintptr
 )
 
-// Init resolves and initializes all VK_NV_memory_decompression extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDecompressMemoryIndirectCountNV = vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryIndirectCountNV")
-	pfnCmdDecompressMemoryNV = vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryNV")
+// Init resolves and initializes all VK_NV_memory_decompression extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDecompressMemoryIndirectCountNV: vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryIndirectCountNV"),
+		pfnCmdDecompressMemoryNV:              vulkan.GetDeviceProcAddr(device, "vkCmdDecompressMemoryNV"),
+	}
+	pfnCmdDecompressMemoryIndirectCountNV = cmds.pfnCmdDecompressMemoryIndirectCountNV
+	pfnCmdDecompressMemoryNV = cmds.pfnCmdDecompressMemoryNV
+	return cmds
 }
 
 // CmdDecompressMemoryIndirectCountNV - Indirect decompress data between memory regions (vkCmdDecompressMemoryIndirectCountNV).
@@ -30,6 +41,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - stride: is the byte stride between successive sets of decompression parameters located starting from indirectCommandsAddress.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryIndirectCountNV.html
+func (c *Commands) CmdDecompressMemoryIndirectCountNV(commandBuffer vulkan.CommandBuffer, indirectCommandsAddress vulkan.DeviceAddress, indirectCommandsCountAddress vulkan.DeviceAddress, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDecompressMemoryIndirectCountNV, uintptr(commandBuffer), uintptr(indirectCommandsAddress), uintptr(indirectCommandsCountAddress), uintptr(stride))
+}
+
 func CmdDecompressMemoryIndirectCountNV(commandBuffer vulkan.CommandBuffer, indirectCommandsAddress vulkan.DeviceAddress, indirectCommandsCountAddress vulkan.DeviceAddress, stride uint32) {
 	vulkan.CallSyscall(pfnCmdDecompressMemoryIndirectCountNV, uintptr(commandBuffer), uintptr(indirectCommandsAddress), uintptr(indirectCommandsCountAddress), uintptr(stride))
 }
@@ -41,6 +56,16 @@ func CmdDecompressMemoryIndirectCountNV(commandBuffer vulkan.CommandBuffer, indi
 //   - decompressMemoryRegions: is a pointer to an array of decompressRegionCount VkDecompressMemoryRegionNV structures specifying decompression parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDecompressMemoryNV.html
+func (c *Commands) CmdDecompressMemoryNV(commandBuffer vulkan.CommandBuffer, decompressMemoryRegions []vulkan.DecompressMemoryRegionNV) {
+	c_decompressMemoryRegions := make([]vulkan.RawDecompressMemoryRegionNV, len(decompressMemoryRegions))
+	for i := range decompressMemoryRegions {
+		if raw := decompressMemoryRegions[i].Raw(); raw != nil {
+			c_decompressMemoryRegions[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdDecompressMemoryNV, uintptr(commandBuffer), uintptr(len(decompressMemoryRegions)), uintptr(unsafe.Pointer(vulkan.SliceData(c_decompressMemoryRegions))))
+}
+
 func CmdDecompressMemoryNV(commandBuffer vulkan.CommandBuffer, decompressMemoryRegions []vulkan.DecompressMemoryRegionNV) {
 	c_decompressMemoryRegions := make([]vulkan.RawDecompressMemoryRegionNV, len(decompressMemoryRegions))
 	for i := range decompressMemoryRegions {

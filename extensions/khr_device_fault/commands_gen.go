@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetDeviceFaultDebugInfoKHR uintptr
+	pfnGetDeviceFaultReportsKHR   uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetDeviceFaultDebugInfoKHR uintptr
 	pfnGetDeviceFaultReportsKHR   uintptr
 )
 
-// Init resolves and initializes all VK_KHR_device_fault extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetDeviceFaultDebugInfoKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeviceFaultDebugInfoKHR")
-	pfnGetDeviceFaultReportsKHR = vulkan.GetDeviceProcAddr(device, "vkGetDeviceFaultReportsKHR")
+// Init resolves and initializes all VK_KHR_device_fault extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetDeviceFaultDebugInfoKHR: vulkan.GetDeviceProcAddr(device, "vkGetDeviceFaultDebugInfoKHR"),
+		pfnGetDeviceFaultReportsKHR:   vulkan.GetDeviceProcAddr(device, "vkGetDeviceFaultReportsKHR"),
+	}
+	pfnGetDeviceFaultDebugInfoKHR = cmds.pfnGetDeviceFaultDebugInfoKHR
+	pfnGetDeviceFaultReportsKHR = cmds.pfnGetDeviceFaultReportsKHR
+	return cmds
 }
 
 // GetDeviceFaultDebugInfoKHR - Retrieve vendor-specific crash dump data for the specified logical device (vkGetDeviceFaultDebugInfoKHR).
@@ -30,6 +41,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_NOT_ENOUGH_SPACE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultDebugInfoKHR.html
+func (c *Commands) GetDeviceFaultDebugInfoKHR(device vulkan.Device) (debugInfo vulkan.DeviceFaultDebugInfoKHR, result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceFaultDebugInfoKHR, uintptr(device), uintptr(unsafe.Pointer(&debugInfo)))
+	return debugInfo, vulkan.Result(r1)
+}
+
 func GetDeviceFaultDebugInfoKHR(device vulkan.Device) (debugInfo vulkan.DeviceFaultDebugInfoKHR, result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceFaultDebugInfoKHR, uintptr(device), uintptr(unsafe.Pointer(&debugInfo)))
 	return debugInfo, vulkan.Result(r1)
@@ -44,6 +60,19 @@ func GetDeviceFaultDebugInfoKHR(device vulkan.Device) (debugInfo vulkan.DeviceFa
 // Success codes: VK_SUCCESS, VK_INCOMPLETE, VK_TIMEOUT
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceFaultReportsKHR.html
+func (c *Commands) GetDeviceFaultReportsKHR(device vulkan.Device, timeout uint64) (faultInfo []vulkan.DeviceFaultInfoKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetDeviceFaultReportsKHR, uintptr(device), uintptr(timeout), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	faultInfo = make([]vulkan.DeviceFaultInfoKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&faultInfo[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetDeviceFaultReportsKHR, uintptr(device), uintptr(timeout), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return faultInfo, vulkan.Result(r1)
+}
+
 func GetDeviceFaultReportsKHR(device vulkan.Device, timeout uint64) (faultInfo []vulkan.DeviceFaultInfoKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetDeviceFaultReportsKHR, uintptr(device), uintptr(timeout), uintptr(unsafe.Pointer(&count)), 0)

@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetBufferDeviceAddressEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetBufferDeviceAddressEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_buffer_device_address extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetBufferDeviceAddressEXT = vulkan.GetInstanceProcAddr(instance, "vkGetBufferDeviceAddressEXT")
+// Init resolves and initializes all VK_EXT_buffer_device_address extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetBufferDeviceAddressEXT: vulkan.GetInstanceProcAddr(instance, "vkGetBufferDeviceAddressEXT"),
+	}
+	pfnGetBufferDeviceAddressEXT = cmds.pfnGetBufferDeviceAddressEXT
+	return cmds
 }
 
 // GetBufferDeviceAddressEXT executes vkGetBufferDeviceAddressEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetBufferDeviceAddressEXT.html
+func (c *Commands) GetBufferDeviceAddressEXT() {
+	vulkan.CallSyscall(c.pfnGetBufferDeviceAddressEXT)
+}
+
 func GetBufferDeviceAddressEXT() {
 	vulkan.CallSyscall(pfnGetBufferDeviceAddressEXT)
 }

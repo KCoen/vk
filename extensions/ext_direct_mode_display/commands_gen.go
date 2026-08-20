@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnReleaseDisplayEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnReleaseDisplayEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_direct_mode_display extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnReleaseDisplayEXT = vulkan.GetInstanceProcAddr(instance, "vkReleaseDisplayEXT")
+// Init resolves and initializes all VK_EXT_direct_mode_display extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnReleaseDisplayEXT: vulkan.GetInstanceProcAddr(instance, "vkReleaseDisplayEXT"),
+	}
+	pfnReleaseDisplayEXT = cmds.pfnReleaseDisplayEXT
+	return cmds
 }
 
 // ReleaseDisplayEXT - Release access to an acquired VkDisplayKHR (vkReleaseDisplayEXT).
@@ -28,6 +37,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkReleaseDisplayEXT.html
+func (c *Commands) ReleaseDisplayEXT(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnReleaseDisplayEXT, uintptr(physicalDevice), uintptr(display))
+	return vulkan.Result(r1)
+}
+
 func ReleaseDisplayEXT(physicalDevice vulkan.PhysicalDevice, display vulkan.DisplayKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnReleaseDisplayEXT, uintptr(physicalDevice), uintptr(display))
 	return vulkan.Result(r1)

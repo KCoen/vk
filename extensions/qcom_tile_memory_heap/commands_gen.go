@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdBindTileMemoryQCOM uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdBindTileMemoryQCOM uintptr
 )
 
-// Init resolves and initializes all VK_QCOM_tile_memory_heap extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdBindTileMemoryQCOM = vulkan.GetDeviceProcAddr(device, "vkCmdBindTileMemoryQCOM")
+// Init resolves and initializes all VK_QCOM_tile_memory_heap extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdBindTileMemoryQCOM: vulkan.GetDeviceProcAddr(device, "vkCmdBindTileMemoryQCOM"),
+	}
+	pfnCmdBindTileMemoryQCOM = cmds.pfnCmdBindTileMemoryQCOM
+	return cmds
 }
 
 // CmdBindTileMemoryQCOM - Bind tile memory to a command buffer (vkCmdBindTileMemoryQCOM).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - tileMemoryBindInfo: is VK_NULL_HANDLE or a pointer to a VkTileMemoryBindInfoQCOM structure defining how tile memory is bound.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBindTileMemoryQCOM.html
+func (c *Commands) CmdBindTileMemoryQCOM(commandBuffer vulkan.CommandBuffer, tileMemoryBindInfo *vulkan.TileMemoryBindInfoQCOM) {
+	c_tileMemoryBindInfo := tileMemoryBindInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdBindTileMemoryQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_tileMemoryBindInfo)))
+}
+
 func CmdBindTileMemoryQCOM(commandBuffer vulkan.CommandBuffer, tileMemoryBindInfo *vulkan.TileMemoryBindInfoQCOM) {
 	c_tileMemoryBindInfo := tileMemoryBindInfo.Raw()
 	vulkan.CallSyscall(pfnCmdBindTileMemoryQCOM, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_tileMemoryBindInfo)))

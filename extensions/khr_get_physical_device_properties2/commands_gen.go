@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceFeatures2KHR                    uintptr
+	pfnGetPhysicalDeviceFormatProperties2KHR            uintptr
+	pfnGetPhysicalDeviceImageFormatProperties2KHR       uintptr
+	pfnGetPhysicalDeviceMemoryProperties2KHR            uintptr
+	pfnGetPhysicalDeviceProperties2KHR                  uintptr
+	pfnGetPhysicalDeviceQueueFamilyProperties2KHR       uintptr
+	pfnGetPhysicalDeviceSparseImageFormatProperties2KHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceFeatures2KHR                    uintptr
 	pfnGetPhysicalDeviceFormatProperties2KHR            uintptr
@@ -21,55 +32,93 @@ var (
 	pfnGetPhysicalDeviceSparseImageFormatProperties2KHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_get_physical_device_properties2 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceFeatures2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures2KHR")
-	pfnGetPhysicalDeviceFormatProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFormatProperties2KHR")
-	pfnGetPhysicalDeviceImageFormatProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceImageFormatProperties2KHR")
-	pfnGetPhysicalDeviceMemoryProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties2KHR")
-	pfnGetPhysicalDeviceProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties2KHR")
-	pfnGetPhysicalDeviceQueueFamilyProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties2KHR")
-	pfnGetPhysicalDeviceSparseImageFormatProperties2KHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSparseImageFormatProperties2KHR")
+// Init resolves and initializes all VK_KHR_get_physical_device_properties2 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceFeatures2KHR:                    vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures2KHR"),
+		pfnGetPhysicalDeviceFormatProperties2KHR:            vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceFormatProperties2KHR"),
+		pfnGetPhysicalDeviceImageFormatProperties2KHR:       vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceImageFormatProperties2KHR"),
+		pfnGetPhysicalDeviceMemoryProperties2KHR:            vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties2KHR"),
+		pfnGetPhysicalDeviceProperties2KHR:                  vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties2KHR"),
+		pfnGetPhysicalDeviceQueueFamilyProperties2KHR:       vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties2KHR"),
+		pfnGetPhysicalDeviceSparseImageFormatProperties2KHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceSparseImageFormatProperties2KHR"),
+	}
+	pfnGetPhysicalDeviceFeatures2KHR = cmds.pfnGetPhysicalDeviceFeatures2KHR
+	pfnGetPhysicalDeviceFormatProperties2KHR = cmds.pfnGetPhysicalDeviceFormatProperties2KHR
+	pfnGetPhysicalDeviceImageFormatProperties2KHR = cmds.pfnGetPhysicalDeviceImageFormatProperties2KHR
+	pfnGetPhysicalDeviceMemoryProperties2KHR = cmds.pfnGetPhysicalDeviceMemoryProperties2KHR
+	pfnGetPhysicalDeviceProperties2KHR = cmds.pfnGetPhysicalDeviceProperties2KHR
+	pfnGetPhysicalDeviceQueueFamilyProperties2KHR = cmds.pfnGetPhysicalDeviceQueueFamilyProperties2KHR
+	pfnGetPhysicalDeviceSparseImageFormatProperties2KHR = cmds.pfnGetPhysicalDeviceSparseImageFormatProperties2KHR
+	return cmds
 }
 
 // GetPhysicalDeviceFeatures2KHR executes vkGetPhysicalDeviceFeatures2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFeatures2KHR.html
+func (c *Commands) GetPhysicalDeviceFeatures2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceFeatures2KHR)
+}
+
 func GetPhysicalDeviceFeatures2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceFeatures2KHR)
 }
 
 // GetPhysicalDeviceFormatProperties2KHR executes vkGetPhysicalDeviceFormatProperties2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceFormatProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceFormatProperties2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceFormatProperties2KHR)
+}
+
 func GetPhysicalDeviceFormatProperties2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceFormatProperties2KHR)
 }
 
 // GetPhysicalDeviceImageFormatProperties2KHR executes vkGetPhysicalDeviceImageFormatProperties2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceImageFormatProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceImageFormatProperties2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceImageFormatProperties2KHR)
+}
+
 func GetPhysicalDeviceImageFormatProperties2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceImageFormatProperties2KHR)
 }
 
 // GetPhysicalDeviceMemoryProperties2KHR executes vkGetPhysicalDeviceMemoryProperties2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMemoryProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceMemoryProperties2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceMemoryProperties2KHR)
+}
+
 func GetPhysicalDeviceMemoryProperties2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceMemoryProperties2KHR)
 }
 
 // GetPhysicalDeviceProperties2KHR executes vkGetPhysicalDeviceProperties2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceProperties2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceProperties2KHR)
+}
+
 func GetPhysicalDeviceProperties2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceProperties2KHR)
 }
 
 // GetPhysicalDeviceQueueFamilyProperties2KHR executes vkGetPhysicalDeviceQueueFamilyProperties2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceQueueFamilyProperties2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceQueueFamilyProperties2KHR)
+}
+
 func GetPhysicalDeviceQueueFamilyProperties2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceQueueFamilyProperties2KHR)
 }
 
 // GetPhysicalDeviceSparseImageFormatProperties2KHR executes vkGetPhysicalDeviceSparseImageFormatProperties2KHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSparseImageFormatProperties2KHR.html
+func (c *Commands) GetPhysicalDeviceSparseImageFormatProperties2KHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceSparseImageFormatProperties2KHR)
+}
+
 func GetPhysicalDeviceSparseImageFormatProperties2KHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceSparseImageFormatProperties2KHR)
 }

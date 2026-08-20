@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetSwapchainStatusKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetSwapchainStatusKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_shared_presentable_image extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetSwapchainStatusKHR = vulkan.GetDeviceProcAddr(device, "vkGetSwapchainStatusKHR")
+// Init resolves and initializes all VK_KHR_shared_presentable_image extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetSwapchainStatusKHR: vulkan.GetDeviceProcAddr(device, "vkGetSwapchainStatusKHR"),
+	}
+	pfnGetSwapchainStatusKHR = cmds.pfnGetSwapchainStatusKHR
+	return cmds
 }
 
 // GetSwapchainStatusKHR - Get a swapchain\ (vkGetSwapchainStatusKHR).
@@ -28,6 +37,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_SUBOPTIMAL_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainStatusKHR.html
+func (c *Commands) GetSwapchainStatusKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSwapchainStatusKHR, uintptr(device), uintptr(swapchain))
+	return vulkan.Result(r1)
+}
+
 func GetSwapchainStatusKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnGetSwapchainStatusKHR, uintptr(device), uintptr(swapchain))
 	return vulkan.Result(r1)

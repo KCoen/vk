@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_cooperative_matrix extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR")
+// Init resolves and initializes all VK_KHR_cooperative_matrix extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR"),
+	}
+	pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR = cmds.pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR
+	return cmds
 }
 
 // GetPhysicalDeviceCooperativeMatrixPropertiesKHR - Returns properties describing what cooperative matrix types are supported (vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR).
@@ -29,6 +38,19 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_INCOMPLETE
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceCooperativeMatrixPropertiesKHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.CooperativeMatrixPropertiesKHR, result vulkan.Result) {
+	var count uint32
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)
+	if vulkan.Result(r1) != vulkan.SUCCESS || count == 0 {
+		return nil, vulkan.Result(r1)
+	}
+
+	properties = make([]vulkan.CooperativeMatrixPropertiesKHR, count)
+	call2ArgsPtr := uintptr(unsafe.Pointer(&properties[0]))
+	r1, _, _ = vulkan.CallSyscall(c.pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), call2ArgsPtr)
+	return properties, vulkan.Result(r1)
+}
+
 func GetPhysicalDeviceCooperativeMatrixPropertiesKHR(physicalDevice vulkan.PhysicalDevice) (properties []vulkan.CooperativeMatrixPropertiesKHR, result vulkan.Result) {
 	var count uint32
 	r1, _, _ := vulkan.CallSyscall(pfnGetPhysicalDeviceCooperativeMatrixPropertiesKHR, uintptr(physicalDevice), uintptr(unsafe.Pointer(&count)), 0)

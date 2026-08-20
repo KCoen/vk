@@ -10,7 +10,16 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDebugMarkerBeginEXT      uintptr
+	pfnCmdDebugMarkerEndEXT        uintptr
+	pfnCmdDebugMarkerInsertEXT     uintptr
+	pfnDebugMarkerSetObjectNameEXT uintptr
+	pfnDebugMarkerSetObjectTagEXT  uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDebugMarkerBeginEXT      uintptr
 	pfnCmdDebugMarkerEndEXT        uintptr
@@ -19,13 +28,21 @@ var (
 	pfnDebugMarkerSetObjectTagEXT  uintptr
 )
 
-// Init resolves and initializes all VK_EXT_debug_marker extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDebugMarkerBeginEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDebugMarkerBeginEXT")
-	pfnCmdDebugMarkerEndEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDebugMarkerEndEXT")
-	pfnCmdDebugMarkerInsertEXT = vulkan.GetDeviceProcAddr(device, "vkCmdDebugMarkerInsertEXT")
-	pfnDebugMarkerSetObjectNameEXT = vulkan.GetDeviceProcAddr(device, "vkDebugMarkerSetObjectNameEXT")
-	pfnDebugMarkerSetObjectTagEXT = vulkan.GetDeviceProcAddr(device, "vkDebugMarkerSetObjectTagEXT")
+// Init resolves and initializes all VK_EXT_debug_marker extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDebugMarkerBeginEXT:      vulkan.GetDeviceProcAddr(device, "vkCmdDebugMarkerBeginEXT"),
+		pfnCmdDebugMarkerEndEXT:        vulkan.GetDeviceProcAddr(device, "vkCmdDebugMarkerEndEXT"),
+		pfnCmdDebugMarkerInsertEXT:     vulkan.GetDeviceProcAddr(device, "vkCmdDebugMarkerInsertEXT"),
+		pfnDebugMarkerSetObjectNameEXT: vulkan.GetDeviceProcAddr(device, "vkDebugMarkerSetObjectNameEXT"),
+		pfnDebugMarkerSetObjectTagEXT:  vulkan.GetDeviceProcAddr(device, "vkDebugMarkerSetObjectTagEXT"),
+	}
+	pfnCmdDebugMarkerBeginEXT = cmds.pfnCmdDebugMarkerBeginEXT
+	pfnCmdDebugMarkerEndEXT = cmds.pfnCmdDebugMarkerEndEXT
+	pfnCmdDebugMarkerInsertEXT = cmds.pfnCmdDebugMarkerInsertEXT
+	pfnDebugMarkerSetObjectNameEXT = cmds.pfnDebugMarkerSetObjectNameEXT
+	pfnDebugMarkerSetObjectTagEXT = cmds.pfnDebugMarkerSetObjectTagEXT
+	return cmds
 }
 
 // CmdDebugMarkerBeginEXT - Open a command buffer marker region (vkCmdDebugMarkerBeginEXT).
@@ -34,6 +51,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - markerInfo: is a pointer to a VkDebugMarkerMarkerInfoEXT structure specifying the parameters of the marker region to open.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDebugMarkerBeginEXT.html
+func (c *Commands) CmdDebugMarkerBeginEXT(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.DebugMarkerMarkerInfoEXT) {
+	c_markerInfo := markerInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDebugMarkerBeginEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+}
+
 func CmdDebugMarkerBeginEXT(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.DebugMarkerMarkerInfoEXT) {
 	c_markerInfo := markerInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDebugMarkerBeginEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
@@ -44,6 +66,10 @@ func CmdDebugMarkerBeginEXT(commandBuffer vulkan.CommandBuffer, markerInfo *vulk
 //   - commandBuffer: is the command buffer into which the command is recorded.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDebugMarkerEndEXT.html
+func (c *Commands) CmdDebugMarkerEndEXT(commandBuffer vulkan.CommandBuffer) {
+	vulkan.CallSyscall(c.pfnCmdDebugMarkerEndEXT, uintptr(commandBuffer))
+}
+
 func CmdDebugMarkerEndEXT(commandBuffer vulkan.CommandBuffer) {
 	vulkan.CallSyscall(pfnCmdDebugMarkerEndEXT, uintptr(commandBuffer))
 }
@@ -54,6 +80,11 @@ func CmdDebugMarkerEndEXT(commandBuffer vulkan.CommandBuffer) {
 //   - markerInfo: is a pointer to a VkDebugMarkerMarkerInfoEXT structure specifying the parameters of the marker to insert.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDebugMarkerInsertEXT.html
+func (c *Commands) CmdDebugMarkerInsertEXT(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.DebugMarkerMarkerInfoEXT) {
+	c_markerInfo := markerInfo.Raw()
+	vulkan.CallSyscall(c.pfnCmdDebugMarkerInsertEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
+}
+
 func CmdDebugMarkerInsertEXT(commandBuffer vulkan.CommandBuffer, markerInfo *vulkan.DebugMarkerMarkerInfoEXT) {
 	c_markerInfo := markerInfo.Raw()
 	vulkan.CallSyscall(pfnCmdDebugMarkerInsertEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_markerInfo)))
@@ -67,6 +98,12 @@ func CmdDebugMarkerInsertEXT(commandBuffer vulkan.CommandBuffer, markerInfo *vul
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDebugMarkerSetObjectNameEXT.html
+func (c *Commands) DebugMarkerSetObjectNameEXT(device vulkan.Device, nameInfo *vulkan.DebugMarkerObjectNameInfoEXT) (result vulkan.Result) {
+	c_nameInfo := nameInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnDebugMarkerSetObjectNameEXT, uintptr(device), uintptr(unsafe.Pointer(c_nameInfo)))
+	return vulkan.Result(r1)
+}
+
 func DebugMarkerSetObjectNameEXT(device vulkan.Device, nameInfo *vulkan.DebugMarkerObjectNameInfoEXT) (result vulkan.Result) {
 	c_nameInfo := nameInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnDebugMarkerSetObjectNameEXT, uintptr(device), uintptr(unsafe.Pointer(c_nameInfo)))
@@ -81,6 +118,12 @@ func DebugMarkerSetObjectNameEXT(device vulkan.Device, nameInfo *vulkan.DebugMar
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDebugMarkerSetObjectTagEXT.html
+func (c *Commands) DebugMarkerSetObjectTagEXT(device vulkan.Device, tagInfo *vulkan.DebugMarkerObjectTagInfoEXT) (result vulkan.Result) {
+	c_tagInfo := tagInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnDebugMarkerSetObjectTagEXT, uintptr(device), uintptr(unsafe.Pointer(c_tagInfo)))
+	return vulkan.Result(r1)
+}
+
 func DebugMarkerSetObjectTagEXT(device vulkan.Device, tagInfo *vulkan.DebugMarkerObjectTagInfoEXT) (result vulkan.Result) {
 	c_tagInfo := tagInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnDebugMarkerSetObjectTagEXT, uintptr(device), uintptr(unsafe.Pointer(c_tagInfo)))

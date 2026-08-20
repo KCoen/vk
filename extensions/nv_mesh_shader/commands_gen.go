@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDrawMeshTasksIndirectCountNV uintptr
+	pfnCmdDrawMeshTasksIndirectNV      uintptr
+	pfnCmdDrawMeshTasksNV              uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDrawMeshTasksIndirectCountNV uintptr
 	pfnCmdDrawMeshTasksIndirectNV      uintptr
 	pfnCmdDrawMeshTasksNV              uintptr
 )
 
-// Init resolves and initializes all VK_NV_mesh_shader extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDrawMeshTasksIndirectCountNV = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountNV")
-	pfnCmdDrawMeshTasksIndirectNV = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectNV")
-	pfnCmdDrawMeshTasksNV = vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksNV")
+// Init resolves and initializes all VK_NV_mesh_shader extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDrawMeshTasksIndirectCountNV: vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectCountNV"),
+		pfnCmdDrawMeshTasksIndirectNV:      vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksIndirectNV"),
+		pfnCmdDrawMeshTasksNV:              vulkan.GetDeviceProcAddr(device, "vkCmdDrawMeshTasksNV"),
+	}
+	pfnCmdDrawMeshTasksIndirectCountNV = cmds.pfnCmdDrawMeshTasksIndirectCountNV
+	pfnCmdDrawMeshTasksIndirectNV = cmds.pfnCmdDrawMeshTasksIndirectNV
+	pfnCmdDrawMeshTasksNV = cmds.pfnCmdDrawMeshTasksNV
+	return cmds
 }
 
 // CmdDrawMeshTasksIndirectCountNV - Perform an indirect mesh tasks draw with the draw count sourced from a buffer (vkCmdDrawMeshTasksIndirectCountNV).
@@ -35,6 +48,10 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - stride: is the byte stride between successive sets of draw parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountNV.html
+func (c *Commands) CmdDrawMeshTasksIndirectCountNV(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, countBuffer vulkan.Buffer, countBufferOffset vulkan.DeviceSize, maxDrawCount uint32, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksIndirectCountNV, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
+}
+
 func CmdDrawMeshTasksIndirectCountNV(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, countBuffer vulkan.Buffer, countBufferOffset vulkan.DeviceSize, maxDrawCount uint32, stride uint32) {
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksIndirectCountNV, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(countBuffer), uintptr(countBufferOffset), uintptr(maxDrawCount), uintptr(stride))
 }
@@ -48,6 +65,10 @@ func CmdDrawMeshTasksIndirectCountNV(commandBuffer vulkan.CommandBuffer, buffer 
 //   - stride: is the byte stride between successive sets of draw parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectNV.html
+func (c *Commands) CmdDrawMeshTasksIndirectNV(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, drawCount uint32, stride uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksIndirectNV, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
+}
+
 func CmdDrawMeshTasksIndirectNV(commandBuffer vulkan.CommandBuffer, buffer vulkan.Buffer, offset vulkan.DeviceSize, drawCount uint32, stride uint32) {
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksIndirectNV, uintptr(commandBuffer), uintptr(buffer), uintptr(offset), uintptr(drawCount), uintptr(stride))
 }
@@ -59,6 +80,10 @@ func CmdDrawMeshTasksIndirectNV(commandBuffer vulkan.CommandBuffer, buffer vulka
 //   - firstTask: is the X component of the first workgroup ID.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksNV.html
+func (c *Commands) CmdDrawMeshTasksNV(commandBuffer vulkan.CommandBuffer, taskCount uint32, firstTask uint32) {
+	vulkan.CallSyscall(c.pfnCmdDrawMeshTasksNV, uintptr(commandBuffer), uintptr(taskCount), uintptr(firstTask))
+}
+
 func CmdDrawMeshTasksNV(commandBuffer vulkan.CommandBuffer, taskCount uint32, firstTask uint32) {
 	vulkan.CallSyscall(pfnCmdDrawMeshTasksNV, uintptr(commandBuffer), uintptr(taskCount), uintptr(firstTask))
 }

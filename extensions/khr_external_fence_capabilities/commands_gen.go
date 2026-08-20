@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceExternalFencePropertiesKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceExternalFencePropertiesKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_fence_capabilities extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceExternalFencePropertiesKHR = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalFencePropertiesKHR")
+// Init resolves and initializes all VK_KHR_external_fence_capabilities extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceExternalFencePropertiesKHR: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalFencePropertiesKHR"),
+	}
+	pfnGetPhysicalDeviceExternalFencePropertiesKHR = cmds.pfnGetPhysicalDeviceExternalFencePropertiesKHR
+	return cmds
 }
 
 // GetPhysicalDeviceExternalFencePropertiesKHR executes vkGetPhysicalDeviceExternalFencePropertiesKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceExternalFencePropertiesKHR.html
+func (c *Commands) GetPhysicalDeviceExternalFencePropertiesKHR() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceExternalFencePropertiesKHR)
+}
+
 func GetPhysicalDeviceExternalFencePropertiesKHR() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceExternalFencePropertiesKHR)
 }

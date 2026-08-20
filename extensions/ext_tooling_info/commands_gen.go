@@ -10,18 +10,31 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPhysicalDeviceToolPropertiesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPhysicalDeviceToolPropertiesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_tooling_info extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPhysicalDeviceToolPropertiesEXT = vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceToolPropertiesEXT")
+// Init resolves and initializes all VK_EXT_tooling_info extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPhysicalDeviceToolPropertiesEXT: vulkan.GetInstanceProcAddr(instance, "vkGetPhysicalDeviceToolPropertiesEXT"),
+	}
+	pfnGetPhysicalDeviceToolPropertiesEXT = cmds.pfnGetPhysicalDeviceToolPropertiesEXT
+	return cmds
 }
 
 // GetPhysicalDeviceToolPropertiesEXT executes vkGetPhysicalDeviceToolPropertiesEXT.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceToolPropertiesEXT.html
+func (c *Commands) GetPhysicalDeviceToolPropertiesEXT() {
+	vulkan.CallSyscall(c.pfnGetPhysicalDeviceToolPropertiesEXT)
+}
+
 func GetPhysicalDeviceToolPropertiesEXT() {
 	vulkan.CallSyscall(pfnGetPhysicalDeviceToolPropertiesEXT)
 }

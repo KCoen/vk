@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCreateStreamDescriptorSurfaceGGP uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCreateStreamDescriptorSurfaceGGP uintptr
 )
 
-// Init resolves and initializes all VK_GGP_stream_descriptor_surface extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCreateStreamDescriptorSurfaceGGP = vulkan.GetInstanceProcAddr(instance, "vkCreateStreamDescriptorSurfaceGGP")
+// Init resolves and initializes all VK_GGP_stream_descriptor_surface extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCreateStreamDescriptorSurfaceGGP: vulkan.GetInstanceProcAddr(instance, "vkCreateStreamDescriptorSurfaceGGP"),
+	}
+	pfnCreateStreamDescriptorSurfaceGGP = cmds.pfnCreateStreamDescriptorSurfaceGGP
+	return cmds
 }
 
 // CreateStreamDescriptorSurfaceGGP - Create a VkSurfaceKHR object for a Google Games Platform stream (vkCreateStreamDescriptorSurfaceGGP).
@@ -30,6 +39,13 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_NATIVE_WINDOW_IN_USE_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateStreamDescriptorSurfaceGGP.html
+func (c *Commands) CreateStreamDescriptorSurfaceGGP(instance vulkan.Instance, createInfo *vulkan.StreamDescriptorSurfaceCreateInfoGGP, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateStreamDescriptorSurfaceGGP, uintptr(instance), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&surface)))
+	return surface, vulkan.Result(r1)
+}
+
 func CreateStreamDescriptorSurfaceGGP(instance vulkan.Instance, createInfo *vulkan.StreamDescriptorSurfaceCreateInfoGGP, allocator *vulkan.AllocationCallbacks) (surface vulkan.SurfaceKHR, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()

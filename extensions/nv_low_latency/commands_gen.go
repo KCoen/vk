@@ -10,7 +10,18 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetLatencyTimingsLegacyNV     uintptr
+	pfnGetSleepStatusLegacyNV        uintptr
+	pfnLatencySleepLegacyNV          uintptr
+	pfnQueueNotifyOutOfBandLegacyNV  uintptr
+	pfnSetLatencyMarkerLegacyNV      uintptr
+	pfnSetLatencySleepModeLegacyNV   uintptr
+	pfnShutdownLatencyDeviceLegacyNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetLatencyTimingsLegacyNV     uintptr
 	pfnGetSleepStatusLegacyNV        uintptr
@@ -21,19 +32,34 @@ var (
 	pfnShutdownLatencyDeviceLegacyNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_low_latency extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetLatencyTimingsLegacyNV = vulkan.GetDeviceProcAddr(device, "vkGetLatencyTimingsLegacyNV")
-	pfnGetSleepStatusLegacyNV = vulkan.GetDeviceProcAddr(device, "vkGetSleepStatusLegacyNV")
-	pfnLatencySleepLegacyNV = vulkan.GetDeviceProcAddr(device, "vkLatencySleepLegacyNV")
-	pfnQueueNotifyOutOfBandLegacyNV = vulkan.GetDeviceProcAddr(device, "vkQueueNotifyOutOfBandLegacyNV")
-	pfnSetLatencyMarkerLegacyNV = vulkan.GetDeviceProcAddr(device, "vkSetLatencyMarkerLegacyNV")
-	pfnSetLatencySleepModeLegacyNV = vulkan.GetDeviceProcAddr(device, "vkSetLatencySleepModeLegacyNV")
-	pfnShutdownLatencyDeviceLegacyNV = vulkan.GetDeviceProcAddr(device, "vkShutdownLatencyDeviceLegacyNV")
+// Init resolves and initializes all VK_NV_low_latency extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetLatencyTimingsLegacyNV:     vulkan.GetDeviceProcAddr(device, "vkGetLatencyTimingsLegacyNV"),
+		pfnGetSleepStatusLegacyNV:        vulkan.GetDeviceProcAddr(device, "vkGetSleepStatusLegacyNV"),
+		pfnLatencySleepLegacyNV:          vulkan.GetDeviceProcAddr(device, "vkLatencySleepLegacyNV"),
+		pfnQueueNotifyOutOfBandLegacyNV:  vulkan.GetDeviceProcAddr(device, "vkQueueNotifyOutOfBandLegacyNV"),
+		pfnSetLatencyMarkerLegacyNV:      vulkan.GetDeviceProcAddr(device, "vkSetLatencyMarkerLegacyNV"),
+		pfnSetLatencySleepModeLegacyNV:   vulkan.GetDeviceProcAddr(device, "vkSetLatencySleepModeLegacyNV"),
+		pfnShutdownLatencyDeviceLegacyNV: vulkan.GetDeviceProcAddr(device, "vkShutdownLatencyDeviceLegacyNV"),
+	}
+	pfnGetLatencyTimingsLegacyNV = cmds.pfnGetLatencyTimingsLegacyNV
+	pfnGetSleepStatusLegacyNV = cmds.pfnGetSleepStatusLegacyNV
+	pfnLatencySleepLegacyNV = cmds.pfnLatencySleepLegacyNV
+	pfnQueueNotifyOutOfBandLegacyNV = cmds.pfnQueueNotifyOutOfBandLegacyNV
+	pfnSetLatencyMarkerLegacyNV = cmds.pfnSetLatencyMarkerLegacyNV
+	pfnSetLatencySleepModeLegacyNV = cmds.pfnSetLatencySleepModeLegacyNV
+	pfnShutdownLatencyDeviceLegacyNV = cmds.pfnShutdownLatencyDeviceLegacyNV
+	return cmds
 }
 
 // GetLatencyTimingsLegacyNV - Stub description of vkGetLatencyTimingsLegacyNV (vkGetLatencyTimingsLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetLatencyTimingsLegacyNV.html
+func (c *Commands) GetLatencyTimingsLegacyNV(device vulkan.Device) (timings unsafe.Pointer) {
+	vulkan.CallSyscall(c.pfnGetLatencyTimingsLegacyNV, uintptr(device), uintptr(unsafe.Pointer(&timings)))
+	return timings
+}
+
 func GetLatencyTimingsLegacyNV(device vulkan.Device) (timings unsafe.Pointer) {
 	vulkan.CallSyscall(pfnGetLatencyTimingsLegacyNV, uintptr(device), uintptr(unsafe.Pointer(&timings)))
 	return timings
@@ -41,6 +67,11 @@ func GetLatencyTimingsLegacyNV(device vulkan.Device) (timings unsafe.Pointer) {
 
 // GetSleepStatusLegacyNV - Stub description of vkGetSleepStatusLegacyNV (vkGetSleepStatusLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSleepStatusLegacyNV.html
+func (c *Commands) GetSleepStatusLegacyNV(device vulkan.Device) (lowLatencyMode vulkan.Bool32) {
+	vulkan.CallSyscall(c.pfnGetSleepStatusLegacyNV, uintptr(device), uintptr(unsafe.Pointer(&lowLatencyMode)))
+	return lowLatencyMode
+}
+
 func GetSleepStatusLegacyNV(device vulkan.Device) (lowLatencyMode vulkan.Bool32) {
 	vulkan.CallSyscall(pfnGetSleepStatusLegacyNV, uintptr(device), uintptr(unsafe.Pointer(&lowLatencyMode)))
 	return lowLatencyMode
@@ -48,30 +79,50 @@ func GetSleepStatusLegacyNV(device vulkan.Device) (lowLatencyMode vulkan.Bool32)
 
 // LatencySleepLegacyNV - Stub description of vkLatencySleepLegacyNV (vkLatencySleepLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkLatencySleepLegacyNV.html
+func (c *Commands) LatencySleepLegacyNV(device vulkan.Device, signalSemaphore vulkan.Semaphore, value uint64) {
+	vulkan.CallSyscall(c.pfnLatencySleepLegacyNV, uintptr(device), uintptr(signalSemaphore), uintptr(value))
+}
+
 func LatencySleepLegacyNV(device vulkan.Device, signalSemaphore vulkan.Semaphore, value uint64) {
 	vulkan.CallSyscall(pfnLatencySleepLegacyNV, uintptr(device), uintptr(signalSemaphore), uintptr(value))
 }
 
 // QueueNotifyOutOfBandLegacyNV - Stub description of vkQueueNotifyOutOfBandLegacyNV (vkQueueNotifyOutOfBandLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkQueueNotifyOutOfBandLegacyNV.html
+func (c *Commands) QueueNotifyOutOfBandLegacyNV(queue vulkan.Queue, queueType uint32) {
+	vulkan.CallSyscall(c.pfnQueueNotifyOutOfBandLegacyNV, uintptr(queue), uintptr(queueType))
+}
+
 func QueueNotifyOutOfBandLegacyNV(queue vulkan.Queue, queueType uint32) {
 	vulkan.CallSyscall(pfnQueueNotifyOutOfBandLegacyNV, uintptr(queue), uintptr(queueType))
 }
 
 // SetLatencyMarkerLegacyNV - Stub description of vkSetLatencyMarkerLegacyNV (vkSetLatencyMarkerLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencyMarkerLegacyNV.html
+func (c *Commands) SetLatencyMarkerLegacyNV(device vulkan.Device, frameID uint64, marker uint32) {
+	vulkan.CallSyscall(c.pfnSetLatencyMarkerLegacyNV, uintptr(device), uintptr(frameID), uintptr(marker))
+}
+
 func SetLatencyMarkerLegacyNV(device vulkan.Device, frameID uint64, marker uint32) {
 	vulkan.CallSyscall(pfnSetLatencyMarkerLegacyNV, uintptr(device), uintptr(frameID), uintptr(marker))
 }
 
 // SetLatencySleepModeLegacyNV - Stub description of vkSetLatencySleepModeLegacyNV (vkSetLatencySleepModeLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSetLatencySleepModeLegacyNV.html
+func (c *Commands) SetLatencySleepModeLegacyNV(device vulkan.Device, lowLatencyMode vulkan.Bool32, lowLatencyBoost vulkan.Bool32, minimumIntervalUs uint32) {
+	vulkan.CallSyscall(c.pfnSetLatencySleepModeLegacyNV, uintptr(device), uintptr(lowLatencyMode), uintptr(lowLatencyBoost), uintptr(minimumIntervalUs))
+}
+
 func SetLatencySleepModeLegacyNV(device vulkan.Device, lowLatencyMode vulkan.Bool32, lowLatencyBoost vulkan.Bool32, minimumIntervalUs uint32) {
 	vulkan.CallSyscall(pfnSetLatencySleepModeLegacyNV, uintptr(device), uintptr(lowLatencyMode), uintptr(lowLatencyBoost), uintptr(minimumIntervalUs))
 }
 
 // ShutdownLatencyDeviceLegacyNV - Stub description of vkShutdownLatencyDeviceLegacyNV (vkShutdownLatencyDeviceLegacyNV).
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkShutdownLatencyDeviceLegacyNV.html
+func (c *Commands) ShutdownLatencyDeviceLegacyNV(device vulkan.Device) {
+	vulkan.CallSyscall(c.pfnShutdownLatencyDeviceLegacyNV, uintptr(device))
+}
+
 func ShutdownLatencyDeviceLegacyNV(device vulkan.Device) {
 	vulkan.CallSyscall(pfnShutdownLatencyDeviceLegacyNV, uintptr(device))
 }

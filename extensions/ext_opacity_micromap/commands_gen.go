@@ -10,7 +10,25 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnBuildMicromapsEXT                 uintptr
+	pfnCmdBuildMicromapsEXT              uintptr
+	pfnCmdCopyMemoryToMicromapEXT        uintptr
+	pfnCmdCopyMicromapEXT                uintptr
+	pfnCmdCopyMicromapToMemoryEXT        uintptr
+	pfnCmdWriteMicromapsPropertiesEXT    uintptr
+	pfnCopyMemoryToMicromapEXT           uintptr
+	pfnCopyMicromapEXT                   uintptr
+	pfnCopyMicromapToMemoryEXT           uintptr
+	pfnCreateMicromapEXT                 uintptr
+	pfnDestroyMicromapEXT                uintptr
+	pfnGetDeviceMicromapCompatibilityEXT uintptr
+	pfnGetMicromapBuildSizesEXT          uintptr
+	pfnWriteMicromapsPropertiesEXT       uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnBuildMicromapsEXT                 uintptr
 	pfnCmdBuildMicromapsEXT              uintptr
@@ -28,22 +46,39 @@ var (
 	pfnWriteMicromapsPropertiesEXT       uintptr
 )
 
-// Init resolves and initializes all VK_EXT_opacity_micromap extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnBuildMicromapsEXT = vulkan.GetDeviceProcAddr(device, "vkBuildMicromapsEXT")
-	pfnCmdBuildMicromapsEXT = vulkan.GetDeviceProcAddr(device, "vkCmdBuildMicromapsEXT")
-	pfnCmdCopyMemoryToMicromapEXT = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToMicromapEXT")
-	pfnCmdCopyMicromapEXT = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMicromapEXT")
-	pfnCmdCopyMicromapToMemoryEXT = vulkan.GetDeviceProcAddr(device, "vkCmdCopyMicromapToMemoryEXT")
-	pfnCmdWriteMicromapsPropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkCmdWriteMicromapsPropertiesEXT")
-	pfnCopyMemoryToMicromapEXT = vulkan.GetDeviceProcAddr(device, "vkCopyMemoryToMicromapEXT")
-	pfnCopyMicromapEXT = vulkan.GetDeviceProcAddr(device, "vkCopyMicromapEXT")
-	pfnCopyMicromapToMemoryEXT = vulkan.GetDeviceProcAddr(device, "vkCopyMicromapToMemoryEXT")
-	pfnCreateMicromapEXT = vulkan.GetDeviceProcAddr(device, "vkCreateMicromapEXT")
-	pfnDestroyMicromapEXT = vulkan.GetDeviceProcAddr(device, "vkDestroyMicromapEXT")
-	pfnGetDeviceMicromapCompatibilityEXT = vulkan.GetDeviceProcAddr(device, "vkGetDeviceMicromapCompatibilityEXT")
-	pfnGetMicromapBuildSizesEXT = vulkan.GetDeviceProcAddr(device, "vkGetMicromapBuildSizesEXT")
-	pfnWriteMicromapsPropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkWriteMicromapsPropertiesEXT")
+// Init resolves and initializes all VK_EXT_opacity_micromap extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnBuildMicromapsEXT:                 vulkan.GetDeviceProcAddr(device, "vkBuildMicromapsEXT"),
+		pfnCmdBuildMicromapsEXT:              vulkan.GetDeviceProcAddr(device, "vkCmdBuildMicromapsEXT"),
+		pfnCmdCopyMemoryToMicromapEXT:        vulkan.GetDeviceProcAddr(device, "vkCmdCopyMemoryToMicromapEXT"),
+		pfnCmdCopyMicromapEXT:                vulkan.GetDeviceProcAddr(device, "vkCmdCopyMicromapEXT"),
+		pfnCmdCopyMicromapToMemoryEXT:        vulkan.GetDeviceProcAddr(device, "vkCmdCopyMicromapToMemoryEXT"),
+		pfnCmdWriteMicromapsPropertiesEXT:    vulkan.GetDeviceProcAddr(device, "vkCmdWriteMicromapsPropertiesEXT"),
+		pfnCopyMemoryToMicromapEXT:           vulkan.GetDeviceProcAddr(device, "vkCopyMemoryToMicromapEXT"),
+		pfnCopyMicromapEXT:                   vulkan.GetDeviceProcAddr(device, "vkCopyMicromapEXT"),
+		pfnCopyMicromapToMemoryEXT:           vulkan.GetDeviceProcAddr(device, "vkCopyMicromapToMemoryEXT"),
+		pfnCreateMicromapEXT:                 vulkan.GetDeviceProcAddr(device, "vkCreateMicromapEXT"),
+		pfnDestroyMicromapEXT:                vulkan.GetDeviceProcAddr(device, "vkDestroyMicromapEXT"),
+		pfnGetDeviceMicromapCompatibilityEXT: vulkan.GetDeviceProcAddr(device, "vkGetDeviceMicromapCompatibilityEXT"),
+		pfnGetMicromapBuildSizesEXT:          vulkan.GetDeviceProcAddr(device, "vkGetMicromapBuildSizesEXT"),
+		pfnWriteMicromapsPropertiesEXT:       vulkan.GetDeviceProcAddr(device, "vkWriteMicromapsPropertiesEXT"),
+	}
+	pfnBuildMicromapsEXT = cmds.pfnBuildMicromapsEXT
+	pfnCmdBuildMicromapsEXT = cmds.pfnCmdBuildMicromapsEXT
+	pfnCmdCopyMemoryToMicromapEXT = cmds.pfnCmdCopyMemoryToMicromapEXT
+	pfnCmdCopyMicromapEXT = cmds.pfnCmdCopyMicromapEXT
+	pfnCmdCopyMicromapToMemoryEXT = cmds.pfnCmdCopyMicromapToMemoryEXT
+	pfnCmdWriteMicromapsPropertiesEXT = cmds.pfnCmdWriteMicromapsPropertiesEXT
+	pfnCopyMemoryToMicromapEXT = cmds.pfnCopyMemoryToMicromapEXT
+	pfnCopyMicromapEXT = cmds.pfnCopyMicromapEXT
+	pfnCopyMicromapToMemoryEXT = cmds.pfnCopyMicromapToMemoryEXT
+	pfnCreateMicromapEXT = cmds.pfnCreateMicromapEXT
+	pfnDestroyMicromapEXT = cmds.pfnDestroyMicromapEXT
+	pfnGetDeviceMicromapCompatibilityEXT = cmds.pfnGetDeviceMicromapCompatibilityEXT
+	pfnGetMicromapBuildSizesEXT = cmds.pfnGetMicromapBuildSizesEXT
+	pfnWriteMicromapsPropertiesEXT = cmds.pfnWriteMicromapsPropertiesEXT
+	return cmds
 }
 
 // BuildMicromapsEXT - Build a micromap on the host (vkBuildMicromapsEXT).
@@ -56,6 +91,17 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkBuildMicromapsEXT.html
+func (c *Commands) BuildMicromapsEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, infos []vulkan.MicromapBuildInfoEXT) (result vulkan.Result) {
+	c_infos := make([]vulkan.RawMicromapBuildInfoEXT, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	r1, _, _ := vulkan.CallSyscall(c.pfnBuildMicromapsEXT, uintptr(device), uintptr(deferredOperation), uintptr(len(infos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_infos))))
+	return vulkan.Result(r1)
+}
+
 func BuildMicromapsEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, infos []vulkan.MicromapBuildInfoEXT) (result vulkan.Result) {
 	c_infos := make([]vulkan.RawMicromapBuildInfoEXT, len(infos))
 	for i := range infos {
@@ -74,6 +120,16 @@ func BuildMicromapsEXT(device vulkan.Device, deferredOperation vulkan.DeferredOp
 //   - infos: is a pointer to an array of infoCount VkMicromapBuildInfoEXT structures defining the data used to build each micromap.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdBuildMicromapsEXT.html
+func (c *Commands) CmdBuildMicromapsEXT(commandBuffer vulkan.CommandBuffer, infos []vulkan.MicromapBuildInfoEXT) {
+	c_infos := make([]vulkan.RawMicromapBuildInfoEXT, len(infos))
+	for i := range infos {
+		if raw := infos[i].Raw(); raw != nil {
+			c_infos[i] = *raw
+		}
+	}
+	vulkan.CallSyscall(c.pfnCmdBuildMicromapsEXT, uintptr(commandBuffer), uintptr(len(infos)), uintptr(unsafe.Pointer(vulkan.SliceData(c_infos))))
+}
+
 func CmdBuildMicromapsEXT(commandBuffer vulkan.CommandBuffer, infos []vulkan.MicromapBuildInfoEXT) {
 	c_infos := make([]vulkan.RawMicromapBuildInfoEXT, len(infos))
 	for i := range infos {
@@ -90,6 +146,11 @@ func CmdBuildMicromapsEXT(commandBuffer vulkan.CommandBuffer, infos []vulkan.Mic
 //   - info: is a pointer to a VkCopyMemoryToMicromapInfoEXT structure defining the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMemoryToMicromapEXT.html
+func (c *Commands) CmdCopyMemoryToMicromapEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMemoryToMicromapInfoEXT) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyMemoryToMicromapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdCopyMemoryToMicromapEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMemoryToMicromapInfoEXT) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdCopyMemoryToMicromapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -101,6 +162,11 @@ func CmdCopyMemoryToMicromapEXT(commandBuffer vulkan.CommandBuffer, info *vulkan
 //   - info: is a pointer to a VkCopyMicromapInfoEXT structure defining the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMicromapEXT.html
+func (c *Commands) CmdCopyMicromapEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMicromapInfoEXT) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyMicromapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdCopyMicromapEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMicromapInfoEXT) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdCopyMicromapEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -112,6 +178,11 @@ func CmdCopyMicromapEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMic
 //   - info: is an a pointer to a VkCopyMicromapToMemoryInfoEXT structure defining the copy operation.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdCopyMicromapToMemoryEXT.html
+func (c *Commands) CmdCopyMicromapToMemoryEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMicromapToMemoryInfoEXT) {
+	c_info := info.Raw()
+	vulkan.CallSyscall(c.pfnCmdCopyMicromapToMemoryEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
+}
+
 func CmdCopyMicromapToMemoryEXT(commandBuffer vulkan.CommandBuffer, info *vulkan.CopyMicromapToMemoryInfoEXT) {
 	c_info := info.Raw()
 	vulkan.CallSyscall(pfnCmdCopyMicromapToMemoryEXT, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_info)))
@@ -127,6 +198,11 @@ func CmdCopyMicromapToMemoryEXT(commandBuffer vulkan.CommandBuffer, info *vulkan
 //   - firstQuery: is the first query index within the query pool that will contain the micromapCount number of results.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdWriteMicromapsPropertiesEXT.html
+func (c *Commands) CmdWriteMicromapsPropertiesEXT(commandBuffer vulkan.CommandBuffer, micromaps []vulkan.MicromapEXT, queryType vulkan.QueryType, queryPool vulkan.QueryPool, firstQuery uint32) {
+	c_micromaps := vulkan.SliceData(micromaps)
+	vulkan.CallSyscall(c.pfnCmdWriteMicromapsPropertiesEXT, uintptr(commandBuffer), uintptr(len(micromaps)), uintptr(unsafe.Pointer(c_micromaps)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
+}
+
 func CmdWriteMicromapsPropertiesEXT(commandBuffer vulkan.CommandBuffer, micromaps []vulkan.MicromapEXT, queryType vulkan.QueryType, queryPool vulkan.QueryPool, firstQuery uint32) {
 	c_micromaps := vulkan.SliceData(micromaps)
 	vulkan.CallSyscall(pfnCmdWriteMicromapsPropertiesEXT, uintptr(commandBuffer), uintptr(len(micromaps)), uintptr(unsafe.Pointer(c_micromaps)), uintptr(queryType), uintptr(queryPool), uintptr(firstQuery))
@@ -141,6 +217,12 @@ func CmdWriteMicromapsPropertiesEXT(commandBuffer vulkan.CommandBuffer, micromap
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMemoryToMicromapEXT.html
+func (c *Commands) CopyMemoryToMicromapEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMemoryToMicromapInfoEXT) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCopyMemoryToMicromapEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func CopyMemoryToMicromapEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMemoryToMicromapInfoEXT) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCopyMemoryToMicromapEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
@@ -156,6 +238,12 @@ func CopyMemoryToMicromapEXT(device vulkan.Device, deferredOperation vulkan.Defe
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMicromapEXT.html
+func (c *Commands) CopyMicromapEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMicromapInfoEXT) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCopyMicromapEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func CopyMicromapEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMicromapInfoEXT) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCopyMicromapEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
@@ -171,6 +259,12 @@ func CopyMicromapEXT(device vulkan.Device, deferredOperation vulkan.DeferredOper
 // Success codes: VK_SUCCESS, VK_OPERATION_DEFERRED_KHR, VK_OPERATION_NOT_DEFERRED_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCopyMicromapToMemoryEXT.html
+func (c *Commands) CopyMicromapToMemoryEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMicromapToMemoryInfoEXT) (result vulkan.Result) {
+	c_info := info.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCopyMicromapToMemoryEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
+	return vulkan.Result(r1)
+}
+
 func CopyMicromapToMemoryEXT(device vulkan.Device, deferredOperation vulkan.DeferredOperationKHR, info *vulkan.CopyMicromapToMemoryInfoEXT) (result vulkan.Result) {
 	c_info := info.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnCopyMicromapToMemoryEXT, uintptr(device), uintptr(deferredOperation), uintptr(unsafe.Pointer(c_info)))
@@ -187,6 +281,13 @@ func CopyMicromapToMemoryEXT(device vulkan.Device, deferredOperation vulkan.Defe
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS_KHR, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCreateMicromapEXT.html
+func (c *Commands) CreateMicromapEXT(device vulkan.Device, createInfo *vulkan.MicromapCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (micromap vulkan.MicromapEXT, result vulkan.Result) {
+	c_createInfo := createInfo.Raw()
+	c_allocator := allocator.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnCreateMicromapEXT, uintptr(device), uintptr(unsafe.Pointer(c_createInfo)), uintptr(unsafe.Pointer(c_allocator)), uintptr(unsafe.Pointer(&micromap)))
+	return micromap, vulkan.Result(r1)
+}
+
 func CreateMicromapEXT(device vulkan.Device, createInfo *vulkan.MicromapCreateInfoEXT, allocator *vulkan.AllocationCallbacks) (micromap vulkan.MicromapEXT, result vulkan.Result) {
 	c_createInfo := createInfo.Raw()
 	c_allocator := allocator.Raw()
@@ -201,6 +302,11 @@ func CreateMicromapEXT(device vulkan.Device, createInfo *vulkan.MicromapCreateIn
 //   - allocator: controls host memory allocation as described in the Memory Allocation chapter.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyMicromapEXT.html
+func (c *Commands) DestroyMicromapEXT(device vulkan.Device, micromap vulkan.MicromapEXT, allocator *vulkan.AllocationCallbacks) {
+	c_allocator := allocator.Raw()
+	vulkan.CallSyscall(c.pfnDestroyMicromapEXT, uintptr(device), uintptr(micromap), uintptr(unsafe.Pointer(c_allocator)))
+}
+
 func DestroyMicromapEXT(device vulkan.Device, micromap vulkan.MicromapEXT, allocator *vulkan.AllocationCallbacks) {
 	c_allocator := allocator.Raw()
 	vulkan.CallSyscall(pfnDestroyMicromapEXT, uintptr(device), uintptr(micromap), uintptr(unsafe.Pointer(c_allocator)))
@@ -213,6 +319,12 @@ func DestroyMicromapEXT(device vulkan.Device, micromap vulkan.MicromapEXT, alloc
 //   - compatibility: is a pointer to a VkAccelerationStructureCompatibilityKHR value in which compatibility information is returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceMicromapCompatibilityEXT.html
+func (c *Commands) GetDeviceMicromapCompatibilityEXT(device vulkan.Device, versionInfo *vulkan.MicromapVersionInfoEXT) (compatibility vulkan.AccelerationStructureCompatibilityKHR) {
+	c_versionInfo := versionInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetDeviceMicromapCompatibilityEXT, uintptr(device), uintptr(unsafe.Pointer(c_versionInfo)), uintptr(unsafe.Pointer(&compatibility)))
+	return compatibility
+}
+
 func GetDeviceMicromapCompatibilityEXT(device vulkan.Device, versionInfo *vulkan.MicromapVersionInfoEXT) (compatibility vulkan.AccelerationStructureCompatibilityKHR) {
 	c_versionInfo := versionInfo.Raw()
 	vulkan.CallSyscall(pfnGetDeviceMicromapCompatibilityEXT, uintptr(device), uintptr(unsafe.Pointer(c_versionInfo)), uintptr(unsafe.Pointer(&compatibility)))
@@ -227,6 +339,12 @@ func GetDeviceMicromapCompatibilityEXT(device vulkan.Device, versionInfo *vulkan
 //   - sizeInfo: is a pointer to a VkMicromapBuildSizesInfoEXT structure which returns the size required for a micromap and the sizes required for the scratch buffers, given the build parameters. The size requirements for a scratch buffer may be zero.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetMicromapBuildSizesEXT.html
+func (c *Commands) GetMicromapBuildSizesEXT(device vulkan.Device, buildType vulkan.AccelerationStructureBuildTypeKHR, buildInfo *vulkan.MicromapBuildInfoEXT) (sizeInfo vulkan.MicromapBuildSizesInfoEXT) {
+	c_buildInfo := buildInfo.Raw()
+	vulkan.CallSyscall(c.pfnGetMicromapBuildSizesEXT, uintptr(device), uintptr(buildType), uintptr(unsafe.Pointer(c_buildInfo)), uintptr(unsafe.Pointer(&sizeInfo)))
+	return sizeInfo
+}
+
 func GetMicromapBuildSizesEXT(device vulkan.Device, buildType vulkan.AccelerationStructureBuildTypeKHR, buildInfo *vulkan.MicromapBuildInfoEXT) (sizeInfo vulkan.MicromapBuildSizesInfoEXT) {
 	c_buildInfo := buildInfo.Raw()
 	vulkan.CallSyscall(pfnGetMicromapBuildSizesEXT, uintptr(device), uintptr(buildType), uintptr(unsafe.Pointer(c_buildInfo)), uintptr(unsafe.Pointer(&sizeInfo)))
@@ -246,6 +364,13 @@ func GetMicromapBuildSizesEXT(device vulkan.Device, buildType vulkan.Acceleratio
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWriteMicromapsPropertiesEXT.html
+func (c *Commands) WriteMicromapsPropertiesEXT(device vulkan.Device, micromaps []vulkan.MicromapEXT, queryType vulkan.QueryType, data []unsafe.Pointer, stride uintptr) (result vulkan.Result) {
+	c_micromaps := vulkan.SliceData(micromaps)
+	c_data := vulkan.SliceData(data)
+	r1, _, _ := vulkan.CallSyscall(c.pfnWriteMicromapsPropertiesEXT, uintptr(device), uintptr(len(micromaps)), uintptr(unsafe.Pointer(c_micromaps)), uintptr(queryType), uintptr(len(data)), uintptr(unsafe.Pointer(c_data)), uintptr(stride))
+	return vulkan.Result(r1)
+}
+
 func WriteMicromapsPropertiesEXT(device vulkan.Device, micromaps []vulkan.MicromapEXT, queryType vulkan.QueryType, data []unsafe.Pointer, stride uintptr) (result vulkan.Result) {
 	c_micromaps := vulkan.SliceData(micromaps)
 	c_data := vulkan.SliceData(data)

@@ -10,26 +10,45 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdDrawIndexedIndirectCountAMD uintptr
+	pfnCmdDrawIndirectCountAMD        uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdDrawIndexedIndirectCountAMD uintptr
 	pfnCmdDrawIndirectCountAMD        uintptr
 )
 
-// Init resolves and initializes all VK_AMD_draw_indirect_count extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdDrawIndexedIndirectCountAMD = vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirectCountAMD")
-	pfnCmdDrawIndirectCountAMD = vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndirectCountAMD")
+// Init resolves and initializes all VK_AMD_draw_indirect_count extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdDrawIndexedIndirectCountAMD: vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirectCountAMD"),
+		pfnCmdDrawIndirectCountAMD:        vulkan.GetInstanceProcAddr(instance, "vkCmdDrawIndirectCountAMD"),
+	}
+	pfnCmdDrawIndexedIndirectCountAMD = cmds.pfnCmdDrawIndexedIndirectCountAMD
+	pfnCmdDrawIndirectCountAMD = cmds.pfnCmdDrawIndirectCountAMD
+	return cmds
 }
 
 // CmdDrawIndexedIndirectCountAMD executes vkCmdDrawIndexedIndirectCountAMD.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexedIndirectCountAMD.html
+func (c *Commands) CmdDrawIndexedIndirectCountAMD() {
+	vulkan.CallSyscall(c.pfnCmdDrawIndexedIndirectCountAMD)
+}
+
 func CmdDrawIndexedIndirectCountAMD() {
 	vulkan.CallSyscall(pfnCmdDrawIndexedIndirectCountAMD)
 }
 
 // CmdDrawIndirectCountAMD executes vkCmdDrawIndirectCountAMD.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndirectCountAMD.html
+func (c *Commands) CmdDrawIndirectCountAMD() {
+	vulkan.CallSyscall(c.pfnCmdDrawIndirectCountAMD)
+}
+
 func CmdDrawIndirectCountAMD() {
 	vulkan.CallSyscall(pfnCmdDrawIndirectCountAMD)
 }

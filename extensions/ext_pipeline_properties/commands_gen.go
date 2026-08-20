@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetPipelinePropertiesEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetPipelinePropertiesEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_pipeline_properties extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetPipelinePropertiesEXT = vulkan.GetDeviceProcAddr(device, "vkGetPipelinePropertiesEXT")
+// Init resolves and initializes all VK_EXT_pipeline_properties extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetPipelinePropertiesEXT: vulkan.GetDeviceProcAddr(device, "vkGetPipelinePropertiesEXT"),
+	}
+	pfnGetPipelinePropertiesEXT = cmds.pfnGetPipelinePropertiesEXT
+	return cmds
 }
 
 // GetPipelinePropertiesEXT - Query pipeline properties (vkGetPipelinePropertiesEXT).
@@ -29,6 +38,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetPipelinePropertiesEXT.html
+func (c *Commands) GetPipelinePropertiesEXT(device vulkan.Device, pipelineInfo *vulkan.PipelineInfoKHR) (pipelineProperties vulkan.BaseOutStructure, result vulkan.Result) {
+	c_pipelineInfo := pipelineInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetPipelinePropertiesEXT, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&pipelineProperties)))
+	return pipelineProperties, vulkan.Result(r1)
+}
+
 func GetPipelinePropertiesEXT(device vulkan.Device, pipelineInfo *vulkan.PipelineInfoKHR) (pipelineProperties vulkan.BaseOutStructure, result vulkan.Result) {
 	c_pipelineInfo := pipelineInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetPipelinePropertiesEXT, uintptr(device), uintptr(unsafe.Pointer(c_pipelineInfo)), uintptr(unsafe.Pointer(&pipelineProperties)))

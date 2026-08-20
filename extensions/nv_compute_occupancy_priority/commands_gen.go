@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnCmdSetComputeOccupancyPriorityNV uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnCmdSetComputeOccupancyPriorityNV uintptr
 )
 
-// Init resolves and initializes all VK_NV_compute_occupancy_priority extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnCmdSetComputeOccupancyPriorityNV = vulkan.GetDeviceProcAddr(device, "vkCmdSetComputeOccupancyPriorityNV")
+// Init resolves and initializes all VK_NV_compute_occupancy_priority extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnCmdSetComputeOccupancyPriorityNV: vulkan.GetDeviceProcAddr(device, "vkCmdSetComputeOccupancyPriorityNV"),
+	}
+	pfnCmdSetComputeOccupancyPriorityNV = cmds.pfnCmdSetComputeOccupancyPriorityNV
+	return cmds
 }
 
 // CmdSetComputeOccupancyPriorityNV - Set the compute occupancy priority for subsequent compute dispatches (vkCmdSetComputeOccupancyPriorityNV).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - parameters: is a pointer to a VkComputeOccupancyPriorityParametersNV structure specifying the occupancy priority parameters.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkCmdSetComputeOccupancyPriorityNV.html
+func (c *Commands) CmdSetComputeOccupancyPriorityNV(commandBuffer vulkan.CommandBuffer, parameters *vulkan.ComputeOccupancyPriorityParametersNV) {
+	c_parameters := parameters.Raw()
+	vulkan.CallSyscall(c.pfnCmdSetComputeOccupancyPriorityNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_parameters)))
+}
+
 func CmdSetComputeOccupancyPriorityNV(commandBuffer vulkan.CommandBuffer, parameters *vulkan.ComputeOccupancyPriorityParametersNV) {
 	c_parameters := parameters.Raw()
 	vulkan.CallSyscall(pfnCmdSetComputeOccupancyPriorityNV, uintptr(commandBuffer), uintptr(unsafe.Pointer(c_parameters)))

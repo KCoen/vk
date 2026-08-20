@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnExportMetalObjectsEXT uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnExportMetalObjectsEXT uintptr
 )
 
-// Init resolves and initializes all VK_EXT_metal_objects extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnExportMetalObjectsEXT = vulkan.GetDeviceProcAddr(device, "vkExportMetalObjectsEXT")
+// Init resolves and initializes all VK_EXT_metal_objects extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnExportMetalObjectsEXT: vulkan.GetDeviceProcAddr(device, "vkExportMetalObjectsEXT"),
+	}
+	pfnExportMetalObjectsEXT = cmds.pfnExportMetalObjectsEXT
+	return cmds
 }
 
 // ExportMetalObjectsEXT - Export Metal objects from the corresponding Vulkan objects (vkExportMetalObjectsEXT).
@@ -26,6 +35,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 //   - metalObjectsInfo: is a pointer to a VkExportMetalObjectsInfoEXT structure whose pNext chain contains structures, each identifying a Vulkan object and providing a pointer through which the Metal object will be returned.
 //
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkExportMetalObjectsEXT.html
+func (c *Commands) ExportMetalObjectsEXT(device vulkan.Device) (metalObjectsInfo vulkan.ExportMetalObjectsInfoEXT) {
+	vulkan.CallSyscall(c.pfnExportMetalObjectsEXT, uintptr(device), uintptr(unsafe.Pointer(&metalObjectsInfo)))
+	return metalObjectsInfo
+}
+
 func ExportMetalObjectsEXT(device vulkan.Device) (metalObjectsInfo vulkan.ExportMetalObjectsInfoEXT) {
 	vulkan.CallSyscall(pfnExportMetalObjectsEXT, uintptr(device), uintptr(unsafe.Pointer(&metalObjectsInfo)))
 	return metalObjectsInfo

@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetSemaphoreZirconHandleFUCHSIA    uintptr
+	pfnImportSemaphoreZirconHandleFUCHSIA uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetSemaphoreZirconHandleFUCHSIA    uintptr
 	pfnImportSemaphoreZirconHandleFUCHSIA uintptr
 )
 
-// Init resolves and initializes all VK_FUCHSIA_external_semaphore extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetSemaphoreZirconHandleFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreZirconHandleFUCHSIA")
-	pfnImportSemaphoreZirconHandleFUCHSIA = vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreZirconHandleFUCHSIA")
+// Init resolves and initializes all VK_FUCHSIA_external_semaphore extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetSemaphoreZirconHandleFUCHSIA:    vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreZirconHandleFUCHSIA"),
+		pfnImportSemaphoreZirconHandleFUCHSIA: vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreZirconHandleFUCHSIA"),
+	}
+	pfnGetSemaphoreZirconHandleFUCHSIA = cmds.pfnGetSemaphoreZirconHandleFUCHSIA
+	pfnImportSemaphoreZirconHandleFUCHSIA = cmds.pfnImportSemaphoreZirconHandleFUCHSIA
+	return cmds
 }
 
 // GetSemaphoreZirconHandleFUCHSIA - Get a Zircon event handle for a semaphore (vkGetSemaphoreZirconHandleFUCHSIA).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreZirconHandleFUCHSIA.html
+func (c *Commands) GetSemaphoreZirconHandleFUCHSIA(device vulkan.Device, getZirconHandleInfo *vulkan.SemaphoreGetZirconHandleInfoFUCHSIA) (zirconHandle uint32, result vulkan.Result) {
+	c_getZirconHandleInfo := getZirconHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSemaphoreZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_getZirconHandleInfo)), uintptr(unsafe.Pointer(&zirconHandle)))
+	return zirconHandle, vulkan.Result(r1)
+}
+
 func GetSemaphoreZirconHandleFUCHSIA(device vulkan.Device, getZirconHandleInfo *vulkan.SemaphoreGetZirconHandleInfoFUCHSIA) (zirconHandle uint32, result vulkan.Result) {
 	c_getZirconHandleInfo := getZirconHandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetSemaphoreZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_getZirconHandleInfo)), uintptr(unsafe.Pointer(&zirconHandle)))
@@ -45,6 +62,12 @@ func GetSemaphoreZirconHandleFUCHSIA(device vulkan.Device, getZirconHandleInfo *
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreZirconHandleFUCHSIA.html
+func (c *Commands) ImportSemaphoreZirconHandleFUCHSIA(device vulkan.Device, importSemaphoreZirconHandleInfo *vulkan.ImportSemaphoreZirconHandleInfoFUCHSIA) (result vulkan.Result) {
+	c_importSemaphoreZirconHandleInfo := importSemaphoreZirconHandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportSemaphoreZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreZirconHandleInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportSemaphoreZirconHandleFUCHSIA(device vulkan.Device, importSemaphoreZirconHandleInfo *vulkan.ImportSemaphoreZirconHandleInfoFUCHSIA) (result vulkan.Result) {
 	c_importSemaphoreZirconHandleInfo := importSemaphoreZirconHandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportSemaphoreZirconHandleFUCHSIA, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreZirconHandleInfo)))

@@ -10,14 +10,23 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnWaitForPresentKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnWaitForPresentKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_present_wait extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnWaitForPresentKHR = vulkan.GetDeviceProcAddr(device, "vkWaitForPresentKHR")
+// Init resolves and initializes all VK_KHR_present_wait extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnWaitForPresentKHR: vulkan.GetDeviceProcAddr(device, "vkWaitForPresentKHR"),
+	}
+	pfnWaitForPresentKHR = cmds.pfnWaitForPresentKHR
+	return cmds
 }
 
 // WaitForPresentKHR - Wait for presentation (vkWaitForPresentKHR).
@@ -30,6 +39,11 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS, VK_TIMEOUT, VK_SUBOPTIMAL_KHR
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_OUT_OF_DEVICE_MEMORY, VK_ERROR_DEVICE_LOST, VK_ERROR_OUT_OF_DATE_KHR, VK_ERROR_SURFACE_LOST_KHR, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWaitForPresentKHR.html
+func (c *Commands) WaitForPresentKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, presentId uint64, timeout uint64) (result vulkan.Result) {
+	r1, _, _ := vulkan.CallSyscall(c.pfnWaitForPresentKHR, uintptr(device), uintptr(swapchain), uintptr(presentId), uintptr(timeout))
+	return vulkan.Result(r1)
+}
+
 func WaitForPresentKHR(device vulkan.Device, swapchain vulkan.SwapchainKHR, presentId uint64, timeout uint64) (result vulkan.Result) {
 	r1, _, _ := vulkan.CallSyscall(pfnWaitForPresentKHR, uintptr(device), uintptr(swapchain), uintptr(presentId), uintptr(timeout))
 	return vulkan.Result(r1)

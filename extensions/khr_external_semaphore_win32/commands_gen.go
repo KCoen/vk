@@ -10,16 +10,27 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetSemaphoreWin32HandleKHR    uintptr
+	pfnImportSemaphoreWin32HandleKHR uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetSemaphoreWin32HandleKHR    uintptr
 	pfnImportSemaphoreWin32HandleKHR uintptr
 )
 
-// Init resolves and initializes all VK_KHR_external_semaphore_win32 extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetSemaphoreWin32HandleKHR = vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreWin32HandleKHR")
-	pfnImportSemaphoreWin32HandleKHR = vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreWin32HandleKHR")
+// Init resolves and initializes all VK_KHR_external_semaphore_win32 extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetSemaphoreWin32HandleKHR:    vulkan.GetDeviceProcAddr(device, "vkGetSemaphoreWin32HandleKHR"),
+		pfnImportSemaphoreWin32HandleKHR: vulkan.GetDeviceProcAddr(device, "vkImportSemaphoreWin32HandleKHR"),
+	}
+	pfnGetSemaphoreWin32HandleKHR = cmds.pfnGetSemaphoreWin32HandleKHR
+	pfnImportSemaphoreWin32HandleKHR = cmds.pfnImportSemaphoreWin32HandleKHR
+	return cmds
 }
 
 // GetSemaphoreWin32HandleKHR - Get a Windows HANDLE for a semaphore (vkGetSemaphoreWin32HandleKHR).
@@ -31,6 +42,12 @@ func Init(instance vulkan.Instance, device vulkan.Device) {
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_TOO_MANY_OBJECTS, VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreWin32HandleKHR.html
+func (c *Commands) GetSemaphoreWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.SemaphoreGetWin32HandleInfoKHR) (handle uintptr, result vulkan.Result) {
+	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnGetSemaphoreWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
+	return handle, vulkan.Result(r1)
+}
+
 func GetSemaphoreWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan.SemaphoreGetWin32HandleInfoKHR) (handle uintptr, result vulkan.Result) {
 	c_getWin32HandleInfo := getWin32HandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnGetSemaphoreWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_getWin32HandleInfo)), uintptr(unsafe.Pointer(&handle)))
@@ -45,6 +62,12 @@ func GetSemaphoreWin32HandleKHR(device vulkan.Device, getWin32HandleInfo *vulkan
 // Success codes: VK_SUCCESS
 // Error codes: VK_ERROR_OUT_OF_HOST_MEMORY, VK_ERROR_INVALID_EXTERNAL_HANDLE, VK_ERROR_UNKNOWN, VK_ERROR_VALIDATION_FAILED
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkImportSemaphoreWin32HandleKHR.html
+func (c *Commands) ImportSemaphoreWin32HandleKHR(device vulkan.Device, importSemaphoreWin32HandleInfo *vulkan.ImportSemaphoreWin32HandleInfoKHR) (result vulkan.Result) {
+	c_importSemaphoreWin32HandleInfo := importSemaphoreWin32HandleInfo.Raw()
+	r1, _, _ := vulkan.CallSyscall(c.pfnImportSemaphoreWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreWin32HandleInfo)))
+	return vulkan.Result(r1)
+}
+
 func ImportSemaphoreWin32HandleKHR(device vulkan.Device, importSemaphoreWin32HandleInfo *vulkan.ImportSemaphoreWin32HandleInfoKHR) (result vulkan.Result) {
 	c_importSemaphoreWin32HandleInfo := importSemaphoreWin32HandleInfo.Raw()
 	r1, _, _ := vulkan.CallSyscall(pfnImportSemaphoreWin32HandleKHR, uintptr(device), uintptr(unsafe.Pointer(c_importSemaphoreWin32HandleInfo)))

@@ -10,34 +10,59 @@ import (
 
 var _ = unsafe.Pointer(nil)
 
-// Procedure addresses resolved by Init
+// Commands holds resolved procedure addresses for an instance and/or device.
+type Commands struct {
+	pfnGetSemaphoreCounterValueKHR uintptr
+	pfnSignalSemaphoreKHR          uintptr
+	pfnWaitSemaphoresKHR           uintptr
+}
+
+// Default procedure addresses resolved by Init
 var (
 	pfnGetSemaphoreCounterValueKHR uintptr
 	pfnSignalSemaphoreKHR          uintptr
 	pfnWaitSemaphoresKHR           uintptr
 )
 
-// Init resolves and initializes all VK_KHR_timeline_semaphore extension procedure addresses.
-func Init(instance vulkan.Instance, device vulkan.Device) {
-	pfnGetSemaphoreCounterValueKHR = vulkan.GetInstanceProcAddr(instance, "vkGetSemaphoreCounterValueKHR")
-	pfnSignalSemaphoreKHR = vulkan.GetInstanceProcAddr(instance, "vkSignalSemaphoreKHR")
-	pfnWaitSemaphoresKHR = vulkan.GetInstanceProcAddr(instance, "vkWaitSemaphoresKHR")
+// Init resolves and initializes all VK_KHR_timeline_semaphore extension procedure addresses, setting default globals and returning a Commands instance for multi-device support.
+func Init(instance vulkan.Instance, device vulkan.Device) *Commands {
+	cmds := &Commands{
+		pfnGetSemaphoreCounterValueKHR: vulkan.GetInstanceProcAddr(instance, "vkGetSemaphoreCounterValueKHR"),
+		pfnSignalSemaphoreKHR:          vulkan.GetInstanceProcAddr(instance, "vkSignalSemaphoreKHR"),
+		pfnWaitSemaphoresKHR:           vulkan.GetInstanceProcAddr(instance, "vkWaitSemaphoresKHR"),
+	}
+	pfnGetSemaphoreCounterValueKHR = cmds.pfnGetSemaphoreCounterValueKHR
+	pfnSignalSemaphoreKHR = cmds.pfnSignalSemaphoreKHR
+	pfnWaitSemaphoresKHR = cmds.pfnWaitSemaphoresKHR
+	return cmds
 }
 
 // GetSemaphoreCounterValueKHR executes vkGetSemaphoreCounterValueKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreCounterValueKHR.html
+func (c *Commands) GetSemaphoreCounterValueKHR() {
+	vulkan.CallSyscall(c.pfnGetSemaphoreCounterValueKHR)
+}
+
 func GetSemaphoreCounterValueKHR() {
 	vulkan.CallSyscall(pfnGetSemaphoreCounterValueKHR)
 }
 
 // SignalSemaphoreKHR executes vkSignalSemaphoreKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkSignalSemaphoreKHR.html
+func (c *Commands) SignalSemaphoreKHR() {
+	vulkan.CallSyscall(c.pfnSignalSemaphoreKHR)
+}
+
 func SignalSemaphoreKHR() {
 	vulkan.CallSyscall(pfnSignalSemaphoreKHR)
 }
 
 // WaitSemaphoresKHR executes vkWaitSemaphoresKHR.
 // Documented at: https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkWaitSemaphoresKHR.html
+func (c *Commands) WaitSemaphoresKHR() {
+	vulkan.CallSyscall(c.pfnWaitSemaphoresKHR)
+}
+
 func WaitSemaphoresKHR() {
 	vulkan.CallSyscall(pfnWaitSemaphoresKHR)
 }
